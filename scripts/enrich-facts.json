@@ -1,0 +1,22 @@
+{
+  "_readme": "Verified primary-source facts for articles where the specifics ARE the article. Without this, the enrichment pass refuses to state any figure not present in the (often stub) original, which produces a structurally correct but hollow guide. Everything here must be checked against the cited URL by a human or a live fetch before being added. The model may state these specifically and must cite the source; it still may not invent anything beyond them.",
+
+  "52": {
+    "topic": "Making Tax Digital for Income Tax",
+    "verifiedOn": "2026-08-01",
+    "sources": [
+      "https://www.gov.uk/guidance/check-if-youre-eligible-for-making-tax-digital-for-income-tax",
+      "https://www.gov.uk/guidance/use-making-tax-digital-for-income-tax"
+    ],
+    "facts": [
+      "Making Tax Digital for Income Tax is phased in by 'qualifying income', which is total gross income from self-employment and property before expenses, not profit.",
+      "Sole traders and landlords with qualifying income over £50,000 must use Making Tax Digital for Income Tax from 6 April 2026.",
+      "Those with qualifying income over £30,000 join from 6 April 2027.",
+      "Those with qualifying income over £20,000 join from 6 April 2028.",
+      "The government has stated it will extend the requirement to those with qualifying income over £20,000 by the end of this Parliament.",
+      "Qualifying income is assessed for a tax year, and HMRC writes to people it believes are in scope.",
+      "Once in scope, you keep digital records and send quarterly updates to HMRC using compatible software, then finalise the year.",
+      "Making Tax Digital for VAT already applies to VAT-registered businesses, which is a separate and earlier regime from Making Tax Digital for Income Tax."
+    ]
+  }
+}

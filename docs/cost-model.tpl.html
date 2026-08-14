@@ -1,0 +1,732 @@
+<title>Cogent Incubator — Fleet Cost Model</title>
+
+<style>
+@font-face{font-family:"Space Grotesk";src:url(data:font/woff2;base64,__GROTESK__) format("woff2");font-weight:300 700;font-style:normal;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:url(data:font/woff2;base64,__MONO__) format("woff2");font-weight:100 800;font-style:normal;font-display:swap}
+
+:root{
+  color-scheme:light;
+  --bg:#F4F5FA; --surface:#FFFFFF; --surface-2:#F8F9FD;
+  --line:#E3E5EF; --line-bright:#C7CBE0;
+  --text:#0A0C16; --muted:#5A5E75; --faint:#8A8FA8;
+  --brand:#2E3EEE; --brand-2:#4553F0;
+  --s1:#059669; --s2:#8B5CF6; --s3:#D97706; --s4:#0891B2;
+  --warn:#D0202B;
+  --grid:rgba(10,12,22,.07);
+  --tile:#FFFFFF;
+  --ambient:none;
+  --ring:rgba(46,62,238,.10);
+}
+@media (prefers-color-scheme:dark){
+  :root:where(:not([data-theme="light"])){
+    color-scheme:dark;
+    --bg:#05070f; --surface:#0b1022; --surface-2:#111a36;
+    --line:rgba(101,125,255,.14); --line-bright:rgba(101,125,255,.35);
+    --text:#eef2ff; --muted:#8b97c6; --faint:#69749d;
+    --brand:#2e3eee; --brand-2:#5a6aff;
+    --s1:#059669; --s2:#8B5CF6; --s3:#D97706; --s4:#0891B2;
+    --warn:#fb7185;
+    --grid:rgba(101,125,255,.06);
+    --tile:#0b1022;
+    --ambient:block;
+    --ring:rgba(90,106,255,.18);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#05070f; --surface:#0b1022; --surface-2:#111a36;
+  --line:rgba(101,125,255,.14); --line-bright:rgba(101,125,255,.35);
+  --text:#eef2ff; --muted:#8b97c6; --faint:#69749d;
+  --brand:#2e3eee; --brand-2:#5a6aff;
+  --s1:#059669; --s2:#8B5CF6; --s3:#D97706; --s4:#0891B2;
+  --warn:#fb7185;
+  --grid:rgba(101,125,255,.06);
+  --tile:#0b1022;
+  --ambient:block;
+  --ring:rgba(90,106,255,.18);
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+
+.amb{display:var(--ambient);position:fixed;inset:0;pointer-events:none;z-index:0}
+.amb::before{content:"";position:absolute;inset:0;
+  background-image:
+    radial-gradient(900px 500px at 8% -10%,rgba(46,62,238,.26),transparent 60%),
+    radial-gradient(700px 420px at 96% 4%,rgba(34,211,238,.11),transparent 60%),
+    radial-gradient(800px 600px at 50% 108%,rgba(139,92,246,.13),transparent 60%)}
+.amb::after{content:"";position:absolute;inset:0;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:44px 44px;
+  -webkit-mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 30%,transparent 75%);
+  mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 30%,transparent 75%)}
+
+.page{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:40px 20px 72px;
+  display:flex;flex-direction:column;gap:34px}
+
+h1,h2,h3{font-family:"Space Grotesk",system-ui,sans-serif;margin:0;letter-spacing:-.018em;text-wrap:balance}
+h1{font-size:clamp(28px,4.6vw,42px);font-weight:600;line-height:1.08}
+h2{font-size:19px;font-weight:600}
+h3{font-size:14px;font-weight:600}
+p{margin:0}
+
+.micro{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted)}
+.num{font-family:"JetBrains Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+
+.masthead{display:flex;flex-direction:column;gap:12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.masthead .stand{color:var(--muted);max-width:62ch;font-size:15.5px}
+.rule{display:flex;align-items:center;gap:10px}
+.rule::after{content:"";flex:1;height:1px;background:var(--line)}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+
+/* ---------- controls ---------- */
+.controls{padding:18px 20px;display:flex;flex-direction:column;gap:18px}
+.ctlgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px 26px}
+.ctl{display:flex;flex-direction:column;gap:9px;min-width:0}
+.ctl > .micro{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.ctl .val{color:var(--text);font-size:11px;letter-spacing:.06em}
+
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;font-weight:600;
+  padding:7px 13px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--muted);
+  cursor:pointer;transition:border-color .15s,color .15s,background .15s}
+.chip:hover{border-color:var(--line-bright);color:var(--text)}
+.chip[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff;
+  box-shadow:0 0 18px var(--ring)}
+.chip:focus-visible,.seg button:focus-visible{outline:2px solid var(--s4);outline-offset:2px}
+
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:3px;
+  background:var(--line-bright);cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;
+  background:var(--brand);border:2px solid var(--surface);box-shadow:0 0 12px var(--ring)}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--brand);
+  border:2px solid var(--surface)}
+input[type=range]:focus-visible{outline:2px solid var(--s4);outline-offset:4px}
+
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;align-self:flex-start}
+.seg button{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.04em;
+  padding:8px 14px;border:0;background:transparent;color:var(--muted);cursor:pointer;transition:.15s}
+.seg button + button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--surface-2);color:var(--text)}
+
+/* ---------- tiles ---------- */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+.tile{background:var(--tile);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+  display:flex;flex-direction:column;gap:5px;min-width:0}
+.tile .v{font-family:"Space Grotesk",system-ui,sans-serif;font-size:30px;font-weight:600;line-height:1.05;
+  letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.tile .sub{font-size:12.5px;color:var(--muted);line-height:1.4}
+.tile.hero{border-color:var(--line-bright)}
+.tile.hero .v{color:var(--brand-2)}
+
+/* ---------- charts ---------- */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+figure{margin:0;padding:18px 18px 14px;min-width:0}
+figure.wide{grid-column:1 / -1}
+figcaption{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+figcaption .note{font-size:13px;color:var(--muted);max-width:70ch}
+.chart{width:100%;height:auto;display:block;overflow:visible}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.lg{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--muted)}
+.sw{width:11px;height:11px;border-radius:3px;flex:none}
+.sw.ln{height:3px;border-radius:2px;width:16px}
+
+.ax{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10px;fill:var(--faint);font-variant-numeric:tabular-nums}
+.axl{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10.5px;fill:var(--muted);font-variant-numeric:tabular-nums}
+.dl{font-family:"Space Grotesk",system-ui,sans-serif;font-size:11.5px;font-weight:600;fill:var(--text);font-variant-numeric:tabular-nums}
+.gl{stroke:var(--line);stroke-width:1}
+.base{stroke:var(--line-bright);stroke-width:1}
+.seg-r{transition:opacity .12s}
+figure:hover .seg-r{opacity:.6}
+figure .seg-r:hover{opacity:1}
+.hi{stroke:var(--brand-2);stroke-width:1.5;fill:none}
+
+.tip{position:fixed;z-index:20;pointer-events:none;opacity:0;transition:opacity .12s;
+  background:var(--surface-2);border:1px solid var(--line-bright);border-radius:8px;padding:8px 11px;
+  font-size:12px;color:var(--text);box-shadow:0 8px 26px rgba(0,0,0,.28);max-width:230px}
+.tip .t{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);display:block;margin-bottom:3px}
+.tip .n{font-variant-numeric:tabular-nums;font-weight:600}
+
+/* ---------- table ---------- */
+.tablewrap{padding:18px 0 6px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:13.5px}
+caption{text-align:left;padding:0 18px 14px;color:var(--muted);font-size:13px}
+th,td{padding:9px 18px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left;white-space:normal}
+thead th{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);font-weight:500;border-bottom-color:var(--line-bright)}
+tbody td{font-variant-numeric:tabular-nums;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12.5px}
+tbody td:first-child{font-family:inherit;font-size:13.5px;color:var(--muted)}
+tbody tr.total td{border-top:1px solid var(--line-bright);border-bottom:0;font-weight:700;color:var(--text);padding-top:11px}
+tbody tr.total td:first-child{color:var(--text);font-weight:600}
+tbody tr.derived td{border-bottom:0;padding-top:2px;padding-bottom:2px;color:var(--muted)}
+tbody tr.derived td:first-child{font-size:12.5px}
+col.hl{background:var(--surface-2)}
+
+/* ---------- method ---------- */
+.method{padding:20px 22px;display:flex;flex-direction:column;gap:16px}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px 28px}
+.mgrid h3{margin-bottom:5px}
+.mgrid p,.mgrid li{font-size:13.5px;color:var(--muted)}
+.mgrid ul{margin:0;padding-left:17px;display:flex;flex-direction:column;gap:4px}
+.flag{border-left:2px solid var(--s3);padding:2px 0 2px 14px;font-size:13.5px;color:var(--muted)}
+.flag b{color:var(--text);font-weight:600}
+footer{color:var(--faint);font-size:12px;text-align:center;padding-top:4px}
+
+@media (max-width:820px){
+  .grid{grid-template-columns:1fr}
+  .page{padding:28px 14px 56px;gap:26px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="amb" aria-hidden="true"></div>
+
+<div class="page">
+
+  <header class="masthead">
+    <span class="micro">Cogent Incubator · Fleet economics</span>
+    <h1>What it costs to run N titles</h1>
+    <p class="stand">Every figure below is computed from the Smart SME engine's actual behaviour — the agents on the priority ladder, their cadences, and the token shapes of their calls — priced at current Anthropic rates. Change the assumptions and everything recomputes.</p>
+  </header>
+
+  <section class="panel controls" aria-label="Model inputs">
+    <div class="ctlgrid">
+      <div class="ctl">
+        <span class="micro">Fleet size <span class="val" id="lblN">10 titles</span></span>
+        <div class="chips" role="group" aria-label="Fleet size">
+          <button class="chip" data-n="3" type="button" aria-pressed="false">3</button>
+          <button class="chip" data-n="5" type="button" aria-pressed="false">5</button>
+          <button class="chip" data-n="10" type="button" aria-pressed="true">10</button>
+          <button class="chip" data-n="20" type="button" aria-pressed="false">20</button>
+          <button class="chip" data-n="30" type="button" aria-pressed="false">30</button>
+        </div>
+      </div>
+      <div class="ctl">
+        <label class="micro" for="rA">Articles per title, per day <span class="val" id="lblA">1.0</span></label>
+        <input type="range" id="rA" min="0.5" max="3" step="0.5" value="1">
+      </div>
+      <div class="ctl">
+        <label class="micro" for="rS">Newsletter subscribers per title <span class="val" id="lblS">15,000</span></label>
+        <input type="range" id="rS" min="0" max="25000" step="1000" value="15000">
+      </div>
+      <div class="ctl">
+        <span class="micro">Engine build</span>
+        <div class="seg" role="group" aria-label="Engine build">
+          <button type="button" data-mode="naive" aria-pressed="false">Naive port</button>
+          <button type="button" data-mode="opt" aria-pressed="true">Optimised</button>
+        </div>
+      </div>
+      <div class="ctl">
+        <span class="micro">Email provider</span>
+        <div class="seg" role="group" aria-label="Email provider">
+          <button type="button" data-esp="contact" aria-pressed="true">Priced per contact</button>
+          <button type="button" data-esp="send" aria-pressed="false">Priced per send</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tiles" aria-label="Headline figures">
+    <div class="tile hero"><span class="micro">Total per month</span><span class="v" id="tTotal">—</span><span class="sub" id="tTotalSub">—</span></div>
+    <div class="tile"><span class="micro">Per title</span><span class="v" id="tPer">—</span><span class="sub" id="tPerSub">—</span></div>
+    <div class="tile"><span class="micro">Per published article</span><span class="v" id="tArt">—</span><span class="sub" id="tArtSub">—</span></div>
+    <div class="tile"><span class="micro">Your approvals</span><span class="v" id="tOps">—</span><span class="sub" id="tOpsSub">—</span></div>
+  </section>
+
+  <section class="grid">
+
+    <figure class="panel wide">
+      <figcaption>
+        <h2>Total monthly cost as the fleet grows</h2>
+        <p class="note">Four cost families, stacked. At 15,000 subscribers a title, email delivery — not AI — is the biggest number on this chart, and which billing model you pick for it matters more than every engine optimisation combined. Switch the provider control above and watch what happens.</p>
+      </figcaption>
+      <svg class="chart" id="c1" viewBox="0 0 760 340" role="img" aria-label="Stacked bar chart of total monthly cost by fleet size"></svg>
+      <div class="legend">
+        <span class="lg"><span class="sw" style="background:var(--s1)"></span>AI — article production</span>
+        <span class="lg"><span class="sw" style="background:var(--s2)"></span>AI — agent overhead</span>
+        <span class="lg"><span class="sw" style="background:var(--s3)"></span>Newsletter delivery</span>
+        <span class="lg"><span class="sw" style="background:var(--s4)"></span>Infrastructure</span>
+      </div>
+    </figure>
+
+    <figure class="panel">
+      <figcaption>
+        <h2>Cost per title falls — but in a sawtooth</h2>
+        <p class="note">Mostly it drifts down. At two points it jumps: the 6th title and the 16th, where the hosting plan and the database tier both step up at once. Those two titles cost roughly three times what the ones either side of them cost. Cross a boundary in a batch, never for one title.</p>
+      </figcaption>
+      <svg class="chart" id="c2" viewBox="0 0 380 280" role="img" aria-label="Line chart of cost per title by fleet size, naive versus optimised"></svg>
+      <div class="legend">
+        <span class="lg"><span class="sw ln" style="background:var(--s3)"></span>Naive port</span>
+        <span class="lg"><span class="sw ln" style="background:var(--s4)"></span>Optimised</span>
+        <span class="lg"><span class="sw ln" style="background:var(--warn)"></span>Tier step</span>
+      </div>
+    </figure>
+
+    <figure class="panel">
+      <figcaption>
+        <h2>Where the AI money actually goes</h2>
+        <p class="note">Per title, per month. On a naive port the agents cost 3.5× more to keep awake than the articles cost to write — and the Director alone is over half of it.</p>
+      </figcaption>
+      <svg class="chart" id="c3" viewBox="0 0 380 280" role="img" aria-label="Stacked bars comparing per-title AI cost, naive versus optimised"></svg>
+      <div class="legend">
+        <span class="lg"><span class="sw" style="background:var(--s1)"></span>Article production</span>
+        <span class="lg"><span class="sw" style="background:var(--s2)"></span>Agent overhead</span>
+      </div>
+    </figure>
+
+    <figure class="panel wide">
+      <figcaption>
+        <h2>The real constraint is your attention, not the bill</h2>
+        <p class="note">Outreach sends, LinkedIn posts and SEO edits all wait on you by design. Twenty-five separate approval queues is a job nobody has; one fleet-wide queue with bulk approve on low-risk items is the difference between viable and not.</p>
+      </figcaption>
+      <svg class="chart" id="c4" viewBox="0 0 760 300" role="img" aria-label="Line chart of daily approval minutes by fleet size"></svg>
+      <div class="legend">
+        <span class="lg"><span class="sw ln" style="background:var(--s3)"></span>Per-title queues (today's design)</span>
+        <span class="lg"><span class="sw ln" style="background:var(--s4)"></span>One fleet queue with bulk approve</span>
+        <span class="lg"><span class="sw ln" style="background:var(--warn)"></span>One hour a day</span>
+      </div>
+    </figure>
+
+  </section>
+
+  <section class="panel tablewrap">
+    <table id="tbl">
+      <caption id="tblCap">Monthly cost breakdown, GBP.</caption>
+      <colgroup><col><col><col><col><col><col></colgroup>
+      <thead><tr><th scope="col">Cost line</th><th scope="col">3</th><th scope="col">5</th><th scope="col">10</th><th scope="col">20</th><th scope="col">30</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </section>
+
+  <section class="panel method">
+    <div class="rule"><span class="micro">How these numbers are built</span></div>
+    <div class="mgrid">
+      <div>
+        <h3>Per article</h3>
+        <p>Editor draft on Opus (~8k in / 6k out incl. thinking) $0.19, QA gate $0.05, Designer routing on Haiku plus two Opus vision checks $0.04 — about $0.28 clean, ~$0.45 with QA-hold retries. Optimised assumes prompt caching on the invariant house-style and editorial-standard blocks.</p>
+      </div>
+      <div>
+        <h3>Agent overhead</h3>
+        <p>Director $27/mo at today's every-tick cadence, Researcher $7.50, SEO $6, Backlink $3, LinkedIn $2.40, Finance $2, Newsletter $0.20. Optimised event-gates the Director (13 ticks/day to 3) and moves it to Sonnet 5.</p>
+      </div>
+      <div>
+        <h3>Newsletter delivery</h3>
+        <p><b>Per contact</b> follows Mailchimp Standard, billed on total contacts across the whole account — published tiers stop around 200k, above which it is negotiated and this model extrapolates at £5.50 per thousand. <b>Per send</b> is Amazon SES at $0.10 per thousand emails, weekly issues, plus £40 a month for dedicated IPs and monitoring.</p>
+      </div>
+      <div>
+        <h3>Everything else</h3>
+        <ul>
+          <li>SiteGround stepped by site count: GoGeek → Cloud Entry → Cloud Business</li>
+          <li>Vercel Pro + compute, Neon, domains at £11/yr</li>
+          <li>Five minutes per title per day of approvals, plus a context-switch penalty; the fleet queue assumes 90 seconds per title against a fixed ten-minute review</li>
+          <li>Converted at £1 = $1.27</li>
+        </ul>
+      </div>
+    </div>
+    <p class="flag" id="espFlag"></p>
+    <p class="flag"><b>One caveat that outranks all of this.</b> <code>costOf()</code> in <code>lib/agents/registry.js</code> matches model IDs by exact string and falls back to Opus pricing on a miss, while <code>recordUsage()</code> passes the ID the API returns. If those disagree, every Haiku and Sonnet call in Smart SME is currently billed at 5× in your own reporting — so the first job is fixing that lookup and replacing these estimates with 30 days of measured <code>AgentRun</code> data.</p>
+  </section>
+
+  <footer>Model v1 · 14 August 2026 · figures are estimates from code behaviour, not measurements</footer>
+</div>
+
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+"use strict";
+
+var FX = 0.7874;                       // £ per $
+var SCALES = [3,5,10,20,30];
+var ENG = {
+  naive: { art: 0.45, fixed: 48.10 },
+  opt:   { art: 0.38, fixed: 22.14 }
+};
+/* Contact-priced ESP (Mailchimp Standard, GBP). Billed on total contacts across
+   the account, so a fleet-wide list is one big number. Published tiers run to
+   ~200k; beyond that it is negotiated, and the last segment is extrapolated at
+   roughly £5.50 per thousand contacts. */
+var MC = [[0,0],[1500,22],[2500,34],[5000,55],[10000,85],[20000,170],[30000,235],
+          [50000,350],[75000,500],[100000,640],[150000,900],[200000,1150],[500000,2800]];
+
+/* Send-priced ESP (Amazon SES class): $0.10 per thousand emails, plus a fleet
+   allowance for dedicated IPs and deliverability monitoring. Contacts are free;
+   you pay for what you actually send. */
+var SEND_PER_1K = 0.10 * 0.7874;   // $0.10 per 1,000 emails, in GBP
+var SEND_FIXED  = 40;              // dedicated IPs + deliverability monitoring
+var ISSUES_PM   = 4.33;            // weekly
+
+var st = { n:10, a:1, s:15000, mode:"opt", esp:"contact" };
+
+function espCost(n, subs, mode){
+  var contacts = n * subs;
+  if(contacts <= 0) return 0;
+  if((mode || st.esp) === "send"){
+    return SEND_FIXED + (contacts * ISSUES_PM / 1000) * SEND_PER_1K;
+  }
+  for(var i=1;i<MC.length;i++){
+    if(contacts <= MC[i][0]){
+      var a=MC[i-1], b=MC[i];
+      return a[1] + (contacts-a[0])/(b[0]-a[0]) * (b[1]-a[1]);
+    }
+  }
+  var last = MC[MC.length-1];
+  return last[1] + (contacts-last[0])/1000 * 5.5;
+}
+function hosting(n){ return n<=5?32 : n<=15?80 : n<=30?160 : 240; }
+function platform(n){ return 16 + 0.40*n + (n<=5?0 : n<=15?15 : 50) + 0.92*n; }
+
+function model(n, mode){
+  var e = ENG[mode];
+  var artPerTitle  = st.a * 30.4 * e.art * FX;
+  var overPerTitle = e.fixed * FX;
+  var o = {
+    n:n,
+    articles: n * st.a * 30.4,
+    aiArt:  artPerTitle * n,
+    aiOver: overPerTitle * n,
+    news:   espCost(n, st.s),
+    infra:  hosting(n) + platform(n),
+    perTitleArt: artPerTitle,
+    perTitleOver: overPerTitle
+  };
+  o.ai = o.aiArt + o.aiOver;
+  o.total = o.ai + o.news + o.infra;
+  o.perTitle = o.total / n;
+  o.perArticle = o.articles ? o.total / o.articles : 0;
+  o.opsNaive = n*5 + Math.max(0,n-1)*0.5;
+  o.opsFleet = 10 + n*1.5;
+  return o;
+}
+
+var gbp  = function(v){ return "£" + Math.round(v).toLocaleString("en-GB"); };
+var gbp2 = function(v){ return "£" + v.toFixed(2); };
+
+/* ---------------- tooltip ---------------- */
+var tip = document.getElementById("tip");
+function showTip(e,label,value,extra){
+  tip.innerHTML = '<span class="t">'+label+'</span><span class="n">'+value+'</span>'+(extra?'<br>'+extra:'');
+  tip.style.opacity = "1";
+  var w = 230, x = e.clientX + 14, y = e.clientY - 10;
+  if(x + w > window.innerWidth - 12) x = e.clientX - w - 14;
+  if(y < 8) y = 8;
+  tip.style.left = x+"px"; tip.style.top = y+"px";
+}
+function hideTip(){ tip.style.opacity = "0"; }
+function bindTip(el,label,value,extra){
+  el.addEventListener("mousemove", function(e){ showTip(e,label,value,extra); });
+  el.addEventListener("mouseleave", hideTip);
+}
+
+/* ---------------- svg helpers ---------------- */
+var NS = "http://www.w3.org/2000/svg";
+function el(tag,attrs,txt){
+  var n = document.createElementNS(NS,tag);
+  for(var k in attrs) n.setAttribute(k,attrs[k]);
+  if(txt!=null) n.textContent = txt;
+  return n;
+}
+function clear(id){ var s=document.getElementById(id); while(s.firstChild) s.removeChild(s.firstChild); return s; }
+function niceMax(v){
+  var mag = Math.pow(10, Math.floor(Math.log10(v)));
+  var steps=[1,2,2.5,5,10];
+  for(var i=0;i<steps.length;i++){ if(v/mag <= steps[i]) return steps[i]*mag; }
+  return 10*mag;
+}
+
+/* ---------------- chart 1: stacked totals ---------------- */
+function drawC1(){
+  var s = clear("c1");
+  var W=760,H=340,L=62,R=16,T=26,B=44;
+  var pw=W-L-R, ph=H-T-B;
+  var rows = SCALES.map(function(n){ return model(n, st.mode); });
+  var max = niceMax(Math.max.apply(null, rows.map(function(r){return r.total;})) * 1.14);
+  var y = function(v){ return T + ph - (v/max)*ph; };
+
+  for(var i=0;i<=4;i++){
+    var v = max*i/4;
+    s.appendChild(el("line",{x1:L,x2:W-R,y1:y(v),y2:y(v),class:i?"gl":"base"}));
+    s.appendChild(el("text",{x:L-10,y:y(v)+3.5,"text-anchor":"end",class:"ax"}, gbp(v)));
+  }
+
+  var bw = Math.min(78, pw/rows.length*0.52);
+  var keys = [["aiArt","--s1","AI — article production"],["aiOver","--s2","AI — agent overhead"],
+              ["news","--s3","Newsletter delivery"],["infra","--s4","Infrastructure"]];
+
+  rows.forEach(function(r,i){
+    var cx = L + pw*(i+0.5)/rows.length;
+    var acc = 0;
+    keys.forEach(function(k){
+      var v = r[k[0]];
+      var top = y(acc+v), bot = y(acc);
+      var h = Math.max(1, bot-top-2);            // 2px surface gap between segments
+      var rect = el("rect",{x:cx-bw/2,y:top,width:bw,height:h,rx:3,
+        fill:"var("+k[1]+")",class:"seg-r"});
+      bindTip(rect, k[2], gbp(v), r.n+" titles · "+Math.round(v/r.total*100)+"% of total");
+      s.appendChild(rect);
+      acc += v;
+    });
+    if(r.n===st.n) s.appendChild(el("rect",{x:cx-bw/2-4,y:y(r.total)-5,width:bw+8,height:(H-B)-y(r.total)+9,
+      rx:6,class:"hi"}));
+    s.appendChild(el("text",{x:cx,y:y(r.total)-13,"text-anchor":"middle",class:"dl"}, gbp(r.total)));
+    s.appendChild(el("text",{x:cx,y:H-B+19,"text-anchor":"middle",class:"axl"}, r.n));
+    s.appendChild(el("text",{x:cx,y:H-B+33,"text-anchor":"middle",class:"ax"}, "titles"));
+  });
+}
+
+/* ---------------- chart 2: cost per title ----------------
+   Plotted at EVERY fleet size from 3 to 30, not just the five presets.
+   Sampling only the presets hides the two tier steps completely and draws a
+   smooth downward curve that isn't true: hosting and the database both step at
+   5 and at 15, so the 6th and 16th titles each cost about 3x the marginal
+   title either side of them. The sawtooth is the finding. */
+function drawC2(){
+  var s = clear("c2");
+  var W=380,H=280,L=56,R=52,T=22,B=42;
+  var pw=W-L-R, ph=H-T-B;
+  var N0=3, N1=30, STEPS=[6,16];
+  var ns=[]; for(var n=N0;n<=N1;n++) ns.push(n);
+  var A = ns.map(function(n){ return model(n,"naive").perTitle; });
+  var B2= ns.map(function(n){ return model(n,"opt").perTitle; });
+  var max = niceMax(Math.max.apply(null,A)*1.10);
+  var y=function(v){ return T+ph-(v/max)*ph; };
+  var x=function(n){ return L + pw*(n-N0)/(N1-N0); };
+
+  for(var i=0;i<=3;i++){
+    var v=max*i/3;
+    s.appendChild(el("line",{x1:L,x2:W-R,y1:y(v),y2:y(v),class:i?"gl":"base"}));
+    s.appendChild(el("text",{x:L-9,y:y(v)+3.5,"text-anchor":"end",class:"ax"}, gbp(v)));
+  }
+
+  // Tier boundaries — where hosting and database plans both step up at once.
+  STEPS.forEach(function(sn){
+    s.appendChild(el("line",{x1:x(sn),x2:x(sn),y1:T,y2:T+ph,stroke:"var(--warn)",
+      "stroke-width":1,"stroke-dasharray":"3 3",opacity:.8}));
+    s.appendChild(el("text",{x:x(sn),y:T-6,"text-anchor":"middle",class:"ax",
+      fill:"var(--warn)"}, "+"+sn+"th"));
+  });
+
+  [3,5,10,15,20,25,30].forEach(function(n){
+    s.appendChild(el("text",{x:x(n),y:H-B+19,"text-anchor":"middle",class:"axl"}, n));
+  });
+  s.appendChild(el("text",{x:L+pw/2,y:H-B+33,"text-anchor":"middle",class:"ax"},"titles in the fleet"));
+
+  [[A,"--s3","Naive port"],[B2,"--s4","Optimised"]].forEach(function(ser){
+    var d = ser[0].map(function(v,i){ return (i?"L":"M")+x(ns[i])+" "+y(v); }).join(" ");
+    s.appendChild(el("path",{d:d,fill:"none",stroke:"var("+ser[1]+")","stroke-width":2,
+      "stroke-linejoin":"round","stroke-linecap":"round"}));
+    var si = ns.indexOf(st.n);
+    if(si>-1){
+      var c=el("circle",{cx:x(st.n),cy:y(ser[0][si]),r:5,fill:"var("+ser[1]+")",
+        stroke:"var(--surface)","stroke-width":2});
+      bindTip(c, ser[2], gbp(ser[0][si])+" per title", st.n+" titles");
+      s.appendChild(c);
+    }
+    var last=ser[0].length-1;
+    s.appendChild(el("text",{x:x(N1)+9,y:y(ser[0][last])+4,class:"dl",fill:"var("+ser[1]+")"},
+      gbp(ser[0][last])));
+  });
+
+  // Invisible hit strips so every fleet size is hoverable, not just the marker.
+  ns.forEach(function(n,i){
+    var half = pw/(N1-N0)/2;
+    var r = el("rect",{x:x(n)-half,y:T,width:half*2,height:ph,fill:"transparent"});
+    bindTip(r, n+" titles", gbp(B2[i])+" per title",
+      "optimised · " + gbp(model(n,"opt").total) + " total" +
+      (STEPS.indexOf(n)>-1 ? " · hosting and database both step up here" : ""));
+    s.appendChild(r);
+  });
+}
+
+/* ---------------- chart 3: fixed vs variable ---------------- */
+function drawC3(){
+  var s = clear("c3");
+  var W=380,H=280,L=56,R=16,T=26,B=52;
+  var pw=W-L-R, ph=H-T-B;
+  var pairs = [["naive","Naive port"],["opt","Optimised"]].map(function(p){
+    var m = model(1,p[0]);
+    return { key:p[0], label:p[1], art:m.perTitleArt, over:m.perTitleOver, tot:m.perTitleArt+m.perTitleOver };
+  });
+  var max = niceMax(Math.max.apply(null,pairs.map(function(p){return p.tot;}))*1.2);
+  var y=function(v){ return T+ph-(v/max)*ph; };
+
+  for(var i=0;i<=3;i++){
+    var v=max*i/3;
+    s.appendChild(el("line",{x1:L,x2:W-R,y1:y(v),y2:y(v),class:i?"gl":"base"}));
+    s.appendChild(el("text",{x:L-9,y:y(v)+3.5,"text-anchor":"end",class:"ax"}, gbp(v)));
+  }
+
+  var bw=72;
+  pairs.forEach(function(p,i){
+    var cx = L + pw*(i+0.5)/2;
+    var acc=0;
+    [["art","--s1","Article production"],["over","--s2","Agent overhead"]].forEach(function(k){
+      var v=p[k[0]], top=y(acc+v), bot=y(acc), h=Math.max(1,bot-top-2);
+      var rect=el("rect",{x:cx-bw/2,y:top,width:bw,height:h,rx:3,fill:"var("+k[1]+")",class:"seg-r"});
+      bindTip(rect, k[2], gbp2(v)+" per title", p.label);
+      s.appendChild(rect);
+      acc+=v;
+    });
+    s.appendChild(el("text",{x:cx,y:y(p.tot)-11,"text-anchor":"middle",class:"dl"}, gbp2(p.tot)));
+    s.appendChild(el("text",{x:cx,y:H-B+20,"text-anchor":"middle",class:"axl"}, p.label));
+    var ratio = p.over/p.art;
+    s.appendChild(el("text",{x:cx,y:H-B+35,"text-anchor":"middle",class:"ax"},
+      "overhead " + ratio.toFixed(1) + "× content"));
+  });
+}
+
+/* ---------------- chart 4: attention ---------------- */
+function drawC4(){
+  var s = clear("c4");
+  var W=760,H=300,L=62,R=92,T=24,B=46;
+  var pw=W-L-R, ph=H-T-B;
+  var A = SCALES.map(function(n){ return model(n,st.mode).opsNaive; });
+  var B2= SCALES.map(function(n){ return model(n,st.mode).opsFleet; });
+  var max = niceMax(Math.max.apply(null,A)*1.1);
+  var y=function(v){ return T+ph-(v/max)*ph; };
+  var x=function(i){ return L + pw*i/(SCALES.length-1); };
+
+  for(var i=0;i<=4;i++){
+    var v=max*i/4;
+    s.appendChild(el("line",{x1:L,x2:L+pw,y1:y(v),y2:y(v),class:i?"gl":"base"}));
+    s.appendChild(el("text",{x:L-10,y:y(v)+3.5,"text-anchor":"end",class:"ax"}, Math.round(v)));
+  }
+  s.appendChild(el("text",{x:L-10,y:T-9,"text-anchor":"end",class:"ax"},"min/day"));
+
+  SCALES.forEach(function(n,i){
+    s.appendChild(el("text",{x:x(i),y:H-B+20,"text-anchor":"middle",class:"axl"}, n));
+  });
+  s.appendChild(el("text",{x:L+pw/2,y:H-B+34,"text-anchor":"middle",class:"ax"},"titles in the fleet"));
+
+  // Threshold sits inside the plot on the left, clear of the series end-labels
+  // in the right gutter — the fleet-queue line ends at 55 min, which is close
+  // enough to 60 that a right-hand marker would land on top of it.
+  s.appendChild(el("line",{x1:L,x2:L+pw,y1:y(60),y2:y(60),stroke:"var(--warn)","stroke-width":1.5,
+    "stroke-dasharray":"5 4"}));
+  s.appendChild(el("text",{x:L+8,y:y(60)-7,class:"ax",fill:"var(--warn)"},"one hour a day"));
+
+  [[A,"--s3","Per-title queues"],[B2,"--s4","One fleet queue"]].forEach(function(ser){
+    var d = ser[0].map(function(v,i){ return (i?"L":"M")+x(i)+" "+y(v); }).join(" ");
+    s.appendChild(el("path",{d:d,fill:"none",stroke:"var("+ser[1]+")","stroke-width":2,
+      "stroke-linejoin":"round","stroke-linecap":"round"}));
+    ser[0].forEach(function(v,i){
+      var c=el("circle",{cx:x(i),cy:y(v),r:SCALES[i]===st.n?5.5:4,fill:"var("+ser[1]+")",
+        stroke:"var(--surface)","stroke-width":2});
+      bindTip(c, ser[2], Math.round(v)+" min/day", SCALES[i]+" titles · "+(v/60).toFixed(1)+" hrs");
+      s.appendChild(c);
+    });
+    var last=ser[0].length-1;
+    s.appendChild(el("text",{x:x(last)+10,y:y(ser[0][last])+4,class:"dl",fill:"var("+ser[1]+")"},
+      Math.round(ser[0][last])+" min"));
+  });
+}
+
+/* ---------------- table ---------------- */
+function drawTable(){
+  var rows = SCALES.map(function(n){ return model(n, st.mode); });
+  var defs = [
+    ["AI — article production","aiArt",0],
+    ["AI — agent overhead","aiOver",0],
+    ["Newsletter delivery","news",0],
+    ["Infrastructure (hosting, platform, domains)","infra",0]
+  ];
+  var html = "";
+  defs.forEach(function(d){
+    html += "<tr><td>"+d[0]+"</td>" + rows.map(function(r){ return "<td>"+gbp(r[d[1]])+"</td>"; }).join("") + "</tr>";
+  });
+  html += '<tr class="total"><td>Total per month</td>' + rows.map(function(r){ return "<td>"+gbp(r.total)+"</td>"; }).join("") + "</tr>";
+  html += '<tr class="derived"><td>Per title</td>' + rows.map(function(r){ return "<td>"+gbp(r.perTitle)+"</td>"; }).join("") + "</tr>";
+  html += '<tr class="derived"><td>Per published article</td>' + rows.map(function(r){ return "<td>"+gbp2(r.perArticle)+"</td>"; }).join("") + "</tr>";
+  html += '<tr class="derived"><td>Articles published per month</td>' + rows.map(function(r){ return "<td>"+Math.round(r.articles).toLocaleString("en-GB")+"</td>"; }).join("") + "</tr>";
+  html += '<tr class="derived"><td>Your approvals, one fleet queue</td>' + rows.map(function(r){ return "<td>"+Math.round(r.opsFleet)+" min/day</td>"; }).join("") + "</tr>";
+  document.getElementById("tbody").innerHTML = html;
+
+  var cols = document.querySelectorAll("#tbl colgroup col");
+  for(var i=0;i<cols.length;i++) cols[i].className = "";
+  var idx = SCALES.indexOf(st.n);
+  if(idx > -1) cols[idx+1].className = "hl";
+
+  document.getElementById("tblCap").textContent =
+    "Monthly cost breakdown, GBP · " + (st.mode==="opt"?"optimised engine":"naive port") +
+    " · " + st.a.toFixed(1) + " articles per title per day · " +
+    st.s.toLocaleString("en-GB") + " subscribers per title · email billed " +
+    (st.esp==="send" ? "per send" : "per contact") + ".";
+}
+
+/* ---------------- tiles ---------------- */
+function drawTiles(){
+  var m = model(st.n, st.mode);
+  var other = model(st.n, st.mode==="opt"?"naive":"opt");
+  document.getElementById("tTotal").textContent = gbp(m.total);
+  document.getElementById("tTotalSub").textContent =
+    st.mode==="opt" ? gbp(other.total - m.total) + " a month less than a naive port"
+                    : gbp(m.total - other.total) + " a month more than the optimised build";
+  document.getElementById("tPer").textContent = gbp(m.perTitle);
+  document.getElementById("tPerSub").textContent = "per title, all in, per month";
+  document.getElementById("tArt").textContent = gbp2(m.perArticle);
+  document.getElementById("tArtSub").textContent = Math.round(m.articles).toLocaleString("en-GB") + " articles a month across the fleet";
+  document.getElementById("tOps").textContent = Math.round(m.opsFleet) + " min";
+  document.getElementById("tOpsSub").textContent = "a day, one fleet queue — " + Math.round(m.opsNaive) + " min with per-title queues";
+}
+
+function drawFlag(){
+  var f = document.getElementById("espFlag");
+  var contacts = st.n * st.s;
+  if(contacts <= 0){
+    f.innerHTML = "<b>Newsletter switched off.</b> Set subscribers above zero to compare the two billing models.";
+    return;
+  }
+  var perContact = espCost(st.n, st.s, "contact");
+  var perSend    = espCost(st.n, st.s, "send");
+  var gap = perContact - perSend;
+  var mails = Math.round(contacts * ISSUES_PM);
+  f.innerHTML = "<b>The newsletter is the decision, not the engine.</b> At " +
+    st.n + " titles × " + st.s.toLocaleString("en-GB") + " subscribers you are holding " +
+    contacts.toLocaleString("en-GB") + " contacts and sending about " +
+    mails.toLocaleString("en-GB") + " emails a month. Priced per contact that is " +
+    gbp(perContact) + " a month; priced per send it is " + gbp(perSend) + " — a difference of " +
+    gbp(gap) + " a month, " + gbp(gap*12) + " a year. " +
+    "Per-send billing moves bounce handling, complaint monitoring, suppression lists and IP warming in-house, " +
+    "which is real work the app only half has today — but at this volume it pays for itself in the first month.";
+}
+
+function render(){
+  document.getElementById("lblN").textContent = st.n + (st.n===1?" title":" titles");
+  document.getElementById("lblA").textContent = st.a.toFixed(1);
+  document.getElementById("lblS").textContent = st.s.toLocaleString("en-GB");
+  drawTiles(); drawC1(); drawC2(); drawC3(); drawC4(); drawTable(); drawFlag();
+}
+
+/* ---------------- wiring ---------------- */
+Array.prototype.forEach.call(document.querySelectorAll(".chip"), function(b){
+  b.addEventListener("click", function(){
+    st.n = +b.dataset.n;
+    Array.prototype.forEach.call(document.querySelectorAll(".chip"), function(o){
+      o.setAttribute("aria-pressed", o===b ? "true" : "false");
+    });
+    render();
+  });
+});
+Array.prototype.forEach.call(document.querySelectorAll(".seg button"), function(b){
+  b.addEventListener("click", function(){
+    var group = b.parentNode;
+    if(b.dataset.mode) st.mode = b.dataset.mode; else st.esp = b.dataset.esp;
+    Array.prototype.forEach.call(group.querySelectorAll("button"), function(o){
+      o.setAttribute("aria-pressed", o===b ? "true" : "false");
+    });
+    render();
+  });
+});
+document.getElementById("rA").addEventListener("input", function(e){ st.a = +e.target.value; render(); });
+document.getElementById("rS").addEventListener("input", function(e){ st.s = +e.target.value; render(); });
+
+render();
+window.addEventListener("resize", hideTip);
+})();
+</script>

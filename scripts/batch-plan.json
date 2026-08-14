@@ -1,0 +1,180 @@
+{
+  "waves": [
+    [
+      {
+        "key": "crm",
+        "type": "seo_original",
+        "title": "Best CRM for Small Business UK 2026: Compared, Costed and Ranked",
+        "keywords": "best CRM for small business UK, small business CRM, CRM pricing UK",
+        "category": "Marketing",
+        "brief": "A buyer's guide to CRM software for UK firms of 2 to 50 people. Cover what a CRM actually does versus a spreadsheet, the point at which a business outgrows the spreadsheet, and a proper comparison of the mainstream options a UK SME will shortlist: HubSpot, Zoho CRM, Pipedrive, Capsule (UK-built), Salesforce Starter and Monday CRM. Include a comparison table with approximate per-user monthly pricing in pounds, free-tier limits, and who each one suits. Cover the AI features now bundled into CRMs and whether they are worth paying for. Cover data migration, UK GDPR obligations when moving customer data, and the mistakes that kill CRM rollouts (no owner, no data hygiene, too many fields). Prices must be described as approximate and 'at the time of writing'."
+      },
+      {
+        "key": "hiring",
+        "type": "seo_original",
+        "title": "Hiring Your First Employee in the UK: The Complete 2026 Checklist",
+        "keywords": "hiring your first employee UK, first employee checklist, PAYE registration small business",
+        "category": "Operations",
+        "brief": "An end-to-end operational checklist for an owner-manager taking on staff for the first time. Cover: deciding between employee, worker and contractor and why IR35-style misclassification is risky; registering as an employer with HMRC and PAYE; choosing payroll software and running RTI submissions; employer National Insurance and the Employment Allowance; workplace pension auto-enrolment duties and choosing a provider; employer's liability insurance (legally required); right to work checks and the share code process; the written statement of employment particulars and what must be in it by day one; the National Minimum and Living Wage; holiday entitlement and how to calculate it; probation periods; and the first-90-days onboarding basics. Include a table of the legal must-dos with when each is due. Link to gov.uk pages for the statutory items. Be careful to describe rules generally rather than quoting specific rates that change each April, and tell readers to check current rates on gov.uk."
+      },
+      {
+        "key": "gdpr-ai",
+        "type": "seo_original",
+        "title": "Using ChatGPT and Copilot at Work Without Breaking UK GDPR",
+        "keywords": "ChatGPT GDPR UK, AI data protection small business, using AI at work safely",
+        "category": "AI & Automation",
+        "brief": "A practical data protection guide for small firms whose staff are already pasting customer data into AI chatbots. Cover: what UK GDPR actually requires (lawful basis, purpose limitation, data minimisation, transfers outside the UK), the real difference between consumer accounts and business or enterprise tiers on training and data retention, what a DPIA is and when a small business genuinely needs one, how to write a one-page acceptable use policy for AI, what to tell customers in your privacy notice, the special care needed with special category data and children's data, and the practical controls: no client names in prompts, redaction habits, approved-tool lists, and audit. Include a table comparing the data handling posture of the main tiers (free consumer, paid consumer, business or team, enterprise) in general terms. Include an FAQ covering whether prompts are used for training, whether you must tell customers you used AI, and what happens if staff leak data. Reference the ICO as the UK regulator and link to ico.org.uk. Do not give legal advice; tell readers to take advice for anything high risk."
+      }
+    ],
+    [
+      {
+        "key": "cashflow",
+        "type": "seo_original",
+        "title": "Cash Flow Forecasting for Small Businesses: The 13-Week Method",
+        "keywords": "cash flow forecasting small business, 13 week cash flow forecast, cash flow template UK",
+        "category": "Finance",
+        "brief": "A hands-on guide to building and running a rolling 13-week cash flow forecast, the tool that tells an owner whether they can make payroll. Cover: why 13 weeks (a quarter, far enough to act, short enough to be accurate); the difference between profit and cash and why profitable firms fail; how to build the forecast line by line (opening balance, receipts from debtors with realistic collection timings, VAT, PAYE, payroll, rent, subscriptions, loan repayments, closing balance); how to phase VAT and corporation tax payments; how to model the three scenarios (base, slow-paying customers, lost customer); what to do when the forecast goes red, including invoice chasing, payment terms, invoice finance, and talking to HMRC early about Time to Pay; and how to automate the data feed from accounting software. Include a worked example table for a small services business, and a comparison of forecasting approaches (spreadsheet, accounting software forecast, dedicated tools such as Float or Fluidly-style apps). Include an FAQ. No invented statistics."
+      },
+      {
+        "key": "local-seo",
+        "type": "seo_original",
+        "title": "Local SEO for Small Businesses: How to Win Google's Map Pack",
+        "keywords": "local SEO small business, Google Business Profile, map pack ranking",
+        "category": "Marketing",
+        "brief": "A practical local search guide for businesses that serve a town, city or region. Cover: how the local pack differs from ordinary organic results and the three broad ranking factors Google describes (relevance, distance, prominence); setting up and fully completing a Google Business Profile including categories, services, attributes, hours and holiday hours; why NAP consistency matters and where to fix citations; getting reviews ethically and responding to them, including bad ones; local landing pages done properly versus doorway pages that get penalised; on-page basics (title tags, schema markup for LocalBusiness, embedded map); Google Posts and product listings; tracking what works with Google Business Profile insights and Search Console; and what to do if you have no shopfront (service area businesses). Include a table of a realistic first-90-days plan. Include an FAQ covering fake reviews, multiple locations, and how long local SEO takes."
+      },
+      {
+        "key": "ecommerce-platforms",
+        "type": "seo_original",
+        "title": "Shopify vs WooCommerce vs Squarespace: Choosing a UK Online Store in 2026",
+        "keywords": "Shopify vs WooCommerce, best ecommerce platform UK, online store platform small business",
+        "category": "Operations",
+        "brief": "A decision guide for a UK small business choosing where to build an online shop. Compare Shopify, WooCommerce on WordPress, Squarespace Commerce and, briefly, Etsy and eBay as marketplaces rather than platforms. Cover total cost of ownership honestly: platform subscription, transaction and card fees, theme and app or plugin costs, and the developer time WooCommerce quietly needs. Cover VAT handling and UK invoicing, payment providers available in the UK, shipping and courier integrations, and what happens when you want to sell to the EU. Cover who owns and hosts the data, and the security and maintenance burden of each. Include a comparison table with approximate monthly costs in pounds and the ideal user for each. Include a section on migration between platforms and how painful it really is. Include an FAQ. Prices approximate and at the time of writing."
+      },
+      {
+        "key": "companies-house",
+        "type": "pr_rewrite",
+        "title": "Companies House Identity Verification: What Every Director Needs to Do",
+        "sourceUrl": "https://www.gov.uk/guidance/when-you-need-to-verify-your-identity-for-companies-house",
+        "sourceItemId": "cms95fzym001pg6zpct51gh5i",
+        "brandName": "Companies House",
+        "category": "News",
+        "brief": "Explain the identity verification regime for company directors and people with significant control, who has to verify, the ways to verify (GOV.UK One Login directly, or through an Authorised Corporate Service Provider such as an accountant or formation agent), what documents are needed, what happens to people who do not verify, and how it fits the wider Economic Crime and Corporate Transparency Act changes. Practical, calm, and precise: state only what the guidance says, and direct readers to the official page for deadlines and their own circumstances."
+      }
+    ],
+    [
+      {
+        "key": "agentic-commerce",
+        "type": "pr_rewrite",
+        "title": "Agentic Commerce: What AI Shopping Agents Mean for Small Retailers",
+        "sourceUrl": "https://gocardless.com/blog/action-plan-agentic-commerce",
+        "sourceItemId": "cms8plpwo00o13wmgxv2wi5bf",
+        "brandName": "GoCardless",
+        "category": "Marketing",
+        "brief": "News analysis. Explain what agentic commerce means (AI assistants that research, choose and buy on a customer's behalf), what the UK policy direction implies for merchants, and the practical consequence for a small online retailer: structured product data, machine-readable pricing and stock, clear returns terms, payment rails that can authorise an agent, and the awkward question of who is liable when an agent buys the wrong thing. Sober about timelines, no hype. Close with what a small retailer can sensibly do this quarter. HEADER PHOTO: the subject is abstract, so the image must show something concrete and screen-led rather than warehouse or parcel-packing scenes: a close-up of a smartphone showing an online checkout or chat interface, a laptop screen with a shopping basket, or a hand paying by phone. Avoid people packing boxes."
+      },
+      {
+        "key": "woo-security",
+        "type": "pr_rewrite",
+        "title": "Catching Store Problems Early: A Security Routine for Small Online Shops",
+        "sourceUrl": "https://woocommerce.com/posts/woocommerce-security/",
+        "sourceItemId": "cms8plh7400mt3wmg58v7h1ep",
+        "brandName": "WooCommerce",
+        "category": "Operations",
+        "brief": "Turn WooCommerce's security advice into a routine any small shop owner can actually run: what to monitor, how often, the early warning signs of a compromised store, plugin and theme hygiene, admin account discipline and two-factor authentication, backups that are actually restorable, and what to do in the first hour if you think you have been breached. Attribute the source advice clearly."
+      },
+      {
+        "key": "bbb-scotland",
+        "type": "pr_rewrite",
+        "title": "British Business Bank Backs Social Investment Scotland with £3.5m",
+        "sourceUrl": "https://www.british-business-bank.co.uk/news-and-events/news/social-investment-scotland-secures-ps35m-british-business-bank-support-scotlands-smaller-business",
+        "sourceItemId": "cms8pjn4f006n3wmg0khvxlko",
+        "brandName": "British Business Bank",
+        "category": "Finance",
+        "brief": "Report the funding and then do the useful bit: explain what this kind of wholesale funding means for a smaller Scottish business looking for finance, how community development finance institutions differ from banks, who tends to qualify, and where else in the UK equivalent regional funds sit. Practical takeaway for owners who have been turned down by a high street bank."
+      }
+    ],
+    [
+      {
+        "key": "sic-codes",
+        "type": "seo_original",
+        "title": "SIC Codes Explained: How to Choose the Right One for Your UK Company",
+        "keywords": "SIC codes UK, SIC code for my business, Companies House SIC code",
+        "category": "Operations",
+        "brief": "A practical guide to Standard Industrial Classification codes for anyone forming or running a UK limited company. Cover what a SIC code actually is and what Companies House uses it for, where it appears on the public record, and the fact that you choose it yourself rather than being assigned one. Explain the structure of the five digit code and how to search the official condensed list. Cover the common real-world problems: picking a code that does not really describe what you do, businesses that genuinely span several activities and can list up to four codes, dormant company codes (99999) and non-trading codes, and the codes that are commonly misused because they sound right. Explain who actually looks at your SIC code in practice, including banks during account opening, insurers when underwriting, credit reference agencies when scoring, and some grant and tender processes, and be careful to describe this as influence rather than a hard rule. Cover how to change your SIC code on the confirmation statement and that it costs nothing to correct. Include a table of frequently used codes across trades, consultancy, retail, ecommerce, construction, hospitality and software, with a short note on who each suits. Include an FAQ covering whether the wrong code is illegal, whether it affects tax, whether you can have more than one, and what happens if none of them fit. Link to the official Companies House SIC code list on gov.uk. Describe processes generally rather than quoting fees or figures that change."
+      },
+      {
+        "key": "buy-a-business",
+        "type": "seo_original",
+        "title": "How to Buy a Small Business in the UK: Due Diligence, Valuation and Legal Steps",
+        "keywords": "how to buy a small business UK, buying a business due diligence, small business valuation UK",
+        "category": "Finance",
+        "brief": "An end to end guide for someone buying an existing UK small business rather than starting one. Cover where businesses are actually listed and the role of business transfer agents and brokers. Explain the fundamental split between an asset purchase and a share purchase, why buyers usually prefer assets and sellers usually prefer shares, and what each means for liabilities, contracts and employees. Cover valuation properly: multiples of adjusted net profit or SDE for owner managed firms, why revenue multiples mislead, what add backs are and which ones are legitimate, and why a business wholly dependent on the departing owner is worth less. Cover due diligence in three strands, financial (filed accounts versus management accounts, VAT returns, debtor concentration, lease commitments), legal (title, contracts, disputes, IP ownership, licences) and commercial (customer concentration, supplier terms, staff retention). Explain TUPE in plain terms and why it matters when staff transfer. Cover heads of terms, exclusivity, the share purchase or asset purchase agreement, warranties and indemnities, and retention or earn out structures that keep the seller honest. Cover funding routes generally, including bank lending, seller financing and asset finance. Include a comparison table of asset purchase versus share purchase across liabilities, employees, contracts, tax and complexity. Include an FAQ on how long a sale takes, whether you need a solicitor, what deposit is normal and the biggest reasons deals collapse. Tell readers to take professional advice; do not give legal or tax advice."
+      },
+      {
+        "key": "what-counts-sme",
+        "type": "seo_original",
+        "title": "What Counts as a Small Business in the UK? Thresholds, Definitions and Why They Matter",
+        "keywords": "what counts as a small business UK, small business definition UK, SME thresholds",
+        "category": "Operations",
+        "brief": "An explainer on the fact that there is no single UK definition of a small business, and that which one applies to you depends entirely on who is asking. Cover the Companies Act size classification (micro entity, small, medium, large) and that it works on a two out of three test across turnover, balance sheet total and average employees, and what each size unlocks in terms of filing and audit exemption. Cover the separate definition used for statistical and policy purposes where SME simply means fewer than 250 employees, split into micro, small and medium. Cover the fact that HMRC, grant bodies, lenders and procurement frameworks each use their own tests, and that a business can be small for accounts and not small for a particular grant. Explain why the classification genuinely matters in practice: audit exemption, abridged or filleted accounts, some employment law thresholds, eligibility for certain reliefs and schemes, and how much of your finances end up on the public record. Cover what happens when you cross a threshold, including the two consecutive years rule, and why growing companies get caught out by it. Include a comparison table of the size bands against turnover, balance sheet and employee tests, and what each band means for filing and audit. Include an FAQ on whether sole traders count, how group companies are treated, whether part time staff count as one employee, and what happens the year you grow past a limit. Because the specific threshold figures change, describe the structure of the tests carefully and tell readers to confirm current figures on gov.uk, and link to the relevant gov.uk and Companies House guidance."
+      },
+      {
+        "key": "home-business",
+        "type": "seo_original",
+        "title": "Running a Business From Home in the UK: Planning, Insurance and Tax Rules",
+        "keywords": "running a business from home UK, home business planning permission, working from home tax relief",
+        "category": "Operations",
+        "brief": "A practical guide for owners trading from a spare room, garage or garden office. Cover planning permission and the material change of use test, and the questions that actually decide it: whether the property remains substantially a home, customer or delivery traffic, signage, noise, smells and parking. Cover the separate issue of permitted development for garden offices and when one crosses into needing consent. Cover the paperwork most people miss: checking your mortgage terms, checking a tenancy agreement or lease for a prohibition on business use, and telling your freeholder where relevant. Cover insurance properly and be clear that standard home insurance usually will not cover business stock, business equipment or public liability, and cover what a home business policy adds. Cover business rates and the circumstances in which a room used exclusively for business can attract them, alongside small business rate relief, described generally. Cover the tax side: the simplified flat rate deduction versus the proportion of actual costs method, what counts as an allowable proportion, and the capital gains warning about using part of a home exclusively for business. Cover practical operations too, including using a registered office service to keep your home address off the public record, and food or childcare style activities that carry their own licensing. Include a comparison table of the simplified versus actual costs methods with worked reasoning. Include an FAQ on whether you must tell the council, whether clients can visit, whether you can put up a sign, and whether a limited company changes the answer. Link to gov.uk and the Planning Portal. Describe rates and allowances generally and tell readers to confirm current figures."
+      },
+      {
+        "key": "ai-services-business",
+        "type": "seo_original",
+        "title": "Starting an AI Services Business in the UK: Services, Pricing and First Clients",
+        "keywords": "start an AI business UK, AI consultancy pricing, AI services for small business",
+        "category": "AI & Automation",
+        "brief": "A grounded guide for someone with practical AI skills who wants to sell them to UK businesses, written to cut through the hype. Cover the services small firms actually pay for right now rather than the ones that sound impressive: process automation, document and data extraction, customer support triage, content and marketing production, internal knowledge search, and training staff to use tools they already have licences for. Cover positioning by sector or by process and why generalists struggle to get referrals. Cover pricing models honestly, including day rates, fixed scope projects, monthly retainers and outcome based pricing, with the risks of each, and explain why usage based API costs must be passed through or capped rather than absorbed. Cover the awkward commercial realities: clients who expect a pilot for free, projects that stall because the client's data is a mess, and the discovery work needed before quoting. Cover the professional obligations, including UK GDPR when handling client data, being clear about what is sent to third party model providers, professional indemnity insurance, and writing a contract that limits liability for model output. Cover getting the first clients without a portfolio, including doing one piece of work at cost for a case study, partnering with accountants and agencies who already hold the relationships, and demonstrating on the client's own data. Include a table of service lines against typical engagement shape, who buys it, and what makes each one go wrong. Include an FAQ on whether you need to be technical, whether to build or resell, what to charge first, and how to handle a client who wants to own the prompts. Keep all pricing described as typical ranges and clearly approximate, and avoid naming specific model prices that change."
+      },
+      {
+        "key": "airbnb-business",
+        "type": "seo_original",
+        "title": "Starting a Short Let Business in the UK: Licensing, Tax and Running Costs",
+        "keywords": "start an Airbnb business UK, short let licensing UK, furnished holiday let tax",
+        "category": "Operations",
+        "brief": "A practical guide to running short term lets as a business in the UK, covering the regulatory tightening that has caught many operators out. Cover the different regimes across the UK: the short term let licensing scheme in Scotland and its control areas, the registration and licensing direction of travel in Wales, and the planning use class and registration changes affecting England, described carefully as an evolving picture that readers must check locally. Cover the permissions layer that sits underneath: mortgage consent, leasehold restrictions that commonly forbid short lets, freeholder consent, and the 90 day restriction that applies in parts of London. Cover the compliance basics that apply regardless: gas safety certificates, electrical installation condition reports, fire risk assessment and alarms, furniture fire safety, and the fact that standard home or landlord insurance will usually not cover paying guests. Cover the money properly: the difference between short let income and standard rental income for tax, the withdrawal of the furnished holiday lettings regime and what that means, VAT if turnover crosses the threshold, and business rates versus council tax for properties available to let for much of the year. Cover the operating reality, including cleaning and linen costs, channel fees, dynamic pricing, damage deposits and the true occupancy rate needed to beat a standard tenancy. Include a table of the four UK nations against licensing or registration status, key permissions and who to check with. Include an FAQ on whether you can sublet, whether you need a licence for one room, how neighbours can object, and whether it still pays. Link to gov.uk and the relevant devolved guidance. Rules here vary by council and change often, so tell readers to confirm with their local authority and avoid stating specific fees."
+      },
+      {
+        "key": "business-insurance",
+        "type": "seo_original",
+        "title": "Business Insurance for UK Small Businesses: What You Must Have and What Is Worth It",
+        "keywords": "business insurance UK small business, employers liability insurance, professional indemnity insurance UK",
+        "category": "Operations",
+        "brief": "A guide that separates the legally required from the commercially sensible, aimed at an owner who suspects they are either underinsured or paying for cover they do not need. Cover the genuinely compulsory items: employers liability once you have staff and the penalties for not holding it, and motor insurance for business vehicle use including the fact that commuting and business use are treated differently. Cover the covers that are contractually required rather than legally required, particularly professional indemnity demanded by client contracts and public liability demanded by landlords, venues and larger customers. Then cover the discretionary layer and how to judge it: public liability, product liability, contents and stock, business interruption and why it is the one most often set too low, cyber and the questions insurers now ask about controls, key person, directors and officers, legal expenses, and goods in transit. Explain how premiums are actually assessed, including SIC code and trade classification, turnover, claims history, and the security or process controls you can evidence. Cover the practical traps: underinsurance and the average clause, sums insured left unchanged for years, working from home invalidating cover, using a personal vehicle for deliveries, and subcontractors who are not covered by your policy. Cover how to buy sensibly, comparing direct insurers, comparison sites and brokers, and what a broker is genuinely worth for a complex trade. Include a table of the main covers against whether they are required, who typically needs them and what they actually pay out for. Include an FAQ on whether a sole trader with no staff needs employers liability, whether you need cover before your first client, what happens if you cannot afford a claim excess, and whether cover follows you abroad. Describe premiums as ranges only and avoid quoting specific prices."
+      },
+      {
+        "key": "vat-registration",
+        "type": "seo_original",
+        "title": "VAT Registration for Small Businesses: When to Register and Which Scheme to Use",
+        "keywords": "VAT registration UK, VAT threshold small business, VAT flat rate scheme",
+        "category": "Finance",
+        "brief": "A guide to the decision most growing UK small businesses face, aimed at an owner watching their turnover climb. Cover how the registration test actually works, including the rolling twelve month look back and the forward look test that catches people out, and the distinction between compulsory and voluntary registration. Cover the case for registering voluntarily before you have to, particularly for B2B businesses that can reclaim input VAT and whose customers reclaim anyway, and the case against for B2C businesses where it is effectively a price rise. Explain the bunching effect near the threshold and why some businesses deliberately restrict trading, and be balanced about whether that is sensible. Cover the schemes and who each suits: standard accounting, the flat rate scheme and the limited cost trader rules that removed much of its benefit, cash accounting and why it helps businesses with slow payers, and annual accounting. Cover the mechanics of being registered: charging the right rate, the difference between zero rated, exempt and outside the scope and why it matters, partial exemption in outline, issuing compliant VAT invoices, and the record keeping and digital filing obligations under Making Tax Digital. Cover deregistration and when it is worth it. Cover the common and expensive mistakes: registering late and owing VAT you never charged, reclaiming on entertainment or on cars, forgetting pre registration input tax rules, and missing the reverse charge in construction. Include a comparison table of the schemes against eligibility, how VAT is calculated, cash flow effect and who it suits. Include an FAQ on whether you can charge VAT before your number arrives, whether you can reclaim on things bought before registering, what happens if you cross the threshold once, and whether the threshold is per business or per person. Link to gov.uk VAT guidance. Because the threshold and rates change, describe the rules structurally and tell readers to confirm current figures on gov.uk."
+      },
+      {
+        "key": "business-bank-accounts",
+        "type": "seo_original",
+        "title": "Best Business Bank Accounts for UK Small Businesses: Compared and Costed",
+        "keywords": "best business bank account UK, business bank account comparison, free business banking UK",
+        "category": "Finance",
+        "brief": "A buyer's guide to business current accounts for a UK sole trader or small limited company, structured like the CRM comparison. Start with whether you legally need one, which is yes in practice for a limited company because the company is a separate legal entity, and strongly advisable for sole traders even though it is not compulsory. Cover what actually differentiates accounts: monthly fees versus free periods, transaction and cash deposit charges which is where the real cost hides for retail and trade businesses, whether the account is a bank or an e money institution and what that means for FSCS protection, integrations with accounting software, sub accounts or pots for tax, multi user access for a bookkeeper, international payments and FX margins, and whether lending and overdrafts are available. Compare the mainstream options a UK small business will actually shortlist across the high street and the digital challengers, covering the traditional banks and the app based providers, and be explicit that pricing is approximate and at the time of writing. Cover the account opening reality, including the documents required, why sole traders and certain trades get declined, and how long approval takes. Cover switching, including the Current Account Switch Service coverage for business accounts, and the practical work of moving direct debits and standing orders. Cover the traps: free banking periods that end quietly, cash deposit limits for cash heavy trades, e money accounts that are not covered by FSCS, and accounts frozen during compliance reviews. Include a comparison table of the main options against monthly fee, transaction and cash handling charges, FSCS or safeguarding status, accounting integrations and who each suits. Include an FAQ on whether a sole trader can use a personal account, what happens if you are refused, whether you can hold more than one, and whether the bank must be the same one that lends to you. All pricing must be described as approximate and at the time of writing."
+      },
+      {
+        "key": "card-payment-fees",
+        "type": "seo_original",
+        "title": "Card Payment Fees Explained: What UK Small Businesses Actually Pay to Take Money",
+        "keywords": "card payment fees UK, card machine costs small business, payment processing fees explained",
+        "category": "Finance",
+        "brief": "A guide to the single most misunderstood running cost for any business that takes card payments, aimed at an owner who has never worked out their true blended rate. Explain how a card transaction is actually priced, breaking it into the interchange fee that goes to the card issuer, the scheme fee that goes to Visa or Mastercard, and the acquirer margin which is the only part that is genuinely negotiable. Explain interchange plus pricing versus blended or fixed rate pricing and why blended looks simpler but usually costs more, and how to calculate your real effective rate from a monthly statement rather than trusting a headline rate. Cover the cost differences that catch people out: consumer debit versus consumer credit versus commercial cards, cards issued outside the UK and EEA, and card not present transactions. Cover the main ways a UK small business takes payment and what each really costs, including countertop and portable card machines, mobile card readers, ecommerce gateways, payment links and invoicing, and pay by bank options. Cover the contract traps specifically, because this is where small businesses lose money: long minimum terms on terminal leases, separate terminal rental agreements from a third party, PCI compliance fees and non compliance charges, minimum monthly service charges, authorisation fees charged per attempt, and early termination penalties. Cover the rules on surcharging consumers and what a business may and may not pass on, described carefully. Cover chargebacks, the fee charged regardless of outcome, and how to reduce them. Cover practical negotiation, including that rates are negotiable above modest volumes, that quotes should be compared on effective rate not headline rate, and that switching is usually straightforward. Include a comparison table of the payment methods against typical cost shape, settlement time, hardware cost and who each suits. Include an FAQ on why the rate on the statement differs from the one quoted, whether you can pass fees to customers, what happens with refunds, and how quickly money arrives. Describe all rates as typical approximate ranges at the time of writing and avoid naming specific providers' prices."
+      }
+    ]
+  ]
+}

@@ -1,0 +1,699 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+}
+
+// ------------------------------------------------------------------- tenancy
+//
+// One row per publication. This is the spine: everything below that carries a
+// siteId belongs to exactly one title, and the Prisma extension in lib/prisma.js
+// refuses to run a query against a tenanted model without one.
+//
+// The whole reason this table exists is that Smart SME expressed every
+// brand-specific value as an environment variable, and an environment variable
+// cannot express twenty-five of anything.
+
+enum SiteStatus {
+  setup      // being provisioned; agents cannot run
+  cold_start // live, but no Search Console history yet — see lib/site.js
+  live
+  paused
+  archived
+}
+
+// How articles are attributed. Stored per title rather than assumed, because
+// one named human across twenty-five unrelated trade titles is implausible to a
+// reader and a weak E-E-A-T signal — see docs/game-plan.md §2. All three modes
+// are implemented so changing a title's attribution is a dropdown, not a
+// refactor.
+enum BylineMode {
+  shared_person   // one named editor across the fleet (the current default)
+  per_title_person
+  masthead        // "The <Title> Team", with an AI-assisted disclosure page
+}
+
+model Site {
+  id        String     @id @default(cuid())
+  slug      String     @unique // URL segment: /s/smart-sme
+  name      String
+  strapline String?
+  domain    String? // smartsme.co.uk — no scheme
+  status    SiteStatus @default(setup)
+  timezone  String     @default("Europe/London")
+  launchedAt DateTime?
+
+  // ---- brand ----
+  // The rail and header render a square mark from markPrimary + markAccent when
+  // no image exists, which is how Smart SME's own logo already works: it is a
+  // CSS type lockup ("Smart" + a glowing "SME" chip), not a file. That means a
+  // new title has a usable mark the moment it is named, with no asset pipeline
+  // in the way. markUrl/logoUrl take over once real artwork exists.
+  markPrimary String  @default("")
+  markAccent  String  @default("")
+  accentHex   String  @default("#2e3eee")
+  accent2Hex  String  @default("#5a6aff")
+  markUrl     String?
+  logoUrl     String?
+  faviconUrl  String?
+
+  // ---- editorial ----
+  bylineMode  BylineMode @default(shared_person)
+  authorName  String?
+  authorEmail String?
+  // [{ name, target, commissionable }] — replaces the hardcoded SECTIONS and
+  // MANUFACTURED maps in lib/sections.js. The Researcher's output is validated
+  // against this list, so a hallucinated section cannot create a stray
+  // WordPress category at publish time.
+  sections    Json       @default("[]")
+  // The tier rules the agent prompts cite by name. Seeded from Smart SME's for
+  // a new title, then edited: the boundary between "needs only a topic" and
+  // "needs a real named person who consented" genuinely differs by sector.
+  editorialStandardMd String?
+  houseStyleMd        String?
+  sectionTarget   Int @default(6)
+  wordFloorGuide  Int @default(1100)
+  wordFloorNews   Int @default(300)
+
+  // ---- engine ----
+  engineEnabled       Boolean  @default(false)
+  officeHoursStart    Int      @default(7)  // UK wall clock, not UTC
+  officeHoursEnd      Int      @default(20)
+  dailySpendCapUsd    Float?   // null = uncapped; publishing and the Director are exempt
+  articlesPerDayTarget Float   @default(1)
+  newsletterEnabled   Boolean  @default(false)
+  linkedInEnabled     Boolean  @default(false)
+  outreachEnabled     Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  credentials       SiteCredential[]
+  provisioningSteps SiteProvisioningStep[]
+  todos             Todo[]
+  leads             Lead[]
+  prBrands          PrBrand[]
+  feedItems         FeedItem[]
+  articles          Article[]
+  seoSuggestions    SeoSuggestion[]
+  linkedInPosts     LinkedInPost[]
+  outreachEmails    OutreachEmail[]
+  advertiserProspects AdvertiserProspect[]
+  launchItems       LaunchItem[]
+  researchTopics    ResearchTopic[]
+  newsletterProspects NewsletterProspect[]
+  agents            Agent[]
+  agentRuns         AgentRun[]
+  agentMessages     AgentMessage[]
+  engineSettings    EngineSetting[]
+}
+
+// Per-title secrets, encrypted at rest with AES-256-GCM under CREDENTIAL_KEY.
+//
+// These were nine environment variables in Smart SME: WP_URL, WP_USERNAME,
+// WP_APP_PASSWORD, GSC_SITE_URL, GA4_PROPERTY_ID, MAILCHIMP_AUDIENCE_ID and the
+// OUTREACH_* set. Shared credentials (the Anthropic key, the Google service
+// account, Pexels) stay in the environment — they are fleet-wide by nature.
+//
+// payloadEnc is never returned to the browser. The settings UI shows presence,
+// health and last-checked, never values: a decrypted WordPress application
+// password in a React prop is a credential in the page source.
+model SiteCredential {
+  id        String   @id @default(cuid())
+  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId    String
+  kind      String // wordpress | google_analytics | mailchimp | linkedin | outreach
+  payloadEnc String
+  // A silently-expired application password on title #17 is invisible until
+  // something fails to publish. A cheap daily liveness probe per kind turns that
+  // into a red dot on the title's card instead.
+  healthy   Boolean?
+  lastError String?
+  checkedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([siteId, kind])
+}
+
+// The provisioning checklist, tracked per title so a half-built site is visible
+// rather than forgotten. Steps that involve consoles with no useful API (DNS,
+// Search Console, LinkedIn OAuth) are marked manual and ticked by hand.
+model SiteProvisioningStep {
+  id        String    @id @default(cuid())
+  site      Site      @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId    String
+  key       String
+  label     String
+  detail    String?
+  manual    Boolean   @default(true)
+  blocking  Boolean   @default(false)
+  done      Boolean   @default(false)
+  doneAt    DateTime?
+  sortOrder Int       @default(0)
+
+  @@unique([siteId, key])
+  @@index([siteId, done])
+}
+
+// An opt-out is global and keyed by domain, NOT per site.
+//
+// A brand that opts out of one title and then receives near-identical outreach
+// from four sister titles is the most damaging thing this system could do to
+// the company's name, and under UK B2B direct-marketing expectations it is
+// indefensible. This table is checked in the single send path in lib/outreach.js
+// and is the one signal the engine never re-litigates.
+model OutreachOptOut {
+  domain     String   @id
+  brandName  String?
+  optedOutAt DateTime @default(now())
+  sourceSite String?  // which title's email triggered it, for the audit trail
+  note       String?
+}
+
+// Fleet-wide toggles and cursors. Per-title settings live on EngineSetting.
+model GlobalSetting {
+  key   String @id
+  value String
+}
+
+// ------------------------------------------------------------- launch phases
+// The four launch phases from the pitch deck, plus a general bucket.
+enum Phase {
+  brand
+  content
+  audience
+  monetise
+  general
+}
+
+model Todo {
+  id          String    @id @default(cuid())
+  site        Site      @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId      String
+  title       String
+  notes       String?
+  phase       Phase     @default(general)
+  dueDate     DateTime?
+  pinned      Boolean   @default(false)
+  done        Boolean   @default(false)
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([siteId, done])
+}
+
+enum LeadStage {
+  prospect
+  contacted
+  in_talks
+  offer_sent
+  won
+  lost
+}
+
+enum AdProduct {
+  banner
+  solus
+  web_story
+  newsletter
+  multiple
+  other
+}
+
+model Lead {
+  id            String     @id @default(cuid())
+  site          Site       @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId        String
+  company       String
+  contactName   String?
+  email         String?
+  phone         String?
+  website       String?
+  stage         LeadStage  @default(prospect)
+  product       AdProduct?
+  offerValue    Float?
+  perMonth      Boolean    @default(true)
+  lastContacted DateTime?
+  nextFollowUp  DateTime?
+  notes         String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@index([siteId, stage])
+}
+
+// Brands whose news we can republish/share on the site (the 50% non-own content).
+model PrBrand {
+  id            String     @id @default(cuid())
+  site          Site       @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId        String
+  name          String
+  website       String?
+  category      String?
+  newsHubUrl    String?
+  newsletterUrl String?
+  subscribed    Boolean    @default(false)
+  notes         String?
+  createdAt     DateTime   @default(now())
+  // Feed ingestion state, filled in by the scan-feeds cron.
+  feedUrl       String?
+  feedStatus    String? // ok | none | error
+  lastScannedAt DateTime?
+  feedItems     FeedItem[]
+  // Press contact for backlink outreach, resolved from the brand's own site by
+  // the outreach agent. `contactConfidence` is "found" when a real address was
+  // on the page, "guessed" when it fell back to a press@domain pattern, and
+  // "confirmed" once JB has typed one in himself.
+  //
+  // The send path refuses "guessed" outright. It is not a hint: an invented
+  // address is how a morning of outreach turned into a morning of bounces, and
+  // a null here means the next scan re-resolves rather than reuses a dead one.
+  prContactName     String?
+  prContactEmail    String?
+  contactConfidence String?   // found | guessed
+  contactCheckedAt  DateTime?
+  // Per-title record of the opt-out. The authority is OutreachOptOut, which is
+  // global — this flag exists so a title's own UI can show the state without a
+  // join, and is kept in step by the send path.
+  optedOut      Boolean   @default(false)
+  optedOutAt    DateTime?
+  outreach      OutreachEmail[]
+
+  @@index([siteId])
+}
+
+// A story pulled from a PR source's feed — the raw material for PR rewrites.
+model FeedItem {
+  id           String    @id @default(cuid())
+  site         Site      @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId       String
+  brand        PrBrand   @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  brandId      String
+  title        String
+  link         String
+  summary      String?
+  publishedAt  DateTime?
+  discoveredAt DateTime  @default(now())
+  status       String    @default("new") // new | shortlisted | dismissed | drafted
+  articles     Article[]
+
+  // Was globally unique on link. Now unique per title: two titles in adjacent
+  // sectors will legitimately both pick up the same wire item, and the first one
+  // to scan it must not silently deny it to the second.
+  @@unique([siteId, link])
+  @@index([siteId, status])
+}
+
+enum ArticleType {
+  pr_rewrite
+  seo_original
+  case_study
+}
+
+enum ArticleStatus {
+  idea
+  drafting
+  review
+  approved
+  published
+}
+
+model Article {
+  id             String        @id @default(cuid())
+  site           Site          @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId         String
+  title          String
+  type           ArticleType
+  status         ArticleStatus @default(idea)
+  sourceItem     FeedItem?     @relation(fields: [sourceItemId], references: [id])
+  sourceItemId   String?
+  sourceUrl      String?
+  keywords       String?
+  // A commissioning brief in plain English: the angle, what to cover, who for.
+  // Deliberately separate from `keywords`, which the writer is told to work into
+  // the headline — a brief pushed through that field ends up stuffed in the title.
+  brief          String?
+  body           String?
+  wpPostId       Int?
+  seoScore       Int?
+  scoreRationale String?
+  imageUrl       String?
+  imageAlt       String?
+  imageCredit    String?
+  // Identifies the photo SHOOT, as "source:photographer" — not the file. Stock
+  // libraries sell whole shoots, so three frames of one person at one laptop
+  // arrive as three different URLs from a single photographer, and deduping on
+  // imageUrl alone put all three into one homepage section.
+  //
+  // Scoped per title on purpose: one title's spent shoot is another title's
+  // fresh one, and a shared archive would make images scarcer as the fleet grows.
+  imageSource    String?
+  category       String?
+  qaReport       String?
+  qaPassed       Boolean       @default(false)
+  scheduledFor   DateTime?
+  keyphrase      String?
+  metaDesc       String?
+  // What this article cost to produce, in USD, when it was made outside the
+  // agent runtime. Agent-made articles are attributable through AgentRun.
+  // articleId; the batch publisher has no AgentRun, so without this its spend
+  // is invisible to the Finance Manager and cost-per-article is divided by an
+  // article count that includes work it cannot see.
+  costUsd        Float?
+  outreach       OutreachEmail[]
+  // When the backlink engine last read this article. Set even when it found
+  // nothing worth sending, because "no mentions" is a result: without it, an
+  // article that names no one is re-analysed by the model every six hours for
+  // a fortnight and costs money each time.
+  outreachScannedAt DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  publishedAt    DateTime?
+
+  @@index([siteId, status])
+  @@index([siteId, publishedAt])
+}
+
+// The SEO Analyst agent's recommendations — pending until JB one-click approves.
+model SeoSuggestion {
+  id        String    @id @default(cuid())
+  site      Site      @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId    String
+  kind      String // internal_link | brand_link | title_update | content_edit | advice
+  wpPostId  Int?
+  targetUrl String?
+  title     String
+  detail    String
+  impact    Int // 1-100 estimated benefit
+  payload   String? // JSON: {find, replaceWith} | {anchor, url} | {newTitle} | null
+  status    String    @default("pending") // pending | applied | dismissed | failed
+  error     String?
+  createdAt DateTime  @default(now())
+  appliedAt DateTime?
+
+  @@index([siteId, status])
+}
+
+model LinkedInPost {
+  id           String    @id @default(cuid())
+  site         Site      @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId       String
+  text         String
+  articleId    String?
+  wpPostId     Int?
+  sourceUrl    String?
+  status       String    @default("draft") // draft | approved | posted
+  scheduledFor DateTime?
+  postedAt     DateTime?
+  imageUrl     String? // picture the card is built from; every post goes out with one
+  linkedinUrn  String? // set once live, so the queue can link to the real post
+  publishError String? // last failure, surfaced on the queue rather than swallowed
+  attempts     Int       @default(0)
+  createdAt    DateTime  @default(now())
+
+  @@index([siteId, status])
+}
+
+// Backlink-request emails tied to published articles (SEO engine).
+//
+// The pitch is not "please link to us". It is "you were featured, and here is
+// everything already written for you" — which is why the row carries the assets
+// as well as the email: the quote, the paste-ready anchor for their news page,
+// and a LinkedIn draft. Removing the recipient's work is the whole conversion
+// mechanism, so those fields are the point of the table, not decoration.
+model OutreachEmail {
+  id           String   @id @default(cuid())
+  site         Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId       String
+  brand        PrBrand? @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  brandId      String?
+  brandName    String
+  contactName  String?
+  contactEmail String?
+  article      Article? @relation(fields: [articleId], references: [id], onDelete: SetNull)
+  articleId    String?
+  wpPostId     Int?
+  articleUrl   String?
+  articleTitle String?
+  // The sentence the brand actually appears in, quoted back to them verbatim.
+  // Proof we read about them rather than scraped them, and the single line that
+  // makes the email read as editorial rather than link-begging.
+  mentionQuote String?
+  subject      String?
+  body         String?
+  blurbHtml    String?  // paste-ready anchor + blurb for their news page
+  linkedInDraft String?
+  // pending | approved | sent | replied | linked | dismissed | failed | bounced
+  //
+  // "bounced" is a hard bounce read back out of the inbox, and is kept apart
+  // from "failed" on purpose: failed means we never sent it, bounced means we
+  // did and there was nobody there. Only the second one tells you the address
+  // was wrong.
+  status       String   @default("pending")
+  error        String?
+  attempts     Int      @default(0)
+  sentAt       DateTime?
+  // Exactly one chase, seven days out. There is never a third email.
+  followUpSentAt DateTime?
+  // Set by the check-backlinks cron once the link is live on their site.
+  linkedAt     DateTime?
+  linkUrl      String?
+  createdAt    DateTime @default(now())
+
+  @@index([siteId, status])
+  @@index([brandId])
+}
+
+// Small key/value store for engine cursors and toggles, per title.
+model EngineSetting {
+  site   Site   @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId String
+  key    String
+  value  String
+
+  @@id([siteId, key])
+}
+
+// Research list of companies likely to advertise; promotable to a CRM Lead.
+model AdvertiserProspect {
+  id               String     @id @default(cuid())
+  site             Site       @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId           String
+  company          String
+  website          String?
+  category         String
+  rationale        String?
+  suggestedProduct AdProduct?
+  promotedLeadId   String?
+  createdAt        DateTime   @default(now())
+
+  @@index([siteId])
+}
+
+model LaunchItem {
+  id        String  @id @default(cuid())
+  site      Site    @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId    String
+  phase     Phase
+  title     String
+  done      Boolean @default(false)
+  sortOrder Int     @default(0)
+
+  @@index([siteId, phase])
+}
+
+// ---------------------------------------------------------------- AI agents
+// Nine specialists with their own goals, woken by events rather than a clock.
+// State is persisted so the office view shows what is genuinely happening
+// rather than a simulation.
+//
+// Every agent now belongs to a title. At fleet scale the tick stops being "one
+// agent per hour globally" and becomes a work queue with per-site fairness —
+// see AgentJob and docs/game-plan.md §3.3.
+
+enum AgentKey {
+  director
+  researcher
+  seo
+  editor
+  designer
+  finance
+  linkedin
+  backlink
+  newsletter
+}
+
+enum AgentState {
+  idle
+  working
+  blocked
+  reporting
+}
+
+model Agent {
+  site        Site       @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId      String
+  key         AgentKey
+  name        String
+  role        String
+  goal        String
+  state       AgentState @default(idle)
+  currentTask String?
+  detail      String?
+  startedAt   DateTime?
+  lastRunAt   DateTime?
+  runs        AgentRun[]
+  updatedAt   DateTime   @updatedAt
+
+  @@id([siteId, key])
+}
+
+model AgentRun {
+  id           String    @id @default(cuid())
+  site         Site      @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  agent        Agent     @relation(fields: [siteId, agentKey], references: [siteId, key], onDelete: Cascade)
+  siteId       String
+  agentKey     AgentKey
+  trigger      String
+  summary      String?
+  ok           Boolean   @default(true)
+  error        String?
+  model        String?
+  inputTokens  Int       @default(0)
+  outputTokens Int       @default(0)
+  costUsd      Float     @default(0)
+  // Written as soon as the article is selected, not only on success. A run that
+  // throws never reaches the success path, so counting attempts off this column
+  // used to miss every crash — and a repeatedly crashing draft could exceed the
+  // three-strike limit in sweepHeldArticles() indefinitely.
+  articleId    String?
+  startedAt    DateTime  @default(now())
+  endedAt      DateTime?
+
+  @@index([siteId, agentKey, startedAt])
+  @@index([siteId, startedAt])
+}
+
+// Inter-agent traffic. Everything routes through the Director, who rules on
+// conflicts (the SEO and quality goals genuinely pull against each other).
+// Scoped per title so one title's Director can never read another's inbox.
+model AgentMessage {
+  id        String   @id @default(cuid())
+  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId    String
+  fromKey   AgentKey
+  toKey     AgentKey
+  kind      String   @default("report")
+  subject   String
+  body      String?
+  resolved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([siteId, toKey, resolved])
+}
+
+// The work queue that replaces the single global hourly ladder.
+//
+// Claimed with SELECT ... FOR UPDATE SKIP LOCKED, which also supplies the
+// single-flight lock the old design lacked: nothing stopped two overlapping
+// ticks running the same agent against the same article, and a manual wake
+// during a tick made that real rather than theoretical.
+model AgentJob {
+  id        String    @id @default(cuid())
+  siteId    String
+  agentKey  AgentKey
+  reason    String
+  state     String    @default("queued") // queued | claimed | done | failed
+  attempts  Int       @default(0)
+  error     String?
+  runAt     DateTime  @default(now())
+  claimedAt DateTime?
+  endedAt   DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([state, runAt])
+  @@index([siteId, state])
+}
+
+// What the Researcher finds worth covering, from free sources only.
+model ResearchTopic {
+  id          String   @id @default(cuid())
+  site        Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId      String
+  title       String
+  // Which homepage section this topic is meant to fill. Carried onto the
+  // Article at commission time so the quota in lib/sections.js can count work
+  // in progress, not only what is already published. Validated against the
+  // site's own Site.sections — a hallucinated name would otherwise create a
+  // stray WordPress category at publish time.
+  category    String?
+  source      String
+  query       String?
+  rationale   String?
+  score       Int?
+  impressions Int?
+  clicks      Int?
+  position    Float?
+  status      String   @default("proposed")
+  articleId   String?
+  createdAt   DateTime @default(now())
+
+  @@index([siteId, status, score])
+}
+
+// The ranked Apollo list, drip-fed into the newsletter a thousand at a time.
+//
+// It lives here rather than as a CSV in the repo because it is tens of
+// thousands of people's contact details and has no business being in version
+// control. Rank is fixed at import time by lib ranking (deliverability first,
+// seniority as a tie-break), so the drip only ever has to take the next N by
+// rank.
+//
+// Nothing is imported unverified. verifyStatus is filled in by the daily
+// verification pass, and only "good" is ever pushed: Apollo's own catch-all
+// flag proved wrong about 11% of the time on the first tranche.
+model NewsletterProspect {
+  id             String    @id @default(cuid())
+  site           Site      @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId         String
+  email          String
+  firstName      String?
+  lastName       String?
+  title          String?
+  company        String?
+  companyCountry String?
+  domain         String?
+  sic            String?
+  score          Int       @default(0)
+  rank           Int
+  // good | risky | bad, from MillionVerifier. null means not yet checked.
+  verifyStatus   String?
+  // catch_all, invalid, unknown … the finer-grained reason behind verifyStatus.
+  verifyResult   String?
+  verifiedAt     DateTime?
+  importedAt     DateTime?
+  tranche        Int?
+  // Suppressed contacts are never imported and never re-checked.
+  suppressed     Boolean   @default(false)
+  suppressReason String?
+  createdAt      DateTime  @default(now())
+
+  // Unique per title, not globally: the same person can legitimately subscribe
+  // to two titles, and deduping across the fleet would silently deny the second.
+  @@unique([siteId, email])
+  @@index([siteId, suppressed, importedAt, rank])
+  @@index([siteId, suppressed, verifyStatus, rank])
+}

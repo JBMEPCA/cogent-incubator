@@ -1,0 +1,24 @@
+name = "smart-sme-cron"
+main = "worker.js"
+compatibility_date = "2026-08-03"
+
+# No public URL. A cron trigger fires server side and needs no route, so there
+# is nothing to be gained by exposing this on workers.dev and one less endpoint
+# on the internet for it. The fetch handler in worker.js stays as a local
+# testing hook via `wrangler dev`.
+workers_dev = false
+
+# Hourly at five past, across 06:00-19:00 UTC. That spans 07:00-20:00 UK in both
+# BST and GMT, and lib/agents/hours.js trims it to the exact hours against UK
+# wall clock, so this never needs touching at the clock change.
+#
+# Five past rather than on the hour purely out of habit from the GitHub problem:
+# the top of the hour is the most contended slot on any shared scheduler.
+#
+# The second trigger is the publishing half only. Four of the seven slots in
+# lib/schedule.js sit on the half hour (07:30, 10:30, 13:30, 16:30) and the
+# hourly tick could not reach them, so those articles went out 36 minutes late,
+# which was 10 of the last 14 posts. worker.js tells the two apart on
+# event.cron and runs no agent stage at half past, so this adds no model spend.
+[triggers]
+crons = ["5 6-19 * * *", "35 6-19 * * *"]
