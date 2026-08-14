@@ -91,6 +91,12 @@ export default async function FleetOverview() {
         <div>
           <span className="micro">Cogent Incubator</span>
           <h1>All titles</h1>
+          {/* The fleet spend figure to the right is a number; this is the
+              breakdown behind it. Linked from the heading because it is a
+              fleet-level view, not a per-title one. */}
+          <Link href="/costs" className="nav-link" style={{ padding: "2px 0", fontSize: 13 }}>
+            View spend breakdown &rarr;
+          </Link>
         </div>
         <div className="fleet-totals">
           <Figure value={totals.publishedWeek} label="published this week" />
