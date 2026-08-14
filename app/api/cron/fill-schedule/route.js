@@ -9,13 +9,18 @@ export const maxDuration = 60;
 // then queues new commissions (news picks, SEO topics, case studies) for the
 // drafting agent to write into the gaps.
 export async function GET(request) {
-  const authHeader = request.headers.get("authorization");
-  if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return new Response("Unauthorized", { status: 401 });
-  }
+  const denied = cronGuard(request);
+  if (denied) return denied;
   if (!isDraftingConfigured()) return Response.json({ skipped: "no ANTHROPIC_API_KEY" });
 
-  const slots = upcomingSlots(7);
+  // Every title keeps its own calendar, so this runs once per title against
+  // that title's scoped handle. It read a module-level `db` that has not
+  // existed since the multi-tenant split, so the route was a 500 on every call
+  // and the schedule silently never filled — an article could pass QA, get its
+  // image, and then simply never be given a time to go out.
+  return Response.json(
+    await forEachSite(async ({ db }) => {
+      const slots = upcomingSlots(7);
 
   // THE SCHEDULE IS REBALANCED ON EVERY RUN, best score to earliest slot.
   //
@@ -120,13 +125,15 @@ export async function GET(request) {
   // both meant the same queue was commissioned and drafted twice.
   const inFlight = await db.article.count({ where: { status: 'drafting' } });
 
-  return Response.json({
-    openSlots: open.length,
-    assigned,
-    moved,
-    released,
-    substituted,
-    inFlight,
-    commissioning: "director agent",
-  });
+      return {
+        openSlots: open.length,
+        assigned,
+        moved,
+        released,
+        substituted,
+        inFlight,
+        commissioning: "director agent",
+      };
+    })
+  );
 }
