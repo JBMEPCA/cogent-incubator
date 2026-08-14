@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import OfficeRoom, { STATE_COLOUR } from "./OfficeRoom";
 import { Walkway, Commuter, Dog, ROUTES, routeKey, walkBetween, visitPath, meetSpots } from "./Walkways";
+import { useActiveSite } from "./FleetContext";
 
 // Seven rooms in three columns, the centre pair dropped lower so the grid reads
 // as an isometric floor rather than a spreadsheet. Rows are ~230px apart
@@ -61,6 +62,7 @@ function timeAgo(d) {
 }
 
 export default function AgentOffice() {
+  const site = useActiveSite();
   const [data, setData] = useState(null);
   const [selected, setSelected] = useState("director");
   const [error, setError] = useState(null);
@@ -72,15 +74,16 @@ export default function AgentOffice() {
   const [now, setNow] = useState(0);
 
   const load = useCallback(async () => {
+    if (!site) return;
     try {
-      const res = await fetch("/api/agents", { cache: "no-store" });
+      const res = await fetch(`/api/agents?site=${encodeURIComponent(site.slug)}`, { cache: "no-store" });
       if (!res.ok) throw new Error(`status ${res.status}`);
       setData(await res.json());
       setError(null);
     } catch (e) {
       setError(e.message);
     }
-  }, []);
+  }, [site]);
 
   useEffect(() => {
     load();
@@ -97,7 +100,7 @@ export default function AgentOffice() {
   const wake = async (key) => {
     setWaking(key);
     try {
-      await fetch(`/api/agents/wake?agent=${key}`, { method: "POST" });
+      await fetch(`/api/agents/wake?agent=${key}&site=${encodeURIComponent(site.slug)}`, { method: "POST" });
     } catch {}
     setWaking(null);
     load();
