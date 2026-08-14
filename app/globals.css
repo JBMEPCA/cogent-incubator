@@ -1327,3 +1327,34 @@ tbody tr:hover {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------- Sign in ---------- */
+
+.login-mark {
+  width: 54px;
+  height: 54px;
+  border-radius: 15px;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-grotesk), sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(150deg, var(--brand) 0%, var(--neon-cyan) 150%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: var(--glow-brand);
+}
+
+.login-wordmark {
+  font-family: var(--font-grotesk), sans-serif;
+  font-size: 23px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.login-wordmark em {
+  font-style: normal;
+  font-weight: 300;
+  color: var(--muted);
+}

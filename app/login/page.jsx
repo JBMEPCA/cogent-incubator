@@ -1,5 +1,4 @@
 import { authenticate } from "@/lib/actions";
-import Logo from "../components/Logo";
 
 export default async function LoginPage({ searchParams }) {
   const params = await searchParams;
@@ -16,10 +15,14 @@ export default async function LoginPage({ searchParams }) {
           gap: 10,
         }}
       >
-        <div style={{ fontSize: 30 }}>
-          <Logo />
+        {/* The Cogent mark, not a title's. This screen sits above the whole
+            portfolio, so branding it as any one publication would be wrong —
+            and would leak which titles exist to anyone who reaches the page. */}
+        <span className="login-mark">C</span>
+        <div className="login-wordmark">
+          Cogent <em>Incubator</em>
         </div>
-        <div className="micro">Launch HQ — Director access</div>
+        <div className="micro">Portfolio control room</div>
       </div>
       <form action={authenticate} className="panel panel-glow">
         <div style={{ marginBottom: 14 }}>
