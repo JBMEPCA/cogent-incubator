@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { forEachSite, cronGuard } from "@/lib/cron";
 import { scanBrand } from "@/lib/feeds";
 
 export const dynamic = "force-dynamic";
@@ -42,16 +42,18 @@ async function pool(items, size, deadline, worker) {
 }
 
 export async function GET(request) {
-  const authHeader = request.headers.get("authorization");
-  if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return new Response("Unauthorized", { status: 401 });
-  }
+  const denied = cronGuard(request);
+  if (denied) return denied;
 
+  // The time budget is shared across the whole fleet, not per title, so a
+  // long tail of dead hosts on title #1 cannot starve title #12 entirely.
   const deadline = Date.now() + TIME_BUDGET_MS;
 
+  const out = await forEachSite(async ({ db }) => {
+
   const [searches, rotation] = await Promise.all([
-    prisma.prBrand.findMany({ where: isSearch }),
-    prisma.prBrand.findMany({
+    db.prBrand.findMany({ where: isSearch }),
+    db.prBrand.findMany({
       where: { newsHubUrl: { not: null }, NOT: isSearch },
       orderBy: [{ lastScannedAt: { sort: "asc", nulls: "first" } }],
       take: ROTATION_PER_RUN,
@@ -60,12 +62,12 @@ export async function GET(request) {
 
   // Searches first: if the budget runs out, it must be the rotation that waits.
   const outcomes = [
-    ...((await pool(searches, CONCURRENCY, deadline, (b) => scanBrand(prisma, b))) || []),
-    ...((await pool(rotation, CONCURRENCY, deadline, (b) => scanBrand(prisma, b))) || []),
+    ...((await pool(searches, CONCURRENCY, deadline, (b) => scanBrand(db, b))) || []),
+    ...((await pool(rotation, CONCURRENCY, deadline, (b) => scanBrand(db, b))) || []),
   ];
 
   const tally = (s) => outcomes.filter((r) => r?.status === s).length;
-  return Response.json({
+  return {
     scanned: outcomes.length,
     searchesScanned: Math.min(searches.length, outcomes.length),
     ok: tally("ok"),
@@ -73,5 +75,8 @@ export async function GET(request) {
     error: tally("error"),
     itemsAdded: outcomes.reduce((n, r) => n + (r?.added || 0), 0),
     msElapsed: TIME_BUDGET_MS - (deadline - Date.now()),
+  };
   });
+
+  return Response.json(out);
 }

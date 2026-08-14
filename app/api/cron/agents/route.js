@@ -1,10 +1,11 @@
-import { prisma } from "@/lib/prisma";
+import { forEachSite, cronGuard, activeSites } from "@/lib/cron";
+import { getSiteContext } from "@/lib/site";
 import { ensureAgents, reapStaleRuns } from "@/lib/agents/runtime";
 import { runResearcher } from "@/lib/agents/researcher";
 import { runLinkedIn } from "@/lib/agents/linkedin";
 import { runBacklink } from "@/lib/agents/backlink";
 import { runDirector, runEditor, runDesigner, runSeo, runFinance, sweepHeldArticles } from "@/lib/agents/team";
-import { withinOperatingHours, operatingHoursLabel, ukHour } from "@/lib/agents/hours";
+import { withinOfficeHours } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 // 60 was never a platform limit, it was this line. Fluid compute is enabled on
@@ -26,73 +27,90 @@ export const maxDuration = 300;
 //   ?stage=worker    the one agent that has something to do
 //   (omitted)        both, still used by the Vercel daily backstop
 export async function GET(request) {
-  const auth = request.headers.get("authorization");
-  if (process.env.CRON_SECRET && auth !== `Bearer ${process.env.CRON_SECRET}`) {
-    return new Response("Unauthorized", { status: 401 });
-  }
+  const denied = cronGuard(request);
+  if (denied) return denied;
   if (!process.env.ANTHROPIC_API_KEY) return Response.json({ skipped: "no ANTHROPIC_API_KEY" });
 
-  await ensureAgents();
   const url = new URL(request.url);
   const forced = url.searchParams.get("agent");
-
-  // Office hours. A manual wake from the Engine Room still works out of hours,
-  // so you are never locked out of your own team.
-  if (!forced && !withinOperatingHours()) {
-    return Response.json({
-      skipped: `outside operating hours (${operatingHoursLabel()})`,
-      ukHour: ukHour(),
-    });
-  }
-
-  if (forced) {
-    const map = { researcher: runResearcher, editor: runEditor, designer: runDesigner, seo: runSeo, finance: runFinance, director: runDirector, linkedin: runLinkedIn, backlink: runBacklink };
-    if (!map[forced]) return Response.json({ error: "unknown agent" }, { status: 400 });
-    return Response.json({ forced, result: await map[forced]("manual") });
-  }
-
   const stage = url.searchParams.get("stage");
   if (stage && stage !== "director" && stage !== "worker") {
     return Response.json({ error: "stage must be director or worker" }, { status: 400 });
   }
 
+  // A manual wake names its title; the scheduled tick runs the whole fleet.
+  const onlySlug = url.searchParams.get("site");
+  if (forced && !onlySlug) {
+    return Response.json({ error: "waking one agent needs ?site=<slug>" }, { status: 400 });
+  }
+
+  const contexts = onlySlug
+    ? [await getSiteContext(onlySlug)].filter(Boolean)
+    : await activeSites();
+  if (!contexts.length) return Response.json({ skipped: "no titles with the engine on" });
+
+  const fleet = [];
+  for (const ctx of contexts) {
+    fleet.push({ site: ctx.site.slug, ...(await tickOne(ctx, { forced, stage })) });
+  }
+  return Response.json({ titles: fleet.length, fleet });
+}
+
+// One title's tick. Everything below is the original logic, now taking the site
+// it belongs to rather than assuming there is only one.
+async function tickOne(ctx, { forced, stage }) {
+  const { site, db } = ctx;
+  await ensureAgents(site.id);
+
+  // Office hours. A manual wake from the Engine Room still works out of hours,
+  // so you are never locked out of your own team.
+  if (!forced && !withinOfficeHours(site)) {
+    return { skipped: `outside ${site.officeHoursStart}:00-${site.officeHoursEnd}:00` };
+  }
+
+  if (forced) {
+    const map = { researcher: runResearcher, editor: runEditor, designer: runDesigner, seo: runSeo, finance: runFinance, director: runDirector, linkedin: runLinkedIn, backlink: runBacklink };
+    if (!map[forced]) return { error: "unknown agent" };
+    return { forced, result: await map[forced](site, "manual") };
+  }
+
   // Close out anything a previous invocation was killed part way through, so a
   // timed-out run stops reading as a success and its agent stops showing as
   // busy for ever.
-  const reaped = await reapStaleRuns();
+  const reaped = await reapStaleRuns(site.id);
 
   // Put anything QA held back in the queue before the Director looks at the
   // board, so a recovered article can be written on this same tick.
-  const held = await sweepHeldArticles();
+  const held = await sweepHeldArticles(site);
 
   const ran = [];
   if (stage !== "worker") {
-    const director = await runDirector("tick");
+    const director = await runDirector(site, "tick");
     ran.push({ agent: "director", ...director });
   }
   if (stage === "director") {
-    return Response.json({
+    return {
       stage,
       reaped,
       held,
       ran: ran.map((r) => ({ agent: r.agent, ok: r.ok, summary: r.summary })),
       costUsd: Number(ran.reduce((s, r) => s + (r.cost || 0), 0).toFixed(4)),
-    });
+    };
   }
 
   // Work out who actually has something to do, in priority order. Finishing
   // started work beats starting new work.
   const [needsImage, drafting, proposed, lastResearch, lastAttempts] =
     await Promise.all([
-      prisma.article.count({ where: { status: { in: ["review", "approved"] }, imageUrl: null } }),
-      prisma.article.count({ where: { status: "drafting" } }),
-      prisma.researchTopic.count({ where: { status: "proposed" } }),
-      prisma.agent.findUnique({ where: { key: "researcher" }, select: { lastRunAt: true } }),
+      db.article.count({ where: { status: { in: ["review", "approved"] }, imageUrl: null } }),
+      db.article.count({ where: { status: "drafting" } }),
+      db.researchTopic.count({ where: { status: "proposed" } }),
+      db.agent.findUnique({ where: { key: "researcher" }, select: { lastRunAt: true } }),
       // The last ATTEMPT per agent, not the last success. agent.lastRunAt is
       // only written when a run finishes cleanly, so gating on it means a
       // failing agent looks permanently overdue and takes every tick for ever.
       // A failed attempt still counts as a turn taken.
-      prisma.agentRun.groupBy({ by: ["agentKey"], _max: { startedAt: true } }),
+      db.agentRun.groupBy({ by: ["agentKey"], _max: { startedAt: true } }),
     ]);
 
   const hoursSince = (d) => (d ? (Date.now() - new Date(d).getTime()) / 36e5 : 999);
@@ -141,15 +159,15 @@ export async function GET(request) {
 
   if (worker) {
     const [key, fn, trigger] = worker;
-    ran.push({ agent: key, ...(await fn(trigger)) });
+    ran.push({ agent: key, ...(await fn(site, trigger)) });
   }
 
   const cost = ran.reduce((s, r) => s + (r.cost || 0), 0);
-  return Response.json({
+  return {
     stage: stage || "both",
     reaped,
     held,
     ran: ran.map((r) => ({ agent: r.agent, ok: r.ok, summary: r.summary })),
     costUsd: Number(cost.toFixed(4)),
-  });
+  };
 }

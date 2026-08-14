@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { forEachSite, cronGuard } from "@/lib/cron";
 import { upcomingSlots } from "@/lib/schedule";
 import { isDraftingConfigured } from "@/lib/drafting";
 
@@ -38,7 +38,7 @@ export async function GET(request) {
   const LOCK_MINUTES = 30;
   const lockUntil = new Date(Date.now() + LOCK_MINUTES * 60000);
 
-  const waiting = await prisma.article.findMany({
+  const waiting = await db.article.findMany({
     where: {
       status: { in: ["review", "approved"] },
       qaPassed: true,
@@ -51,7 +51,7 @@ export async function GET(request) {
   // Locked articles keep their slots, so those slots are not up for grabs.
   const held = new Set(
     (
-      await prisma.article.findMany({
+      await db.article.findMany({
         where: { status: { not: "published" }, scheduledFor: { not: null, lte: lockUntil } },
         select: { scheduledFor: true },
       })
@@ -98,7 +98,7 @@ export async function GET(request) {
     const { article: next, swapped } = pick;
     if (swapped) substituted++;
     if (next.scheduledFor && new Date(next.scheduledFor).getTime() === slot.at.getTime()) continue;
-    await prisma.article.update({ where: { id: next.id }, data: { scheduledFor: slot.at } });
+    await db.article.update({ where: { id: next.id }, data: { scheduledFor: slot.at } });
     if (next.scheduledFor) moved++;
     else assigned++;
   }
@@ -110,7 +110,7 @@ export async function GET(request) {
   for (const type of Object.keys(pool)) {
     for (const a of pool[type]) {
       if (!a.scheduledFor) continue;
-      await prisma.article.update({ where: { id: a.id }, data: { scheduledFor: null } });
+      await db.article.update({ where: { id: a.id }, data: { scheduledFor: null } });
       released++;
     }
   }
@@ -118,7 +118,7 @@ export async function GET(request) {
   // Commissioning used to happen here. It now belongs to the Director agent,
   // which weighs the Researcher's scored topics and caps work in flight. Running
   // both meant the same queue was commissioned and drafted twice.
-  const inFlight = await prisma.article.count({ where: { status: 'drafting' } });
+  const inFlight = await db.article.count({ where: { status: 'drafting' } });
 
   return Response.json({
     openSlots: open.length,

@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { prisma, forSite, fleetRead } from "@/lib/prisma";
 import { imageForPost } from "@/lib/linkedin";
 import { composeLinkedInImage, thumbnail } from "@/lib/linkedin-image";
 
@@ -16,10 +16,16 @@ export async function GET(request, { params }) {
   const { id } = await params;
   const width = Number(new URL(request.url).searchParams.get("w")) || 0;
 
-  const post = await prisma.linkedInPost.findUnique({ where: { id } });
-  if (!post) return new Response("Not found", { status: 404 });
+  // The URL carries a post id and nothing else, so the title has to be found
+  // before anything can be scoped to it.
+  const rows = await fleetRead().linkedInPost.findMany({ where: { id }, take: 1 });
+  if (!rows.length) return new Response("Not found", { status: 404 });
+  const post = rows[0];
 
-  const { url } = await imageForPost(post);
+  const site = await prisma.site.findUnique({ where: { id: post.siteId } });
+  if (!site) return new Response("Not found", { status: 404 });
+
+  const { url } = await imageForPost(site, post);
   const { buffer } = await composeLinkedInImage(url);
   const out = width ? await thumbnail(buffer, width) : buffer;
 

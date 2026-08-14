@@ -1,6 +1,6 @@
-import { prisma } from "@/lib/prisma";
+import { forEachSite, cronGuard } from "@/lib/cron";
 import { publishPost, isLinkedInConfigured, dueFilter, MAX_ATTEMPTS } from "@/lib/linkedin";
-import { withinOperatingHours, operatingHoursLabel } from "@/lib/agents/hours";
+
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -21,28 +21,28 @@ export async function GET(request) {
     return Response.json({ skipped: `outside operating hours (${operatingHoursLabel()})` });
   }
 
-  const post = await prisma.linkedInPost.findFirst({
+  const post = await db.linkedInPost.findFirst({
     where: dueFilter(),
     orderBy: { scheduledFor: "asc" },
   });
-  if (!post) return Response.json({ posted: 0 });
+  if (!post) return { posted: 0 };
 
   // Claim the attempt before the call, so a function timeout mid-publish cannot
   // leave a post retrying for ever, and three failures park it for a human.
-  await prisma.linkedInPost.update({
+  await db.linkedInPost.update({
     where: { id: post.id },
     data: { attempts: { increment: 1 } },
   });
 
   try {
-    const result = await publishPost(post);
-    await prisma.linkedInPost.update({
+    const result = await publishPost(site, post);
+    await db.linkedInPost.update({
       where: { id: post.id },
       data: { status: "posted", postedAt: new Date(), linkedinUrn: result.urn, publishError: null },
     });
-    return Response.json({ posted: 1, url: result.url });
+    return { posted: 1, url: result.url };
   } catch (e) {
-    await prisma.linkedInPost.update({
+    await db.linkedInPost.update({
       where: { id: post.id },
       data: { publishError: e.message.slice(0, 500) },
     });
