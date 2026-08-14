@@ -63,6 +63,24 @@ export default function NewTitleForm({ action, taken = [] }) {
               placeholder="The UK's publication for ..." autoComplete="off" />
           </label>
 
+          {/*
+            Every agent prompt opens with this line, and the Researcher
+            commissions against it. Worth more care than anything else on this
+            form: "fleet managers" produces a different publication from "UK
+            fleet managers and transport operators running commercial vehicle
+            fleets", and the second is the one that gets useful commissions.
+          */}
+          <label className="field field-wide">
+            <span className="micro">Readers</span>
+            <input name="audience"
+              placeholder="UK fleet managers and transport operators running commercial vehicle fleets"
+              autoComplete="off" />
+            <span style={{ fontSize: 11.5, opacity: 0.5, marginTop: 3 }}>
+              Who the magazine is for, in one line. Every agent is told this, and the Researcher
+              commissions against it. Be specific.
+            </span>
+          </label>
+
           <label className="field">
             <span className="micro">Domain</span>
             <input name="domain" placeholder="smartmanufacturing.co.uk" autoComplete="off" />

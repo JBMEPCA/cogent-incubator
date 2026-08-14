@@ -66,6 +66,11 @@ async function createTitle(formData) {
       slug,
       name,
       strapline: String(formData.get("strapline") || "").trim() || null,
+      // The single most load-bearing editorial fact: every agent prompt opens
+      // with it, and it is what the Researcher commissions against. A title
+      // created without one gets agents that know its name and its sections but
+      // not who it is for.
+      audience: String(formData.get("audience") || "").trim() || null,
       domain: String(formData.get("domain") || "").trim().replace(/^https?:\/\//, "") || null,
       status: "setup",
       markPrimary: name.split(/\s+/)[0] || name,
