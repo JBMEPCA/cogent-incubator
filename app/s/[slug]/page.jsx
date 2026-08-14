@@ -1,10 +1,11 @@
 import Link from "next/link";
 import Header from "@/app/components/Header";
-import { prisma } from "@/lib/prisma";
+import { notFound } from "next/navigation";
+import { getSiteContext } from "@/lib/site";
 import { addTodo, toggleTodo, deleteTodo } from "@/lib/actions";
 import { launchProgress } from "@/lib/milestones";
 import { buildCostReport } from "@/lib/agents/costs";
-import { withinOperatingHours, operatingHoursLabel } from "@/lib/agents/hours";
+import { withinOfficeHours } from "@/lib/site";
 import { fmtMoney } from "@/lib/crm";
 
 export const dynamic = "force-dynamic";
@@ -61,33 +62,41 @@ function Bar({ value, max, tone }) {
 
 /* ------------------------------------------------------------------- page */
 
-export default async function Dashboard() {
+export default async function Dashboard({ params }) {
+  const { slug } = await params;
+  const ctx = await getSiteContext(slug);
+  if (!ctx) notFound();
+  const { site, db, creds } = ctx;
+  // Bound into every server action on this page. Next signs bound arguments,
+  // so this cannot be re-pointed at another title from the browser.
+  const siteRef = { id: site.id, slug: site.slug };
+
   const weekAgo = new Date(Date.now() - 7 * 864e5);
 
   const [todos, progress, costs, agents, articles, topics, linkedIn, seoPending, publishedWeek, nextUp, leadRows] =
     await Promise.all([
-      prisma.todo.findMany({ orderBy: [{ pinned: "desc" }, { createdAt: "asc" }] }),
-      launchProgress(),
-      buildCostReport(),
-      prisma.agent.findMany(),
-      prisma.article.groupBy({ by: ["status"], _count: true }),
-      prisma.researchTopic.findMany({ where: { status: "proposed" }, orderBy: { score: "desc" }, take: 3 }),
-      prisma.linkedInPost.count({ where: { status: "draft" } }),
-      prisma.seoSuggestion.count({ where: { status: "pending" } }),
-      prisma.article.count({ where: { publishedAt: { gte: weekAgo } } }),
-      prisma.article.findFirst({
+      db.todo.findMany({ orderBy: [{ pinned: "desc" }, { createdAt: "asc" }] }),
+      launchProgress(site.id, { hasWordPress: Boolean(creds.wordpress?.url) }),
+      buildCostReport(site.id),
+      db.agent.findMany(),
+      db.article.groupBy({ by: ["status"], _count: true }),
+      db.researchTopic.findMany({ where: { status: "proposed" }, orderBy: { score: "desc" }, take: 3 }),
+      db.linkedInPost.count({ where: { status: "draft" } }),
+      db.seoSuggestion.count({ where: { status: "pending" } }),
+      db.article.count({ where: { publishedAt: { gte: weekAgo } } }),
+      db.article.findFirst({
         where: { scheduledFor: { gte: new Date() } },
         orderBy: { scheduledFor: "asc" },
         select: { title: true, scheduledFor: true },
       }),
-      prisma.lead.findMany({ select: { stage: true, offerValue: true, perMonth: true } }),
+      db.lead.findMany({ select: { stage: true, offerValue: true, perMonth: true } }),
     ]);
 
   const openTodos = todos.filter((t) => !t.done);
   const byStatus = Object.fromEntries(articles.map((a) => [a.status, a._count]));
   const working = agents.filter((a) => a.state === "working");
   const blocked = agents.filter((a) => a.state === "blocked");
-  const onShift = withinOperatingHours();
+  const onShift = withinOfficeHours(site);
   const lastActive = agents.map((a) => a.lastRunAt).filter(Boolean).sort((a, b) => new Date(b) - new Date(a))[0];
 
   // Deals are quoted either per month or as a one-off, so annualise the monthly
@@ -142,7 +151,7 @@ export default async function Dashboard() {
                     : working.length ? `${working.length} working`
                     : onShift ? "idle" : "asleep"
                 }
-                label={onShift ? "AI team, on shift" : `AI team, ${operatingHoursLabel()}`}
+                label={onShift ? "AI team, on shift" : `AI team, ${site.officeHoursStart}:00–${site.officeHoursEnd}:00`}
                 tone={blocked.length ? "#d03b3b" : working.length ? "#0ca30c" : undefined}
               />
               <Figure value={`£${costs.totalMonthlyGbp.toFixed(0)}`} label={`of £${costs.targetGbp} budget`} tone={budgetTone} />
@@ -276,7 +285,7 @@ export default async function Dashboard() {
             <span style={{ fontSize: 11.5, opacity: 0.5 }}>{openTodos.length ? `${openTodos.length} open` : "all clear"}</span>
           </div>
 
-          <form action={addTodo} style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+          <form action={addTodo.bind(null, siteRef)} style={{ display: "flex", gap: 8, marginBottom: 12 }}>
             <input
               name="title"
               placeholder="Something only you can do…"
@@ -290,12 +299,12 @@ export default async function Dashboard() {
           {openTodos.length === 0 && <p style={{ fontSize: 12.5, opacity: 0.5, margin: 0 }}>Nothing outstanding.</p>}
           {openTodos.map((t) => (
             <div key={t.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "7px 0", borderBottom: "1px solid rgba(255,255,255,.06)" }}>
-              <form action={toggleTodo} style={{ display: "flex" }}>
+              <form action={toggleTodo.bind(null, siteRef)} style={{ display: "flex" }}>
                 <input type="hidden" name="id" value={t.id} />
                 <button type="submit" className="btn-ghost" style={{ padding: "2px 8px" }} aria-label="Mark done">○</button>
               </form>
               <span style={{ flex: 1, fontSize: 13 }}>{t.title}</span>
-              <form action={deleteTodo} style={{ display: "flex" }}>
+              <form action={deleteTodo.bind(null, siteRef)} style={{ display: "flex" }}>
                 <input type="hidden" name="id" value={t.id} />
                 <button type="submit" className="btn-ghost" style={{ padding: "2px 8px", opacity: 0.5 }} aria-label="Delete">×</button>
               </form>
