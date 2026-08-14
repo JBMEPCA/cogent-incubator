@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { forEachSite, cronGuard } from "@/lib/cron";
 import { isWordPressConfigured, publishToWordPress, uploadMedia, resolveCategory } from "@/lib/wordpress";
 import { stripEmDashes } from "@/lib/drafting";
 import { verifyImage } from "@/lib/qa";
@@ -10,13 +10,17 @@ export const maxDuration = 60;
 // the image must survive one last visual check — and if it does not, the
 // article waits for a new picture rather than going out without one.
 export async function GET(request) {
-  const authHeader = request.headers.get("authorization");
-  if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return new Response("Unauthorized", { status: 401 });
-  }
-  if (!isWordPressConfigured()) return Response.json({ skipped: "WordPress not configured" });
+  const denied = cronGuard(request);
+  if (denied) return denied;
 
-  const due = await prisma.article.findMany({
+  // Once per enabled title, each with its own WordPress and its own scoped
+  // client. A title with no WordPress connection is skipped rather than
+  // failing the whole tick for everyone else.
+  const out = await forEachSite(async ({ site, db, creds }) => {
+  const wp = creds.wordpress;
+  if (!isWordPressConfigured(wp)) return { skipped: "WordPress not configured" };
+
+  const due = await db.article.findMany({
     where: {
       status: { in: ["review", "approved"] },
       qaPassed: true,
@@ -26,7 +30,7 @@ export async function GET(request) {
     orderBy: { scheduledFor: "asc" },
     take: 2,
   });
-  if (!due.length) return Response.json({ published: 0 });
+  if (!due.length) return { published: 0 };
 
   const results = [];
   for (const article of due) {
@@ -40,7 +44,7 @@ export async function GET(request) {
         });
         if (check.ok) {
           const slug = article.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 60);
-          const media = await uploadMedia({
+          const media = await uploadMedia(wp, {
             imageUrl: article.imageUrl,
             alt: check.altText || article.imageAlt,
             filename: slug,
@@ -61,7 +65,7 @@ export async function GET(request) {
           // and publishing is deferred. The Designer takes anything in review or
           // approved with no imageUrl, so it sources a fresh one and this
           // publishes on the next tick with a picture that has passed twice.
-          await prisma.article.update({
+          await db.article.update({
             where: { id: article.id },
             data: { imageUrl: null, imageAlt: null, imageCredit: null, imageSource: null },
           });
@@ -77,16 +81,16 @@ export async function GET(request) {
       if (article.imageCredit) {
         body += `\n<p><em style="font-size:0.85em">${article.imageCredit}</em></p>`;
       }
-      const post = await publishToWordPress({
+      const post = await publishToWordPress(wp, {
         title: stripEmDashes(article.title),
         body,
         status: "publish",
         featuredMediaId,
-        categoryId: await resolveCategory(article.category),
+        categoryId: await resolveCategory(wp, article.category),
         keyphrase: article.keyphrase,
         metaDesc: article.metaDesc,
       });
-      await prisma.article.update({
+      await db.article.update({
         where: { id: article.id },
         data: { status: "published", publishedAt: new Date(), wpPostId: post.id },
       });
@@ -95,5 +99,8 @@ export async function GET(request) {
       results.push({ title: article.title, error: e.message });
     }
   }
-  return Response.json({ published: results.filter((r) => r.url).length, results });
+  return { published: results.filter((r) => r.url).length, results };
+  });
+
+  return Response.json(out);
 }
