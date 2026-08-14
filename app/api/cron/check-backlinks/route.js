@@ -1,20 +1,26 @@
 import { runBacklinkCheck, dueToRun } from "@/lib/outreach";
+import { cronGuard, forEachSite } from "@/lib/cron";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 export async function GET(request) {
-  const authHeader = request.headers.get("authorization");
-  if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return new Response("Unauthorized", { status: 401 });
-  }
+  const denied = cronGuard(request);
+  if (denied) return denied;
+
   try {
-    // Once a day. A news page that has not been updated in the last hour will
-    // not have been updated in the last fifteen minutes either.
-    if (!(await dueToRun("backlink_last_check", 24))) {
-      return Response.json({ skipped: "throttled" });
-    }
-    return Response.json(await runBacklinkCheck());
+    return Response.json(
+      await forEachSite(async ({ site }) => {
+        // Once a day, per title. A news page that has not been updated in the
+        // last hour will not have been updated in the last fifteen minutes
+        // either. The throttle is per title because the cursor lives in that
+        // title's EngineSetting row.
+        if (!(await dueToRun(site, "backlink_last_check", 24))) {
+          return { skipped: "throttled" };
+        }
+        return runBacklinkCheck(site);
+      })
+    );
   } catch (e) {
     return Response.json({ error: e.message }, { status: 500 });
   }

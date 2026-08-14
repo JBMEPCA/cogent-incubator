@@ -43,9 +43,9 @@ export default async function LinkedInPage({searchParams, params}) {
   const query = await searchParams;
   const [posts, connection] = await Promise.all([
     db.linkedInPost.findMany({ orderBy: { createdAt: "desc" }, take: 100 }),
-    getConnection(),
+    getConnection(site),
   ]);
-  const configured = isLinkedInConfigured();
+  const configured = isLinkedInConfigured(creds.linkedin);
   const live = Boolean(connection && !connection.expired);
 
   // Show which article each post came from: the LinkedIn Manager drafts from
@@ -108,7 +108,7 @@ export default async function LinkedInPage({searchParams, params}) {
               <p className="micro" style={{ margin: "0 0 12px" }}>
                 Not connected. Until you connect, approving a post just marks it ready and you post it yourself.
               </p>
-              <a href="/api/linkedin/connect" className="btn">
+              <a href={`/api/linkedin/connect?site=${site.slug}`} className="btn">
                 Connect LinkedIn
               </a>
             </>
@@ -128,7 +128,7 @@ export default async function LinkedInPage({searchParams, params}) {
                 )}
               </p>
               <div style={{ display: "flex", gap: 10 }}>
-                <a href="/api/linkedin/connect" className="btn-ghost" style={{ fontSize: 12 }}>
+                <a href={`/api/linkedin/connect?site=${site.slug}`} className="btn-ghost" style={{ fontSize: 12 }}>
                   Reconnect
                 </a>
                 <form action={disconnectLinkedIn.bind(null, siteRef)}>

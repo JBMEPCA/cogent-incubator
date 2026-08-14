@@ -96,7 +96,7 @@ export default async function EngineRoomPage({ params }) {
     }),
     spendWindow(site.id, 7),
     // Mailchimp being down must never blank the Engine Room.
-    newsletterStatus(site.id).catch((e) => ({ configured: true, error: e.message })),
+    newsletterStatus(site.id, creds.mailchimp).catch((e) => ({ configured: true, error: e.message })),
     prospectStats(site.id).catch(() => null),
   ]);
 

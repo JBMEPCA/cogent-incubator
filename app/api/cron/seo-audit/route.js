@@ -1,4 +1,5 @@
 import { runSeoAudit, isSeoAgentConfigured } from "@/lib/seo-agent";
+import { cronGuard, forEachSite } from "@/lib/cron";
 
 export const dynamic = "force-dynamic";
 // 60 killed this route on every single call from 5 August: the audit now reads
@@ -8,16 +9,18 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
 export async function GET(request) {
-  const authHeader = request.headers.get("authorization");
-  if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return new Response("Unauthorized", { status: 401 });
-  }
-  if (!isSeoAgentConfigured()) {
-    return Response.json({ skipped: "SEO agent needs ANTHROPIC_API_KEY + WordPress" });
-  }
+  const denied = cronGuard(request);
+  if (denied) return denied;
+
   try {
-    const result = await runSeoAudit();
-    return Response.json(result);
+    return Response.json(
+      await forEachSite(async ({ site, creds }) => {
+        if (!isSeoAgentConfigured(creds.wordpress)) {
+          return { skipped: "needs ANTHROPIC_API_KEY and this title's WordPress credentials" };
+        }
+        return runSeoAudit(site, creds.wordpress);
+      })
+    );
   } catch (e) {
     return Response.json({ error: e.message }, { status: 500 });
   }

@@ -7,7 +7,18 @@
 // schedule, so this Worker exists purely to hit the endpoints GitHub was
 // supposed to hit, on time.
 
-const BASE = "https://smart-sme-app.vercel.app";
+// Which app the clock drives, and therefore the cutover switch.
+//
+// There is exactly ONE clock, so this is also what prevents the old
+// single-title app and the fleet app both publishing to the same WordPress:
+// moving the engine means repointing this, not running a second worker.
+//
+// Left defaulting to the old app on purpose. Setting BASE_URL in the Worker's
+// variables is a deliberate act with an obvious undo, whereas changing the
+// default here would have flipped the live engine the moment this was deployed
+// — before the new app had its environment variables.
+const DEFAULT_BASE = "https://smart-sme-app.vercel.app";
+const baseUrl = (env) => (env.BASE_URL || DEFAULT_BASE).replace(/\/$/, "");
 
 // Order matters. Publishing frees slots before the schedule is refilled, and
 // the Director commissions before the worker goes looking for something to do.
@@ -111,7 +122,7 @@ async function runAll(env, now = new Date(), steps = null) {
   const results = [];
   for (const path of steps || [...STEPS, ...scheduledExtras(now)]) {
     try {
-      const res = await fetch(BASE + path, {
+      const res = await fetch(baseUrl(env) + path, {
         headers: { Authorization: `Bearer ${env.CRON_SECRET}` },
       });
       results.push({ path, status: res.status, body: (await res.text()).slice(0, 300) });
