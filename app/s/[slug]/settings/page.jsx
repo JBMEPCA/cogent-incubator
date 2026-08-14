@@ -3,7 +3,12 @@ import { notFound } from "next/navigation";
 import { CREDENTIAL_KINDS, credentialSummary, getSite } from "@/lib/site";
 import { isCryptoConfigured } from "@/lib/crypto";
 import { isGoogleConfigured, googleServiceAccountEmail } from "@/lib/google";
-import { saveSiteCredential, testSiteCredential, clearSiteCredential } from "@/lib/actions";
+import {
+  saveSiteCredential,
+  testSiteCredential,
+  clearSiteCredential,
+  saveEngineSettings,
+} from "@/lib/actions";
 
 export const dynamic = "force-dynamic";
 
@@ -61,6 +66,28 @@ function statusOf(entry) {
 
 const when = (d) =>
   d ? new Date(d).toLocaleString("en-GB", { timeZone: "Europe/London", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : null;
+
+const INPUT = {
+  width: "100%", boxSizing: "border-box", padding: "8px 10px", borderRadius: 8,
+  border: "1px solid rgba(255,255,255,.12)", background: "rgba(0,0,0,.25)",
+  color: "var(--text)", fontSize: 13.5,
+};
+
+function Switch({ name, label, hint, checked, warn }) {
+  return (
+    <label style={{ display: "flex", gap: 10, alignItems: "flex-start", padding: "7px 0" }}>
+      <input type="checkbox" name={name} defaultChecked={checked} style={{ marginTop: 3 }} />
+      <span>
+        <span style={{ fontSize: 13.5 }}>{label}</span>
+        {hint && (
+          <span style={{ display: "block", fontSize: 11.5, opacity: 0.5, color: warn ? "#fcd34d" : undefined }}>
+            {hint}
+          </span>
+        )}
+      </span>
+    </label>
+  );
+}
 
 function Fleet({ label, present, detail }) {
   return (
@@ -124,6 +151,90 @@ export default async function SettingsPage({ params }) {
           </ul>
         </section>
 
+        <section style={{ ...SURFACE, borderRadius: 14, padding: "16px 18px", marginBottom: 22 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 3 }}>
+            <Dot state={site.engineEnabled ? "ok" : "off"} />
+            <h2 style={{ margin: 0, fontSize: 17 }}>Engine</h2>
+            <span style={{ marginLeft: "auto", fontSize: 12.5, opacity: 0.65 }}>
+              {site.engineEnabled ? "Running" : "Switched off"}
+            </span>
+          </div>
+          <p style={{ fontSize: 12.5, opacity: 0.55, margin: "0 0 10px" }}>
+            A title with the engine off is skipped by every scheduled job, so this is safe to set before
+            the clock is pointed at this app.
+          </p>
+
+          <form action={saveEngineSettings.bind(null, siteRef)}>
+            <Switch
+              name="engineEnabled"
+              label="Engine on"
+              hint="Lets the agents run, spend and publish to the live site."
+              checked={site.engineEnabled}
+            />
+            <Switch
+              name="newsletterEnabled"
+              label="Weekly newsletter"
+              hint="Sends a real issue to the whole audience each Thursday."
+              checked={site.newsletterEnabled}
+              warn
+            />
+            <Switch
+              name="linkedInEnabled"
+              label="LinkedIn queue"
+              hint="Drafting only. Nothing posts without approval, and without a connection it is copy-and-paste."
+              checked={site.linkedInEnabled}
+            />
+            <Switch
+              name="outreachEnabled"
+              label="Backlink outreach"
+              hint="Drafting only. Every email still waits for approval on the Backlinks page."
+              checked={site.outreachEnabled}
+            />
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 10, marginTop: 12 }}>
+              <label>
+                <span style={{ display: "block", fontSize: 11.5, opacity: 0.6, marginBottom: 3 }}>
+                  Daily spend cap (USD)
+                </span>
+                <input
+                  name="dailySpendCapUsd"
+                  type="number"
+                  step="0.5"
+                  min="0.5"
+                  defaultValue={site.dailySpendCapUsd ?? ""}
+                  placeholder="uncapped"
+                  style={INPUT}
+                />
+              </label>
+              <label>
+                <span style={{ display: "block", fontSize: 11.5, opacity: 0.6, marginBottom: 3 }}>
+                  Articles per day
+                </span>
+                <input name="articlesPerDayTarget" type="number" step="0.5" min="0.5" defaultValue={site.articlesPerDayTarget} style={INPUT} />
+              </label>
+              <label>
+                <span style={{ display: "block", fontSize: 11.5, opacity: 0.6, marginBottom: 3 }}>
+                  Office hours start
+                </span>
+                <input name="officeHoursStart" type="number" min="0" max="23" defaultValue={site.officeHoursStart} style={INPUT} />
+              </label>
+              <label>
+                <span style={{ display: "block", fontSize: 11.5, opacity: 0.6, marginBottom: 3 }}>
+                  Office hours end
+                </span>
+                <input name="officeHoursEnd" type="number" min="0" max="23" defaultValue={site.officeHoursEnd} style={INPUT} />
+              </label>
+            </div>
+
+            <div style={{ display: "flex", gap: 8, marginTop: 12, alignItems: "center" }}>
+              <button className="btn" type="submit">Save engine settings</button>
+              <span style={{ fontSize: 11.5, opacity: 0.45 }}>
+                Hours are {site.timezone} wall clock, so the clock change needs no edit.
+              </span>
+            </div>
+          </form>
+        </section>
+
         <div style={{ display: "grid", gap: 14 }}>
           {Object.entries(CREDENTIAL_KINDS).map(([kind, spec]) => {
             const entry = summary[kind] || { configured: false, fields: {} };
@@ -182,11 +293,7 @@ export default async function SettingsPage({ params }) {
                             // non-secret fields and •••• for secrets, so an
                             // empty box reads as "unchanged" rather than blank.
                             placeholder={current || meta.placeholder || ""}
-                            style={{
-                              width: "100%", boxSizing: "border-box", padding: "8px 10px", borderRadius: 8,
-                              border: "1px solid rgba(255,255,255,.12)", background: "rgba(0,0,0,.25)",
-                              color: "var(--text)", fontSize: 13.5,
-                            }}
+                            style={INPUT}
                           />
                         </label>
                       );
