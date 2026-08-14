@@ -1,0 +1,230 @@
+import Header from "@/app/components/Header";
+import { notFound } from "next/navigation";
+import { CREDENTIAL_KINDS, credentialSummary, getSite } from "@/lib/site";
+import { isCryptoConfigured } from "@/lib/crypto";
+import { isGoogleConfigured, googleServiceAccountEmail } from "@/lib/google";
+import { saveSiteCredential, testSiteCredential, clearSiteCredential } from "@/lib/actions";
+
+export const dynamic = "force-dynamic";
+
+// Where a title's integrations are entered.
+//
+// Everything on this page obeys one rule: a stored secret is never sent to the
+// browser. Fields show whether they are set, not what they hold, and a blank
+// input on save means "leave it" rather than "clear it" — see saveSiteCredential.
+//
+// Saving always probes. A credential that has been typed but never tested is
+// the state this whole screen exists to abolish: it looks configured, reads as
+// done, and fails at 6am when the Editor tries to publish.
+
+const SURFACE = { background: "var(--surface-2, #111a36)", border: "1px solid rgba(255,255,255,.07)" };
+
+// Human labels and input hints. The field names themselves are terse because
+// they are also the JSON keys in the encrypted payload.
+const FIELD_META = {
+  url: { label: "Site URL", placeholder: "https://smartsme.co.uk", type: "url" },
+  username: { label: "Username", placeholder: "smartsme" },
+  appPassword: { label: "Application password", secret: true, placeholder: "xxxx xxxx xxxx xxxx xxxx xxxx" },
+  gscSiteUrl: { label: "Search Console property", placeholder: "sc-domain:smartsme.co.uk" },
+  ga4PropertyId: { label: "GA4 property id", placeholder: "123456789" },
+  audienceId: { label: "Mailchimp audience id", placeholder: "707a3f613c" },
+  fromEmail: { label: "From address", type: "email", placeholder: "jb@smartsme.co.uk" },
+  fromName: { label: "From name", placeholder: "James Burke" },
+  replyTo: { label: "Reply-to", type: "email", placeholder: "same as the from address" },
+  postalAddress: { label: "Postal address (email footer)", placeholder: "Cogent Multimedia Ltd, ..." },
+  organisationUrn: { label: "Organisation URN", placeholder: "urn:li:organization:12345678" },
+  accessToken: { label: "Access token", secret: true },
+  refreshToken: { label: "Refresh token", secret: true },
+  expiresAt: { label: "Expires", placeholder: "set by the OAuth callback" },
+};
+
+function Dot({ state }) {
+  const colour = { ok: "#34d399", bad: "#f87171", warn: "#fbbf24", off: "rgba(255,255,255,.22)" }[state];
+  return (
+    <span
+      style={{
+        width: 9, height: 9, borderRadius: "50%", background: colour, display: "inline-block",
+        boxShadow: state === "ok" ? "0 0 10px rgba(52,211,153,.8)" : state === "bad" ? "0 0 10px rgba(248,113,113,.7)" : "none",
+      }}
+    />
+  );
+}
+
+// Four states, and the difference between the middle two is the point of the
+// page: "stored but never proved" is not the same as "working".
+function statusOf(entry) {
+  if (!entry.configured) return { state: "off", text: "Not set" };
+  if (entry.healthy === true) return { state: "ok", text: entry.lastError ? "Working, with a caveat" : "Working" };
+  if (entry.healthy === false) return { state: "bad", text: "Failing" };
+  return { state: "warn", text: "Stored, not yet tested" };
+}
+
+const when = (d) =>
+  d ? new Date(d).toLocaleString("en-GB", { timeZone: "Europe/London", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : null;
+
+function Fleet({ label, present, detail }) {
+  return (
+    <li style={{ display: "flex", alignItems: "center", gap: 9, padding: "5px 0" }}>
+      <Dot state={present ? "ok" : "bad"} />
+      <span style={{ fontSize: 13.5 }}>{label}</span>
+      <span style={{ fontSize: 12, opacity: 0.5 }}>{detail || (present ? "set" : "missing")}</span>
+    </li>
+  );
+}
+
+export default async function SettingsPage({ params }) {
+  const { slug } = await params;
+  const site = await getSite(slug);
+  if (!site) notFound();
+  const siteRef = { id: site.id, slug: site.slug };
+
+  const cryptoReady = isCryptoConfigured();
+  const summary = cryptoReady ? await credentialSummary(site.id) : {};
+
+  return (
+    <>
+      <Header />
+      <main style={{ maxWidth: 900, margin: "0 auto", padding: "28px 24px 60px" }}>
+        <h1 style={{ margin: "0 0 4px", fontSize: 25 }}>Integrations</h1>
+        <p style={{ fontSize: 13.5, opacity: 0.65, margin: "0 0 22px" }}>
+          Per-title credentials for {site.name}. Values are encrypted before they are stored and are never
+          shown again — saving runs a live test against the real service.
+        </p>
+
+        {!cryptoReady && (
+          <section style={{ ...SURFACE, borderRadius: 12, padding: 16, marginBottom: 18, borderColor: "rgba(248,113,113,.45)" }}>
+            <strong style={{ color: "#f87171" }}>CREDENTIAL_KEY is not set.</strong>
+            <p style={{ fontSize: 13, opacity: 0.75, margin: "6px 0 0" }}>
+              Nothing can be stored or read without it, so this page is disabled rather than writing secrets in
+              plain text. Generate one with{" "}
+              <code>node -e &quot;console.log(require(&apos;crypto&apos;).randomBytes(32).toString(&apos;base64&apos;))&quot;</code>{" "}
+              and set it in the environment.
+            </p>
+          </section>
+        )}
+
+        <section style={{ ...SURFACE, borderRadius: 12, padding: "14px 16px", marginBottom: 22 }}>
+          <h2 style={{ margin: "0 0 4px", fontSize: 14, textTransform: "uppercase", letterSpacing: ".06em", opacity: 0.6 }}>
+            Fleet-wide
+          </h2>
+          <p style={{ fontSize: 12.5, opacity: 0.55, margin: "0 0 8px" }}>
+            Shared by every title and set in the environment, not here.
+          </p>
+          <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+            <Fleet label="Anthropic API key" present={Boolean(process.env.ANTHROPIC_API_KEY)} />
+            <Fleet
+              label="Google service account"
+              present={isGoogleConfigured()}
+              detail={googleServiceAccountEmail() || undefined}
+            />
+            <Fleet label="Pexels API key" present={Boolean(process.env.PEXELS_API_KEY)} />
+            <Fleet label="Mailchimp API key" present={Boolean(process.env.MAILCHIMP_API_KEY)} />
+            <Fleet label="LinkedIn app" present={Boolean(process.env.LINKEDIN_CLIENT_ID && process.env.LINKEDIN_CLIENT_SECRET)} />
+            <Fleet label="Credential key" present={cryptoReady} />
+          </ul>
+        </section>
+
+        <div style={{ display: "grid", gap: 14 }}>
+          {Object.entries(CREDENTIAL_KINDS).map(([kind, spec]) => {
+            const entry = summary[kind] || { configured: false, fields: {} };
+            const status = statusOf(entry);
+            const checked = when(entry.checkedAt);
+
+            return (
+              <section key={kind} style={{ ...SURFACE, borderRadius: 14, padding: "16px 18px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 3 }}>
+                  <Dot state={status.state} />
+                  <h2 style={{ margin: 0, fontSize: 17 }}>{spec.label}</h2>
+                  {spec.required && (
+                    <span className="micro" style={{ opacity: 0.5, border: "1px solid rgba(255,255,255,.15)", borderRadius: 20, padding: "1px 8px" }}>
+                      required
+                    </span>
+                  )}
+                  <span style={{ marginLeft: "auto", fontSize: 12.5, opacity: 0.65 }}>
+                    {status.text}
+                    {checked && <span style={{ opacity: 0.55 }}> · tested {checked}</span>}
+                  </span>
+                </div>
+
+                {spec.note && <p style={{ fontSize: 12.5, opacity: 0.55, margin: "0 0 10px" }}>{spec.note}</p>}
+
+                {entry.lastError && (
+                  <p
+                    style={{
+                      fontSize: 12.5,
+                      margin: "0 0 12px",
+                      padding: "8px 10px",
+                      borderRadius: 8,
+                      background: entry.healthy ? "rgba(251,191,36,.08)" : "rgba(248,113,113,.08)",
+                      color: entry.healthy ? "#fcd34d" : "#fca5a5",
+                    }}
+                  >
+                    {entry.lastError}
+                  </p>
+                )}
+
+                <form action={saveSiteCredential.bind(null, siteRef, kind)}>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: 10 }}>
+                    {spec.fields.map((field) => {
+                      const meta = FIELD_META[field] || { label: field };
+                      const current = entry.fields?.[field];
+                      return (
+                        <label key={field} style={{ display: "block" }}>
+                          <span style={{ display: "block", fontSize: 11.5, opacity: 0.6, marginBottom: 3 }}>
+                            {meta.label}
+                          </span>
+                          <input
+                            name={field}
+                            type={meta.secret ? "password" : meta.type || "text"}
+                            autoComplete="off"
+                            disabled={!cryptoReady}
+                            // The placeholder carries the current value for
+                            // non-secret fields and •••• for secrets, so an
+                            // empty box reads as "unchanged" rather than blank.
+                            placeholder={current || meta.placeholder || ""}
+                            style={{
+                              width: "100%", boxSizing: "border-box", padding: "8px 10px", borderRadius: 8,
+                              border: "1px solid rgba(255,255,255,.12)", background: "rgba(0,0,0,.25)",
+                              color: "var(--text)", fontSize: 13.5,
+                            }}
+                          />
+                        </label>
+                      );
+                    })}
+                  </div>
+
+                  <div style={{ display: "flex", gap: 8, marginTop: 12, alignItems: "center" }}>
+                    <button className="btn" type="submit" disabled={!cryptoReady}>
+                      Save and test
+                    </button>
+                    {entry.configured && (
+                      <button
+                        className="btn-ghost"
+                        type="submit"
+                        formAction={testSiteCredential.bind(null, siteRef, kind)}
+                      >
+                        Test again
+                      </button>
+                    )}
+                    <span style={{ fontSize: 11.5, opacity: 0.45 }}>
+                      Leave a field blank to keep what is already stored.
+                    </span>
+                  </div>
+                </form>
+
+                {entry.configured && (
+                  <form action={clearSiteCredential.bind(null, siteRef)} style={{ marginTop: 8 }}>
+                    <input type="hidden" name="kind" value={kind} />
+                    <button className="btn-ghost" type="submit" style={{ fontSize: 12, opacity: 0.6 }}>
+                      Remove
+                    </button>
+                  </form>
+                )}
+              </section>
+            );
+          })}
+        </div>
+      </main>
+    </>
+  );
+}

@@ -74,6 +74,13 @@ export default function Header() {
         {site.engineEnabled ? "Engine running" : "Engine off"}
       </span>
 
+      <Link
+        href={`${base}/settings`}
+        className="nav-link"
+        style={{ fontSize: 13, ...(rest.startsWith("/settings") ? { color: "var(--text)" } : null) }}
+      >
+        Integrations
+      </Link>
       <Link href="/" className="nav-link" style={{ fontSize: 13 }}>
         All titles
       </Link>
