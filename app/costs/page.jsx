@@ -94,35 +94,21 @@ export default async function FleetCostsPage() {
         Everything the operation costs this month. Model spend is measured from real token usage on
         every agent run; subscriptions are declared. Converted at {rate} USD to GBP.
       </p>
-      {/*
-        The two per-article figures answer different questions and the gap
-        between them is the point, so it is stated rather than left to be
-        inferred from two tiles sitting side by side.
-      */}
-      <p style={{ fontSize: 12.5, opacity: 0.5, margin: "0 0 18px", maxWidth: 760 }}>
-        The two per-article figures are not the same thing.{" "}
-        <strong style={{ opacity: 0.85 }}>To produce</strong> is the median of the agent runs
-        attributed to each piece the engine actually wrote — what one more article costs.{" "}
-        <strong style={{ opacity: 0.85 }}>All-in</strong> divides every cost by everything published,
-        including articles put up by hand, and carries the{" "}
-        {totals.attributableShare != null
-          ? `${Math.round((1 - totals.attributableShare) * 100)}% of spend that is not article production`
-          : "spend that is not article production"}{" "}
-        — research, SEO sweeps, LinkedIn drafts, outreach and Director ticks.
-      </p>
 
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 18 }}>
         <Stat label="Total this month" value={gbp(totals.monthUsd, rate)} hint={`${titles.length} title${titles.length === 1 ? "" : "s"}`} />
         <Stat label="AI model spend" value={gbp(totals.modelMonthUsd, rate)} hint="measured, per run" />
+        {/*
+          One per-article figure, not two. An earlier version showed the
+          production cost beside a total-spend-divided-by-output number, which
+          looked like the same measure disagreeing with itself. The second one
+          is still worth having, so it sits in the detail line under each title
+          rather than in a headline tile competing with this.
+        */}
         <Stat
-          label="To produce an article"
+          label="Per article"
           value={pence(totals.medianArticleUsd, rate)}
-          hint={`median of ${totals.producedCount} the engine wrote`}
-        />
-        <Stat
-          label="All-in per published"
-          value={pence(totals.allInPerArticleUsd, rate)}
-          hint={`everything ÷ ${totals.publishedThisMonth} published`}
+          hint={`typical cost to write one, from ${totals.producedCount} articles`}
         />
       </div>
 
@@ -161,8 +147,7 @@ export default async function FleetCostsPage() {
                 <span>fixed {gbp(t.fixedUsd, rate)}</span>
                 <span>share of shared {gbp(t.shareOfFleetUsd, rate)}</span>
                 <span>{t.publishedThisMonth} published</span>
-                <span>{t.medianArticleUsd != null ? `${pence(t.medianArticleUsd, rate)} to produce (median of ${t.producedCount})` : "nothing produced yet"}</span>
-                <span>{t.allInPerArticleUsd != null ? `${pence(t.allInPerArticleUsd, rate)} all-in` : ""}</span>
+                <span>{t.medianArticleUsd != null ? `${pence(t.medianArticleUsd, rate)} per article` : "nothing produced yet"}</span>
               </div>
 
               {t.agents.length > 0 && (
