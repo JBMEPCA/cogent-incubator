@@ -76,6 +76,14 @@ model Site {
   faviconUrl  String?
 
   // ---- editorial ----
+  //
+  // Who the magazine is for, in one line — "UK fleet managers and transport
+  // operators running commercial vehicles". This is the single most load-bearing
+  // editorial fact in the system: it decides what the Researcher commissions,
+  // what the Director considers on-brief, who the Editor writes for and what the
+  // QA gate holds. Every agent prompt opens with it, which is why it is a column
+  // and not a sentence buried in houseStyleMd.
+  audience    String?
   bylineMode  BylineMode @default(shared_person)
   authorName  String?
   authorEmail String?
