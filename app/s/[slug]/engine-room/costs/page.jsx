@@ -1,4 +1,6 @@
 import Header from "@/app/components/Header";
+import { notFound } from "next/navigation";
+import { getSiteContext } from "@/lib/site";
 import SubTabs, { ENGINE_TABS } from "@/app/components/SubTabs";
 import { buildCostReport, getStoredReport } from "@/lib/agents/costs";
 import { updateFixedCost, updateCostTarget } from "@/lib/actions";
@@ -38,8 +40,14 @@ function Card({ title, sub, children }) {
   );
 }
 
-export default async function CostsPage() {
-  const [report, stored] = await Promise.all([buildCostReport(), getStoredReport()]);
+export default async function CostsPage({ params }) {
+  const { slug } = await params;
+  const ctx = await getSiteContext(slug);
+  if (!ctx) notFound();
+  const { site, db, creds } = ctx;
+  const siteRef = { id: site.id, slug: site.slug };
+
+  const [report, stored] = await Promise.all([buildCostReport(site.id), getStoredReport(site.id)]);
   const perArticleAll = report.published30
     ? (report.projectedMonthly + report.fixedMonthly) / report.published30
     : null;
@@ -81,7 +89,7 @@ export default async function CostsPage() {
         <section style={{ background: "var(--surface, #10182b)", border: "1px solid rgba(255,255,255,.07)", borderRadius: 14, padding: 18, marginBottom: 14 }}>
           <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 12 }}>
             <h3 style={{ margin: 0, fontSize: 15 }}>Monthly budget</h3>
-            <form action={updateCostTarget} style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6 }}>
+            <form action={updateCostTarget.bind(null, siteRef)} style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6 }}>
               <label style={{ fontSize: 11.5, opacity: 0.55 }}>Target £</label>
               <input
                 name="targetGbp"
@@ -163,7 +171,7 @@ export default async function CostsPage() {
 
           <Card title="Fixed infrastructure" sub="Edit any figure. Lines marked to confirm are ones only you can settle.">
             {report.fixed.map((f) => (
-              <form key={f.key} action={updateFixedCost} style={{ padding: "9px 0", borderBottom: "1px solid rgba(255,255,255,.06)" }}>
+              <form key={f.key} action={updateFixedCost.bind(null, siteRef)} style={{ padding: "9px 0", borderBottom: "1px solid rgba(255,255,255,.06)" }}>
                 <input type="hidden" name="key" value={f.key} />
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span style={{ flex: 1, fontSize: 13 }}>

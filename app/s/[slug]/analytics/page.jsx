@@ -1,4 +1,6 @@
 import Header from "@/app/components/Header";
+import { notFound } from "next/navigation";
+import { getSiteContext } from "@/lib/site";
 import SubTabs, { ANALYTICS_TABS } from "@/app/components/SubTabs";
 import TrendChart from "@/app/components/TrendChart";
 import { fetchAnalytics } from "@/lib/analytics";
@@ -114,8 +116,14 @@ function Table({ head, rows, empty }) {
   );
 }
 
-export default async function AnalyticsPage() {
-  const { config, gsc, ga4, errors } = await fetchAnalytics();
+export default async function AnalyticsPage({ params }) {
+  const { slug } = await params;
+  const ctx = await getSiteContext(slug);
+  if (!ctx) notFound();
+  const { site, db, creds } = ctx;
+  const siteRef = { id: site.id, slug: site.slug };
+
+  const { config, gsc, ga4, errors } = await fetchAnalytics(creds.google_analytics);
   const serviceAccount = googleServiceAccountEmail();
 
   const gscQuiet = gsc && gsc.impressions === 0 && gsc.clicks === 0;

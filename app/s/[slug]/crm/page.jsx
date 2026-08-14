@@ -1,7 +1,8 @@
 import Link from "next/link";
 import Header from "@/app/components/Header";
 import SubTabs, { CRM_TABS } from "@/app/components/SubTabs";
-import { prisma } from "@/lib/prisma";
+import { notFound } from "next/navigation";
+import { getSiteContext } from "@/lib/site";
 import { addLead, markContacted } from "@/lib/actions";
 import { STAGES, PRODUCTS, OPEN_STAGES, stageInfo, productLabel, fmtMoney } from "@/lib/crm";
 
@@ -11,8 +12,14 @@ function fmtDate(d) {
   return new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
 }
 
-export default async function CrmPage() {
-  const leads = await prisma.lead.findMany({ orderBy: { updatedAt: "desc" } });
+export default async function CrmPage({ params }) {
+  const { slug } = await params;
+  const ctx = await getSiteContext(slug);
+  if (!ctx) notFound();
+  const { site, db, creds } = ctx;
+  const siteRef = { id: site.id, slug: site.slug };
+
+  const leads = await db.lead.findMany({ orderBy: { updatedAt: "desc" } });
 
   const now = new Date();
   const stageOrder = Object.fromEntries(STAGES.map((s, i) => [s.value, i]));
@@ -67,7 +74,7 @@ export default async function CrmPage() {
         <section className="panel" style={{ marginBottom: 22 }}>
           <h2 style={{ margin: "0 0 14px", fontSize: 16 }}>Add lead</h2>
           <form
-            action={addLead}
+            action={addLead.bind(null, siteRef)}
             style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "flex-end" }}
           >
             <input name="company" placeholder="Company *" required style={{ flex: "1 1 160px" }} />
@@ -181,7 +188,7 @@ export default async function CrmPage() {
                         {l.nextFollowUp ? fmtDate(l.nextFollowUp) : "—"}
                       </td>
                       <td style={{ padding: "8px", whiteSpace: "nowrap" }}>
-                        <form action={markContacted} style={{ display: "inline" }}>
+                        <form action={markContacted.bind(null, siteRef)} style={{ display: "inline" }}>
                           <input type="hidden" name="id" value={l.id} />
                           <button
                             type="submit"

@@ -2,10 +2,11 @@ import Header from "@/app/components/Header";
 import AgentOffice from "@/app/components/AgentOffice";
 import SuggestionBox from "@/app/components/SuggestionBox";
 import SubTabs, { ENGINE_TABS } from "@/app/components/SubTabs";
-import { prisma } from "@/lib/prisma";
+import { notFound } from "next/navigation";
+import { getSiteContext } from "@/lib/site";
 import { ensureAgents } from "@/lib/agents/runtime";
 import { spendWindow } from "@/lib/agents/costs";
-import { withinOperatingHours, operatingHoursLabel } from "@/lib/agents/hours";
+import { withinOfficeHours } from "@/lib/site";
 import { newsletterStatus } from "@/lib/newsletter";
 import { prospectStats } from "@/lib/prospects";
 
@@ -54,48 +55,55 @@ function pct(v) {
   return v == null ? "n/a" : `${(v * 100).toFixed(1)}%`;
 }
 
-export default async function EngineRoomPage() {
-  await ensureAgents();
+export default async function EngineRoomPage({ params }) {
+  const { slug } = await params;
+  const ctx = await getSiteContext(slug);
+  if (!ctx) notFound();
+  const { site, db, creds } = ctx;
+  const siteRef = { id: site.id, slug: site.slug };
+  const hoursLabel = `${site.officeHoursStart}:00–${site.officeHoursEnd}:00 UK`;
+
+  await ensureAgents(site.id);
   const weekAgo = new Date(Date.now() - 7 * 864e5);
 
   const [agents, topics, messages, spend, pipeline, publishedWeek, suggestions, recent, week, newsletter, drip] = await Promise.all([
-    prisma.agent.findMany(),
-    prisma.researchTopic.findMany({
+    db.agent.findMany(),
+    db.researchTopic.findMany({
       // JB's own requests have their own panel, so this is what the Researcher found.
       where: { status: "proposed", source: { not: "jb" } },
       orderBy: [{ score: "desc" }],
       take: 10,
     }),
-    prisma.agentMessage.findMany({ orderBy: { createdAt: "desc" }, take: 12 }),
-    prisma.agentRun.groupBy({
+    db.agentMessage.findMany({ orderBy: { createdAt: "desc" }, take: 12 }),
+    db.agentRun.groupBy({
       by: ["agentKey"],
       where: { startedAt: { gte: weekAgo } },
       _sum: { costUsd: true, inputTokens: true, outputTokens: true },
       _count: true,
     }),
-    prisma.article.groupBy({ by: ["status"], _count: true }),
-    prisma.article.count({ where: { publishedAt: { gte: weekAgo } } }),
-    prisma.researchTopic.findMany({
+    db.article.groupBy({ by: ["status"], _count: true }),
+    db.article.count({ where: { publishedAt: { gte: weekAgo } } }),
+    db.researchTopic.findMany({
       where: { source: "jb" },
       orderBy: { createdAt: "desc" },
       take: 12,
     }),
-    prisma.article.findMany({
+    db.article.findMany({
       where: { publishedAt: { not: null } },
       orderBy: { publishedAt: "desc" },
       take: 8,
       select: { id: true, title: true, publishedAt: true, wpPostId: true, type: true, seoScore: true, status: true },
     }),
-    spendWindow(7),
+    spendWindow(site.id, 7),
     // Mailchimp being down must never blank the Engine Room.
-    newsletterStatus().catch((e) => ({ configured: true, error: e.message })),
-    prospectStats().catch(() => null),
+    newsletterStatus(site.id).catch((e) => ({ configured: true, error: e.message })),
+    prospectStats(site.id).catch(() => null),
   ]);
 
   // What became of each request. Matched on title, which is what the Director
   // carries across when it commissions one.
   const suggestedArticles = suggestions.length
-    ? await prisma.article.findMany({
+    ? await db.article.findMany({
         where: { title: { in: suggestions.map((s) => s.title) } },
         select: { title: true, status: true, wpPostId: true },
       })
@@ -123,15 +131,15 @@ export default async function EngineRoomPage() {
             right now, what it has just done, and what it cost.
           </p>
           <p style={{ margin: "8px 0 0", fontSize: 12.5, opacity: 0.6 }}>
-            {withinOperatingHours() ? (
+            {withinOfficeHours(site) ? (
               <>
                 <span style={{ color: "#059669", fontWeight: 600 }}>On shift</span> · the team works{" "}
-                {operatingHoursLabel()} and sleeps outside those hours
+                {hoursLabel} and sleeps outside those hours
               </>
             ) : (
               <>
                 <span style={{ color: "#94a3b8", fontWeight: 600 }}>Off shift</span> · the team works{" "}
-                {operatingHoursLabel()}. Waking an agent from a desk still works.
+                {hoursLabel}. Waking an agent from a desk still works.
               </>
             )}
           </p>

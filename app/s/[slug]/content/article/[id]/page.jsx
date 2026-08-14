@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Header from "@/app/components/Header";
-import { prisma } from "@/lib/prisma";
+import { getSiteContext } from "@/lib/site";
 import { saveArticle, advanceArticle, publishArticle, deleteArticle } from "@/lib/actions";
 import { isWordPressConfigured } from "@/lib/wordpress";
 import { isDraftingConfigured } from "@/lib/drafting";
@@ -9,14 +9,19 @@ import { isDraftingConfigured } from "@/lib/drafting";
 export const dynamic = "force-dynamic";
 
 export default async function ArticlePage({ params }) {
-  const { id } = await params;
-  const article = await prisma.article.findUnique({
+  const { slug, id } = await params;
+  const ctx = await getSiteContext(slug);
+  if (!ctx) notFound();
+  const { site, db, creds } = ctx;
+  const siteRef = { id: site.id, slug: site.slug };
+
+  const article = await db.article.findUnique({
     where: { id },
     include: { sourceItem: { include: { brand: true } } },
   });
   if (!article) notFound();
 
-  const wpReady = isWordPressConfigured();
+  const wpReady = isWordPressConfigured(creds.wordpress);
   const aiReady = isDraftingConfigured();
 
   return (
@@ -156,7 +161,7 @@ export default async function ArticlePage({ params }) {
             </p>
           )}
 
-          <form action={saveArticle}>
+          <form action={saveArticle.bind(null, siteRef)}>
             <input type="hidden" name="id" value={article.id} />
             <label className="micro">
               Title
@@ -193,7 +198,7 @@ export default async function ArticlePage({ params }) {
             }}
           >
             {article.status !== "published" && (
-              <form action={advanceArticle}>
+              <form action={advanceArticle.bind(null, siteRef)}>
                 <input type="hidden" name="id" value={article.id} />
                 <button type="submit" className="btn-ghost" style={{ color: "var(--neon-cyan)" }}>
                   Advance stage →
@@ -201,7 +206,7 @@ export default async function ArticlePage({ params }) {
               </form>
             )}
             {article.status === "approved" && article.body && (
-              <form action={publishArticle}>
+              <form action={publishArticle.bind(null, siteRef)}>
                 <input type="hidden" name="id" value={article.id} />
                 <button type="submit" className="btn">
                   {wpReady ? "Publish to WordPress" : "Mark published"}
@@ -213,7 +218,7 @@ export default async function ArticlePage({ params }) {
                 WordPress not connected yet
               </span>
             )}
-            <form action={deleteArticle} style={{ marginLeft: "auto" }}>
+            <form action={deleteArticle.bind(null, siteRef)} style={{ marginLeft: "auto" }}>
               <input type="hidden" name="id" value={article.id} />
               <button type="submit" className="btn-ghost" style={{ color: "var(--neon-red)" }}>
                 Delete

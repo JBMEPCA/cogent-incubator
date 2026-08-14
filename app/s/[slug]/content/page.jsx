@@ -3,7 +3,8 @@ import Header from "@/app/components/Header";
 import SubTabs, { CONTENT_TABS } from "@/app/components/SubTabs";
 import ScheduleCalendar from "@/app/components/ScheduleCalendar";
 import { upcomingSlots, SLOTS } from "@/lib/schedule";
-import { prisma } from "@/lib/prisma";
+import { notFound } from "next/navigation";
+import { getSiteContext } from "@/lib/site";
 import {
   addPrBrand,
   togglePrSubscribed,
@@ -31,11 +32,17 @@ const PR_CATEGORIES = [
 ];
 
 
-export default async function ContentPage({ searchParams }) {
-  const params = await searchParams;
-  const tab = ["pr", "schedule"].includes(params?.tab) ? params.tab : "engine";
-  const cat = params?.cat || "";
-  const q = params?.q?.trim() || "";
+export default async function ContentPage({searchParams, params}) {
+  const { slug } = await params;
+  const ctx = await getSiteContext(slug);
+  if (!ctx) notFound();
+  const { site, db, creds } = ctx;
+  const siteRef = { id: site.id, slug: site.slug };
+
+  const query = await searchParams;
+  const tab = ["pr", "schedule"].includes(query?.tab) ? query.tab : "engine";
+  const cat = query?.cat || "";
+  const q = query?.q?.trim() || "";
 
   let brands = [];
   let categories = [];
@@ -46,29 +53,29 @@ export default async function ContentPage({ searchParams }) {
   let engineStats = null;
   if (tab === "engine") {
     const [newItems, feedsOk, totalItems, arts] = await Promise.all([
-      prisma.feedItem.findMany({
+      db.feedItem.findMany({
         where: { status: "new" },
         orderBy: [{ publishedAt: { sort: "desc", nulls: "last" } }, { discoveredAt: "desc" }],
         take: 40,
         include: { brand: { select: { name: true, category: true } } },
       }),
-      prisma.prBrand.count({ where: { feedStatus: "ok" } }),
-      prisma.feedItem.count(),
-      prisma.article.findMany({ orderBy: { updatedAt: "desc" }, take: 60 }),
+      db.prBrand.count({ where: { feedStatus: "ok" } }),
+      db.feedItem.count(),
+      db.article.findMany({ orderBy: { updatedAt: "desc" }, take: 60 }),
     ]);
     wire = newItems;
     articles = arts;
     engineStats = {
       feedsOk,
       totalItems,
-      newItems: await prisma.feedItem.count({ where: { status: "new" } }),
-      scannedBrands: await prisma.prBrand.count({ where: { lastScannedAt: { not: null } } }),
+      newItems: await db.feedItem.count({ where: { status: "new" } }),
+      scannedBrands: await db.prBrand.count({ where: { lastScannedAt: { not: null } } }),
     };
   }
   let calendarDays = [];
   let scheduleStats = null;
   if (tab === "schedule") {
-    const scheduled = await prisma.article.findMany({
+    const scheduled = await db.article.findMany({
       where: { scheduledFor: { not: null } },
       select: { id: true, title: true, type: true, scheduledFor: true, qaPassed: true, status: true },
     });
@@ -89,11 +96,11 @@ export default async function ContentPage({ searchParams }) {
     scheduleStats = {
       slots: slots.length,
       filled: slots.filter((s) => byIso.has(s.at.toISOString())).length,
-      drafting: await prisma.article.count({ where: { status: "drafting" } }),
-      readyPool: await prisma.article.count({
+      drafting: await db.article.count({ where: { status: "drafting" } }),
+      readyPool: await db.article.count({
         where: { qaPassed: true, scheduledFor: null, status: { in: ["review", "approved"] } },
       }),
-      needsFix: await prisma.article.count({
+      needsFix: await db.article.count({
         where: { qaPassed: false, body: { not: null }, status: { not: "published" } },
       }),
     };
@@ -104,11 +111,11 @@ export default async function ContentPage({ searchParams }) {
       ...(q ? { name: { contains: q, mode: "insensitive" } } : {}),
     };
     [brands, totalCount, subscribedCount] = await Promise.all([
-      prisma.prBrand.findMany({ where, orderBy: [{ category: "asc" }, { name: "asc" }] }),
-      prisma.prBrand.count(),
-      prisma.prBrand.count({ where: { subscribed: true } }),
+      db.prBrand.findMany({ where, orderBy: [{ category: "asc" }, { name: "asc" }] }),
+      db.prBrand.count(),
+      db.prBrand.count({ where: { subscribed: true } }),
     ]);
-    const catRows = await prisma.prBrand.groupBy({ by: ["category"], _count: true });
+    const catRows = await db.prBrand.groupBy({ by: ["category"], _count: true });
     categories = catRows
       .filter((c) => c.category)
       .sort((a, b) => a.category.localeCompare(b.category));
@@ -255,7 +262,7 @@ export default async function ContentPage({ searchParams }) {
                           </span>
                         )}
                         <span style={{ marginLeft: "auto", display: "flex", gap: 4 }}>
-                          <form action={shortlistFeedItem}>
+                          <form action={shortlistFeedItem.bind(null, siteRef)}>
                             <input type="hidden" name="id" value={item.id} />
                             <button
                               type="submit"
@@ -266,7 +273,7 @@ export default async function ContentPage({ searchParams }) {
                               + shortlist
                             </button>
                           </form>
-                          <form action={dismissFeedItem}>
+                          <form action={dismissFeedItem.bind(null, siteRef)}>
                             <input type="hidden" name="id" value={item.id} />
                             <button type="submit" className="btn-ghost" title="Dismiss">
                               ✕
@@ -283,7 +290,7 @@ export default async function ContentPage({ searchParams }) {
               <section className="panel">
                 <h2 style={{ margin: "0 0 14px", fontSize: 16 }}>Article pipeline</h2>
                 <form
-                  action={addArticleIdea}
+                  action={addArticleIdea.bind(null, siteRef)}
                   style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}
                 >
                   <input
@@ -354,7 +361,7 @@ export default async function ContentPage({ searchParams }) {
                               )}
                             </span>
                             {stage !== "published" && (
-                              <form action={advanceArticle}>
+                              <form action={advanceArticle.bind(null, siteRef)}>
                                 <input type="hidden" name="id" value={a.id} />
                                 <button
                                   type="submit"
@@ -366,7 +373,7 @@ export default async function ContentPage({ searchParams }) {
                                 </button>
                               </form>
                             )}
-                            <form action={deleteArticle}>
+                            <form action={deleteArticle.bind(null, siteRef)}>
                               <input type="hidden" name="id" value={a.id} />
                               <button type="submit" className="btn-ghost" title="Delete">
                                 ✕
@@ -400,7 +407,7 @@ export default async function ContentPage({ searchParams }) {
                 </span>
               </div>
               <form
-                action={addPrBrand}
+                action={addPrBrand.bind(null, siteRef)}
                 style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "flex-end" }}
               >
                 <input name="name" placeholder="Brand *" required style={{ flex: "1 1 140px" }} />
@@ -535,7 +542,7 @@ export default async function ContentPage({ searchParams }) {
                           )}
                         </td>
                         <td style={{ padding: "8px" }}>
-                          <form action={togglePrSubscribed}>
+                          <form action={togglePrSubscribed.bind(null, siteRef)}>
                             <input type="hidden" name="id" value={b.id} />
                             <button
                               type="submit"
@@ -553,7 +560,7 @@ export default async function ContentPage({ searchParams }) {
                           {b.notes || ""}
                         </td>
                         <td style={{ padding: "8px" }}>
-                          <form action={deletePrBrand}>
+                          <form action={deletePrBrand.bind(null, siteRef)}>
                             <input type="hidden" name="id" value={b.id} />
                             <button type="submit" className="btn-ghost" title="Delete">
                               ✕

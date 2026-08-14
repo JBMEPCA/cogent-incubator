@@ -1,16 +1,17 @@
 import Header from "@/app/components/Header";
 import SubTabs, { ANALYTICS_TABS } from "@/app/components/SubTabs";
 import LinkMap from "@/app/components/LinkMap";
-import { prisma } from "@/lib/prisma";
+import { notFound } from "next/navigation";
+import { getSiteContext } from "@/lib/site";
 import { approveSeoSuggestion, dismissSeoSuggestion, retrySeoSuggestion } from "@/lib/actions";
 import { isSeoAgentConfigured } from "@/lib/seo-agent";
 import { fetchPosts, isWordPressConfigured } from "@/lib/wordpress";
 
 // Build the site's link graph from live post content.
-async function buildLinkGraph() {
-  if (!isWordPressConfigured()) return { nodes: [], edges: [] };
+async function buildLinkGraph(wp) {
+  if (!isWordPressConfigured(wp)) return { nodes: [], edges: [] };
   try {
-    const posts = await fetchPosts(50);
+    const posts = await fetchPosts(wp, 50);
     const byUrl = new Map(posts.map((p) => [p.link.replace(/\/$/, ""), p]));
     const nodes = [];
     const edges = [];
@@ -78,34 +79,40 @@ function scoreColor(score) {
   return { color: "#fcd34d", bg: "rgba(217,119,6,0.14)" };
 }
 
-export default async function SeoPage() {
+export default async function SeoPage({ params }) {
+  const { slug } = await params;
+  const ctx = await getSiteContext(slug);
+  if (!ctx) notFound();
+  const { site, db, creds } = ctx;
+  const siteRef = { id: site.id, slug: site.slug };
+
   const [pending, resolved, scoreSetting, auditSetting, scoredArticles, publishedCount] =
     await Promise.all([
-      prisma.seoSuggestion.findMany({
+      db.seoSuggestion.findMany({
         where: { status: { in: ["pending", "failed"] } },
         orderBy: { impact: "desc" },
       }),
-      prisma.seoSuggestion.findMany({
+      db.seoSuggestion.findMany({
         where: { status: { in: ["applied", "dismissed"] } },
         orderBy: { appliedAt: "desc" },
         take: 10,
       }),
-      prisma.engineSetting.findUnique({ where: { key: "seo_site_score" } }),
-      prisma.engineSetting.findUnique({ where: { key: "seo_last_audit" } }),
-      prisma.article.findMany({
+      db.engineSetting.findFirst({ where: { key: "seo_site_score" } }),
+      db.engineSetting.findFirst({ where: { key: "seo_last_audit" } }),
+      db.article.findMany({
         where: { seoScore: { not: null } },
         orderBy: { seoScore: "desc" },
         take: 8,
         select: { id: true, title: true, seoScore: true, status: true },
       }),
-      prisma.article.count({ where: { status: "published" } }),
+      db.article.count({ where: { status: "published" } }),
     ]);
 
-  const linkGraph = await buildLinkGraph();
+  const linkGraph = await buildLinkGraph(creds.wordpress);
   const siteScore = scoreSetting ? parseInt(scoreSetting.value, 10) : null;
   const audit = auditSetting ? JSON.parse(auditSetting.value) : null;
   const appliedCount = resolved.filter((s) => s.status === "applied").length;
-  const configured = isSeoAgentConfigured();
+  const configured = isSeoAgentConfigured(creds.wordpress);
   const CIRC = 502; // 2πr for r=80
   const gaugeOffset = siteScore != null ? CIRC - (CIRC * siteScore) / 100 : CIRC;
   const avgArticleScore = scoredArticles.length
@@ -266,21 +273,21 @@ export default async function SeoPage() {
                       )}
                       <div style={{ display: "flex", gap: 8 }}>
                         {s.status === "pending" ? (
-                          <form action={approveSeoSuggestion}>
+                          <form action={approveSeoSuggestion.bind(null, siteRef)}>
                             <input type="hidden" name="id" value={s.id} />
                             <button type="submit" className="btn" style={{ padding: "7px 18px" }}>
                               ✓ Approve{s.kind !== "advice" ? " & apply" : ""}
                             </button>
                           </form>
                         ) : (
-                          <form action={retrySeoSuggestion}>
+                          <form action={retrySeoSuggestion.bind(null, siteRef)}>
                             <input type="hidden" name="id" value={s.id} />
                             <button type="submit" className="btn-ghost" style={{ color: "var(--neon-cyan)" }}>
                               ↻ Retry
                             </button>
                           </form>
                         )}
-                        <form action={dismissSeoSuggestion}>
+                        <form action={dismissSeoSuggestion.bind(null, siteRef)}>
                           <input type="hidden" name="id" value={s.id} />
                           <button type="submit" className="btn-ghost">Dismiss</button>
                         </form>

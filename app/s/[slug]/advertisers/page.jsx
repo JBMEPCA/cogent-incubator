@@ -1,6 +1,7 @@
 import Header from "@/app/components/Header";
 import SubTabs, { CRM_TABS } from "@/app/components/SubTabs";
-import { prisma } from "@/lib/prisma";
+import { notFound } from "next/navigation";
+import { getSiteContext } from "@/lib/site";
 import { addProspect, deleteProspect, promoteProspect } from "@/lib/actions";
 import { PRODUCTS, productLabel } from "@/lib/crm";
 
@@ -20,8 +21,14 @@ const AD_CATEGORIES = [
   "Other",
 ];
 
-export default async function AdvertisersPage() {
-  const prospects = await prisma.advertiserProspect.findMany({
+export default async function AdvertisersPage({ params }) {
+  const { slug } = await params;
+  const ctx = await getSiteContext(slug);
+  if (!ctx) notFound();
+  const { site, db, creds } = ctx;
+  const siteRef = { id: site.id, slug: site.slug };
+
+  const prospects = await db.advertiserProspect.findMany({
     orderBy: [{ category: "asc" }, { company: "asc" }],
   });
   const promoted = prospects.filter((p) => p.promotedLeadId).length;
@@ -60,7 +67,7 @@ export default async function AdvertisersPage() {
         <section className="panel" style={{ marginBottom: 22 }}>
           <h2 style={{ margin: "0 0 14px", fontSize: 16 }}>Add prospect</h2>
           <form
-            action={addProspect}
+            action={addProspect.bind(null, siteRef)}
             style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "flex-end" }}
           >
             <input name="company" placeholder="Company *" required style={{ flex: "1 1 150px" }} />
@@ -129,7 +136,7 @@ export default async function AdvertisersPage() {
                             ✓ in CRM
                           </span>
                         ) : (
-                          <form action={promoteProspect} style={{ display: "inline" }}>
+                          <form action={promoteProspect.bind(null, siteRef)} style={{ display: "inline" }}>
                             <input type="hidden" name="id" value={p.id} />
                             <button
                               type="submit"
@@ -141,7 +148,7 @@ export default async function AdvertisersPage() {
                             </button>
                           </form>
                         )}
-                        <form action={deleteProspect} style={{ display: "inline", marginLeft: 6 }}>
+                        <form action={deleteProspect.bind(null, siteRef)} style={{ display: "inline", marginLeft: 6 }}>
                           <input type="hidden" name="id" value={p.id} />
                           <button type="submit" className="btn-ghost" title="Delete">
                             ✕

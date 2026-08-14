@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Header from "@/app/components/Header";
-import { prisma } from "@/lib/prisma";
+import { getSiteContext } from "@/lib/site";
 import { updateLead, deleteLead } from "@/lib/actions";
 import { STAGES, PRODUCTS } from "@/lib/crm";
 
@@ -15,8 +15,13 @@ const label = { fontSize: 12, color: "var(--muted)", display: "block" };
 const field = { width: "100%", marginTop: 4 };
 
 export default async function LeadPage({ params }) {
-  const { id } = await params;
-  const lead = await prisma.lead.findUnique({ where: { id } });
+  const { slug, id } = await params;
+  const ctx = await getSiteContext(slug);
+  if (!ctx) notFound();
+  const { site, db, creds } = ctx;
+  const siteRef = { id: site.id, slug: site.slug };
+
+  const lead = await db.lead.findUnique({ where: { id } });
   if (!lead) notFound();
 
   return (
@@ -28,7 +33,7 @@ export default async function LeadPage({ params }) {
         </Link>
         <section className="panel" style={{ marginTop: 12 }}>
           <h1 style={{ margin: "0 0 18px", fontSize: 19 }}>{lead.company}</h1>
-          <form action={updateLead}>
+          <form action={updateLead.bind(null, siteRef)}>
             <input type="hidden" name="id" value={lead.id} />
             <div
               style={{
@@ -128,7 +133,7 @@ export default async function LeadPage({ params }) {
             </button>
           </form>
           <form
-            action={deleteLead}
+            action={deleteLead.bind(null, siteRef)}
             style={{ marginTop: 18, borderTop: "1px solid var(--line)", paddingTop: 14 }}
           >
             <input type="hidden" name="id" value={lead.id} />

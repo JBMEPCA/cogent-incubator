@@ -1,6 +1,7 @@
 import Header from "@/app/components/Header";
 import SubTabs, { ANALYTICS_TABS } from "@/app/components/SubTabs";
-import { prisma } from "@/lib/prisma";
+import { notFound } from "next/navigation";
+import { getSiteContext } from "@/lib/site";
 import {
   saveOutreachEmail,
   approveOutreachEmail,
@@ -32,28 +33,34 @@ function fmtDate(d) {
   return new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
 }
 
-export default async function OutreachPage() {
+export default async function OutreachPage({ params }) {
+  const { slug } = await params;
+  const ctx = await getSiteContext(slug);
+  if (!ctx) notFound();
+  const { site, db, creds } = ctx;
+  const siteRef = { id: site.id, slug: site.slug };
+
   const [queue, live, stats] = await Promise.all([
     // Bounced rows come back to the review queue rather than sitting in the sent
     // list looking like progress. The fix for one is a working address, and this
     // is the only screen with a box to type it into.
-    prisma.outreachEmail.findMany({
+    db.outreachEmail.findMany({
       where: { status: { in: ["pending", "failed", "bounced"] } },
       include: { brand: true },
       orderBy: { createdAt: "desc" },
     }),
-    prisma.outreachEmail.findMany({
+    db.outreachEmail.findMany({
       where: { status: { in: ["approved", "sent", "replied", "linked"] } },
       include: { brand: true },
       orderBy: [{ sentAt: "desc" }, { createdAt: "desc" }],
       take: 25,
     }),
-    outreachStats(),
+    outreachStats(site.id),
   ]);
 
-  const configured = isOutreachConfigured();
-  const canSend = isSendConfigured();
-  const hint = outreachSetupHint();
+  const configured = isOutreachConfigured(creds);
+  const canSend = isSendConfigured(creds);
+  const hint = outreachSetupHint(creds);
 
   return (
     <>
@@ -79,7 +86,7 @@ export default async function OutreachPage() {
                   Composing is live, sending is not. Approve still works as a copy-and-paste queue.
                 </p>
               )}
-              <form action={scanForMentionsNow}>
+              <form action={scanForMentionsNow.bind(null, siteRef)}>
                 <button type="submit" className="btn-ghost" style={{ color: "var(--neon-cyan)" }}>
                   ⟳ Scan recent articles now
                 </button>
@@ -228,7 +235,7 @@ export default async function OutreachPage() {
                     </form>
 
                     {row.brandId && (
-                      <form action={optOutBrand} style={{ marginTop: 6 }}>
+                      <form action={optOutBrand.bind(null, siteRef)} style={{ marginTop: 6 }}>
                         <input type="hidden" name="brandId" value={row.brandId} />
                         <button type="submit" className="btn-ghost" style={{ fontSize: 12, opacity: 0.7 }}>
                           Never contact {row.brandName}
@@ -270,7 +277,7 @@ export default async function OutreachPage() {
                     )}
                     {["sent", "replied"].includes(row.status) && (
                       <div style={{ display: "flex", gap: 6, marginTop: 6, flexWrap: "wrap" }}>
-                        <form action={markOutreachLinked} style={{ display: "flex", gap: 4 }}>
+                        <form action={markOutreachLinked.bind(null, siteRef)} style={{ display: "flex", gap: 4 }}>
                           <input type="hidden" name="id" value={row.id} />
                           <input
                             name="linkUrl"
@@ -282,7 +289,7 @@ export default async function OutreachPage() {
                           </button>
                         </form>
                         {row.status === "sent" && (
-                          <form action={markOutreachReplied}>
+                          <form action={markOutreachReplied.bind(null, siteRef)}>
                             <input type="hidden" name="id" value={row.id} />
                             <button type="submit" className="btn-ghost" style={{ fontSize: 12 }}>
                               Replied

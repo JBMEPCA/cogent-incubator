@@ -1,5 +1,6 @@
 import Header from "@/app/components/Header";
-import { prisma } from "@/lib/prisma";
+import { notFound } from "next/navigation";
+import { getSiteContext } from "@/lib/site";
 import {
   addLinkedInPost,
   advanceLinkedInPost,
@@ -32,10 +33,16 @@ const when = (d) =>
     minute: "2-digit",
   }).format(new Date(d));
 
-export default async function LinkedInPage({ searchParams }) {
-  const params = await searchParams;
+export default async function LinkedInPage({searchParams, params}) {
+  const { slug } = await params;
+  const ctx = await getSiteContext(slug);
+  if (!ctx) notFound();
+  const { site, db, creds } = ctx;
+  const siteRef = { id: site.id, slug: site.slug };
+
+  const query = await searchParams;
   const [posts, connection] = await Promise.all([
-    prisma.linkedInPost.findMany({ orderBy: { createdAt: "desc" }, take: 100 }),
+    db.linkedInPost.findMany({ orderBy: { createdAt: "desc" }, take: 100 }),
     getConnection(),
   ]);
   const configured = isLinkedInConfigured();
@@ -46,7 +53,7 @@ export default async function LinkedInPage({ searchParams }) {
   const sourceIds = [...new Set(posts.map((p) => p.articleId).filter(Boolean))];
   const sources = sourceIds.length
     ? Object.fromEntries(
-        (await prisma.article.findMany({ where: { id: { in: sourceIds } }, select: { id: true, title: true } })).map((a) => [a.id, a.title])
+        (await db.article.findMany({ where: { id: { in: sourceIds } }, select: { id: true, title: true } })).map((a) => [a.id, a.title])
       )
     : {};
   const counts = {
@@ -60,12 +67,12 @@ export default async function LinkedInPage({ searchParams }) {
       <Header />
       <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px 24px" }}>
         <SubTabs items={CONTENT_TABS} active="/linkedin" />
-        {params?.connected && (
+        {query?.connected && (
           <div className="panel" style={{ marginBottom: 16, borderColor: "var(--neon-cyan)" }}>
             Connected to LinkedIn as {params.connected}. Approved posts will now publish on their own.
           </div>
         )}
-        {params?.error && (
+        {query?.error && (
           <div className="panel" style={{ marginBottom: 16, borderColor: "#dc2626" }}>
             LinkedIn connection failed: {params.error}
           </div>
@@ -124,7 +131,7 @@ export default async function LinkedInPage({ searchParams }) {
                 <a href="/api/linkedin/connect" className="btn-ghost" style={{ fontSize: 12 }}>
                   Reconnect
                 </a>
-                <form action={disconnectLinkedIn}>
+                <form action={disconnectLinkedIn.bind(null, siteRef)}>
                   <button type="submit" className="btn-ghost" style={{ fontSize: 12 }}>
                     Disconnect
                   </button>
@@ -142,7 +149,7 @@ export default async function LinkedInPage({ searchParams }) {
               ? `Approving one books it a slot between ${POST_START_HOUR}:00 and ${POST_END_HOUR}:00 UK, at least three hours after the last, and it publishes itself.`
               : "Approve here, then publish on LinkedIn yourself."}
           </p>
-          <form action={addLinkedInPost}>
+          <form action={addLinkedInPost.bind(null, siteRef)}>
             <textarea
               name="text"
               rows={4}
@@ -231,7 +238,7 @@ export default async function LinkedInPage({ searchParams }) {
                       </div>
 
                       {parked && (
-                        <form action={retryLinkedInPost}>
+                        <form action={retryLinkedInPost.bind(null, siteRef)}>
                           <input type="hidden" name="id" value={p.id} />
                           <button type="submit" className="btn-ghost" style={{ fontSize: 12, whiteSpace: "nowrap" }}>
                             try again
@@ -239,7 +246,7 @@ export default async function LinkedInPage({ searchParams }) {
                         </form>
                       )}
                       {live && stage !== "posted" && (
-                        <form action={postLinkedInNow}>
+                        <form action={postLinkedInNow.bind(null, siteRef)}>
                           <input type="hidden" name="id" value={p.id} />
                           <button
                             type="submit"
@@ -251,7 +258,7 @@ export default async function LinkedInPage({ searchParams }) {
                         </form>
                       )}
                       {stage !== "posted" && (
-                        <form action={advanceLinkedInPost}>
+                        <form action={advanceLinkedInPost.bind(null, siteRef)}>
                           <input type="hidden" name="id" value={p.id} />
                           <button
                             type="submit"
@@ -262,7 +269,7 @@ export default async function LinkedInPage({ searchParams }) {
                           </button>
                         </form>
                       )}
-                      <form action={deleteLinkedInPost}>
+                      <form action={deleteLinkedInPost.bind(null, siteRef)}>
                         <input type="hidden" name="id" value={p.id} />
                         <button type="submit" className="btn-ghost" title="Delete">
                           ✕

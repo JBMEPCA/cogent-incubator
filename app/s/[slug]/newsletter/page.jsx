@@ -1,4 +1,6 @@
 import Header from "@/app/components/Header";
+import { notFound } from "next/navigation";
+import { getSiteContext } from "@/lib/site";
 import SubTabs, { ANALYTICS_TABS } from "@/app/components/SubTabs";
 import { newsletterReport } from "@/lib/newsletter-stats";
 import { isNewsletterConfigured } from "@/lib/newsletter";
@@ -57,8 +59,14 @@ function Trend({ issues }) {
   );
 }
 
-export default async function NewsletterStatsPage() {
-  if (!isNewsletterConfigured()) {
+export default async function NewsletterStatsPage({ params }) {
+  const { slug } = await params;
+  const ctx = await getSiteContext(slug);
+  if (!ctx) notFound();
+  const { site, db, creds } = ctx;
+  const siteRef = { id: site.id, slug: site.slug };
+
+  if (!isNewsletterConfigured(creds.mailchimp)) {
     return (
       <>
         <Header />
@@ -72,8 +80,8 @@ export default async function NewsletterStatsPage() {
   }
 
   const [r, drip] = await Promise.all([
-    newsletterReport().catch((e) => ({ error: e.message, issues: [], growth: [], latestLinks: [] })),
-    prospectStats().catch(() => null),
+    newsletterReport(site.id).catch((e) => ({ error: e.message, issues: [], growth: [], latestLinks: [] })),
+    prospectStats(site.id).catch(() => null),
   ]);
 
   return (
