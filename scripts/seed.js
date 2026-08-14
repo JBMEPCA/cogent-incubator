@@ -1,5 +1,15 @@
-// Seeds the single director user and the launch-phase checklist.
+// Seeds the director user.
 // Usage: node scripts/seed.js <username> <password> [display name]
+//
+// It used to seed a sixteen-item launch checklist into LaunchItem as well. That
+// table is now read by nothing: lib/milestones.js derives launch progress from
+// what is actually true in the database instead, because the hand-ticked
+// version reported 0 of 16 complete while the site was live and publishing
+// daily. A checklist nobody updates is worse than no checklist — it is
+// confidently wrong.
+//
+// The user is fleet-wide, so this script is not per-title. Titles are created
+// by scripts/seed-smart-sme.js or from /new-title in the app.
 const path = require("path");
 process.loadEnvFile(path.join(__dirname, "..", ".env"));
 
@@ -8,24 +18,6 @@ const bcrypt = require("bcryptjs");
 
 const prisma = new PrismaClient();
 
-const LAUNCH_ITEMS = [
-  ["brand", "Buy domain"],
-  ["brand", "Site build / CMS setup"],
-  ["brand", "Masthead & logo finalised"],
-  ["brand", "Editorial style guide"],
-  ["content", "Daily news coverage live"],
-  ["content", "50-article backlog built"],
-  ["content", "SEO keyword mapping"],
-  ["audience", "Data import"],
-  ["audience", "Newsletter sign-ups open"],
-  ["audience", "LinkedIn content strategy running"],
-  ["audience", "SEO traction (first ranking pages)"],
-  ["monetise", "Rate card confirmed"],
-  ["monetise", "Advertiser prospect list built"],
-  ["monetise", "First 6–8 banner clients signed"],
-  ["monetise", "First solus e-shot sold"],
-  ["monetise", "First web story sold"],
-];
 
 async function main() {
   const [username, password, name] = process.argv.slice(2);
@@ -42,15 +34,6 @@ async function main() {
   });
   console.log(`User '${username}' ready.`);
 
-  const existing = await prisma.launchItem.count();
-  if (existing === 0) {
-    await prisma.launchItem.createMany({
-      data: LAUNCH_ITEMS.map(([phase, title], i) => ({ phase, title, sortOrder: i })),
-    });
-    console.log(`Seeded ${LAUNCH_ITEMS.length} launch checklist items.`);
-  } else {
-    console.log("Launch checklist already seeded — skipped.");
-  }
 }
 
 main()

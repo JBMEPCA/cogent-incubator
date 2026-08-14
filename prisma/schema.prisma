@@ -4,7 +4,14 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  // Pooled endpoint for the app: serverless functions open and drop connections
+  // constantly and would exhaust Postgres without it.
+  url       = env("DATABASE_URL")
+  // Direct endpoint for migrations. `prisma migrate` takes a session-level
+  // advisory lock, and a connection pooler hands each statement to a different
+  // backend, so the lock is taken and lost between statements and the migration
+  // hangs or half-applies.
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
