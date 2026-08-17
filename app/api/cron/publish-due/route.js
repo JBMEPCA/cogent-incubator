@@ -60,7 +60,37 @@ export async function GET(request) {
       // Declared out here because the result is reported after publishing, not
       // only used inside the branch that produces it.
       let check;
-      if (article.imageUrl) {
+
+      // An image ALREADY in our own media library is attached as-is: no fetch,
+      // no re-upload, no second visual check.
+      //
+      // The host blocks datacentre traffic, so an image served from our own
+      // WordPress answers a laptop and 403s from Vercel. Anything put in the
+      // library by hand — a commissioned graphic, an original illustration —
+      // therefore failed the gate on "image fetch 403" and was deferred for
+      // ever, while sitting in the library the whole time. Re-uploading it would
+      // also have duplicated it on every attempt.
+      //
+      // Skipping the check is safe precisely because it is ours: an image in the
+      // library was put there deliberately by a human or by the Designer after
+      // passing the gate at selection. The check exists to catch a bad automated
+      // pick from a stock library, not to second-guess the media library.
+      const ownHost = (() => {
+        try {
+          return new URL(article.imageUrl || "").host === new URL(wp.url).host;
+        } catch {
+          return false;
+        }
+      })();
+      if (article.imageUrl && ownHost) {
+        const { findMediaByUrl } = await import("@/lib/wordpress");
+        featuredMediaId = (await findMediaByUrl(wp, article.imageUrl)) ?? undefined;
+        check = featuredMediaId
+          ? { ok: true, reason: "already in the media library" }
+          : undefined;
+      }
+
+      if (article.imageUrl && !featuredMediaId) {
         // `site` matters: without it titleBrief() renders empty, so the picture
         // editor judges the image with no idea which publication it is for, and
         // the fetch goes out under a generic bot name rather than the title's.
