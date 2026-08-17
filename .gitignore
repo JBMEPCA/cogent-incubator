@@ -39,3 +39,8 @@ scripts/held-*.html
 
 .vercel
 .env*
+
+# Batch publisher runtime state, per title. Churns while a batch runs and
+# has no business in version control.
+scripts/.batch-state*.json
+scripts/held-*.html
