@@ -26,8 +26,28 @@ const STEPS = [
   ["mx", "Set MX to Google, plus SPF and DKIM", "Blocking: outreach reply detection is inert until this is right.", true, true],
   ["wordpress", "Install WordPress and the theme clone", null, true, false],
   ["plugins", "Install security, caching, Yoast and Site Kit", null, true, false],
+  // Smart SME lost publishing runs to this and it took an audit to find. sg-security
+  // serves a captcha interstitial to the integration account on /wp-json/ and returns
+  // 202, not 4xx, so every naive `res.ok` check sails straight past it and the failure
+  // surfaces later as a content-type error somewhere unrelated. Whitelist before you
+  // trust a green credential light.
+  // Phrased as a CHECK, not a change. Written as "exempt the REST API" it read
+  // as an instruction to go and disable something, which sent the first reader
+  // to SiteGround's Protected URLs tool — that adds HTTP Basic Auth to a path,
+  // and applying it to /wp-json/ would have walled off the only interface the
+  // engine publishes through. The captcha often is not firing at all; find out
+  // before touching a security setting.
+  ["sg_captcha", "Verify the REST API is not captcha-blocked, as the Engine user",
+    "Authenticate as the Engine account and fetch /wp-json/wp/v2/posts. A captcha interstitial returns 202 with an HTML body, so res.ok looks fine while every publish fails. Only change SiteGround's anti-bot settings if it actually fires. Do NOT use Protected URLs.", true, true],
   ["categories", "Create the categories exactly as the sections spell them", null, false, false],
   ["wp_user", "Create the Engine user at EDITOR role and an application password", "Not administrator. It must get rest_forbidden on /wp/v2/settings.", true, false],
+  // The Engine account authenticates; the byline account is who the post is
+  // attributed TO. They are deliberately different users, and publishing now
+  // resolves the second by display name over /wp/v2/users. If it does not exist
+  // the publish still succeeds — it just carries the Engine's byline, which is
+  // the wrong name on every article until someone notices.
+  ["wp_author", "Create the WordPress user the byline names",
+    "Display name must match the title's author name exactly, or 'The <Title> Team' in masthead mode. Publishing falls back to the Engine account's byline if it is missing.", true, false],
   ["intake", "Create the /submit-news/ intake page", null, false, false],
   ["search_console", "Add the property to Search Console and GA4, grant the service account", null, true, false],
   ["mailchimp", "Create the audience and authenticate the sending domain", null, true, false],

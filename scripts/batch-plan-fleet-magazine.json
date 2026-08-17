@@ -1,0 +1,90 @@
+{
+  "waves": [
+    [
+      {
+        "key": "company-car-tax",
+        "type": "seo_original",
+        "title": "Company Car Tax 2026/27: How Benefit in Kind Is Actually Calculated",
+        "keywords": "company car tax, benefit in kind, BiK rates 2026/27, P11D value, company car tax calculator",
+        "category": "Tax & Legislation",
+        "brief": "The definitive UK explainer on how company car benefit in kind is calculated, written for both fleet managers setting policy and drivers working out what a car will cost them. Cover the formula plainly: P11D value x BiK percentage x the driver's marginal income tax rate. Explain what the P11D value includes (list price, delivery, VAT, optional extras) and what it excludes (first registration fee, road tax). Give the electric rate as 3% in 2025/26 rising to 4% from 6 April 2026, 5% in 2027/28, 7% in 2028/29 and 9% in 2029/30 where it caps. State that petrol and diesel are capped at 37% today, rising to 38% in 2028/29 and 39% in 2029/30, and that diesels without RDE2 carry a 4% supplement. Work at least two full examples with real arithmetic, one electric and one petrol, for both a 20% and a 40% taxpayer. Explain the employer's side: Class 1A NIC on the taxable value. Note that HMRC published 920,000 company car benefit recipients in 2024/25, 51% of them fully electric. Every rate must be attributed to HMRC and carry its tax year. Do not give personal tax advice; show the mechanism and the arithmetic."
+      },
+      {
+        "key": "ev-salary-sacrifice",
+        "type": "seo_original",
+        "title": "EV Salary Sacrifice Explained: How the Numbers Work in 2026/27",
+        "keywords": "EV salary sacrifice, electric car salary sacrifice scheme, salary sacrifice company car, is salary sacrifice worth it",
+        "category": "Tax & Legislation",
+        "brief": "A practical guide to electric car salary sacrifice for UK employers and employees. Explain the mechanism: the employee gives up gross salary in exchange for a fully maintained, insured electric car, saving income tax and employee National Insurance on the sacrificed amount, and paying benefit in kind on the car at the low electric rate instead. Work a full example with real arithmetic for a 40% taxpayer and a 20% taxpayer, showing gross sacrifice, tax and NI saved, BiK paid, and the genuine net monthly cost against a personal lease. Cover the employer's position: Class 1A NIC on the BiK value, the saving on employer NI from the reduced salary, and why most schemes are cost neutral or better. Be straight about the risks: early termination charges if someone leaves or goes on long-term sick, the effect on pension contributions and on statutory pay calculated from salary, and that sacrificing below National Minimum Wage is not permitted. Note that the BVRLA reports salary sacrifice as the fastest-growing part of the leasing sector. State the tax year against every figure."
+      },
+      {
+        "key": "van-benefit-charge",
+        "type": "seo_original",
+        "title": "Van Benefit Charge: When a Company Van Becomes a Taxable Benefit",
+        "keywords": "van benefit charge, company van tax, van fuel benefit, insignificant private use, van tax rules",
+        "category": "Vans & LCV",
+        "brief": "A clear explainer on when a company van creates a taxable benefit and when it does not, aimed at operators running small and medium van fleets. The central point most guides get wrong: unlike a car, a van attracts no benefit in kind at all if private use is limited to ordinary commuting plus insignificant private use. Explain exactly what HMRC means by insignificant private use, with concrete examples of what passes and what does not. Cover the flat-rate van benefit charge and the separate van fuel benefit charge where the employer provides fuel for private journeys, and note that zero-emission vans carry a nil van benefit charge. Explain the practical controls an operator needs to defend the position: a written policy, mileage records, and why a signed agreement banning private use is worth having. Cover what happens with pooled vans. Attribute every figure and threshold to HMRC with its tax year, and be explicit that the rules differ fundamentally from company car tax."
+      }
+    ],
+    [
+      {
+        "key": "double-cab-pickup",
+        "type": "seo_original",
+        "title": "Double Cab Pickup Tax Rules: What Changed and What It Costs You",
+        "keywords": "double cab pickup tax, pickup benefit in kind, is a double cab a commercial vehicle, pickup truck tax rules",
+        "category": "Vans & LCV",
+        "brief": "An explainer on the reclassification of double cab pickups for benefit in kind purposes, which remains one of the most searched and least understood changes in UK fleet taxation. Explain the position before and after the change: double cab pickups with a payload of one tonne or more were historically treated as vans for BiK, giving a low flat charge, and are now treated as cars, meaning BiK is based on P11D value and CO2 emissions. Since most double cabs are high-emission diesels, that pushes many to or near the 37% band. Work a full worked example comparing the old van treatment against the new car treatment for a typical double cab, for both a 20% and a 40% taxpayer, so the reader sees the cash difference. Cover transitional arrangements for vehicles already held. Explain that VAT treatment and capital allowances follow different tests from BiK, so a vehicle can be a commercial vehicle for one and a car for another. Advise operators on what to review in their choice lists. Attribute to HMRC and state effective dates precisely."
+      },
+      {
+        "key": "advisory-fuel-rates",
+        "type": "seo_original",
+        "title": "HMRC Advisory Fuel Rates and AER: Reimbursing Business Mileage Correctly",
+        "keywords": "advisory fuel rates, AER electric mileage rate, HMRC mileage rates, reimbursing business mileage, approved mileage allowance payments",
+        "category": "Costs & Efficiency",
+        "brief": "A practical reference on reimbursing business mileage in UK fleets, covering the three separate systems people routinely confuse. First, Advisory Fuel Rates: pence per mile figures HMRC publishes quarterly for company cars, used to reimburse business mileage or to have employees repay private fuel, set by engine size and fuel type. Second, the Advisory Electric Rate for fully electric company cars. Third, Approved Mileage Allowance Payments, which apply to employees using their own car and are a completely different scheme with different rates and a threshold at which the rate drops. Explain clearly which applies in which situation, because using AMAP rates for a company car is a common and expensive error. Cover the VAT position on reclaiming input tax on business mileage and the requirement to hold fuel receipts. Explain that AFRs are reviewed quarterly and that using an out-of-date rate creates a taxable benefit. Tell operators how to build a review into their process. Attribute to HMRC and be explicit that rates change quarterly, so readers should check the current figures."
+      },
+      {
+        "key": "zev-mandate",
+        "type": "seo_original",
+        "title": "The ZEV Mandate Explained for Fleet Operators",
+        "keywords": "ZEV mandate, zero emission vehicle mandate, 2030 petrol diesel ban, EV sales targets UK, fleet electrification",
+        "category": "Electric & Charging",
+        "brief": "An explainer on the Zero Emission Vehicle mandate and what it means practically for people running fleets, rather than for manufacturers. Explain the mechanism: the mandate sets a rising percentage of each manufacturer's UK sales that must be zero emission, with flexibilities and fines for shortfall, and it is the main reason fleet buyers see the EV offers and discounts they do. Explain the separate 2030 phase-out of new petrol and diesel cars and how the two interact, since readers conflate them constantly. Cover the live position: the government has been consulting on softening the targets while maintaining the 2030 commitment, and the fleet sector has pushed back. Explain the practical consequences for an operator: availability and discounting of electric vehicles, the effect on residual values, and why replacement cycle planning now needs a view on this. Note that fleet buyers account for roughly six in ten new car registrations, so fleet demand is what actually delivers the mandate. Be clear about what is settled policy and what is still under review at the time of writing."
+      }
+    ],
+    [
+      {
+        "key": "grey-fleet",
+        "type": "seo_original",
+        "title": "Grey Fleet: The Duty of Care Most Employers Are Quietly Ignoring",
+        "keywords": "grey fleet, grey fleet policy, driving at work duty of care, employee own car business use, grey fleet risk",
+        "category": "Compliance & Safety",
+        "brief": "A guide to grey fleet, meaning employee-owned vehicles used for business journeys, and the legal exposure it creates. Explain that an employer's duty of care under health and safety law does not stop at the company car park: if an employee drives their own car on business, the employer carries responsibilities for the safety of that journey. Set out the practical checks a defensible grey fleet policy needs: driving licence checks and how often to repeat them, confirmation of business use insurance rather than social domestic and pleasure, MOT and roadworthiness evidence, and a record that the checks were done. Explain why reimbursing at AMAP rates does not transfer the risk. Cover the commercial argument too: grey fleet mileage is often more expensive per mile than a pool car or a hire car once the true reimbursement cost is counted, and it is almost always the least visible part of a fleet. Give a practical route to getting control of it for an operator starting from nothing. Be clear this is general guidance and not legal advice."
+      },
+      {
+        "key": "depot-charging",
+        "type": "seo_original",
+        "title": "Depot and Workplace Charging: What It Really Costs to Electrify a Van Fleet",
+        "keywords": "depot charging, workplace charging scheme, electric van charging, fleet charging infrastructure, EV charging costs business",
+        "category": "Electric & Charging",
+        "brief": "A practical guide to charging infrastructure for operators electrifying a van or car fleet, written for someone who has to build a business case. Cover the real cost components rather than just hardware price: chargepoint units, groundworks and cabling, and the item that most often derails a project, the grid connection and any substation upgrade, along with the lead times involved. Explain the difference between AC destination charging overnight at a depot and DC rapid charging, and why most van fleets need far less rapid charging than they assume once they look at actual duty cycles. Cover load management and why staggering charging across a fleet is usually cheaper than upgrading the supply. Explain the commercial models available: buying outright, charging as a service, and landlord arrangements for leased sites. Mention the Workplace Charging Scheme as a source of grant support and direct readers to the current terms rather than quoting figures that date. Cover the energy tariff question and why a fleet on the wrong tariff can lose most of the fuel saving. Give a realistic sequence for a first depot."
+      },
+      {
+        "key": "operator-licence",
+        "type": "seo_original",
+        "title": "HGV Operator Licence: What You Need, and What Gets It Taken Away",
+        "keywords": "operator licence, O licence, HGV operator licence, transport manager CPC, DVSA earned recognition",
+        "category": "Compliance & Safety",
+        "brief": "A guide to the goods vehicle operator licence for operators who need one or are approaching the threshold. Explain when an O-licence is required and the three types: restricted, standard national and standard international, and which one a given operation needs. Cover the core requirements the Traffic Commissioner tests: an establishment in Great Britain, financial standing with the ability to evidence available funds per vehicle, good repute, and professional competence via a qualified transport manager holding a CPC. Explain the transport manager's genuine and continuous responsibility, and why naming someone who does not actually exercise control is a serious risk. Cover the operating centre, advertising requirements and vehicle limits. Explain maintenance obligations: inspection intervals, driver defect reporting, and the records that must be kept and produced. Set out what triggers a public inquiry and the range of outcomes from a warning to revocation and disqualification. Explain DVSA Earned Recognition as the route for operators with strong compliance to reduce intervention. Direct readers to the Traffic Commissioner and DVSA for current thresholds rather than quoting figures that change."
+      },
+      {
+        "key": "whole-life-cost",
+        "type": "seo_original",
+        "title": "Whole Life Cost vs P11D: How to Actually Compare Two Company Cars",
+        "keywords": "whole life cost, total cost of ownership fleet, company car choice list, cost per mile fleet, fleet running costs",
+        "category": "Costs & Efficiency",
+        "brief": "A guide to building a company car or van choice list on whole life cost rather than list price, aimed at fleet managers who have to defend their choices to finance. Explain why P11D value alone is a poor basis for comparison and what whole life cost actually includes: depreciation, which is almost always the largest single component, funding cost, fuel or energy, service maintenance and repair, insurance, VED, and the employer's Class 1A National Insurance on the benefit in kind. Explain the tax elements that change the answer: the VAT recovery position on lease rentals for cars against vans, and capital allowances where vehicles are owned. Work a comparison between a petrol car and an electric equivalent showing how a higher list price can still produce a lower whole life cost once BiK, fuel and Class 1A are counted, and be honest that this depends heavily on assumed residual values, which have been volatile for electric vehicles. Explain cost per mile as the unit that makes vehicles genuinely comparable, and why mileage assumptions must be realistic. Give a practical method for someone building their first whole life cost model."
+      }
+    ]
+  ]
+}

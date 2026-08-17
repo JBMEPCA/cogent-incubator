@@ -1,23 +1,44 @@
-// Widen the newswire without adding a single new company relationship.
+// Widen one title's newswire without adding a single company relationship.
 //
 // Two jobs, both idempotent and safe to re-run:
 //
-//   1. Seed the standing news searches in lib/news-searches.js as PrBrand rows.
-//      Their feedUrl is set directly, so the scanner skips discovery and starts
-//      pulling on its next pass.
+//   1. Seed that title's standing news searches as PrBrand rows. Their feedUrl
+//      is set directly, so the scanner skips discovery and starts pulling on its
+//      next pass.
 //
-//   2. Backfill newsHubUrl for sources that have none. The scan cron filters on
-//      `newsHubUrl: { not: null }`, so a source without one is invisible to the
-//      rotation and has never been scanned even once. Pointing it at the site
-//      root is enough: lib/feeds.js already tries /feed, /rss, /rss.xml,
-//      /feed.xml, /atom.xml, /blog/feed and /news/feed off the origin.
+//   2. Backfill newsHubUrl for that title's sources that have none. The scan
+//      cron filters on `newsHubUrl: { not: null }`, so a source without one is
+//      invisible to the rotation and has never been scanned even once. Pointing
+//      it at the site root is enough: lib/feeds.js already tries /feed, /rss,
+//      /rss.xml, /feed.xml, /atom.xml, /blog/feed and /news/feed off the origin.
 //
-//   node scripts/seed-news-searches.mjs            # apply
-//   node scripts/seed-news-searches.mjs --dry-run  # report only
+//   node scripts/seed-news-searches.mjs --site=fleet-magazine
+//   node scripts/seed-news-searches.mjs --site=fleet-magazine --dry-run
+//
+// WHY --site IS REQUIRED. This script predated multi-tenancy: it matched PrBrand
+// rows on name alone and created them with no siteId at all, which on a fleet of
+// titles means one title's wire silently becomes every title's wire. PrBrand is
+// tenanted, so every query below carries an explicit siteId. It uses the bare
+// client rather than forSite(), so there is no guard to catch a mistake here —
+// that is exactly why the siteId is threaded by hand and the script refuses to
+// run without one.
 import fs from "node:fs";
 import path from "node:path";
 import { PrismaClient } from "@prisma/client";
-import { NEWS_SEARCHES, searchFeedUrl, searchHubUrl } from "../lib/news-searches.js";
+import {
+  NEWS_SEARCHES,
+  FLEET_NEWS_SEARCHES,
+  searchFeedUrl,
+  searchHubUrl,
+} from "../lib/news-searches.js";
+
+// Which set belongs to which title. Keyed by slug because the wrong set is not a
+// degraded outcome, it is a title full of another sector's news: seeding the
+// fleet magazine from NEWS_SEARCHES would fill it with "small business" queries.
+const SEARCH_SETS = {
+  "smart-sme": NEWS_SEARCHES,
+  "fleet-magazine": FLEET_NEWS_SEARCHES,
+};
 
 for (const f of [".env.local", ".env"]) {
   const p = path.join(process.cwd(), f);
@@ -29,14 +50,45 @@ for (const f of [".env.local", ".env"]) {
 }
 
 const DRY = process.argv.includes("--dry-run");
+const slug = (process.argv.find((a) => a.startsWith("--site=")) || "").split("=")[1];
+
+if (!slug) {
+  console.error("Refusing to run without --site=<slug>.");
+  console.error("Known sets: " + Object.keys(SEARCH_SETS).join(", "));
+  process.exit(1);
+}
+
 const prisma = new PrismaClient();
 
 try {
+  const site = await prisma.site.findUnique({ where: { slug } });
+  if (!site) throw new Error(`No title with slug "${slug}"`);
+
+  const searches = SEARCH_SETS[slug];
+  if (!searches) {
+    throw new Error(
+      `No search set defined for "${slug}". Add one to SEARCH_SETS in this file ` +
+        `and to lib/news-searches.js rather than borrowing another title's.`
+    );
+  }
+
+  console.log(`${site.name} (${slug}) — ${searches.length} standing searches\n`);
+
+  // A category that is not one of this title's sections is not fatal — the
+  // Researcher assigns the real section anyway — but it is always a mistake,
+  // and silently ignoring it is how a whole beat goes uncovered.
+  const sectionNames = new Set((site.sections || []).map((s) => s.name));
+  const strays = [...new Set(searches.map((s) => s.category))].filter((c) => !sectionNames.has(c));
+  if (strays.length) {
+    console.warn(`WARNING: categories not among this title's sections: ${strays.join(", ")}`);
+    console.warn(`         sections are: ${[...sectionNames].join(", ")}\n`);
+  }
+
   // --- 1. standing news searches ---------------------------------------
   let created = 0, updated = 0;
-  for (const s of NEWS_SEARCHES) {
+  for (const s of searches) {
     const feedUrl = searchFeedUrl(s.query);
-    const existing = await prisma.prBrand.findFirst({ where: { name: s.name } });
+    const existing = await prisma.prBrand.findFirst({ where: { siteId: site.id, name: s.name } });
     if (existing) {
       if (existing.feedUrl !== feedUrl) {
         if (!DRY) await prisma.prBrand.update({ where: { id: existing.id }, data: { feedUrl } });
@@ -47,6 +99,7 @@ try {
     if (!DRY) {
       await prisma.prBrand.create({
         data: {
+          siteId: site.id,
           name: s.name,
           category: s.category,
           website: "https://news.google.com",
@@ -58,11 +111,11 @@ try {
     }
     created++;
   }
-  console.log(`News searches: ${created} created, ${updated} refreshed, ${NEWS_SEARCHES.length} defined`);
+  console.log(`News searches: ${created} created, ${updated} refreshed, ${searches.length} defined`);
 
   // --- 2. backfill newsHubUrl ------------------------------------------
   const orphans = await prisma.prBrand.findMany({
-    where: { newsHubUrl: null, website: { not: null } },
+    where: { siteId: site.id, newsHubUrl: null, website: { not: null } },
     select: { id: true, website: true },
   });
   let fixed = 0;
@@ -77,13 +130,15 @@ try {
     fixed++;
   }
 
-  const stillNull = await prisma.prBrand.count({ where: { newsHubUrl: null } });
+  const stillNull = await prisma.prBrand.count({ where: { siteId: site.id, newsHubUrl: null } });
   console.log(`Backfilled newsHubUrl on ${fixed} source(s); ${stillNull} still have none (no usable website)`);
 
-  const eligible = await prisma.prBrand.count({ where: { newsHubUrl: { not: null } } });
-  const total = await prisma.prBrand.count();
-  console.log(`\nScannable sources: ${eligible} of ${total}`);
-  console.log(`At 30 scans/hour the rotation now takes about ${(eligible / 30 / 24).toFixed(1)} day(s) per full pass.`);
+  const eligible = await prisma.prBrand.count({ where: { siteId: site.id, newsHubUrl: { not: null } } });
+  const total = await prisma.prBrand.count({ where: { siteId: site.id } });
+  console.log(`\nScannable sources for ${site.name}: ${eligible} of ${total}`);
+  if (eligible) {
+    console.log(`At 30 scans/hour the rotation takes about ${(eligible / 30 / 24).toFixed(1)} day(s) per full pass.`);
+  }
   if (DRY) console.log("\n--- DRY RUN, nothing written ---");
 } catch (e) {
   console.error("FAILED: " + e.message.split("\n")[0]);
