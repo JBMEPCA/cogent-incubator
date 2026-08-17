@@ -14,6 +14,8 @@ import {
   scanForMentionsNow,
 } from "@/lib/actions";
 import { isOutreachConfigured, isSendConfigured, outreachSetupHint, outreachStats } from "@/lib/outreach";
+import { authorityTrend } from "@/lib/metrics";
+import AuthorityTrend from "@/app/components/AuthorityTrend";
 
 export const dynamic = "force-dynamic";
 
@@ -40,7 +42,7 @@ export default async function OutreachPage({ params }) {
   const { site, db, creds } = ctx;
   const siteRef = { id: site.id, slug: site.slug };
 
-  const [queue, live, stats] = await Promise.all([
+  const [queue, live, stats, trend] = await Promise.all([
     // Bounced rows come back to the review queue rather than sitting in the sent
     // list looking like progress. The fix for one is a working address, and this
     // is the only screen with a box to type it into.
@@ -56,6 +58,7 @@ export default async function OutreachPage({ params }) {
       take: 25,
     }),
     outreachStats(site.id),
+    authorityTrend(site.id, 60),
   ]);
 
   const configured = isOutreachConfigured(creds);
@@ -67,6 +70,8 @@ export default async function OutreachPage({ params }) {
       <Header />
       <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px 24px" }}>
         <SubTabs items={ANALYTICS_TABS} active="/outreach" />
+
+        <AuthorityTrend rows={trend.rows} summary={trend.summary} />
 
         <section className="panel panel-glow stagger" style={{ marginBottom: 24 }}>
           <div style={{ display: "flex", gap: 28, alignItems: "flex-start", flexWrap: "wrap" }}>

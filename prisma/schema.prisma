@@ -132,6 +132,48 @@ model Site {
   agentRuns         AgentRun[]
   agentMessages     AgentMessage[]
   engineSettings    EngineSetting[]
+  metricSnapshots   MetricSnapshot[]
+}
+
+/// One row per title per day: the authority picture, frozen.
+///
+/// Everything here is derivable from somewhere else on the day it is taken —
+/// Search Console for the search numbers, OutreachEmail for the links — and
+/// none of it is derivable afterwards. Search Console only serves a rolling
+/// window, so a position of 78 on 4 August is gone for good once it ages out,
+/// and "how is our authority trending" is a question you can only answer if
+/// something wrote the answer down at the time.
+///
+/// `day` is midnight UTC on the calendar date Search Console reported, which is
+/// the grain the data actually arrives at. Not the UK-midnight boundary used by
+/// the publishing calendar and the spend cap: those measure our own activity,
+/// this mirrors someone else's reporting, and inventing an hour of alignment
+/// would only shift numbers between days without making them truer.
+model MetricSnapshot {
+  id     String @id @default(cuid())
+  site   Site   @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId String
+  day    DateTime
+
+  // Search Console, for the day itself rather than a trailing window.
+  clicks      Int   @default(0)
+  impressions Int   @default(0)
+  position    Float?
+  // Breadth, which moves before clicks do on a young title: how many distinct
+  // queries and pages earned any impression at all that day.
+  queries Int @default(0)
+  pages   Int @default(0)
+
+  // The link side. Counted as DOMAINS, not emails: ten links from one site is
+  // one referring domain to a search engine, and counting rows would flatter
+  // the number in exactly the way that makes it useless.
+  referringDomains Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([siteId, day])
+  @@index([siteId, day])
 }
 
 // Per-title secrets, encrypted at rest with AES-256-GCM under CREDENTIAL_KEY.
