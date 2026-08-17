@@ -25,9 +25,15 @@ const shortPath = (url) => {
 };
 
 // Change vs the previous window of the same length. Search position is the one
-// metric where down is good, hence `lowerIsBetter`.
-function Delta({ now, before, lowerIsBetter = false, suffix = "%" }) {
-  if (!before) return <span className="micro" style={{ color: "var(--muted)" }}>no prior data</span>;
+// metric where down is good, hence `lowerIsBetter`. The window itself comes
+// from the data layer as `basis`, since a site too young to have a previous 28
+// days is compared over seven instead.
+function Delta({ now, before, lowerIsBetter = false, suffix = "%", basis = "prev 28d", bare = false }) {
+  if (!before) {
+    return (
+      <span className="micro" style={{ color: "var(--muted)" }}>{bare ? "new" : "no prior data"}</span>
+    );
+  }
   const change = ((now - before) / before) * 100;
   if (!isFinite(change) || Math.abs(change) < 0.5) {
     return <span className="micro" style={{ color: "var(--muted)" }}>flat</span>;
@@ -39,8 +45,27 @@ function Delta({ now, before, lowerIsBetter = false, suffix = "%" }) {
       style={{ color: good ? "var(--neon-green)" : "var(--neon-red)", letterSpacing: "0.06em" }}
     >
       {change > 0 ? "▲" : "▼"} {Math.abs(change).toFixed(0)}
-      {suffix} vs prev 28d
+      {suffix}
+      {bare ? "" : ` vs ${basis}`}
     </span>
+  );
+}
+
+// Position with its movement alongside. `posDelta` is already signed so that
+// positive means the row climbed the results page, which is a falling number.
+function PosCell({ position, posDelta }) {
+  if (posDelta == null || Math.abs(posDelta) < 0.5) return <>{pos(position)}</>;
+  return (
+    <>
+      {pos(position)}{" "}
+      <span
+        className="micro num"
+        style={{ color: posDelta > 0 ? "var(--neon-green)" : "var(--neon-red)" }}
+      >
+        {posDelta > 0 ? "▲" : "▼"}
+        {Math.abs(posDelta).toFixed(1)}
+      </span>
+    </>
   );
 }
 
@@ -128,6 +153,23 @@ export default async function AnalyticsPage({ params }) {
 
   const gscQuiet = gsc && gsc.impressions === 0 && gsc.clicks === 0;
 
+  // The headline figure is always the 28-day total; only the comparison behind
+  // it narrows to seven days while the title is new.
+  const cmp = (metric) => ({
+    now: gsc.compare.now[metric],
+    before: gsc.compare.before[metric],
+    basis: gsc.compare.basis,
+  });
+  const acmp = (metric) => ({
+    now: ga4.compare.now[metric],
+    before: ga4.compare.before[metric],
+    basis: ga4.compare.basis,
+  });
+
+  // Email clicks arrive with no referrer, so an untagged newsletter lands in
+  // Direct. Worth saying out loud rather than leaving as a number to interpret.
+  const untaggedNewsletter = ga4 && ga4.email.sessions === 0 && ga4.direct.sessions > 0;
+
   return (
     <>
       <Header />
@@ -199,16 +241,16 @@ export default async function AnalyticsPage({ params }) {
 
             <div className="stagger" style={tileGrid}>
               <Tile label="Clicks" value={int(gsc.clicks)}>
-                <Delta now={gsc.clicks} before={gsc.prev.clicks} />
+                <Delta {...cmp("clicks")} />
               </Tile>
               <Tile label="Impressions" value={int(gsc.impressions)}>
-                <Delta now={gsc.impressions} before={gsc.prev.impressions} />
+                <Delta {...cmp("impressions")} />
               </Tile>
               <Tile label="Click-through rate" value={pct(gsc.ctr)}>
-                <Delta now={gsc.ctr} before={gsc.prev.ctr} />
+                <Delta {...cmp("ctr")} />
               </Tile>
               <Tile label="Average position" value={pos(gsc.position)}>
-                <Delta now={gsc.position} before={gsc.prev.position} lowerIsBetter />
+                <Delta {...cmp("position")} lowerIsBetter />
               </Tile>
             </div>
 
@@ -257,18 +299,35 @@ export default async function AnalyticsPage({ params }) {
               }}
             >
               <div className="panel" style={{ padding: 18 }}>
-                <h3 style={{ margin: "0 0 12px", fontSize: 14 }}>What people searched</h3>
+                <h3 style={{ margin: "0 0 4px", fontSize: 14 }}>What people searched</h3>
+                <p className="micro" style={{ margin: "0 0 14px" }}>
+                  everything that earned a click, then the biggest by impressions · position
+                  movement vs {gsc.compare.basis}
+                </p>
                 <Table
                   head={["Query", "Clicks", "Impr.", "Pos."]}
-                  rows={gsc.topQueries.map((q) => [q.query, int(q.clicks), int(q.impressions), pos(q.position)])}
+                  rows={gsc.topQueries.map((q) => [
+                    q.query,
+                    int(q.clicks),
+                    int(q.impressions),
+                    <PosCell key="p" position={q.position} posDelta={q.posDelta} />,
+                  ])}
                   empty="No queries have surfaced the site yet."
                 />
               </div>
               <div className="panel" style={{ padding: 18 }}>
-                <h3 style={{ margin: "0 0 12px", fontSize: 14 }}>Pages earning search traffic</h3>
+                <h3 style={{ margin: "0 0 4px", fontSize: 14 }}>Pages earning search traffic</h3>
+                <p className="micro" style={{ margin: "0 0 14px" }}>
+                  position movement vs {gsc.compare.basis}
+                </p>
                 <Table
                   head={["Page", "Clicks", "Impr.", "Pos."]}
-                  rows={gsc.topPages.map((p) => [shortPath(p.page), int(p.clicks), int(p.impressions), pos(p.position)])}
+                  rows={gsc.topPages.map((p) => [
+                    shortPath(p.page),
+                    int(p.clicks),
+                    int(p.impressions),
+                    <PosCell key="p" position={p.position} posDelta={p.posDelta} />,
+                  ])}
                   empty="No pages have appeared in results yet."
                 />
               </div>
@@ -286,18 +345,59 @@ export default async function AnalyticsPage({ params }) {
 
             <div className="stagger" style={tileGrid}>
               <Tile label="Users" value={int(ga4.users)}>
-                <Delta now={ga4.users} before={ga4.prev.users} />
+                <Delta {...acmp("users")} />
               </Tile>
               <Tile label="Sessions" value={int(ga4.sessions)}>
-                <Delta now={ga4.sessions} before={ga4.prev.sessions} />
+                <Delta {...acmp("sessions")} />
               </Tile>
               <Tile label="Page views" value={int(ga4.pageViews)}>
-                <Delta now={ga4.pageViews} before={ga4.prev.pageViews} />
+                <Delta {...acmp("pageViews")} />
               </Tile>
               <Tile label="Avg session" value={mmss(ga4.avgDuration)}>
-                <Delta now={ga4.avgDuration} before={ga4.prev.avgDuration} />
+                <Delta {...acmp("avgDuration")} />
               </Tile>
             </div>
+
+            <div className="stagger" style={tileGrid}>
+              <Tile label="From Google search" value={int(ga4.organic.sessions)}>
+                <div className="micro" style={{ marginBottom: 2 }}>
+                  {pct(ga4.organic.share)} of sessions
+                </div>
+                <Delta now={ga4.organic.now} before={ga4.organic.before} basis={ga4.compare.basis} />
+              </Tile>
+              <Tile label="Direct" value={int(ga4.direct.sessions)}>
+                <div className="micro" style={{ marginBottom: 2 }}>
+                  {pct(ga4.direct.share)} of sessions
+                </div>
+                <Delta now={ga4.direct.now} before={ga4.direct.before} basis={ga4.compare.basis} />
+              </Tile>
+              <Tile label="Email" value={int(ga4.email.sessions)}>
+                <div className="micro" style={{ marginBottom: 2 }}>
+                  {pct(ga4.email.share)} of sessions
+                </div>
+                <Delta now={ga4.email.now} before={ga4.email.before} basis={ga4.compare.basis} />
+              </Tile>
+              <Tile label="Referral" value={int(ga4.referral.sessions)}>
+                <div className="micro" style={{ marginBottom: 2 }}>
+                  {pct(ga4.referral.share)} of sessions
+                </div>
+                <Delta now={ga4.referral.now} before={ga4.referral.before} basis={ga4.compare.basis} />
+              </Tile>
+            </div>
+
+            {untaggedNewsletter && (
+              <div className="panel" style={{ marginBottom: 18, borderColor: "rgba(251,191,36,0.4)" }}>
+                <p style={{ margin: 0, color: "var(--muted)", fontSize: 13 }}>
+                  <strong style={{ color: "var(--neon-amber)" }}>Direct is hiding your newsletter.</strong>{" "}
+                  {int(ga4.direct.sessions)} sessions came in with no source attached and Email shows
+                  none, which is what untagged links look like: a click from an email client arrives
+                  with no referrer, so GA4 files it under Direct alongside typed-in addresses and
+                  bookmarks. Add <code>?utm_source=newsletter&amp;utm_medium=email</code> to the links
+                  in the newsletter template and those sessions move into Email, where they can be
+                  counted separately from real direct traffic.
+                </p>
+              </div>
+            )}
 
             <div
               style={{
@@ -335,7 +435,9 @@ export default async function AnalyticsPage({ params }) {
 
               <div className="panel" style={{ padding: 18 }}>
                 <h3 style={{ margin: "0 0 4px", fontSize: 14 }}>Where visitors come from</h3>
-                <p className="micro" style={{ margin: "0 0 14px" }}>sessions by channel</p>
+                <p className="micro" style={{ margin: "0 0 14px" }}>
+                  sessions by channel · share of total · change vs {ga4.compare.basis}
+                </p>
                 {ga4.channels.length ? (
                   <div style={{ display: "grid", gap: 12 }}>
                     {ga4.channels.map((c) => {
@@ -346,12 +448,18 @@ export default async function AnalyticsPage({ params }) {
                             style={{
                               display: "flex",
                               justifyContent: "space-between",
+                              gap: 10,
                               fontSize: 13,
                               marginBottom: 5,
                             }}
                           >
                             <span>{c.channel}</span>
-                            <span className="num" style={{ color: "var(--muted)" }}>{int(c.sessions)}</span>
+                            <span style={{ display: "flex", gap: 10, alignItems: "baseline" }}>
+                              <Delta now={c.now} before={c.before} bare />
+                              <span className="num" style={{ color: "var(--muted)" }}>
+                                {int(c.sessions)} · {pct(c.share)}
+                              </span>
+                            </span>
                           </div>
                           <div
                             className="hbar"
