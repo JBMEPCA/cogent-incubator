@@ -7,6 +7,10 @@ the work and the rest was discovering traps.
 
 The point of this document is that title #3 should take ninety minutes.
 
+Updated 17 August 2026: both titles now run on the shared cogent-base parent
+theme, deploy over SFTP and pass scripts/verify-title.mjs. Title #3 starts by
+copying an existing child, not by forking a theme.
+
 **§§1-6 are about standing a title up. §§7-8 are about the engine behind it, and
 were written the same day from the other direction** — Smart SME spent a weekend
 publishing a full schedule perfectly while its drafting pipeline was dead, and
