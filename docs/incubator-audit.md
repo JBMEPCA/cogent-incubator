@@ -1,5 +1,11 @@
 # Cogent Incubator — full audit
 
+> **Status, 17 August 2026.** Sections 1, 2 (partly), 3.1/3.3/3.4/3.7, 5.2/5.3/5.4
+> and 6.3 are now FIXED in code and verified against the live database — see
+> `docs/fixes-17-aug.md` for what was changed, what was found along the way, and
+> what is still outstanding. The audit below is kept as written on 14 August so
+> the reasoning behind each fix stays readable.
+
 **Date:** 14 August 2026 · **Scope:** `cogent-incubator` (app, engine, data) and
 `smart-sme-website` (theme) · **Method:** read of the code as it stands, plus a
 read-only pull against the live Neon database (agent runs, articles, topics,

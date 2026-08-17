@@ -51,6 +51,9 @@ export async function GET(request) {
       }
 
       let featuredMediaId;
+      // Declared out here because the result is reported after publishing, not
+      // only used inside the branch that produces it.
+      let check;
       if (article.imageUrl) {
         // `site` matters: without it titleBrief() renders empty, so the picture
         // editor judges the image with no idea which publication it is for, and
@@ -67,7 +70,6 @@ export async function GET(request) {
         // lib/images.js. So when the gate cannot run, fall back to that earlier
         // pass rather than blocking indefinitely. Nothing reaches a page
         // without having been looked at; it just is not looked at twice.
-        let check;
         try {
           check = await verifyImage({
             site,
