@@ -1,8 +1,9 @@
 // What the team did on a given day, and what it cost.
 //
-//   node scripts/day-report.js                 today
-//   node scripts/day-report.js 2026-08-03      a specific day
-//   node scripts/day-report.js --vs 2026-08-03 today against that day
+//   node scripts/day-report.js                        today, every title
+//   node scripts/day-report.js 2026-08-03             a specific day
+//   node scripts/day-report.js --vs 2026-08-03        today against that day
+//   node scripts/day-report.js --site smart-sme       one title only
 //
 // Written because comparing two days by hand invites picking whichever numbers
 // flatter the answer. The same query runs for both, so a comparison is honest
@@ -119,10 +120,13 @@ async function gather(dateStr, site) {
     // two days is always drawn against the target each of those days was
     // actually judged by.
     target: site.articlesPerDayTarget,
+    isToday: day === new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/London" }).format(new Date()),
     runs: runs.length,
     failed: failedRuns.length,
     failReasons: failedRuns.reduce((m, r) => {
-      const k = (r.error || "unknown").slice(0, 50);
+      // Collapsed before slicing: Prisma errors are multi-line, and a raw slice
+      // put a newline in the middle of a report column.
+      const k = String(r.error || "unknown").replace(/\s+/g, " ").trim().slice(0, 50);
       m[k] = (m[k] || 0) + 1;
       return m;
     }, {}),
@@ -149,8 +153,11 @@ const money = (usd) => `$${usd.toFixed(2)} (£${(usd * USD_TO_GBP).toFixed(2)})`
 function render(d) {
   console.log(`\n=== ${d.siteName} · ${d.day} ===`);
   const short = d.target != null && d.published < d.target ? `  (${d.target - d.published} short)` : "";
+  // Flagged on any past day, because the target read here is today's and the
+  // setting is not historised. See compare().
+  const asOf = d.isToday ? "" : " (today's setting)";
   console.log(
-    `Published        ${d.published} of ${d.target ?? "?"} target${d.words ? `, ${d.words.toLocaleString()} words` : ""}${short}`
+    `Published        ${d.published} of ${d.target ?? "?"} target${asOf}${d.words ? `, ${d.words.toLocaleString()} words` : ""}${short}`
   );
   d.publishedList.forEach((a) => console.log(`                 wp${a.wpPostId || "-"} ${a.type} ${a.title.slice(0, 52)}`));
   console.log(`Cost             ${money(d.totalCost)}${d.scriptedCost ? ` (agents ${money(d.agentCost)} + scripted ${money(d.scriptedCost)})` : ""}`);
@@ -177,15 +184,16 @@ function compare(now, then) {
   console.log(`\n=== ${now.siteName} · ${now.day} vs ${then.day} ===`);
   console.log(`  ${"".padEnd(18)}${now.day.slice(5).padStart(10)}${then.day.slice(5).padStart(12)}${"change".padStart(12)}`);
   line("published", now.published, then.published);
-  // The target is read live, so both days are measured against TODAY's setting.
-  // If it has been changed since, "published" is not comparable and saying so is
-  // the only honest option: the earlier day was aiming at a different number and
-  // the database does not record what that number was at the time.
-  if (now.target !== then.target) {
-    console.log(`  target now ${now.target}/day — the ${then.day} figure was judged against a different one`);
-  } else {
-    console.log(`  target      ${now.target}/day on both days`);
-  }
+  // Site.articlesPerDayTarget holds ONE value: the current one. There is no
+  // history, so both days above are scored against today's setting and this
+  // cannot detect that the older day was aiming at something else.
+  //
+  // Smart SME ran at seven a day, then one, then three, all within a week. A
+  // report that quietly compares a seven-a-day day against a three-a-day target
+  // reads as a collapse in output. Say which number is being used and leave the
+  // reader to apply what they know; inventing a historical target would be
+  // worse than admitting there isn't one.
+  console.log(`  both days scored against today's target of ${now.target}/day, which is the only one stored`);
   line("cost usd", now.totalCost, then.totalCost, (x) => x.toFixed(2), false);
   line("runs", now.runs, then.runs, (x) => x, false);
   line("failed runs", now.failed, then.failed, (x) => x, false);
