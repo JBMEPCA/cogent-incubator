@@ -11,6 +11,44 @@ Updated 17 August 2026: both titles now run on the shared cogent-base parent
 theme, deploy over SFTP and pass scripts/verify-title.mjs. Title #3 starts by
 copying an existing child, not by forking a theme.
 
+---
+
+## THE RULE
+
+**Anything shared belongs to every title. Before changing shared code, ask what
+it does on the OTHER titles — not whether it looks right on the one in front of
+you.**
+
+This failed three times in a single day, in three costumes, and it is the same
+mistake each time:
+
+| What was changed | What it did to the other title |
+|---|---|
+| Agent prompts naming one title | Fleet articles drafted for SME owner-managers, and large-operator stories struck out |
+| The tools list in the parent theme | Smart SME would have lost all four of its calculators |
+| `.logo-mark` pointing at the `amber` palette slug | Smart SME's masthead turned orange on a live site |
+
+Concretely:
+
+- **The parent theme may only reference palette slots whose meaning is identical
+  everywhere** — `brand`, `contrast`, `surface`, `line`, `muted`. Never `amber`,
+  `cyan`, `violet`: those are expressive, and every title fills them differently.
+  Anything expressive is a one-declaration override in the child.
+- **A prompt may name no title.** Identity comes from the Site row via
+  `lib/voice.js`, and a list of valid sections or categories comes from
+  `site.sections`.
+- **Editorial choices live in the child or the database**, never in the parent:
+  which calculators exist, which sections the homepage shows, what the masthead
+  says.
+- **After deploying anything shared, sweep every title**, not just the one you
+  were working on: `node scripts/check-all-titles.mjs`.
+
+The parent/child split is better architecture, and it converts "I broke one
+site" into "I broke every site". That is the trade being made, and this rule is
+the price of it.
+
+---
+
 **§§1-6 are about standing a title up. §§7-8 are about the engine behind it, and
 were written the same day from the other direction** — Smart SME spent a weekend
 publishing a full schedule perfectly while its drafting pipeline was dead, and

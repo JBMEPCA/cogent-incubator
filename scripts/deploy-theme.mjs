@@ -145,7 +145,22 @@ try {
     { stdio: ["ignore", "pipe", "pipe"], timeout: 300000 }
   );
   console.log(`  uploaded ${files.length} files`);
-  console.log("\nDone. Purge the host cache if the change is in <head> or CSS.");
+
+  // A parent deploy touches every title on this host, and the same mistake has
+  // been made three times: shared code changed to suit the title in front of
+  // you, and the other title silently wears it. Say so loudly, every time.
+  const isParent = /cogent-base/.test(from) || /cogent-base$/.test(remote);
+  if (isParent) {
+    console.log("\n  ----------------------------------------------------------------");
+    console.log("  THAT WAS THE SHARED PARENT THEME. It changes EVERY title here.");
+    console.log("  Sweep them all before you call it done:");
+    console.log("      node scripts/check-all-titles.mjs");
+    console.log("  ----------------------------------------------------------------");
+  }
+
+  console.log("\nPurge the host cache before deciding a change had no effect:");
+  console.log(`  ssh -i <key> -p ${cfg.port || 18765} ${cfg.username}@${cfg.host} \\`);
+  console.log(`    "cd ~/www/*/public_html && wp sg purge && wp cache flush"`);
 } catch (e) {
   const err = (e.stderr?.toString() || e.stdout?.toString() || e.message).trim();
   console.error("FAILED:\n" + err.split("\n").slice(-12).join("\n"));
