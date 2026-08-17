@@ -208,15 +208,27 @@ export default async function OutreachPage({ params }) {
                       </p>
 
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                        <button formAction={approveOutreachEmail} className="btn" style={{ padding: "7px 18px" }}>
+                        {/* Every one of these MUST be bound to the site, the same way the
+                            standalone forms on this page are. A server action here takes
+                            (site, formData); handed to formAction unbound, Next calls it
+                            with (formData) alone, so `site` is the FormData object,
+                            site.id is undefined, and forSite() throws on the action's
+                            first line. That is a 5xx with an empty body, which the browser
+                            renders as "This page couldn't load" — which is what every
+                            button in this row did until 17 August. */}
+                        <button
+                          formAction={approveOutreachEmail.bind(null, siteRef)}
+                          className="btn"
+                          style={{ padding: "7px 18px" }}
+                        >
                           ✓ Approve &amp; send
                         </button>
-                        <button formAction={saveOutreachEmail} className="btn-ghost">
+                        <button formAction={saveOutreachEmail.bind(null, siteRef)} className="btn-ghost">
                           Save draft
                         </button>
                         {guessed && (
                           <button
-                            formAction={confirmOutreachContact}
+                            formAction={confirmOutreachContact.bind(null, siteRef)}
                             className="btn-ghost"
                             style={{ color: "var(--neon-amber)" }}
                           >
@@ -224,11 +236,15 @@ export default async function OutreachPage({ params }) {
                           </button>
                         )}
                         {["failed", "bounced"].includes(row.status) && (
-                          <button formAction={retryOutreachEmail} className="btn-ghost" style={{ color: "var(--neon-cyan)" }}>
+                          <button
+                            formAction={retryOutreachEmail.bind(null, siteRef)}
+                            className="btn-ghost"
+                            style={{ color: "var(--neon-cyan)" }}
+                          >
                             ↻ Reset
                           </button>
                         )}
-                        <button formAction={dismissOutreachEmail} className="btn-ghost">
+                        <button formAction={dismissOutreachEmail.bind(null, siteRef)} className="btn-ghost">
                           Dismiss
                         </button>
                       </div>
