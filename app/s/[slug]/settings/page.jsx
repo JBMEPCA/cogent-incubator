@@ -9,7 +9,9 @@ import {
   testSiteCredential,
   clearSiteCredential,
   saveEngineSettings,
+  toggleProvisioningStep,
 } from "@/lib/actions";
+import { forSite } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
@@ -112,6 +114,14 @@ export default async function SettingsPage({ params }) {
   // of is one you can only steer by guesswork.
   const budget = await spendStatus(site.id);
 
+  // SiteProvisioningStep is tenanted, so it must go through forSite() — the
+  // guard in lib/prisma.js refuses the bare client, which is how it should be.
+  const steps = await forSite(site.id).siteProvisioningStep.findMany({
+    orderBy: { sortOrder: "asc" },
+  });
+  const stepsDone = steps.filter((s) => s.done).length;
+  const blockingLeft = steps.filter((s) => s.blocking && !s.done).length;
+
   return (
     <>
       <Header />
@@ -131,6 +141,80 @@ export default async function SettingsPage({ params }) {
               <code>node -e &quot;console.log(require(&apos;crypto&apos;).randomBytes(32).toString(&apos;base64&apos;))&quot;</code>{" "}
               and set it in the environment.
             </p>
+          </section>
+        )}
+
+        {steps.length > 0 && (
+          <section style={{ ...SURFACE, borderRadius: 14, padding: "16px 18px", marginBottom: 22 }}>
+            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+              <h2 style={{ margin: 0, fontSize: 14, textTransform: "uppercase", letterSpacing: ".06em", opacity: 0.6 }}>
+                Provisioning
+              </h2>
+              <span style={{ fontSize: 12.5, opacity: 0.65, fontVariantNumeric: "tabular-nums" }}>
+                {stepsDone} of {steps.length} done
+                {blockingLeft > 0 && (
+                  <span style={{ color: "#fbbf24" }}> · {blockingLeft} blocking outstanding</span>
+                )}
+              </span>
+            </div>
+            <p style={{ fontSize: 12.5, opacity: 0.55, margin: "6px 0 12px" }}>
+              Jobs in consoles that have no useful API. <strong style={{ opacity: 0.85 }}>Blocking</strong> steps
+              break something quietly if skipped, rather than loudly.
+            </p>
+
+            <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 1 }}>
+              {steps.map((step) => (
+                <li key={step.id}>
+                  <form action={toggleProvisioningStep.bind(null, siteRef)}>
+                    <input type="hidden" name="key" value={step.key} />
+                    <button
+                      type="submit"
+                      style={{
+                        display: "flex", gap: 11, alignItems: "flex-start", width: "100%", textAlign: "left",
+                        background: "transparent", border: 0, borderBottom: "1px solid rgba(255,255,255,.05)",
+                        padding: "9px 2px", cursor: "pointer", color: "inherit", font: "inherit",
+                      }}
+                    >
+                      <span
+                        aria-hidden="true"
+                        style={{
+                          flex: "none", width: 15, height: 15, marginTop: 2, borderRadius: 4,
+                          border: `1.5px solid ${step.done ? "#34d399" : step.blocking ? "rgba(251,191,36,.75)" : "rgba(255,255,255,.28)"}`,
+                          background: step.done ? "#34d399" : "transparent",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          fontSize: 10, color: "#0b1020", fontWeight: 700, lineHeight: 1,
+                        }}
+                      >
+                        {step.done ? "✓" : ""}
+                      </span>
+                      <span style={{ minWidth: 0 }}>
+                        <span style={{
+                          fontSize: 13.5,
+                          opacity: step.done ? 0.45 : 0.95,
+                          textDecoration: step.done ? "line-through" : "none",
+                        }}>
+                          {step.label}
+                        </span>
+                        {step.blocking && !step.done && (
+                          <span style={{
+                            fontSize: 9.5, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase",
+                            color: "#fbbf24", border: "1px solid rgba(251,191,36,.4)", borderRadius: 3,
+                            padding: "1px 5px", marginLeft: 8, whiteSpace: "nowrap",
+                          }}>
+                            Blocking
+                          </span>
+                        )}
+                        {step.detail && !step.done && (
+                          <span style={{ display: "block", fontSize: 12, opacity: 0.55, marginTop: 3 }}>
+                            {step.detail}
+                          </span>
+                        )}
+                      </span>
+                    </button>
+                  </form>
+                </li>
+              ))}
+            </ul>
           </section>
         )}
 

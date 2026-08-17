@@ -1,5 +1,5 @@
 import { forEachSite, cronGuard } from "@/lib/cron";
-import { isWordPressConfigured, publishToWordPress, uploadMedia, resolveCategory } from "@/lib/wordpress";
+import { isWordPressConfigured, publishToWordPress, uploadMedia, resolveCategory, authorForSite } from "@/lib/wordpress";
 import { stripEmDashes } from "@/lib/drafting";
 import { verifyImage } from "@/lib/qa";
 
@@ -31,6 +31,12 @@ export async function GET(request) {
     take: 2,
   });
   if (!due.length) return { published: 0 };
+
+  // Once per tick, not once per article: this is an HTTP round trip to
+  // /wp/v2/users and the answer cannot change between two posts in the same
+  // batch. null means "attribute to the account holding the application
+  // password", which is exactly what happened before bylineMode was honoured.
+  const authorId = await authorForSite(wp, site);
 
   const results = [];
   for (const article of due) {
@@ -131,6 +137,7 @@ export async function GET(request) {
         categoryId: await resolveCategory(wp, article.category),
         keyphrase: article.keyphrase,
         metaDesc: article.metaDesc,
+        authorId,
       });
       await db.article.update({
         where: { id: article.id },
