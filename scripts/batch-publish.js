@@ -493,7 +493,7 @@ no <html>/<head>/<body> wrapper, no H1.
 TITLE: <the headline, 55-70 characters, keyword-bearing, no clickbait>
 SCORE: <0-100 estimate of this article's value to this publication: search demand, evergreen life, internal linking value, audience fit>
 SCORE_WHY: <one sentence>
-CATEGORY: <exactly one of: AI & Automation | Finance | Marketing | News | Operations>
+CATEGORY: <exactly one of: ${(global.__BATCH_SITE?.sections || []).map((s) => s.name).join(" | ") || "News"}>
 KEYPHRASE: <Yoast focus keyphrase, 2-5 words, present in the headline and in the first paragraph>
 META_DESC: <meta description, 120-155 characters, contains the keyphrase, reads like a promise>
 IMAGE_QUERY: <2-4 words describing the ideal header photograph>
@@ -642,7 +642,21 @@ function parseDraft(raw, spec) {
     title: stripDashes(headerLine(body, "TITLE") || spec.title),
     score: parseInt(headerLine(body, "SCORE") || "", 10),
     scoreRationale: headerLine(body, "SCORE_WHY"),
-    category: headerLine(body, "CATEGORY") || spec.category,
+    // The plan wins, and the model's header is the fallback rather than the
+    // other way round. The brief chose the section deliberately against the
+    // demand map; the model only ever guesses. Whichever it is, it must be one
+    // of THIS title's sections — the prompt used to offer Smart SME's five to
+    // every title, so ten fleet articles were filed under Finance and
+    // Operations, matched no category on the site, and landed in Uncategorized.
+    category: (() => {
+      const sections = (global.__BATCH_SITE?.sections || []).map((s) => s.name);
+      const norm = (s) => String(s || "").trim().toLowerCase();
+      for (const candidate of [spec.category, headerLine(body, "CATEGORY")]) {
+        const hit = sections.find((s) => norm(s) === norm(candidate));
+        if (hit) return hit;
+      }
+      return sections.includes("News") ? "News" : sections[0] || null;
+    })(),
     keyphrase: headerLine(body, "KEYPHRASE"),
     metaDesc: stripDashes(headerLine(body, "META_DESC")),
     imageQuery: headerLine(body, "IMAGE_QUERY"),

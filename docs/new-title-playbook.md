@@ -555,3 +555,37 @@ So the second question is **"if this were broken, how would I know?"** Where the
 answer is "the number I look at would still look right", that is the thing to
 instrument. Spend was the tell all weekend: £0.00 with articles going out. Nobody
 was looking at it.
+
+---
+
+## 9. Post-deploy: purge the cache, then look at it on a phone
+
+Added after both homepages were reported dead while every automated check said
+the sites were healthy. Two separate failures, one visible symptom.
+
+**The host cache serves the old page.** `deploy-theme.mjs` prints "purge the
+host cache" and that is not a suggestion. After the parent/child split both
+homepages served a pre-swap page that referenced a stylesheet with zero rules in
+it: HTTP 200, correct HTML length, no PHP error, and a ticker 989px tall
+swallowing the screen. `wp sg purge` over SSH, on every title, every time.
+
+**Status codes do not detect a dead layout.** `verify-title.mjs` passed 19/19
+against a homepage nobody could read. `check-pages.mjs` now sweeps every page,
+category, article and the 404 with a cache-busting request and a mobile user
+agent, and fails a page whose HTML does not reference the parent stylesheet —
+which is the specific shape this failure takes.
+
+Neither replaces opening the site on a phone. Do that after any theme change.
+
+### The category list in the draft prompt was another single-title assumption
+Ten fleet articles were told to file themselves under
+`AI & Automation | Finance | Marketing | News | Operations` — Smart SME's
+sections, hardcoded in the batch publisher's output contract. They came back as
+Finance and Operations, matched no category on the fleet site, and all ten
+landed in Uncategorized. Every category archive was empty and the homepage
+sections never rendered, which looked exactly like "not enough content yet".
+
+The prompt now lists the site's own sections, and the commissioning plan's
+category wins over the model's guess, validated against the section list.
+**When a title publishes its first articles, check the category counts, not just
+that the posts exist.**
