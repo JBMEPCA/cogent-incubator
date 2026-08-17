@@ -89,29 +89,40 @@ if (DRY) {
   process.exit(0);
 }
 
-// One batch file, one connection. `-mkdir` and `-` prefixes mean "carry on if
-// this fails", which is what we want for directories that already exist.
-const batch = [
-  `-mkdir ${remote}`,
-  ...dirs.map((d) => `-mkdir ${remote}/${d}`),
-  ...files.map((f) => `put "${path.join(from, f)}" "${remote}/${f}"`),
-  "quit",
-].join("\n");
+const sshArgs = (extra) => [
+  "-i", keyPath,
+  "-o", "StrictHostKeyChecking=accept-new",
+  "-o", "BatchMode=yes",
+  ...extra,
+];
+
+// Directories first, over ssh rather than sftp. `mkdir -p` is idempotent and
+// silent, where sftp's `-mkdir` prints a Failure line for every directory that
+// already exists — which is all of them after the first deploy, and buries a
+// real error in a wall of expected ones. It also leaves the sftp exit code
+// meaning what it says.
+const mkdirs = [remote, ...dirs.map((d) => `${remote}/${d}`)].map((d) => `'${d}'`).join(" ");
+
+// Local paths MUST use forward slashes. sftp's batch parser treats a backslash
+// as an escape, so a Windows path arrives with every separator eaten:
+// C:\Users\CIM Ltd\... became C:UsersCIM Ltd... and every put failed.
+const fwd = (p) => p.replace(/\\/g, "/");
 
 const batchFile = path.join(os.tmpdir(), `cogent-deploy-${slug}.batch`);
-fs.writeFileSync(batchFile, batch + "\n");
+fs.writeFileSync(
+  batchFile,
+  files.map((f) => `put "${fwd(path.join(from, f))}" "${remote}/${f}"`).join("\n") + "\nquit\n"
+);
 
 try {
+  execFileSync("ssh", sshArgs(["-p", String(cfg.port || 18765), `${cfg.username}@${cfg.host}`, `mkdir -p ${mkdirs}`]), {
+    stdio: ["ignore", "pipe", "pipe"],
+    timeout: 60000,
+  });
+
   execFileSync(
     "sftp",
-    [
-      "-b", batchFile,
-      "-i", keyPath,
-      "-P", String(cfg.port || 18765),
-      "-o", "StrictHostKeyChecking=accept-new",
-      "-o", "BatchMode=yes",
-      `${cfg.username}@${cfg.host}`,
-    ],
+    sshArgs(["-b", batchFile, "-P", String(cfg.port || 18765), `${cfg.username}@${cfg.host}`]),
     { stdio: ["ignore", "pipe", "pipe"], timeout: 300000 }
   );
   console.log(`  uploaded ${files.length} files`);

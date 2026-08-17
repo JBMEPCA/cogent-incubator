@@ -107,6 +107,9 @@ Cost a false failure in the smoke test itself. The role check needs
 `?context=edit`, and an editor is allowed it for their own record even though
 they are refused it for the users collection.
 
+### sftp batch files eat Windows backslashes
+A local path in an `sftp -b` batch file must use forward slashes: the parser treats  as an escape, so `C:UsersCIM Ltd...` arrived as `C:UsersCIM Ltd...` and every upload failed. Also make directories with `ssh mkdir -p` rather than sftp's `-mkdir`, which prints a Failure line for every directory that already exists and buries real errors.
+
 ### The GA4 property ID in the URL is the wrong one
 On the property-create screen the ID in the address bar is the *previously
 selected* property. Storing it silently reports the wrong title's traffic.
@@ -152,7 +155,7 @@ Today was survivable at n=2. Most of it does not survive n=25.
 
 | Problem | Why it breaks | What to build |
 |---|---|---|
-| **Theme changes need a manual zip upload** | The Engine is an editor and cannot install themes. At 25 titles every CSS tweak is 25 uploads. | An `sftp` credential kind plus a deploy script. **Highest priority.** |
+| ~~Theme changes need a manual zip upload~~ | The Engine is an editor and cannot install themes, so every CSS tweak was a zip through wp-admin. | **Built:** `sftp` credential kind + `scripts/deploy-theme.mjs`. Key based, no password stored. |
 | **~14 manual console steps per title** | Domain, DNS, WordPress, users, Workspace, GA4, Search Console. Roughly 90 minutes of clicking that cannot be scripted away entirely — but most of it can. | Provisioning automation where APIs exist: Cloudflare/registrar API for DNS, WP-CLI or a scripted install, GA4 Admin API for property creation. |
 | **Google Workspace licence per title** | Not in the cost model at all. At £5-14/user/month, 25 titles is £150-420/month — more than the entire engine. | Decide the mailbox strategy now: shared catch-all vs per-title user. This is a real cost decision, not a detail. |
 | **Content plan written by hand** | Ten briefs took a considerable amount of careful writing, and they are the difference between useful articles and filler. | A brief-generating step that takes a demand map and produces the plan. The research is already how we choose the vertical. |
