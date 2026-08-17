@@ -60,23 +60,27 @@ function ukDayBounds(dateStr) {
   return { day, from, to: new Date(from.getTime() + 864e5) };
 }
 
-async function gather(dateStr) {
+async function gather(dateStr, site) {
   const { day, from, to } = ukDayBounds(dateStr);
   const window = { gte: from, lt: to };
+  // Every query is scoped to one title. Without this the fleet's totals were
+  // pooled and then divided by one title's article count, so cost per article
+  // was wrong for every title at once.
+  const siteId = site.id;
 
   const [runs, published, topics, linkedIn, outreach, messages] = await Promise.all([
     prisma.agentRun.findMany({
-      where: { startedAt: window },
+      where: { siteId, startedAt: window },
       select: { agentKey: true, ok: true, costUsd: true, error: true, summary: true },
     }),
     prisma.article.findMany({
-      where: { publishedAt: window },
+      where: { siteId, publishedAt: window },
       select: { title: true, type: true, wpPostId: true, costUsd: true, seoScore: true, body: true },
     }),
-    prisma.researchTopic.findMany({ where: { createdAt: window }, select: { status: true } }),
-    prisma.linkedInPost.count({ where: { createdAt: window } }),
-    prisma.outreachEmail.count({ where: { createdAt: window } }),
-    prisma.agentMessage.count({ where: { createdAt: window } }),
+    prisma.researchTopic.findMany({ where: { siteId, createdAt: window }, select: { status: true } }),
+    prisma.linkedInPost.count({ where: { siteId, createdAt: window } }),
+    prisma.outreachEmail.count({ where: { siteId, createdAt: window } }),
+    prisma.agentMessage.count({ where: { siteId, createdAt: window } }),
   ]);
 
   const byAgent = {};
@@ -109,6 +113,12 @@ async function gather(dateStr) {
 
   return {
     day,
+    site: site.slug,
+    siteName: site.name,
+    // Carried on the result, not read at render time, so a comparison between
+    // two days is always drawn against the target each of those days was
+    // actually judged by.
+    target: site.articlesPerDayTarget,
     runs: runs.length,
     failed: failedRuns.length,
     failReasons: failedRuns.reduce((m, r) => {
@@ -137,8 +147,11 @@ async function gather(dateStr) {
 const money = (usd) => `$${usd.toFixed(2)} (£${(usd * USD_TO_GBP).toFixed(2)})`;
 
 function render(d) {
-  console.log(`\n=== ${d.day} ===`);
-  console.log(`Published        ${d.published} of ${SLOTS_PER_DAY} slots${d.words ? `, ${d.words.toLocaleString()} words` : ""}`);
+  console.log(`\n=== ${d.siteName} · ${d.day} ===`);
+  const short = d.target != null && d.published < d.target ? `  (${d.target - d.published} short)` : "";
+  console.log(
+    `Published        ${d.published} of ${d.target ?? "?"} target${d.words ? `, ${d.words.toLocaleString()} words` : ""}${short}`
+  );
   d.publishedList.forEach((a) => console.log(`                 wp${a.wpPostId || "-"} ${a.type} ${a.title.slice(0, 52)}`));
   console.log(`Cost             ${money(d.totalCost)}${d.scriptedCost ? ` (agents ${money(d.agentCost)} + scripted ${money(d.scriptedCost)})` : ""}`);
   if (d.perArticle) console.log(`Per article      ${money(d.perArticle)}`);
@@ -161,9 +174,18 @@ function compare(now, then) {
     const good = delta === 0 ? " " : (delta > 0) === betterHigher ? "▲" : "▼";
     console.log(`  ${label.padEnd(18)}${String(fmt(a)).padStart(10)}${String(fmt(b)).padStart(12)}${arrow.padStart(12)}  ${good}`);
   };
-  console.log(`\n=== ${now.day} vs ${then.day} ===`);
+  console.log(`\n=== ${now.siteName} · ${now.day} vs ${then.day} ===`);
   console.log(`  ${"".padEnd(18)}${now.day.slice(5).padStart(10)}${then.day.slice(5).padStart(12)}${"change".padStart(12)}`);
   line("published", now.published, then.published);
+  // The target is read live, so both days are measured against TODAY's setting.
+  // If it has been changed since, "published" is not comparable and saying so is
+  // the only honest option: the earlier day was aiming at a different number and
+  // the database does not record what that number was at the time.
+  if (now.target !== then.target) {
+    console.log(`  target now ${now.target}/day — the ${then.day} figure was judged against a different one`);
+  } else {
+    console.log(`  target      ${now.target}/day on both days`);
+  }
   line("cost usd", now.totalCost, then.totalCost, (x) => x.toFixed(2), false);
   line("runs", now.runs, then.runs, (x) => x, false);
   line("failed runs", now.failed, then.failed, (x) => x, false);
@@ -179,14 +201,30 @@ function compare(now, then) {
   const args = process.argv.slice(2);
   const vsIndex = args.indexOf("--vs");
   const baseline = vsIndex >= 0 ? args[vsIndex + 1] : null;
-  const target = args.find((a) => /^\d{4}-\d{2}-\d{2}$/.test(a) && a !== baseline) || null;
+  const siteIndex = args.indexOf("--site");
+  const wantSite = siteIndex >= 0 ? args[siteIndex + 1] : null;
+  const day = args.find((a) => /^\d{4}-\d{2}-\d{2}$/.test(a) && a !== baseline) || null;
 
-  const now = await gather(target);
-  render(now);
-  if (baseline) {
-    const then = await gather(baseline);
-    render(then);
-    compare(now, then);
+  const sites = await prisma.site.findMany({
+    where: wantSite ? { slug: wantSite } : {},
+    orderBy: { createdAt: "asc" },
+    select: { id: true, slug: true, name: true, articlesPerDayTarget: true },
+  });
+  if (!sites.length) {
+    console.error(wantSite ? `no title with slug "${wantSite}"` : "no titles found");
+    process.exit(1);
+  }
+
+  // One report per title, never a fleet total. Two titles on different cadences
+  // pooled into one number tells you nothing about either of them.
+  for (const site of sites) {
+    const now = await gather(day, site);
+    render(now);
+    if (baseline) {
+      const then = await gather(baseline, site);
+      render(then);
+      compare(now, then);
+    }
   }
   await prisma.$disconnect();
 })().catch(async (e) => {
