@@ -7,6 +7,13 @@ the work and the rest was discovering traps.
 
 The point of this document is that title #3 should take ninety minutes.
 
+**§§1-6 are about standing a title up. §§7-8 are about the engine behind it, and
+were written the same day from the other direction** — Smart SME spent a weekend
+publishing a full schedule perfectly while its drafting pipeline was dead, and
+nobody noticed because everything that gets looked at said "fine". A new title
+inherits that engine, and inherits gates calibrated on a mature site's output, so
+read them before launch rather than after.
+
 ---
 
 ## 1. What actually went wrong, in order of how much time it cost
@@ -141,6 +148,53 @@ On the property-create screen the ID in the address bar is the *previously
 selected* property. Storing it silently reports the wrong title's traffic.
 Verify by name through the Admin API `accountSummaries` endpoint.
 
+### The host blocks datacentre IPs, so we cannot read our own images back
+An image served from our own WordPress answers every request from a laptop and
+returns **403 to Vercel**. Verified on 17 August: four different user agents all
+got 200 locally, the publisher got 403 on the same URL. It is the source IP, not
+the user agent.
+
+The consequence is not obvious. Any image placed in the media library by hand —
+a commissioned graphic, an original illustration, anything not sideloaded from a
+stock library — could not be fetched back by the publisher that was about to
+re-upload it. The picture gate failed it on `image fetch 403`, `publish-due`
+dropped the image and deferred the article to the Designer, the Designer did
+nothing because the article already had a picture, and the piece sat there for
+ever. On an image that was in the library the whole time.
+
+Fixed with `findMediaByUrl()`: if the image URL is on the title's own host,
+look the attachment up and attach that id directly — no fetch, no re-upload, no
+second visual check. Safe precisely because it is ours. **It also has to write
+the alt text**, because `uploadMedia` is where alt normally gets set and that
+path skips it; the first article through published with an empty `alt`.
+
+### Vercel "Sensitive" environment variables cannot be read back — ever
+Not by `vercel env pull`, not in the dashboard. The pull returns
+`DATABASE_URL="[SENSITIVE]"`, a literal placeholder. On 17 August all 19 of this
+project's own secrets were Sensitive; the only readable values were Vercel's own
+build vars (`TURBO_*`, `VERCEL_*`).
+
+So **Vercel is never the place to recover a connection string.** Go to the owner
+of the thing: Neon for the database, Google Cloud for the service account. Wasted
+half an hour sending someone to a dashboard that structurally cannot show it.
+
+### Vercel's git hook does not always fire
+A push landed on `origin/main` and no deployment was created — confirmed with
+`git ls-remote` showing the commit on the remote while the newest deployment was
+older than the push. Silent: no error, no queued build.
+
+**Always check the deployment age against your commit, never assume the push
+deployed.** `vercel --prod --yes` from a clean working tree forces it. This
+matters more than it sounds: everything downstream was verified against code
+that was not running.
+
+### The play button runs Windows PowerShell 5.1, which rejects `&&`
+Two separate instructions failed on this before anyone noticed, because the
+failure is a parser error before execution and looks like nothing happened at
+all — including an `npm i -g` that appeared to have run and had not. PowerShell
+5.1 needs `;` with `if ($?)`. Any command written for someone to click must be
+PowerShell, not bash.
+
 ---
 
 ## 4. Pre-flight checklist for title #3
@@ -149,13 +203,21 @@ Run these before touching a console.
 
 ```
 □  git rev-list --count origin/main..HEAD   → must be 0, or deploy first
+□  vercel ls → newest Production deploy is NEWER than your last commit
+      → the git hook does not always fire; pushed is not deployed
 □  grep -rniE "<previous title name>" lib/ scripts/ --include=*.js
       → every hit is a tenancy bug waiting to happen
+□  grep -rn "SLOTS_PER_DAY\|= 7\b" scripts/ lib/
+      → anything measuring against a fixed cadence is already wrong
+□  Local .env DATABASE_URL names the CURRENT Neon project
+      → after any migration the old repo's scripts lie confidently
+□  Anthropic credit balance is not near zero (it is fleet-wide)
 □  Daily spend cap set on the new title AND every existing title
 □  Search set added to lib/news-searches.js and to SEARCH_SETS
 □  Source list written (see scripts/seed-fleet-sources.mjs for the shape)
 □  Content plan written (scripts/batch-plan-<slug>.json)
 □  Sections chosen; they must match the plan's `category` values exactly
+□  articlesPerDayTarget set (1-7; it clamps silently above 7)
 ```
 
 And after launch:
@@ -164,6 +226,18 @@ And after launch:
 □  node scripts/verify-title.mjs --site=<slug>     → must be all PASS
 □  HTTPS Enforce on at the host (a valid cert alone is not enough)
 □  Sample Page deleted, menu defined explicitly, favicon rendering
+```
+
+Then on each of the first few days, because a full schedule proves nothing (§7):
+
+```
+□  node scripts/day-report.js --site=<slug>
+      → published vs the title's OWN target, and spend > £0
+      → spend of £0 with articles publishing means it is draining a backlog
+□  Editor and Researcher have both run TODAY
+□  "ready but unscheduled" is not 0 for days on end — no buffer means one
+      QA rejection costs a slot
+□  First article's featured image has alt text on the live page
 ```
 
 `verify-title.mjs` exists because every one of its eighteen checks is something
@@ -200,17 +274,229 @@ From the first fleet batch: 10 articles attempted, 8 published, **$4.11**.
 | Article needing one revision | 7 | $0.55 |
 | Article held on the picture gate | 12 | $0.80, nothing published |
 
-**Opus was 99% of spend.** Two changes since: the picture gate moved to Haiku
-across the whole codebase, and the stale brand strings that were causing
-revisions are gone. Expect nearer $0.20 per article.
+**Opus was 99% of spend.** Measured independently across 1-17 August on Smart
+SME: 438 costed runs, £32.15, of which **£32.09 was Opus**. Haiku had touched
+only the Director and the meta-description call. Nothing was wrong with the
+choice — it had simply never been *made*. Opus was the default and the default
+was never revisited as the engine grew.
 
-The remaining lever is drafting on Sonnet with the Opus editorial gate as
-backstop — roughly $0.11 per article. Not taken yet, because the first titles
-publish tax and compliance content where being wrong is expensive.
+Correction to an earlier draft of this section: it claimed the picture gate had
+moved to Haiku across the codebase. **It has not, and deliberately so.**
+`lib/images.js` routes *query writing and candidate picking* to Haiku; the gate
+in `lib/qa.js` that looks at actual pixels stays on Opus, and `images.js` says
+why in a comment. That gate earns it — on 17 August it rejected three stock
+images in a row and was right every time, including catching a **ChatGPT
+interface about to be published on an article about Anthropic**.
+
+### The routing now in place, and the principle behind it
+
+| Call | Model | Why |
+|---|---|---|
+| `draftArticle` | **Opus** | the draft IS the product; nothing to save |
+| `reviewArticle` (editorial gate) | **Opus** | cheapening the check that catches bad work means publishing bad work and paying twice |
+| `verifyImage` (picture gate) | **Opus** | reads real pixels; the last thing between a wrong logo and a live page |
+| `repairArticle` | Sonnet | fixing a draft against a fault list someone else wrote is copy-editing, not composition |
+| SEO sweep | Sonnet | matches posts against written rules; every suggestion waits for approval |
+| Outreach emails | Sonnet | fixed template, queued for approval before sending |
+| Researcher | Sonnet | returns a scored shortlist of headlines; nothing it writes is published |
+| Director, Finance | Haiku | triage and sequencing |
+| Image query / pick | Haiku | routing, not judgement |
+
+**The principle: pay the writing rate for writing.** Everything else either has
+its output checked by a human before it reaches anybody, or produces something no
+reader ever sees. That covered ~£12 of the £32 fortnight at roughly 40% less,
+with nothing a reader sees touched.
+
+Drafting on Sonnet is still not taken, for the reason already given: the first
+titles publish tax and compliance content where being wrong is expensive.
+
+### Where the money actually leaks
+
+Measured over the same window, and the answer was not what it looked like from a
+single bad day:
+
+| Category | Cost | Share |
+|---|---|---|
+| Repair passes (attempt 2+) | £5.51 | 17% |
+| ↳ of which "fixed but *still* held" | £3.24 | 10% |
+| Work on articles that never published | £4.96 | 15% |
+| Succeeded but produced nothing usable | £2.77 | 9% |
+| Failed with an error | £0.88 | 3% |
+
+Those overlap — a repair pass on an article that never published is in two rows —
+so they do not sum. Netted out, **~15-20% went on work that never reached the
+site.** Real, worth fixing, and still smaller than the model-choice lever. Do the
+routing first.
+
+Two things that are *not* waste and should not be optimised away: the Director's
+heartbeat ticks (pennies, on Haiku, and that is what a pulse costs), and the
+editorial gate refusing an unsourced claim. Refusing to publish something wrong
+about a named company is the cheapest money in the day.
 
 ---
 
-## 7. The one-line version
+## 7. When the engine is lying to you
+
+Every one of these was found on 17 August, on a title that from the outside was
+publishing perfectly.
+
+### Publishing and drafting are independent, so a dead engine still publishes
+The weekend of 15-16 August published **7 of 7 on Saturday and 7 of 7 on Sunday**,
+every post within six minutes of its slot, ~11,000 words a day. It looked
+flawless. Behind it the Editor had run **once since Friday**, the Researcher
+once, the Designer, LinkedIn and Backlink not at all. The Director ran 26 times a
+day reporting "Team on track, nothing to arbitrate".
+
+It was draining a backlog drafted before the cutover. The backlog ran out on the
+Monday morning and the site went from perfect to nothing in one slot.
+
+**A full schedule is not evidence of a working engine.** The signal that
+mattered was spend: **$0.00 across two days**. Zero cost with articles publishing
+means the articles were written earlier. Check the pipeline behind the schedule —
+`ready but unscheduled`, `drafting`, and Editor runs — not the publish count.
+
+### Credit exhaustion looks exactly like a quiet engine
+`400 Your credit balance is too low` fails the model call, the agent records a
+failed run, and nothing publishes. There is no alert. It presents as agents that
+"aren't doing anything".
+
+`scripts/resume-when-funded.sh` exists for this: it probes with a one-token
+request every two minutes and resumes when the balance returns. Rejected probes
+are not charged, so polling is free. Somebody wrote it after a batch died the
+same way, which is the point — **this will happen again.**
+
+### Local tooling silently reads the pre-migration database
+After Smart SME moved into the fleet app, `smart-sme-app/.env` still named the old
+Neon project. Every table on it stopped at **Friday 14 August 13:35**, a clean cut
+across `Article`, `AgentRun`, `AgentMessage`, `ResearchTopic` — the signature of
+a changeover, not a fault. `day-report.js` run from the old repo therefore reported
+a **total weekend outage that had not happened**, while the site published 21
+articles.
+
+Two lessons. **After any migration, the old repo's scripts are legacy and will
+lie confidently** — check which endpoint they name before trusting a number. And
+a clean cut at one instant across every table means the database moved; a
+degrading connection looks nothing like that.
+
+Neon makes this visible: the projects list shows *Compute last active*. Careful
+though — reading the frozen project with a script wakes its compute, so "active 7
+minutes ago" may be your own query rather than production.
+
+### Anything that reports a target must read it from settings
+`day-report.js` measured output against a hardcoded 7 mirroring `SLOTS.length`,
+and ran every query unscoped across the fleet. With two titles on different
+cadences it reported **"12 of 3"** — both titles' output against one title's
+target.
+
+The cadence changes constantly. Smart SME ran at 7, then 1, then 3 inside a
+week; Fleet Magazine went from 1 to 5 in an afternoon. **Never hardcode it, never
+cache it, and scope every query to a `siteId`.** One report per title; a fleet
+total tells you nothing about either title.
+
+Related limitation, worth knowing before it misleads you: `articlesPerDayTarget`
+stores only the **current** value. A past day is necessarily scored against
+today's number, so 16 August reads "7 of 3" and looks like a collapse in output
+rather than a setting that moved. The report says so out loud. Fixing it properly
+means historising the target, which is a schema change nobody has needed yet.
+
+### The daily target is capped at 7 and clamps silently
+`SLOTS` has seven fixed times; `slotsFor()` and the settings form both clamp to
+it. Set 10 and you get 7, with no warning. More than seven a day needs slot times
+added to `lib/schedule.js` first.
+
+### Do not "even out" the slot distribution without reading WEEK_PLAN
+At 3/day `slotsFor()` picks slot indices 0, 2, 4 — 07:30, 10:30, 13:30 — which
+looks badly front-loaded, with the whole afternoon empty. It is not a bug:
+**10:30 and 13:30 are the `seo_original` slots every day**, so the formula is
+deliberately capturing both ranking slots. An "even spread" of 0, 3, 6 produces
+**three news pieces and no guide at all on a Tuesday.**
+
+There is a genuine trade-off here between time-of-day spread and protecting the
+ranking slots, and it is an editorial decision. It is not a tidy-up.
+
+---
+
+## 8. Calibrating the gates
+
+§1 noted that gates tuned for a mature site block a new one. That is broader than
+the link threshold, and it bites every new title.
+
+### The editorial gate will call genuinely new things fabricated
+The gate is a model with a training cutoff, asked to judge whether claims are
+invented. On a news publication, **unfamiliar is the normal condition of a fresh
+story.** On 17 August it demanded someone "verify" a real Anthropic announcement
+URL that the brief had supplied, and called two real products fabricated.
+
+This is worst on exactly the stories worth most: the newest ones, which are the
+ones with link and traffic potential.
+
+Three changes, all of which any new title needs from day one:
+
+1. **Tell it plainly that it cannot rule on existence.** The test is "nothing
+   here backs this up", never "I have not heard of this". Asking for a URL to be
+   verified is not an actionable objection, because it cannot check one.
+2. **Pass the commissioning brief to the gate, not only to the writer.** The
+   brief is where "checked against a primary source" is recorded. It also lets
+   the gate catch the *real* version of the fault — and it immediately did,
+   correctly rejecting a table of invented subscription prices the Editor had
+   added beyond the brief.
+3. **Source-check at commissioning, not after drafting.** Every expensive dead
+   article was a news claim with no `sourceUrl`. A Haiku call confirming a source
+   exists costs a fraction of a penny; an Opus draft plus two repairs costs ~£0.55.
+
+Result on one article: **42 → 88, "fix" → "publish", zero issues.**
+
+### A hold with no stated reason must never stick
+`{"verdict":"fix","summary":"","issues":[]}` gave `repairArticle` nothing to act
+on, so it threw — `nothing to repair: no recorded QA issues`, **61 occurrences
+and the single most common failure in the database.** The article stayed held, the
+gate ran again at full rate, and three rounds later a finished article was parked
+without one word ever having been said against it.
+
+Now the score decides: 70+ publishes, below that the score itself becomes the
+stated reason so the next pass has something real and the queue shows what
+happened. **Any gate that can withhold approval must be unable to do so silently.**
+
+### Retry counters must count the current cycle, not the article's lifetime
+Counting every Editor run ever meant a parked article could never come back:
+recommission it with a proper brief and a verified source and it is abandoned on
+the first tick, because the counter still holds the three failures from the
+original attempt. Anything once parked was permanently unpublishable. Count from
+the most recent draft; old runs stay on the record for costing and stop voting.
+
+### Adaptive thinking spends from `max_tokens`, and three call sites learned it separately
+The verdict is written *after* the thinking, so a tight ceiling means the model
+reasons through its whole allowance and returns no text. The QA gate at 900
+tokens returned score 0 and an empty verdict once the brief was added — which the
+new unreasoned-hold path then read as "held without stating a fault", sending the
+repair pass to rewrite prose that was never the problem.
+
+`draftArticle` (16000), the SEO sweep (20000+) and now the gate (4000) each
+arrived at this independently. **The reply is a few hundred tokens; headroom is
+free on a call that finishes early.** Also: a reply with no verdict at all is a
+broken gate, not a bad article, and must be raised as an error — never reported as
+an article fault.
+
+### A prompt is not a guard
+`repairArticle` asked for "the corrected body as HTML and nothing else" and
+trusted the reply. That held for as long as the call was on Opus. Moved to
+Sonnet, it returned the whole `TITLE / SCORE / IMAGE_QUERY / KEYPHRASE /
+META_DESC` header above the article, and the block was stored as the body — so
+internal field names became the opening words of the piece.
+
+It failed twice over: the article would have published with a wall of metadata at
+the top, **and** it then failed a mechanical test it genuinely passed, because the
+header displaced the real first paragraph out of the first 700 characters, which
+is the window the keyphrase check reads.
+
+`draftArticle` had guarded this from the start with two lines. The repair path
+never did, and the model was standing in for the guard. **Every model reply that
+gets stored needs the same parsing on every path** — changing the model is enough
+to expose the difference.
+
+---
+
+## 9. The one-line version
 
 **Everything that broke was something that had only ever been true for one
 title.** Prompt strings, credentials, gates, thresholds, scripts, user-agents,
@@ -220,3 +506,14 @@ actually ran through it.
 
 For title #3, the useful question is not "what do I need to set up" but **"what
 in this codebase still believes there is only one title?"**
+
+And its twin, from §§7-8: **everything that hid was something whose failure looked
+like success.** A full schedule draining a dead pipeline. A gate holding an
+article without saying why. A report measuring against a cadence nobody was
+aiming at. A push that never deployed. A frozen database answering queries
+confidently. None of them threw an error, and every dashboard said fine.
+
+So the second question is **"if this were broken, how would I know?"** Where the
+answer is "the number I look at would still look right", that is the thing to
+instrument. Spend was the tell all weekend: £0.00 with articles going out. Nobody
+was looking at it.
