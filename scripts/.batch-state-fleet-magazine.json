@@ -1,14 +1,42 @@
 {
   "company-car-tax": {
     "key": "company-car-tax",
-    "status": "error",
-    "error": "400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"You have reached your specified API usage limits. You will regain access on 2026-09-01 at 00:00 UTC.\"},\"request_id\":\"req_011Ce8Tq6pna4ikrdJA6o8S5\"}",
+    "status": "published",
+    "wpPostId": 13,
+    "link": "https://thefleetmagazine.co.uk/company-car-tax-2026-27-how-benefit-in-kind-is-calculated/",
+    "title": "Company Car Tax 2026/27: How Benefit in Kind Is Calculated",
+    "words": 2070,
+    "category": "Finance",
+    "keyphrase": "company car tax",
+    "metaDesc": "Company car tax 2026/27 explained: the benefit in kind formula, BiK rates, P11D value and worked examples for 20% and 40% taxpayers.",
+    "seoScore": 82,
+    "editorialScore": 86,
+    "image": {
+      "url": "https://images.pexels.com/photos/8425360/pexels-photo-8425360.jpeg?auto=compress&cs=tinysrgb&w=2000",
+      "width": 2000,
+      "height": 1335,
+      "alt": "Businessman in grey suit driving a car, illustrating company car tax and benefit in kind rules"
+    },
+    "articleId": "cmsxbu13h0001dcnnh4qf7xj4",
     "cost": {
-      "calls": 0,
-      "in": 0,
-      "out": 0,
-      "usd": 0,
-      "byModel": {}
+      "calls": 7,
+      "in": 26967,
+      "out": 17135,
+      "usd": 0.5517,
+      "byModel": {
+        "claude-opus-4-8": {
+          "calls": 5,
+          "in": 25818,
+          "out": 16790,
+          "usd": 0.5488
+        },
+        "claude-haiku-4-5-20251001": {
+          "calls": 2,
+          "in": 1149,
+          "out": 345,
+          "usd": 0.0029
+        }
+      }
     }
   },
   "ev-salary-sacrifice": {
@@ -93,38 +121,105 @@
   },
   "double-cab-pickup": {
     "key": "double-cab-pickup",
-    "status": "error",
-    "error": "400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"You have reached your specified API usage limits. You will regain access on 2026-09-01 at 00:00 UTC.\"},\"request_id\":\"req_011Ce8Tq8xmeV8nFphquuCmi\"}",
+    "status": "published",
+    "wpPostId": 18,
+    "link": "https://thefleetmagazine.co.uk/double-cab-pickup-tax-rules-what-changed-and-what-it-costs/",
+    "title": "Double Cab Pickup Tax Rules: What Changed and What It Costs",
+    "words": 1956,
+    "category": "Finance",
+    "keyphrase": "double cab pickup tax",
+    "metaDesc": "Double cab pickup tax changed in April 2025: double cabs are now taxed as cars for benefit in kind. See the worked cost and what to do next.",
+    "seoScore": 88,
+    "editorialScore": 88,
+    "image": {
+      "url": "https://images.pexels.com/photos/33206059/pexels-photo-33206059.jpeg?auto=compress&cs=tinysrgb&w=2000",
+      "width": 2000,
+      "height": 1333,
+      "alt": "White Ford double cab pickup parked under a concrete overpass, illustrating double cab pickup tax rules"
+    },
+    "articleId": "cmsxbx9i20005dcnnmh16dqfp",
     "cost": {
-      "calls": 0,
-      "in": 0,
-      "out": 0,
-      "usd": 0,
-      "byModel": {}
+      "calls": 5,
+      "in": 12964,
+      "out": 10153,
+      "usd": 0.3086,
+      "byModel": {
+        "claude-opus-4-8": {
+          "calls": 3,
+          "in": 11804,
+          "out": 9883,
+          "usd": 0.3061
+        },
+        "claude-haiku-4-5-20251001": {
+          "calls": 2,
+          "in": 1160,
+          "out": 270,
+          "usd": 0.0025
+        }
+      }
     }
   },
   "advisory-fuel-rates": {
     "key": "advisory-fuel-rates",
-    "status": "error",
-    "error": "400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"You have reached your specified API usage limits. You will regain access on 2026-09-01 at 00:00 UTC.\"},\"request_id\":\"req_011Ce8Tq99SNwCLmY4FbM5gq\"}",
+    "status": "held",
+    "issues": [
+      "Internal 'our guide' links point to thefleetmagazine.co.uk (van benefit charge, EV salary sacrifice, company car tax) but this is publishing under Smart SME Magazine — these self-references to another publication's domain must be removed or replaced with your own content",
+      "The article repeatedly says 'our guide'/'companion pieces to this one' for articles hosted on a different magazine's site, which is misleading to readers and to search engines under your byline"
+    ],
+    "words": 2253,
     "cost": {
-      "calls": 0,
-      "in": 0,
-      "out": 0,
-      "usd": 0,
-      "byModel": {}
+      "calls": 4,
+      "in": 22352,
+      "out": 15615,
+      "usd": 0.5021,
+      "byModel": {
+        "claude-opus-4-8": {
+          "calls": 4,
+          "in": 22352,
+          "out": 15615,
+          "usd": 0.5021
+        }
+      }
     }
   },
   "zev-mandate": {
     "key": "zev-mandate",
-    "status": "error",
-    "error": "400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"You have reached your specified API usage limits. You will regain access on 2026-09-01 at 00:00 UTC.\"},\"request_id\":\"req_011Ce8TqA5k9HG23dHwgRKi6\"}",
+    "status": "published",
+    "wpPostId": 16,
+    "link": "https://thefleetmagazine.co.uk/the-zev-mandate-explained-for-uk-fleet-operators/",
+    "title": "The ZEV Mandate Explained for UK Fleet Operators",
+    "words": 2280,
+    "category": "Operations",
+    "keyphrase": "ZEV mandate",
+    "metaDesc": "The ZEV mandate explained for fleet operators: how EV sales targets, the 2030 petrol diesel ban and discounts affect your replacement cycle planning.",
+    "seoScore": 82,
+    "editorialScore": 86,
+    "image": {
+      "url": "https://images.pexels.com/photos/29566893/pexels-photo-29566893.jpeg?auto=compress&cs=tinysrgb&w=2000",
+      "width": 2000,
+      "height": 1125,
+      "alt": "Aerial view of hundreds of new cars parked in rows, illustrating the ZEV mandate for UK fleet operators"
+    },
+    "articleId": "cmsxbx5k60003dcnnxhlooqr5",
     "cost": {
-      "calls": 0,
-      "in": 0,
-      "out": 0,
-      "usd": 0,
-      "byModel": {}
+      "calls": 7,
+      "in": 20557,
+      "out": 8410,
+      "usd": 0.3032,
+      "byModel": {
+        "claude-opus-4-8": {
+          "calls": 5,
+          "in": 19642,
+          "out": 8102,
+          "usd": 0.3008
+        },
+        "claude-haiku-4-5-20251001": {
+          "calls": 2,
+          "in": 915,
+          "out": 308,
+          "usd": 0.0025
+        }
+      }
     }
   },
   "grey-fleet": {
