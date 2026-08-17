@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { CREDENTIAL_KINDS, credentialSummary, getSite } from "@/lib/site";
 import { isCryptoConfigured } from "@/lib/crypto";
 import { isGoogleConfigured, googleServiceAccountEmail } from "@/lib/google";
+import { spendStatus } from "@/lib/spend";
 import {
   saveSiteCredential,
   testSiteCredential,
@@ -107,6 +108,9 @@ export default async function SettingsPage({ params }) {
 
   const cryptoReady = isCryptoConfigured();
   const summary = cryptoReady ? await credentialSummary(site.id) : {};
+  // Shown against the cap input: a budget you cannot see the current position
+  // of is one you can only steer by guesswork.
+  const budget = await spendStatus(site.id);
 
   return (
     <>
@@ -205,12 +209,28 @@ export default async function SettingsPage({ params }) {
                   placeholder="uncapped"
                   style={INPUT}
                 />
+                <span
+                  className="micro"
+                  style={{
+                    display: "block",
+                    marginTop: 3,
+                    color: budget.over ? "var(--neon-amber)" : "var(--muted)",
+                  }}
+                >
+                  {budget.capped
+                    ? budget.over
+                      ? `$${budget.spent.toFixed(2)} spent today — cap reached, agents paused`
+                      : `$${budget.spent.toFixed(2)} spent today, $${budget.remaining.toFixed(2)} left`
+                    : `$${budget.spent.toFixed(2)} spent today, no cap set`}
+                </span>
               </label>
               <label>
                 <span style={{ display: "block", fontSize: 11.5, opacity: 0.6, marginBottom: 3 }}>
                   Articles per day
                 </span>
-                <input name="articlesPerDayTarget" type="number" step="0.5" min="0.5" defaultValue={site.articlesPerDayTarget} style={INPUT} />
+                {/* Whole articles only: slotsFor() rounds and clamps to 1-7, so a
+                    step of 0.5 offered settings the scheduler could not honour. */}
+                <input name="articlesPerDayTarget" type="number" step="1" min="1" max="7" defaultValue={site.articlesPerDayTarget} style={INPUT} />
               </label>
               <label>
                 <span style={{ display: "block", fontSize: 11.5, opacity: 0.6, marginBottom: 3 }}>
