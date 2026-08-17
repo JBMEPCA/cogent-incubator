@@ -50,8 +50,25 @@ mandatory wait, and everything hangs off it.
    mailbox with zero Google Cloud work; a new org means setting all of it up again.
 5. **Create the intake user** (`news@…`) and generate DKIM.
 6. **Write the content plan and the source list** while you wait.
-7. **Install WordPress, the theme, and Yoast + Site Kit.** Yoast *before* the
+7. **Install WordPress, Yoast and Site Kit, then the theme.** Yoast *before* the
    first publish — see §3.
+
+   **The theme is a CHILD of `cogent-base`, never a fork.** Copy an existing
+   child (`fleet-magazine-website/child` is the reference), which is about
+   fourteen files: `style.css` with `Template: cogent-base`, `theme.json`,
+   `functions.php`, the masthead parts, `templates/home.html` and the section
+   patterns. Then, in order:
+   - Deploy the parent first if this host has never had it.
+   - List **every** palette colour and font family in the child's theme.json,
+     and ship any font file the child declares (see §3).
+   - Pick the title's calculators in `functions.php` via the `cogent_tools`
+     filter — the default is none, deliberately.
+   - Point templates at `cogent-base/…` for shared patterns and
+     `<title-slug>/…` for the section patterns.
+   - After activating, run `wp option update template cogent-base` (see §3).
+   - **Tools are shortcodes on ordinary pages.** Create `/tools/` with
+     `[cogent_tools_index]` and a page per calculator, or the tool exists in
+     code and 404s on the site — which is exactly what happened to title #2.
 8. **Create two WordPress users**: the `Engine` at **editor** role with an
    application password, and the byline account at author role.
 9. **Store credentials in the app** and let the probe pass.
@@ -115,7 +132,24 @@ Cost a false failure in the smoke test itself. The role check needs
 they are refused it for the users collection.
 
 ### sftp batch files eat Windows backslashes
-A local path in an `sftp -b` batch file must use forward slashes: the parser treats  as an escape, so `C:UsersCIM Ltd...` arrived as `C:UsersCIM Ltd...` and every upload failed. Also make directories with `ssh mkdir -p` rather than sftp's `-mkdir`, which prints a Failure line for every directory that already exists and buries real errors.
+A local path in an `sftp -b` batch file must use forward slashes: the parser
+treats a backslash as an escape, so a Windows path arrives with every separator
+swallowed and each upload fails on a filename that does not exist. Make
+directories with `ssh mkdir -p` rather than sftp's `-mkdir`, which prints a
+Failure line for every directory that already exists and buries the real error.
+
+### Renaming a function prefix silently breaks published content
+Shortcodes are content, not code. When the theme prefix changed, Smart SME's
+live tool pages still contained `[smartsme_tool …]`, and WordPress renders an
+unregistered shortcode as **literal text** — a page that had served traffic for
+weeks would have quietly become visible shortcode syntax with no error anywhere.
+Register the old names as aliases, and remember the asset-loading check tests
+for shortcodes by name too, or the tool renders with no CSS and no JavaScript.
+
+### A tool existing in code does not put it on the site
+Tools are shortcodes on ordinary WordPress pages. Title #2 shipped the company
+car tax calculator in its theme for a full day while `/tools/` returned 404,
+because nobody had created the pages. Check the URL, not the registry.
 
 ### A theme's parent is stored in the DATABASE, not read from style.css
 Converting a standalone theme into a child by adding `Template: cogent-base` to
