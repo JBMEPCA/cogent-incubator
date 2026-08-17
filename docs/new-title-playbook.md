@@ -577,6 +577,21 @@ which is the specific shape this failure takes.
 
 Neither replaces opening the site on a phone. Do that after any theme change.
 
+### A shared parent must not point at a semantic palette slug
+The masthead chip and the favicon in `cogent-base` both used the `amber` slug,
+because The Fleet Magazine wanted an amber mark. Amber is a slot **every** title
+fills, so Smart SME rendered its own `#D97706` and its masthead turned orange —
+a live title wearing another title's colour, introduced by a change that had
+nothing to do with it.
+
+Rule: **the parent may only reference slots whose meaning is the same for every
+title** — `brand`, `contrast`, `surface`, `line`, `muted`. Anything expressive
+belongs in the child, as an override of one declaration. This is the third time
+the same mistake appeared in a day, in three different forms: prompts naming one
+title, a tools list holding one title's editorial choice, and now CSS pointing
+at one title's accent. **When touching anything shared, ask what it does on the
+OTHER title, not whether it looks right on this one.**
+
 ### The category list in the draft prompt was another single-title assumption
 Ten fleet articles were told to file themselves under
 `AI & Automation | Finance | Marketing | News | Operations` — Smart SME's
