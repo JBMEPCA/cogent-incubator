@@ -83,11 +83,16 @@ export async function GET(request) {
         }
       })();
       if (article.imageUrl && ownHost) {
-        const { findMediaByUrl } = await import("@/lib/wordpress");
+        const { findMediaByUrl, setMediaAlt } = await import("@/lib/wordpress");
         featuredMediaId = (await findMediaByUrl(wp, article.imageUrl)) ?? undefined;
-        check = featuredMediaId
-          ? { ok: true, reason: "already in the media library" }
-          : undefined;
+        if (featuredMediaId) {
+          // uploadMedia is where alt text normally gets written, and this branch
+          // skips it. The first article through here published with an empty
+          // alt attribute on its header image, which is an accessibility fault
+          // and throws away the one image field search engines actually read.
+          if (article.imageAlt) await setMediaAlt(wp, featuredMediaId, article.imageAlt);
+          check = { ok: true, reason: "already in the media library" };
+        }
       }
 
       if (article.imageUrl && !featuredMediaId) {
