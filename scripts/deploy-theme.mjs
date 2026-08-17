@@ -75,7 +75,26 @@ function walk(dir, base = "") {
 
 const files = walk(from);
 const dirs = [...new Set(files.map((f) => path.posix.dirname(f)).filter((d) => d !== "."))].sort();
-const remote = cfg.themePath.replace(/\/$/, "");
+// --to overrides the credential's themePath. The shared parent theme lives
+// beside the title's own directory rather than inside it, so deploying it needs
+// a sibling path on the same host and key.
+//
+// Guard against MSYS path mangling. Git Bash rewrites an argument that looks
+// like a Unix absolute path into a Windows one, so `--to=/home/u18-.../themes/x`
+// arrived as `C:/Program Files/Git/home/u18-.../themes/x` and the first run
+// built that entire tree inside the server's home directory. Run the command
+// with MSYS_NO_PATHCONV=1, or pass the path with a leading double slash.
+const rawTo = arg("to");
+if (rawTo && /^[A-Za-z]:[\\/]/.test(rawTo)) {
+  console.error(`--to was mangled into a Windows path: ${rawTo}`);
+  console.error("Git Bash rewrote it. Re-run with MSYS_NO_PATHCONV=1 prefixed to the command.");
+  process.exit(1);
+}
+const remote = (rawTo || cfg.themePath).replace(/\/$/, "");
+if (!remote.startsWith("/")) {
+  console.error(`Remote path must be absolute, got: ${remote}`);
+  process.exit(1);
+}
 
 console.log(`${site.name}`);
 console.log(`  from   ${from}`);

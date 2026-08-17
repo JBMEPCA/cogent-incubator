@@ -110,6 +110,26 @@ they are refused it for the users collection.
 ### sftp batch files eat Windows backslashes
 A local path in an `sftp -b` batch file must use forward slashes: the parser treats  as an escape, so `C:UsersCIM Ltd...` arrived as `C:UsersCIM Ltd...` and every upload failed. Also make directories with `ssh mkdir -p` rather than sftp's `-mkdir`, which prints a Failure line for every directory that already exists and buries real errors.
 
+### A theme's parent is stored in the DATABASE, not read from style.css
+Converting a standalone theme to a child by adding  to
+style.css does nothing on its own. WordPress keeps  in wp_options from
+when the theme was activated, so it kept looking for the parent inside the child's
+own directory and every pattern that called a parent function fatalled with a 500.
+Fix with  over SSH, or by re-activating the
+theme in wp-admin. wp-cli is available on SiteGround and is much the faster route.
+
+### theme.json preset arrays are REPLACED by the child, not merged
+A child declaring two font families silently drops the parent's other two. List
+every palette colour and every font family in the child, even the unchanged ones,
+and keep a copy of any font file the child declares —  resolves against
+the theme that declares it, not the parent.
+
+### Git Bash rewrites Unix absolute paths in arguments
+ reached the script as
+, and the first parent deploy built
+that entire tree inside the server's home directory. Prefix the command with
+. deploy-theme.mjs now refuses a path that looks mangled.
+
 ### The GA4 property ID in the URL is the wrong one
 On the property-create screen the ID in the address bar is the *previously
 selected* property. Storing it silently reports the wrong title's traffic.

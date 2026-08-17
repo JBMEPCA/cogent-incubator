@@ -30,8 +30,17 @@ for (const line of fs.readFileSync(path.join(ROOT, ".env"), "utf8").split(String
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-// Mirrors SLOTS.length in lib/schedule.js, which this CJS script cannot import.
-const SLOTS_PER_DAY = 7;
+// The daily target is READ FROM Site.articlesPerDayTarget, per title, every run.
+//
+// It used to be a hardcoded 7 mirroring SLOTS.length. That was wrong twice over
+// once the fleet arrived: Smart SME had been moved to 1 a day and then 3, and
+// Fleet Magazine runs at 1, so a report saying "2 of 7" was measuring against a
+// cadence nothing was aiming at — and on 17 August, with no site filter either,
+// it read "12 of 3" because it was counting both titles' output against one
+// title's target.
+//
+// The target is expected to change often, so nothing here may cache or restate
+// it. It is fetched with the site row and used exactly as stored.
 const USD_TO_GBP = 0.79;
 
 // The UK calendar day, because the schedule and the operating hours are both UK
