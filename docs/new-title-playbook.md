@@ -91,6 +91,22 @@ Auth to a path, and applying it to `/wp-json/` would have walled off the only
 interface the engine publishes through. The step now reads *verify*, not
 *exempt*, because the captcha usually is not firing at all.
 
+### Installing the certificate is not the same as enforcing HTTPS
+The site answered on `http://` with a 200 rather than redirecting, so the browser
+showed "Not secure" on a page with a perfectly valid certificate. Turning
+**HTTPS Enforce** on in the host's SSL Manager is a separate action from
+installing the certificate, and nothing warns you.
+
+### An empty navigation block auto-lists your pages
+A block theme's `wp:navigation` with no inner links quietly renders whatever
+pages exist, which is how "Sample Page" ended up in the masthead. Define the
+menu explicitly in `parts/header.html`.
+
+### `/wp/v2/users/me` omits roles without `context=edit`
+Cost a false failure in the smoke test itself. The role check needs
+`?context=edit`, and an editor is allowed it for their own record even though
+they are refused it for the users collection.
+
 ### The GA4 property ID in the URL is the wrong one
 On the property-create screen the ID in the address bar is the *previously
 selected* property. Storing it silently reports the wrong title's traffic.
@@ -113,15 +129,20 @@ Run these before touching a console.
 □  Sections chosen; they must match the plan's `category` values exactly
 ```
 
-And after launch, before declaring it done:
+And after launch:
 
 ```
-□  A published article's byline resolves to the right person, not "Engine"
-□  A published article emits <meta name="description"> (cache-busted)
-□  Site status is cold_start, not setup — cron skips `setup` silently
-□  Wire has items, not just sources
-□  Sample Page deleted
+□  node scripts/verify-title.mjs --site=<slug>     → must be all PASS
+□  HTTPS Enforce on at the host (a valid cert alone is not enough)
+□  Sample Page deleted, menu defined explicitly, favicon rendering
 ```
+
+`verify-title.mjs` exists because every one of its eighteen checks is something
+that failed silently during title #2 and was only caught by accident. It covers
+the engine switches, the spend cap, every credential, the REST captcha, the
+editor role, the byline, section-to-category matching, the meta description on a
+cache-busted live page, the wire, and any blocking provisioning. Run it before
+declaring a title live, and again after any change to the engine.
 
 ---
 
@@ -136,7 +157,7 @@ Today was survivable at n=2. Most of it does not survive n=25.
 | **Google Workspace licence per title** | Not in the cost model at all. At £5-14/user/month, 25 titles is £150-420/month — more than the entire engine. | Decide the mailbox strategy now: shared catch-all vs per-title user. This is a real cost decision, not a detail. |
 | **Content plan written by hand** | Ten briefs took a considerable amount of careful writing, and they are the difference between useful articles and filler. | A brief-generating step that takes a demand map and produces the plan. The research is already how we choose the vertical. |
 | **Source list written by hand** | 72 sources for fleet. At 25 titles that is 1,800 hand-picked URLs. | Generate from the vertical's advertiser map, which the business case produces anyway. |
-| **No launch smoke test** | Every check in §4 was done by hand, ad hoc, and I missed several until they bit. | One script: `node scripts/verify-title.mjs --site=<slug>` that runs the whole post-launch checklist and prints pass/fail. |
+| ~~No launch smoke test~~ | Was done by hand, ad hoc, and several failures were missed until they bit. | **Built:** `scripts/verify-title.mjs`, 18 checks. |
 
 ---
 
