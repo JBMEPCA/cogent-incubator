@@ -35,7 +35,9 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const MODEL = "claude-opus-4-8";
 // Mechanical routing work only: search queries and candidate picking.
 const ROUTING_MODEL = "claude-haiku-4-5";
-const UA = { "user-agent": "SmartSMEBot/1.0 (smartsme.co.uk editorial)" };
+// Set per title in the runner: a SmartSMEBot user-agent crawling on behalf of
+// the fleet magazine is the kind of small dishonesty that gets a publisher blocked.
+let UA = { "user-agent": "CogentBot/1.0" };
 const RESULTS = path.join(__dirname, ".batch-state.json");
 
 const log = (...a) => console.log(new Date().toISOString().slice(11, 19), ...a);
@@ -435,8 +437,15 @@ async function chooseImage({ title, keyphrase, brief, used, usedShoots = new Set
 
 /* ----------------------------------------------------------------- drafting */
 
-const HOUSE_STYLE = `You write for Smart SME Magazine, "The UK's publication for smart SMEs".
-Audience: UK small and medium business owners and owner-managers adopting AI, software and automation.
+// Identity comes from the Site row, not from this file. Hardcoded, it told the
+// model it wrote for Smart SME whatever title the run was actually publishing
+// to — so a fleet article would be drafted for SME owner-managers, in an SME
+// voice, and only the topic would give it away. A function rather than a const
+// because the site is resolved in the runner, after this module is evaluated.
+const houseStyle = () => `You write for ${global.__BATCH_SITE?.name || "this publication"}${
+  global.__BATCH_SITE?.strapline ? `, "${global.__BATCH_SITE.strapline}"` : ""
+}.
+Audience: ${global.__BATCH_SITE?.audience || "UK business decision-makers"}.
 Voice: plain English, specific, practical, confident without hype. UK spelling and UK context throughout.
 Short paragraphs of two to four sentences. Explain jargon on first use. Every section must answer
 "what does this mean for my business, and what do I do about it?".
@@ -453,7 +462,7 @@ HARD RULES
 5. Do not repeat the headline as an H1. The page template already prints the title.
 
 LINKING (mandatory, and links must be exact URLs from the list supplied)
-- Internal links: weave links to other smartsme.co.uk articles into sentences using descriptive anchor
+- Internal links: weave links to other articles on this site into sentences using descriptive anchor
   text that reads naturally. Never "click here", never a bare URL, never a "related reading" dump.
 - Outbound links: link authoritative primary sources (gov.uk, hmrc, ico.org.uk, ncsc.gov.uk, the
   vendor's own page, the original announcement). Never link a source you are not certain exists.
@@ -474,7 +483,7 @@ Return the eight header lines below, then the article as clean WordPress-ready H
 <h2>, <h3>, <p>, <ul>, <ol>, <li>, <table>, <strong> and <a href>. No markdown, no code fences,
 no <html>/<head>/<body> wrapper, no H1.
 TITLE: <the headline, 55-70 characters, keyword-bearing, no clickbait>
-SCORE: <0-100 estimate of this article's value to smartsme.co.uk: search demand, evergreen life, internal linking value, audience fit>
+SCORE: <0-100 estimate of this article's value to this publication: search demand, evergreen life, internal linking value, audience fit>
 SCORE_WHY: <one sentence>
 CATEGORY: <exactly one of: AI & Automation | Finance | Marketing | News | Operations>
 KEYPHRASE: <Yoast focus keyphrase, 2-5 words, present in the headline and in the first paragraph>
@@ -559,14 +568,24 @@ function mechanicalIssues({ title, body, type, keyphrase, metaDesc }, links) {
 
   const known = knownUrlSet(links);
   const hrefs = [...body.matchAll(/href="([^"]+)"/g)].map((m) => m[1]);
-  const internal = hrefs.filter((h) => /smartsme\.co\.uk/i.test(h));
+  // The host was hardcoded to smartsme.co.uk. On any other title that
+  // misclassifies every internal link as outbound, so the internal-link gate
+  // can never be satisfied and the outbound count is inflated by the site's own
+  // links. Derive it from the credential the run is actually publishing with.
+  const host = String(process.env.WP_URL || "").replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+  const isInternal = (h) => host && h.toLowerCase().includes(host.toLowerCase());
+  const internal = hrefs.filter(isInternal);
   const bad = internal.filter((h) => !known.has(h) && !known.has(h.replace(/\/$/, "")));
   if (bad.length) issues.push(`Invented internal URLs (not on the site): ${bad.slice(0, 4).join(", ")}`);
-  const minInternal = type === "pr_rewrite" ? 2 : 4;
-  if (internal.length - bad.length < minInternal)
+  // Never ask for more internal links than the site can actually supply. A new
+  // title has no published posts, so a fixed floor of four is unsatisfiable and
+  // holds every article forever — which is exactly what the seed_content
+  // provisioning step exists to work around, by hand. Scale to what exists.
+  const minInternal = Math.min(type === "pr_rewrite" ? 2 : 4, links.length);
+  if (minInternal > 0 && internal.length - bad.length < minInternal)
     issues.push(`Only ${internal.length - bad.length} valid internal links, want at least ${minInternal}`);
   // Outbound citations are an authority signal, so one is not enough.
-  const outbound = [...new Set(hrefs.filter((h) => /^https?:\/\//i.test(h) && !/smartsme\.co\.uk/i.test(h)))];
+  const outbound = [...new Set(hrefs.filter((h) => /^https?:\/\//i.test(h) && !isInternal(h)))];
   if (outbound.length < 2) issues.push(`Only ${outbound.length} outbound link(s) to primary sources, want at least 2`);
   if (/>click here</i.test(body)) issues.push('Uses "click here" anchor text');
   if (type !== "pr_rewrite" && !/<table[\s>]/i.test(body)) issues.push("No comparison table");
@@ -683,6 +702,7 @@ async function publish({ title, body, mediaId, categoryId, keyphrase, metaDesc }
       content: body,
       status: "publish",
       ...(mediaId ? { featured_media: mediaId } : {}),
+      ...(global.__BATCH_AUTHOR_ID ? { author: global.__BATCH_AUTHOR_ID } : {}),
       ...(categoryId ? { categories: [categoryId] } : {}),
       ...(metaDesc ? { excerpt: metaDesc } : {}),
       meta: {
@@ -731,7 +751,7 @@ async function runOneMetered(spec, links, usedImages, archive) {
   const sourceText = spec.sourceUrl ? await fetchSourceText(spec.sourceUrl) : null;
   if (spec.sourceUrl) log(`[${spec.key}] source text: ${sourceText ? `${sourceText.length} chars` : "UNAVAILABLE"}`);
 
-  let draft = parseDraft(await ask({ system: HOUSE_STYLE, user: draftPrompt(spec, sourceText, links) }), spec);
+  let draft = parseDraft(await ask({ system: houseStyle(), user: draftPrompt(spec, sourceText, links) }), spec);
   log(`[${spec.key}] drafted "${draft.title}"`);
 
   // Two QA gates, with one revision pass if either complains.
@@ -743,8 +763,8 @@ async function runOneMetered(spec, links, usedImages, archive) {
     log(`[${spec.key}] QA round 1: ${mech.words} words, ${issues.length} issue(s)`);
     issues.forEach((i) => log(`   - ${i}`));
     const revised = await ask({
-      system: HOUSE_STYLE,
-      user: `Below is a draft article for Smart SME Magazine and the editor's fix list. Rewrite the article so every point is resolved. Keep everything that already works: do not restructure for its own sake, do not shorten, and do not drop valid internal links. Return the full corrected article in the standard output format (the eight header lines then the HTML).
+      system: houseStyle(),
+      user: `Below is a draft article for this publication and the editor's fix list. Rewrite the article so every point is resolved. Keep everything that already works: do not restructure for its own sake, do not shorten, and do not drop valid internal links. Return the full corrected article in the standard output format (the eight header lines then the HTML).
 
 EDITOR'S FIX LIST:
 ${issues.map((i, n) => `${n + 1}. ${i}`).join("\n")}
@@ -827,6 +847,7 @@ ${draft.body}`,
 
   const article = await prisma.article.create({
     data: {
+      siteId: global.__BATCH_SITE.id,
       title: draft.title,
       type: spec.type,
       status: "published",
@@ -877,11 +898,59 @@ ${draft.body}`,
 /* -------------------------------------------------------------------- runner */
 
 (async () => {
-  const plan = JSON.parse(fs.readFileSync(path.join(__dirname, "batch-plan.json"), "utf8"));
-  const results = fs.existsSync(RESULTS) ? JSON.parse(fs.readFileSync(RESULTS, "utf8")) : {};
+  // --- tenancy -----------------------------------------------------------
+  //
+  // This script predated the multi-title rebuild: it read WP_URL, WP_USERNAME
+  // and WP_APP_PASSWORD straight from the environment and wrote Article rows
+  // with no siteId. Those env vars no longer exist, because credentials moved
+  // into SiteCredential encrypted per title — so it would have crashed, and if
+  // the vars HAD still been set it would have published one title's articles
+  // onto another's WordPress. Resolve the title first, then hand the rest of
+  // the script the same env vars it always expected.
+  const slug = (process.argv.find((a) => a.startsWith("--site=")) || "").split("=")[1];
+  if (!slug) {
+    console.error("Refusing to run without --site=<slug>.");
+    process.exit(1);
+  }
+  const SITE = await prisma.site.findUnique({ where: { slug } });
+  if (!SITE) {
+    console.error(`No title with slug "${slug}".`);
+    process.exit(1);
+  }
+  const { siteCredentials } = await import("../lib/site.js");
+  const { creds } = await siteCredentials(SITE.id);
+  const wp = creds.wordpress;
+  if (!wp?.url) {
+    console.error(`${SITE.name} has no WordPress credential stored.`);
+    process.exit(1);
+  }
+  process.env.WP_URL = wp.url;
+  process.env.WP_USERNAME = wp.username;
+  process.env.WP_APP_PASSWORD = wp.appPassword;
+  UA = {
+    "user-agent": `${String(SITE.name).replace(/[^A-Za-z0-9]/g, "")}Bot/1.0 (${String(wp.url).replace(/^https?:\/\//, "")} editorial)`,
+  };
+
+  // Byline, honouring the title's bylineMode. Null falls back to the account
+  // holding the application password, exactly as publishing does elsewhere.
+  const { authorForSite } = await import("../lib/wordpress.js");
+  global.__BATCH_SITE = SITE;
+  global.__BATCH_AUTHOR_ID = await authorForSite(wp, SITE);
+
+  const planPath = (process.argv.find((a) => a.startsWith("--plan=")) || "").split("=")[1]
+    || path.join(__dirname, `batch-plan-${slug}.json`);
+  if (!fs.existsSync(planPath)) {
+    console.error(`No plan file at ${planPath}`);
+    process.exit(1);
+  }
+  log(`${SITE.name} — ${wp.url} — plan ${path.basename(planPath)} — byline ${global.__BATCH_AUTHOR_ID ?? "(engine account)"}`);
+
+  const plan = JSON.parse(fs.readFileSync(planPath, "utf8"));
+  const resultsFile = RESULTS.replace(/\.json$/, `-${slug}.json`);
+  const results = fs.existsSync(resultsFile) ? JSON.parse(fs.readFileSync(resultsFile, "utf8")) : {};
 
   const history = await prisma.article.findMany({
-    where: { imageUrl: { not: null } },
+    where: { siteId: SITE.id, imageUrl: { not: null } },
     select: { imageUrl: true, imageSource: true, imageAlt: true, category: true },
     orderBy: { createdAt: "desc" },
   });
@@ -923,7 +992,7 @@ ${draft.body}`,
         fs.writeFileSync(path.join(__dirname, `held-${key}.html`), r.value.draft?.body || "");
       }
     });
-    fs.writeFileSync(RESULTS, JSON.stringify(results, null, 2));
+    fs.writeFileSync(resultsFile, JSON.stringify(results, null, 2));
   }
 
   log("\n=== SUMMARY ===");

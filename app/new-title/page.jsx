@@ -31,8 +31,14 @@ const STEPS = [
   // 202, not 4xx, so every naive `res.ok` check sails straight past it and the failure
   // surfaces later as a content-type error somewhere unrelated. Whitelist before you
   // trust a green credential light.
-  ["sg_captcha", "Exempt the REST API from the SiteGround security captcha",
-    "sg-security serves a captcha on /wp-json/ and returns 202, not an error — a health check will look green while every publish fails.", true, true],
+  // Phrased as a CHECK, not a change. Written as "exempt the REST API" it read
+  // as an instruction to go and disable something, which sent the first reader
+  // to SiteGround's Protected URLs tool — that adds HTTP Basic Auth to a path,
+  // and applying it to /wp-json/ would have walled off the only interface the
+  // engine publishes through. The captcha often is not firing at all; find out
+  // before touching a security setting.
+  ["sg_captcha", "Verify the REST API is not captcha-blocked, as the Engine user",
+    "Authenticate as the Engine account and fetch /wp-json/wp/v2/posts. A captcha interstitial returns 202 with an HTML body, so res.ok looks fine while every publish fails. Only change SiteGround's anti-bot settings if it actually fires. Do NOT use Protected URLs.", true, true],
   ["categories", "Create the categories exactly as the sections spell them", null, false, false],
   ["wp_user", "Create the Engine user at EDITOR role and an application password", "Not administrator. It must get rest_forbidden on /wp/v2/settings.", true, false],
   // The Engine account authenticates; the byline account is who the post is

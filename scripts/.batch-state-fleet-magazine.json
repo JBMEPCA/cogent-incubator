@@ -1,0 +1,178 @@
+{
+  "company-car-tax": {
+    "key": "company-car-tax",
+    "status": "error",
+    "error": "400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"You have reached your specified API usage limits. You will regain access on 2026-09-01 at 00:00 UTC.\"},\"request_id\":\"req_011Ce8Tq6pna4ikrdJA6o8S5\"}",
+    "cost": {
+      "calls": 0,
+      "in": 0,
+      "out": 0,
+      "usd": 0,
+      "byModel": {}
+    }
+  },
+  "ev-salary-sacrifice": {
+    "key": "ev-salary-sacrifice",
+    "status": "published",
+    "wpPostId": 9,
+    "link": "https://thefleetmagazine.co.uk/ev-salary-sacrifice-explained-how-the-numbers-work-in-2026-27/",
+    "title": "EV Salary Sacrifice Explained: How the Numbers Work in 2026/27",
+    "words": 2121,
+    "category": "Finance",
+    "keyphrase": "EV salary sacrifice",
+    "metaDesc": "EV salary sacrifice explained with full 2026/27 arithmetic for 20% and 40% taxpayers, the employer position, the risks and what to do next.",
+    "seoScore": 88,
+    "editorialScore": 88,
+    "image": {
+      "url": "https://images.pexels.com/photos/28851165/pexels-photo-28851165.jpeg?auto=compress&cs=tinysrgb&w=2000",
+      "width": 2000,
+      "height": 1333,
+      "alt": "White electric vehicles charging at wall units in an indoor bay, illustrating EV salary sacrifice"
+    },
+    "articleId": "cmsxb47ed00011478e72nx04h",
+    "cost": {
+      "calls": 5,
+      "in": 12667,
+      "out": 7973,
+      "usd": 0.2574,
+      "byModel": {
+        "claude-opus-4-8": {
+          "calls": 3,
+          "in": 11828,
+          "out": 7880,
+          "usd": 0.2561
+        },
+        "claude-haiku-4-5-20251001": {
+          "calls": 2,
+          "in": 839,
+          "out": 93,
+          "usd": 0.0013
+        }
+      }
+    }
+  },
+  "van-benefit-charge": {
+    "key": "van-benefit-charge",
+    "status": "published",
+    "wpPostId": 11,
+    "link": "https://thefleetmagazine.co.uk/van-benefit-charge-when-a-company-van-becomes-a-benefit/",
+    "title": "Van Benefit Charge: When a Company Van Becomes a Benefit",
+    "words": 2337,
+    "category": "Finance",
+    "keyphrase": "van benefit charge",
+    "metaDesc": "The van benefit charge explained: when a company van is taxable, what insignificant private use means, plus fuel charges and how to defend your position.",
+    "seoScore": 82,
+    "editorialScore": 88,
+    "image": {
+      "url": "https://images.pexels.com/photos/7363197/pexels-photo-7363197.jpeg?auto=compress&cs=tinysrgb&w=2000",
+      "width": 2000,
+      "height": 1333,
+      "alt": "Driver in a white company delivery van marked 'Delivery Always On Time', illustrating van benefit charge"
+    },
+    "articleId": "cmsxb4ikf00031478rw4kruab",
+    "cost": {
+      "calls": 5,
+      "in": 12949,
+      "out": 8703,
+      "usd": 0.2711,
+      "byModel": {
+        "claude-opus-4-8": {
+          "calls": 3,
+          "in": 11987,
+          "out": 8332,
+          "usd": 0.2682
+        },
+        "claude-haiku-4-5-20251001": {
+          "calls": 2,
+          "in": 962,
+          "out": 371,
+          "usd": 0.0028
+        }
+      }
+    }
+  },
+  "double-cab-pickup": {
+    "key": "double-cab-pickup",
+    "status": "error",
+    "error": "400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"You have reached your specified API usage limits. You will regain access on 2026-09-01 at 00:00 UTC.\"},\"request_id\":\"req_011Ce8Tq8xmeV8nFphquuCmi\"}",
+    "cost": {
+      "calls": 0,
+      "in": 0,
+      "out": 0,
+      "usd": 0,
+      "byModel": {}
+    }
+  },
+  "advisory-fuel-rates": {
+    "key": "advisory-fuel-rates",
+    "status": "error",
+    "error": "400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"You have reached your specified API usage limits. You will regain access on 2026-09-01 at 00:00 UTC.\"},\"request_id\":\"req_011Ce8Tq99SNwCLmY4FbM5gq\"}",
+    "cost": {
+      "calls": 0,
+      "in": 0,
+      "out": 0,
+      "usd": 0,
+      "byModel": {}
+    }
+  },
+  "zev-mandate": {
+    "key": "zev-mandate",
+    "status": "error",
+    "error": "400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"You have reached your specified API usage limits. You will regain access on 2026-09-01 at 00:00 UTC.\"},\"request_id\":\"req_011Ce8TqA5k9HG23dHwgRKi6\"}",
+    "cost": {
+      "calls": 0,
+      "in": 0,
+      "out": 0,
+      "usd": 0,
+      "byModel": {}
+    }
+  },
+  "grey-fleet": {
+    "key": "grey-fleet",
+    "status": "error",
+    "error": "400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"You have reached your specified API usage limits. You will regain access on 2026-09-01 at 00:00 UTC.\"},\"request_id\":\"req_011Ce8TqBjhyWZMQQc9wAcFo\"}",
+    "cost": {
+      "calls": 0,
+      "in": 0,
+      "out": 0,
+      "usd": 0,
+      "byModel": {}
+    }
+  },
+  "depot-charging": {
+    "key": "depot-charging",
+    "status": "error",
+    "error": "400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"You have reached your specified API usage limits. You will regain access on 2026-09-01 at 00:00 UTC.\"},\"request_id\":\"req_011Ce8TqBekDZPatN8wun3Vw\"}",
+    "cost": {
+      "calls": 0,
+      "in": 0,
+      "out": 0,
+      "usd": 0,
+      "byModel": {}
+    }
+  },
+  "operator-licence": {
+    "key": "operator-licence",
+    "status": "error",
+    "error": "400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"You have reached your specified API usage limits. You will regain access on 2026-09-01 at 00:00 UTC.\"},\"request_id\":\"req_011Ce8TqBjhq26UyCwxNqF38\"}",
+    "cost": {
+      "calls": 0,
+      "in": 0,
+      "out": 0,
+      "usd": 0,
+      "byModel": {}
+    }
+  },
+  "whole-life-cost": {
+    "key": "whole-life-cost",
+    "status": "error",
+    "error": "400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"You have reached your specified API usage limits. You will regain access on 2026-09-01 at 00:00 UTC.\"},\"request_id\":\"req_011Ce8TqBrQ78fTaMJoNzCPv\"}",
+    "cost": {
+      "calls": 0,
+      "in": 0,
+      "out": 0,
+      "usd": 0,
+      "byModel": {}
+    }
+  }
+}
