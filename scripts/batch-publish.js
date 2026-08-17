@@ -339,6 +339,11 @@ Reply ONLY with JSON:
 {"verdict":"yes"|"no","score":<0-100 relevance>,"reason":"<one sentence>","alt":"<SEO alt text under 120 chars describing what is actually visible, including the keyphrase if it fits naturally>"}`,
     user: `Article headline: "${title}"\nTarget keyphrase: ${keyphrase || "n/a"}\n\nIs this image safe and appropriate to publish as this article's header?`,
     images: [{ type, data: data.toString("base64") }],
+    // Picture gate on the cheap tier. Judging whether a photo shows the right
+    // subject is mechanical, not editorial, and every rejection re-sends a full
+    // image: one article in the first fleet batch spent $0.80 over 12 Opus
+    // vision calls and still published nothing.
+    routing: true,
   });
   const verdict = (field(out, "verdict") || "").toLowerCase();
   const score = parseInt(field(out, "score") || "0", 10) || 0;

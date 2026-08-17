@@ -25,7 +25,8 @@ const sharp = require("sharp");
 const prisma = new PrismaClient();
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const MODEL = "claude-opus-4-8";
-const UA = { "user-agent": "SmartSMEBot/1.0 (smartsme.co.uk editorial)" };
+const VISION_MODEL = "claude-haiku-4-5";
+const UA = { "user-agent": "CogentBot/1.0" };
 // This host 403s bot-shaped agents on plain reads; authenticated reads are fine.
 const BROWSER_UA = { "user-agent": "Mozilla/5.0" };
 
@@ -63,10 +64,15 @@ async function ask({ system, user, maxTokens = 16000, images = [] }) {
         { type: "text", text: user },
       ]
     : user;
+  // Anything carrying an image is the picture gate, which is mechanical
+  // judgement and belongs on the cheap tier: it asks whether a photo shows the
+  // right subject, and every rejection re-sends a full image through the model.
+  // Haiku 4.5 predates adaptive thinking, so the parameter has to come off too.
+  const vision = images.length > 0;
   const res = await client.messages.create({
-    model: MODEL,
+    model: vision ? VISION_MODEL : MODEL,
     max_tokens: maxTokens,
-    thinking: { type: "adaptive" },
+    ...(vision ? {} : { thinking: { type: "adaptive" } }),
     system,
     messages: [{ role: "user", content }],
   });
