@@ -36,3 +36,6 @@ scripts/held-*.html
 # ...but the template with no values in it is how the required variables get
 # documented for Vercel. .env* above would otherwise swallow it too.
 !.env.example
+
+.vercel
+.env*

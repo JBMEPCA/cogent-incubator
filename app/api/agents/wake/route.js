@@ -4,6 +4,8 @@ import { runResearcher } from "@/lib/agents/researcher";
 import { runLinkedIn } from "@/lib/agents/linkedin";
 import { runBacklink } from "@/lib/agents/backlink";
 import { runDirector, runEditor, runDesigner, runSeo, runFinance } from "@/lib/agents/team";
+import { runNewsletter } from "@/lib/newsletter";
+import { LOGO_PNG } from "@/lib/brand/logo";
 import { getSiteContext } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
@@ -14,9 +16,15 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
 // backlink was missing from this map, so the Backlink Manager could not be woken
-// from the office at all. Newsletter is still absent, deliberately: it is not on
-// the tick's ladder either and sending a real issue on demand is a different
-// class of action from drafting one.
+// from the office at all.
+//
+// Newsletter is here now, but ALWAYS as a dry run. The original objection was
+// right — sending a real issue on demand is a different class of action from
+// drafting one — but the answer to that is not leaving the only weekly job in
+// the system unreachable from the office. A dry run picks the ten stories,
+// renders them and validates every link without creating anything in Mailchimp,
+// which is exactly what you want to check before a Thursday. The real send stays
+// where it belongs: the scheduled route, on its own clock.
 const AGENTS = {
   director: runDirector,
   researcher: runResearcher,
@@ -26,6 +34,8 @@ const AGENTS = {
   finance: runFinance,
   linkedin: runLinkedIn,
   backlink: runBacklink,
+  newsletter: (site, trigger, ctx) =>
+    runNewsletter(site, { creds: ctx.creds, dryRun: true, logoBase64: LOGO_PNG.toString("base64") }),
 };
 
 // Manual wake from the office view, so you can watch an agent work on demand
@@ -49,6 +59,9 @@ export async function POST(request) {
   if (!ctx) return Response.json({ error: "unknown site" }, { status: 404 });
 
   await ensureAgents(ctx.site.id);
-  const result = await AGENTS[key](ctx.site, "manual");
+  // The third argument is the full site context, which only the newsletter
+  // wrapper needs (it wants this title's Mailchimp credential). The eight agents
+  // above take a site row and fetch what they need themselves, so they ignore it.
+  const result = await AGENTS[key](ctx.site, "manual", ctx);
   return Response.json(result);
 }

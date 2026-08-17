@@ -2,7 +2,7 @@ import Link from "next/link";
 import Header from "@/app/components/Header";
 import SubTabs, { CONTENT_TABS } from "@/app/components/SubTabs";
 import ScheduleCalendar from "@/app/components/ScheduleCalendar";
-import { upcomingSlots, SLOTS } from "@/lib/schedule";
+import { upcomingSlots, slotsFor } from "@/lib/schedule";
 import { notFound } from "next/navigation";
 import { getSiteContext } from "@/lib/site";
 import {
@@ -80,7 +80,7 @@ export default async function ContentPage({searchParams, params}) {
       select: { id: true, title: true, type: true, scheduledFor: true, qaPassed: true, status: true },
     });
     const byIso = new Map(scheduled.map((a) => [a.scheduledFor.toISOString(), a]));
-    const slots = upcomingSlots(7);
+    const slots = upcomingSlots(site, 7);
     const grouped = new Map();
     for (const s of slots) {
       if (!grouped.has(s.dayKey)) grouped.set(s.dayKey, []);
@@ -167,14 +167,15 @@ export default async function ContentPage({searchParams, params}) {
               <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 4 }}>
                 <h2 style={{ margin: 0, fontSize: 17 }}>Publishing calendar</h2>
                 <span className="micro">
-                  {SLOTS.length} articles a day · news mornings, guides afternoons, case studies midweek and weekends
+                  {slotsFor(site).length} {slotsFor(site).length === 1 ? "article" : "articles"} a day · news mornings,
+                  guides afternoons, case studies midweek and weekends
                 </span>
               </div>
               <p className="micro" style={{ margin: "0 0 14px" }}>
                 The Director commissions and the Editor writes, during working hours. Nothing publishes until it has passed
                 editorial QA and its image has been visually verified.
               </p>
-              <ScheduleCalendar days={calendarDays} />
+              <ScheduleCalendar days={calendarDays} slots={slotsFor(site)} />
             </section>
           </>
         )}

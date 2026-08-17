@@ -19,8 +19,8 @@ export async function GET(request) {
   // and the schedule silently never filled — an article could pass QA, get its
   // image, and then simply never be given a time to go out.
   return Response.json(
-    await forEachSite(async ({ db }) => {
-      const slots = upcomingSlots(7);
+    await forEachSite(async ({ site, db }) => {
+      const slots = upcomingSlots(site, 7);
 
   // THE SCHEDULE IS REBALANCED ON EVERY RUN, best score to earliest slot.
   //
@@ -68,8 +68,26 @@ export async function GET(request) {
   // runs. An unscored article sorts LAST: Postgres puts NULLs first on a DESC
   // sort, so the old query handed the earliest slot going to an article with no
   // score at all, and nine of the fifty-eight articles have none.
+  //
+  // WITH AN AGEING TERM, because pure best-first has no floor. The pool is
+  // rebalanced on every run, so a mid-scoring piece is re-beaten by whatever was
+  // drafted this morning, every hour, indefinitely: an article written on
+  // 5 August was still queued on the 14th, having been pushed back by nine days
+  // of higher scorers. That was survivable at seven slots a day and is not at
+  // one to three, where the same backlog is a fortnight and a piece written to a
+  // news peg goes stale before its slot arrives.
+  //
+  // Three points a day, capped at twenty, so a week of waiting is worth roughly
+  // the gap between a good article and an excellent one — enough to get its turn,
+  // never enough to put a weak piece at the front of the queue.
+  const AGE_POINTS_PER_DAY = 3;
+  const MAX_AGE_POINTS = 20;
+  const effectiveScore = (a) => {
+    const days = (Date.now() - new Date(a.createdAt).getTime()) / 864e5;
+    return (a.seoScore ?? -1) + Math.min(MAX_AGE_POINTS, days * AGE_POINTS_PER_DAY);
+  };
   const byScore = (a, b) =>
-    (b.seoScore ?? -1) - (a.seoScore ?? -1) || new Date(a.createdAt) - new Date(b.createdAt);
+    effectiveScore(b) - effectiveScore(a) || new Date(a.createdAt) - new Date(b.createdAt);
 
   const pool = {};
   for (const a of waiting) (pool[a.type] ||= []).push(a);

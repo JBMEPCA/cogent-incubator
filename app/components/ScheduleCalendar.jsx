@@ -4,7 +4,11 @@ import { TYPE_LABEL, TYPE_STYLE, SLOTS } from "@/lib/schedule";
 const DAY = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 // Seven-day publishing calendar: one column per day, one row per slot.
-export default function ScheduleCalendar({ days }) {
+//
+// `slots` is this title's own times, which is not necessarily all seven — the
+// footer used to print the full constant, so a title publishing twice a day
+// still read "07:30 · 09:00 · 10:30 · … daily" underneath a two-row calendar.
+export default function ScheduleCalendar({ days, slots = SLOTS }) {
   return (
     <div style={{ overflowX: "auto" }}>
       <div
@@ -113,7 +117,7 @@ export default function ScheduleCalendar({ days }) {
         })}
       </div>
       <p className="micro" style={{ marginTop: 10 }}>
-        {SLOTS.join(" · ")} daily · articles publish automatically once QA passes ·
+        {slots.join(" · ")} daily · articles publish automatically once QA passes ·
         click any title to review or edit before it goes out
       </p>
     </div>

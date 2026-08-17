@@ -84,15 +84,36 @@ async function tickOne(ctx, { forced, stage }) {
   const held = await sweepHeldArticles(site);
 
   const ran = [];
+  let directorSkipped = null;
   if (stage !== "worker") {
-    const director = await runDirector(site, "tick");
-    ran.push({ agent: "director", ...director });
+    // The Director used to run on every single tick: 200 runs in seven days,
+    // the large majority of them reporting "team on track, nothing to
+    // arbitrate". It only ever HAS work in three situations, and all three are
+    // one cheap count away, so ask before paying for a turn.
+    const [openMessages, jbRequests, inFlightNow, proposedNow] = await Promise.all([
+      db.agentMessage.count({ where: { toKey: "director", resolved: false } }),
+      db.researchTopic.count({ where: { status: "proposed", source: "jb" } }),
+      db.article.count({ where: { status: "drafting" } }),
+      db.researchTopic.count({ where: { status: "proposed", source: { not: "jb" } } }),
+    ]);
+    // The commissioning gate inside runDirector is `inFlight < 2`, so mirror it
+    // exactly. Getting these out of step would either wake it for nothing or,
+    // worse, never wake it when the queue genuinely runs dry.
+    const canCommission = inFlightNow < 2 && proposedNow > 0;
+
+    if (openMessages || jbRequests || canCommission) {
+      const director = await runDirector(site, "tick");
+      ran.push({ agent: "director", ...director });
+    } else {
+      directorSkipped = `nothing to do: ${inFlightNow} drafting, ${proposedNow} topics proposed, no open reports`;
+    }
   }
   if (stage === "director") {
     return {
       stage,
       reaped,
       held,
+      ...(directorSkipped ? { directorSkipped } : {}),
       ran: ran.map((r) => ({ agent: r.agent, ok: r.ok, summary: r.summary })),
       costUsd: Number(ran.reduce((s, r) => s + (r.cost || 0), 0).toFixed(4)),
     };
@@ -105,7 +126,13 @@ async function tickOne(ctx, { forced, stage }) {
       db.article.count({ where: { status: { in: ["review", "approved"] }, imageUrl: null } }),
       db.article.count({ where: { status: "drafting" } }),
       db.researchTopic.count({ where: { status: "proposed" } }),
-      db.agent.findUnique({ where: { key: "researcher" }, select: { lastRunAt: true } }),
+      // findFirst, NOT findUnique. Agent's primary key became (siteId, key) in
+      // the multi-tenant split, so `key` alone is not a unique input and Prisma
+      // rejects the call outright — which threw inside this Promise.all, took
+      // the whole worker stage down with it, and left the Director as the only
+      // agent that ever ran. forSite() injects the siteId filter, so findFirst
+      // is both correct and scoped.
+      db.agent.findFirst({ where: { key: "researcher" }, select: { lastRunAt: true } }),
       // The last ATTEMPT per agent, not the last success. agent.lastRunAt is
       // only written when a run finishes cleanly, so gating on it means a
       // failing agent looks permanently overdue and takes every tick for ever.
@@ -167,6 +194,7 @@ async function tickOne(ctx, { forced, stage }) {
     stage: stage || "both",
     reaped,
     held,
+    ...(directorSkipped ? { directorSkipped } : {}),
     ran: ran.map((r) => ({ agent: r.agent, ok: r.ok, summary: r.summary })),
     costUsd: Number(cost.toFixed(4)),
   };
