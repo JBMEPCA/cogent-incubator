@@ -80,7 +80,7 @@ export default async function NewsletterStatsPage({ params }) {
   }
 
   const [r, drip] = await Promise.all([
-    newsletterReport(site.id, creds.mailchimp.audienceId).catch((e) => ({
+    newsletterReport(creds.mailchimp.audienceId).catch((e) => ({
       error: e.message, issues: [], growth: [], latestLinks: [],
     })),
     prospectStats(site.id).catch(() => null),

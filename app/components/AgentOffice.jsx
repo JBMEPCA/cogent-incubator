@@ -89,11 +89,17 @@ export default function AgentOffice() {
     load();
     setAsleep(offShift());
     setNow(Date.now());
+    // Every tick is a serverless invocation and a scoped Prisma query, and at
+    // six seconds this was the single busiest route in the production logs —
+    // running whether or not anyone was looking at the tab. Agents change state
+    // on the order of minutes, so six seconds was buying nothing and competing
+    // with real page loads for the same function capacity.
     const t = setInterval(() => {
+      if (typeof document !== "undefined" && document.visibilityState !== "visible") return;
       load();
       setAsleep(offShift());
       setNow(Date.now());
-    }, 6000);
+    }, 20000);
     return () => clearInterval(t);
   }, [load]);
 
