@@ -1,4 +1,4 @@
-// Smart SME: batch article publisher. Drafts long-form pieces against the live site's
+// Batch article publisher, per title (--site=<slug>). Drafts long-form pieces against the live site's
 // link map, sources a high-resolution header photo, runs the copy and picture
 // QA gates, revises once if the gates complain, then publishes to WordPress and
 // records the article in the app database.
@@ -323,7 +323,7 @@ async function verifyImage({ file, title, keyphrase }) {
   }
   const out = await ask({
     maxTokens: 900,
-    system: `You are the picture editor for Smart SME Magazine, a UK business publication. You are shown a candidate header image and the article it would illustrate. Catch mistakes before publication.
+    system: `You are the picture editor for ${siteName()}, a UK trade publication. You are shown a candidate header image and the article it would illustrate. Catch mistakes before publication.
 
 REJECT (verdict "no") if ANY of these are true:
 - The image does not clearly relate to the article's subject.
@@ -442,6 +442,9 @@ async function chooseImage({ title, keyphrase, brief, used, usedShoots = new Set
 // to — so a fleet article would be drafted for SME owner-managers, in an SME
 // voice, and only the topic would give it away. A function rather than a const
 // because the site is resolved in the runner, after this module is evaluated.
+const siteName = () => global.__BATCH_SITE?.name || "this publication";
+const siteAudience = () => global.__BATCH_SITE?.audience || "UK business decision-makers";
+
 const houseStyle = () => `You write for ${global.__BATCH_SITE?.name || "this publication"}${
   global.__BATCH_SITE?.strapline ? `, "${global.__BATCH_SITE.strapline}"` : ""
 }.
@@ -493,12 +496,12 @@ IMAGE_ALT: <alt text under 120 chars>`;
 
 function draftPrompt(spec, sourceText, links) {
   const shared = `
-Existing Smart SME articles you may link to (use these EXACT URLs, nothing else, and only where the link genuinely helps the reader):
+Existing ${siteName()} articles you may link to (use these EXACT URLs, nothing else, and only where the link genuinely helps the reader):
 ${linkBlock(links)}
 `;
 
   if (spec.type === "pr_rewrite") {
-    return `Write an in-depth news analysis for Smart SME Magazine: 700 to 1,000 words. This is not a press release rewrite and not a squib. It is the piece a UK SME owner reads to understand what just happened and what to do about it.
+    return `Write an in-depth news analysis for ${siteName()}: 700 to 1,000 words. This is not a press release rewrite and not a squib. It is the piece one of your readers (${siteAudience()}) reads to understand what just happened and what to do about it.
 
 Working headline: ${spec.title}
 Source: ${spec.brandName}
@@ -521,7 +524,7 @@ ${sourceText || "(The source page could not be fetched. Write only from the brie
 ${shared}`;
   }
 
-  return `Write a definitive, original SEO guide for Smart SME Magazine: 1,800 to 2,400 words. Depth is the point. This should be the most useful page on the UK internet for this query, and a reader should be able to act on it without reading anything else.
+  return `Write a definitive, original SEO guide for ${siteName()}: 1,800 to 2,400 words. Depth is the point. This should be the most useful page on the UK internet for this query, and a reader should be able to act on it without reading anything else.
 
 Working title: ${spec.title}
 Target keywords: ${spec.keywords}
@@ -601,7 +604,7 @@ function mechanicalIssues({ title, body, type, keyphrase, metaDesc }, links) {
 async function editorialReview({ title, body, type, keyphrase }) {
   const out = await ask({
     maxTokens: 1600,
-    system: `You are the editor of Smart SME Magazine (UK SMEs adopting AI, software and automation). Review this article as if it publishes in ten minutes under your name and your reputation is on the line.
+    system: `You are the editor of ${siteName()}. Your readers: ${siteAudience()}. Review this article as if it publishes in ten minutes under your name and your reputation is on the line.
 
 Flag ONLY genuine problems:
 - Factual claims that look invented or unverifiable: specific statistics, prices, dates, quotes, named customers.
