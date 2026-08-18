@@ -92,6 +92,19 @@ mandatory wait, and everything hangs off it.
    mailbox with zero Google Cloud work; a new org means setting all of it up again.
 5. **Create the intake user** (`news@…`) and generate DKIM.
 6. **Write the content plan and the source list** while you wait.
+
+   **A Google News query is not a source.** It yields a headline and a redirect
+   stub: the link is a JavaScript shell with no publisher URL in it, so the
+   fetch returns the literal string "Google News" — two words — and the RSS
+   summary beside it has a median of 13 words. Fleet launched on twelve such
+   queries and nothing else, and every news rewrite it produced scored 42 to 71
+   with the same complaint: "thin source with no figures limits depth".
+
+   Direct feeds return about 1,600 words of real article. Aim for **30+ direct
+   feeds before launch**. Autodiscovery from each brand's newsroom page finds
+   roughly a fifth of them; the rest are `/feed/`, `/rss.xml`, `.atom` on
+   gov.uk, or a `media.`/`press.` subdomain. Trade bodies and regulators are the
+   richest and the easiest — gov.uk organisation pages all expose `.atom`.
 7. **Install WordPress, Yoast and Site Kit, then the theme.** Yoast *before* the
    first publish — see §3.
 
@@ -291,6 +304,8 @@ Run these before touching a console.
 □  Daily spend cap set on the new title AND every existing title
 □  Search set added to lib/news-searches.js and to SEARCH_SETS
 □  Source list written (see scripts/seed-fleet-sources.mjs for the shape)
+□  At least 30 sources have a real feedUrl, not just Google News queries
+      → a title whose wire is 100% Google News cannot write news worth reading
 □  Content plan written (scripts/batch-plan-<slug>.json)
 □  Sections chosen; they must match the plan's `category` values exactly
 □  articlesPerDayTarget set (1-7; it clamps silently above 7)
@@ -553,6 +568,40 @@ free on a call that finishes early.** Also: a reply with no verdict at all is a
 broken gate, not a bad article, and must be raised as an error — never reported as
 an article fault.
 
+### Do not pay to write what cannot be written
+
+The gate catching a bad article is the expensive way to find out. On 18 August
+Smart SME spent £1.53 of Editor time to publish one article out of three: two
+pieces each took three full passes against a single objection and were then
+parked. Three changes, all fleet-wide, all in `lib/drafting.js` and
+`lib/agents/team.js` so every title inherits them with no configuration:
+
+**A pre-draft material gate.** Before the Opus call, count what is actually
+available. Under `MIN_SOURCE_WORDS` (50) of fetched source AND under
+`MIN_SUMMARY_WORDS` (25) of feed summary, with no commissioning brief, the piece
+is parked for nothing rather than drafted for ~£0.20 and then repaired twice.
+The thresholds are a floor in code, not a model call, because the gap between a
+direct feed and a Google News stub is 1,600 words against two.
+
+Park, never throw. A throw leaves the article in `drafting`, the Editor takes
+the oldest `drafting` piece every tick, and the whole queue stalls behind it.
+
+**The repair pass may correct the headline and meta description.** It used to
+write only the body and hand the ORIGINAL title back to the gate, so any
+objection naming the headline was unfixable by construction — it survived every
+rewrite, failed three times and parked the article. That binned an 80-scoring
+evergreen guide whose only fault was a headline contradicting its own text.
+
+**A repair that changes nothing parks immediately.** When the gate returns
+exactly the issues it raised before, the pass has failed to move it and another
+round buys the same answer at full price.
+
+The general rule, and it is the one to carry into a new title: **every gate
+needs a matching power to fix what it objects to, and every objection it raises
+must be actionable by whatever runs next.** Three separate bugs this week were
+the same shape — a gate raising something the repair path had no way to act on,
+and a loop paying full rate until a counter killed it.
+
 ### A prompt is not a guard
 `repairArticle` asked for "the corrected body as HTML and nothing else" and
 trusted the reply. That held for as long as the call was on Opus. Moved to
@@ -596,7 +645,7 @@ was looking at it.
 
 ---
 
-## 9. Post-deploy: purge the cache, then look at it on a phone
+## 10. Post-deploy: purge the cache, then look at it on a phone
 
 Added after both homepages were reported dead while every automated check said
 the sites were healthy. Two separate failures, one visible symptom.
