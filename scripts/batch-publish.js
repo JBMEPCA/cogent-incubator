@@ -659,7 +659,21 @@ function parseDraft(raw, spec) {
     })(),
     keyphrase: headerLine(body, "KEYPHRASE"),
     metaDesc: stripDashes(headerLine(body, "META_DESC")),
-    imageQuery: headerLine(body, "IMAGE_QUERY"),
+    // A plan entry may override the drafted image query with `imageQuery`.
+    //
+    // The drafting prompt asks for "2-4 words describing the ideal header
+    // photograph" and the model always derives them from the subject, which is
+    // right almost always and catastrophic for a few topics. Golf Resort
+    // Magazine's construction-cost piece failed the picture gate eighteen times
+    // across three runs: every query containing "construction" returns
+    // excavators, quarries and road rollers, and the gate correctly rejects all
+    // of them for having no golf in the frame. Its consolidation piece pulled
+    // stock boardroom handshakes for the same reason. Instructing the model in
+    // the brief does not work — the header line is regenerated from the article
+    // each time and the instruction is ignored.
+    //
+    // Opt-in and absent from every existing plan, so no other title changes.
+    imageQuery: spec?.imageQuery || headerLine(body, "IMAGE_QUERY"),
     imageAlt: stripDashes(headerLine(body, "IMAGE_ALT")),
   };
   const start = body.indexOf("<");

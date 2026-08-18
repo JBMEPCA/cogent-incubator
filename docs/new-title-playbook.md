@@ -19,14 +19,16 @@ copying an existing child, not by forking a theme.
 it does on the OTHER titles — not whether it looks right on the one in front of
 you.**
 
-This failed three times in a single day, in three costumes, and it is the same
-mistake each time:
+This failed four times, in four costumes, and it is the same mistake each time.
+The first three were found in a single day; the fourth had been live on three
+sites for weeks, because it looked perfect on the title it came from:
 
 | What was changed | What it did to the other title |
 |---|---|
 | Agent prompts naming one title | Fleet articles drafted for SME owner-managers, and large-operator stories struck out |
 | The tools list in the parent theme | Smart SME would have lost all four of its calculators |
 | `.logo-mark` pointing at the `amber` palette slug | Smart SME's masthead turned orange on a live site |
+| The parent theme keeping the copy of the title it was forked from | Smart SME and Golf Resort Magazine spent weeks branded as The Fleet Magazine, and their subscribers were filed into Smart SME's Mailchimp audience |
 
 Concretely:
 
@@ -37,11 +39,17 @@ Concretely:
 - **A prompt may name no title.** Identity comes from the Site row via
   `lib/voice.js`, and a list of valid sections or categories comes from
   `site.sections`.
+- **The parent theme may not name a publication, in copy or in config.** Not a
+  heading, not a newsletter promise, not a `From:` address, not a Mailchimp
+  audience. It asks `cogent_brand()` who this site is. Copy is code: a sentence
+  in a shared theme is a single-title assumption exactly as much as a hardcoded
+  category list, and it survives longer because it renders without complaint.
 - **Editorial choices live in the child or the database**, never in the parent:
   which calculators exist, which sections the homepage shows, what the masthead
   says.
 - **After deploying anything shared, sweep every title**, not just the one you
-  were working on: `node scripts/check-all-titles.mjs`.
+  were working on: `node scripts/check-all-titles.mjs`, and from
+  `cogent-base-theme`, `node scripts/check-title-agnostic.mjs --all`.
 
 The parent/child split is better architecture, and it converts "I broke one
 site" into "I broke every site". That is the trade being made, and this rule is
@@ -206,6 +214,37 @@ Tools are shortcodes on ordinary WordPress pages. Title #2 shipped the company
 car tax calculator in its theme for a full day while `/tools/` returned 404,
 because nobody had created the pages. Check the URL, not the registry.
 
+### The byline user's SLUG is load-bearing, and it is hardcoded in the parent
+`cogent-base/inc/author.php` forces the author of every post through a
+`wp_insert_post_data` filter:
+
+```php
+const COGENT_AUTHOR_SLUG = 'james-burke';
+$user = get_user_by( 'slug', COGENT_AUTHOR_SLUG );
+$id   = $user ? (int) $user->ID : 1;   // <- silent fallback to the admin
+```
+
+Title #3 created its byline account as `jamesburke`, so the slug was
+`jamesburke`, the lookup missed, and **every article published under the
+administrator account**. Nothing errored. `wp post update --post_author=3`
+reported `Success:` and changed nothing, because the same filter reassigned it
+on the way back into the database, which reads exactly like a broken wp-cli.
+
+Two things follow. When creating the byline user, set the nicename explicitly:
+
+```bash
+wp user create jamesburke news@<domain> --role=author --display_name="James Burke"
+wp user update <id> --user_nicename=james-burke
+```
+
+And check the rendered byline on a live post before running a batch, not the
+value you passed in. Existing posts are fixed by correcting the slug and then
+re-saving them, at which point the filter does the right thing by itself.
+
+The deeper problem is that a fleet-wide constant names one person. When a title
+needs a different byline this has to become a filter the child can answer, the
+same shape as `cogent_mark_colour`.
+
 ### A theme's parent is stored in the DATABASE, not read from style.css
 Converting a standalone theme into a child by adding `Template: cogent-base` to
 its style.css does nothing on its own. WordPress keeps `template` in wp_options
@@ -296,6 +335,16 @@ Run these before touching a console.
       → the git hook does not always fire; pushed is not deployed
 □  grep -rniE "<previous title name>" lib/ scripts/ --include=*.js
       → every hit is a tenancy bug waiting to happen
+□  cd cogent-base-theme && node scripts/check-title-agnostic.mjs --all
+      → the same sweep for the themes, which the grep above never reaches.
+        Add the new title to TITLES in that file FIRST, or it is not checked
+□  New child theme declares its own cogent_brand filter
+      → name, audience, newsletter copy, contact_email, mailchimp_audience.
+        The defaults are derived and safe, but "safe" is not the same as "right"
+□  A Mailchimp audience exists whose name matches the title's
+      mailchimp_audience exactly
+      → no match means signups queue locally forever, visible only on
+        Settings → <title> in wp-admin
 □  grep -rn "SLOTS_PER_DAY\|= 7\b" scripts/ lib/
       → anything measuring against a fixed cadence is already wrong
 □  Local .env DATABASE_URL names the CURRENT Neon project
@@ -691,3 +740,73 @@ The prompt now lists the site's own sections, and the commissioning plan's
 category wins over the model's guess, validated against the section list.
 **When a title publishes its first articles, check the category counts, not just
 that the posts exist.**
+
+### The parent theme was carrying the copy of the title it was forked from
+Found on 18 August, live on three sites at once, and the longest-lived of every
+single-title assumption in this document — because it shipped in the commit that
+was supposed to end them.
+
+`cogent-base` was created by copying The Fleet Magazine's theme and running a
+find-and-replace over the name. The replace caught the identifiers and missed
+every sentence. What the other two titles then served their readers:
+
+| Where | What Smart SME and Golf Resort Magazine actually said |
+|---|---|
+| Homepage H2 | "Fresh from The Fleet Magazine" |
+| Homepage CTA band | "The best of The Fleet Magazine in your inbox: tax changes, the EV transition and running costs for UK fleets" |
+| Sidebar MPU | "THE FLEET MAGAZINE WEEKLY — practical intelligence for the people who run UK vans, trucks and company cars" |
+| Lower MPU | "Sponsor a The Fleet Magazine section" |
+| LinkedIn card | A follow button pointing at `/company/cogent-base-magazine`, which exists on no network |
+| Article footer | "the tax, EV and running-cost intelligence UK fleet managers actually use" |
+| Contact form | Posted to `jb@thefleetmagazine.co.uk`, from `noreply@thefleetmagazine.co.uk` |
+| 404 page | "Search The Fleet Magazine" |
+| Google News sitemap | `<news:name>The Fleet Magazine</news:name>` |
+| Cookie banner | "The Fleet Magazine uses analytics cookies" |
+| **Mailchimp** | **`COGENT_MC_AUDIENCE = 'SmartSME'` — so every Fleet and Golf Resort signup resolved to Smart SME's audience** |
+
+The last row is the one that matters. Everything above it was embarrassing;
+that one moved real reader data into the wrong list, and it had been doing so
+since the parent/child split.
+
+**Why nothing caught it.** Every existing guard was pointed the wrong way.
+`verify-title.mjs` reads the database and the REST API — it never opens the
+theme. `check-pages.mjs` asks whether a page renders, not what it says. And the
+human check is worse than useless here: whoever builds a title looks at that
+title, and the title being looked at is never the title being harmed. Fleet's
+own site was correct throughout. This is the same blind spot as the orange
+masthead and the hardcoded category list, and it will keep recurring for as long
+as "shared code names a title" is a thing a person has to notice.
+
+**The fix, and why it is not "be careful with the strings".** The parent now
+holds no title name anywhere. `cogent-base/inc/brand.php` exposes
+`cogent_brand( $key )` over a filterable array, and every default in it is
+*derived* — from `get_bloginfo( 'name' )`, from the site's own host, from
+`admin_email`. A child that configures nothing still says its own name, because
+no other title's name exists in the file to fall back to. Title #4 is safe on
+the day it is created, before anyone writes a line of config for it.
+
+Where no honest default exists — a LinkedIn company page — the default is empty
+and the card renders nothing. A missing card costs a follow; a card pointing at
+a competitor title costs the reader's belief that anyone is looking after the
+site.
+
+**The guard.** `cogent-base-theme/scripts/check-title-agnostic.mjs` fails if a
+theme names a publication it has no business naming:
+
+```bash
+node scripts/check-title-agnostic.mjs --all
+```
+
+It checks the parent (zero title names allowed) and every child beside it (its
+own title allowed, all others not). Comments are exempt, so the incident notes
+in the parent can keep naming the titles; only block comments and whole-line
+comments are stripped, never a trailing `//`, so a domain inside a string
+literal cannot hide behind one. **When a title launches, add it to `TITLES` in
+that file** — a title the guard has never heard of is a title it cannot protect.
+
+**The general form, and it is the sharpest version of THE RULE in this
+document:** a shared component must not be *able* to name a title. Not "must not
+currently name one". Copy is code. A sentence in a parent theme is a
+single-title assumption exactly as much as a hardcoded category list is, and it
+survives longer because it compiles, renders, and looks completely fine on the
+site you are testing.

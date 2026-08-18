@@ -28,6 +28,7 @@ import { PrismaClient } from "@prisma/client";
 import {
   NEWS_SEARCHES,
   FLEET_NEWS_SEARCHES,
+  GOLF_NEWS_SEARCHES,
   searchFeedUrl,
   searchHubUrl,
 } from "../lib/news-searches.js";
@@ -38,6 +39,7 @@ import {
 const SEARCH_SETS = {
   "smart-sme": NEWS_SEARCHES,
   "fleet-magazine": FLEET_NEWS_SEARCHES,
+  "golf-resort-magazine": GOLF_NEWS_SEARCHES,
 };
 
 for (const f of [".env.local", ".env"]) {
@@ -87,7 +89,9 @@ try {
   // --- 1. standing news searches ---------------------------------------
   let created = 0, updated = 0;
   for (const s of searches) {
-    const feedUrl = searchFeedUrl(s.query);
+    // s.locale is undefined for the two UK titles, which keeps them on the GB
+    // edition exactly as before. Global titles name an edition per beat.
+    const feedUrl = searchFeedUrl(s.query, s.locale);
     const existing = await prisma.prBrand.findFirst({ where: { siteId: site.id, name: s.name } });
     if (existing) {
       if (existing.feedUrl !== feedUrl) {
@@ -103,7 +107,7 @@ try {
           name: s.name,
           category: s.category,
           website: "https://news.google.com",
-          newsHubUrl: searchHubUrl(s.query),
+          newsHubUrl: searchHubUrl(s.query, s.locale),
           feedUrl,
           notes: "Standing news search. Defined in lib/news-searches.js.",
         },

@@ -155,3 +155,57 @@ may not write a contribution or attribute one to a person who did not send it.
   the analysis and outranks everything in it.
 - **Link out to the company and the original announcement** on any news piece.
 - **No em dashes or en dashes**, per house style.
+
+---
+
+## Per-title rules
+
+Each title carries a load-bearing rule that exists because that sector has one
+way of going wrong that the standing rules above do not catch. They are not
+style preferences. Breaking one is a hold, not a note.
+
+### The Fleet Magazine — the figure rule
+
+Any tax, BiK, rate or allowance figure is somebody's five-figure decision. Every
+one is sourced to the publishing body, dated to the tax year, and never carried
+over from a previous article.
+
+### Golf Resort Magazine — three rules
+
+**1. The buyer rule.** Every article is written for someone who is *paid* to be
+at a golf resort: owner, investor, GM, director of golf, course manager,
+developer, architect, tour operator, supplier. If the natural reader is someone
+on holiday, it is not our article.
+
+No course reviews. No "best of" or bucket-list destination lists. No travel
+guides. No tournament reporting except where it is a business story about the
+host venue.
+
+This is the title's single most important rule and it is a commercial rule, not
+a taste one. Golf is the first vertical where the consumer twin is the entire
+category: Golf Digest sits at Tranco 17,994 and GOLF.com at 26,097, against a
+golf trade press that runs from 458,746 down to 2,487,655. Drifting consumer
+means competing with domains a hundred times stronger on their own ground, and
+losing permanently. Roughly half the raw newswire is travel and tournament
+content, so the pull toward that mistake is constant and mechanical.
+
+The keyword exclusions in `lib/news-searches.js` thin this noise; they do not
+remove it, and Google's negative operators demonstrably leak. The Researcher is
+the guard.
+
+**2. The market-size rule.** Published valuations of the golf tourism market
+vary by more than 4x between research firms — $6.9bn to $30.6bn for the same
+year. Always name the firm and the year, or quote the range. Never assert a
+single market size in our own voice.
+
+**3. The geopolitics rule.** Saudi PIF money runs through this sector, and
+Trump-owned properties are simultaneously golf venues and US political stories.
+Cover both as business: capital, capacity, bookings, contracts, ownership. Do
+not editorialise on human rights or US domestic politics. A title with no named
+political correspondent has no standing to take a side, and taking one costs
+advertisers on both flanks.
+
+Note the deliberate exception: the environmental critique of golf — water, land
+use, chemicals — **is** ours to cover, and covering it straight is an advantage,
+because the incumbent titles are too close to their advertisers to do it well.
+That is reporting on the industry, not adjudicating a foreign policy.
