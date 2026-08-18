@@ -1,5 +1,6 @@
 import Link from "next/link";
 import SiteMark, { statusTone } from "./components/SiteMark";
+import FleetNav from "./components/FleetNav";
 import { fleetSnapshot } from "@/lib/fleet";
 
 export const dynamic = "force-dynamic";
@@ -91,26 +92,27 @@ export default async function FleetOverview() {
         <div>
           <span className="micro">Cogent Incubator</span>
           <h1>All titles</h1>
-          {/* The fleet spend figure to the right is a number; this is the
-              breakdown behind it. Linked from the heading because it is a
-              fleet-level view, not a per-title one. */}
-          <Link href="/costs" className="nav-link" style={{ padding: "2px 0", fontSize: 13 }}>
-            View spend breakdown &rarr;
-          </Link>
         </div>
-        <div className="fleet-totals">
-          <Figure value={totals.publishedWeek} label="published this week" />
-          <Figure value={money(totals.spendMonth)} label="fleet spend, month" />
-          <Figure
-            value={totals.awaiting}
-            label="awaiting approval"
-            tone={totals.awaiting ? "var(--neon-amber)" : undefined}
-          />
-          <Figure
-            value={totals.blocked}
-            label="agents blocked"
-            tone={totals.blocked ? "var(--neon-red)" : undefined}
-          />
+        {/* The fleet-level views sit above the figures they belong to: the
+            spend total here is a number, and Group costs is the breakdown
+            behind it. This was a text link under the heading, where it read as
+            a caption and got missed. */}
+        <div className="fleet-head-right">
+          <FleetNav />
+          <div className="fleet-totals">
+            <Figure value={totals.publishedWeek} label="published this week" />
+            <Figure value={money(totals.spendMonth)} label="fleet spend, month" />
+            <Figure
+              value={totals.awaiting}
+              label="awaiting approval"
+              tone={totals.awaiting ? "var(--neon-amber)" : undefined}
+            />
+            <Figure
+              value={totals.blocked}
+              label="agents blocked"
+              tone={totals.blocked ? "var(--neon-red)" : undefined}
+            />
+          </div>
         </div>
       </header>
 

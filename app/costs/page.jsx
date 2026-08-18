@@ -1,4 +1,5 @@
 import Link from "next/link";
+import FleetNav from "../components/FleetNav";
 import { fleetCosts } from "@/lib/fleet-costs";
 
 export const dynamic = "force-dynamic";
@@ -64,8 +65,8 @@ export default async function FleetCostsPage() {
     return (
       <main className="fleet-wrap">
         <header className="fleet-head">
-          <div><span className="micro">Cogent Incubator</span><h1>Spend</h1></div>
-          <Link href="/" className="nav-link">Back to all titles</Link>
+          <div><span className="micro">Cogent Incubator</span><h1>Group costs</h1></div>
+          <FleetNav />
         </header>
         <p style={{ color: "#fca5a5" }}>Could not read the numbers: {error}</p>
       </main>
@@ -85,9 +86,9 @@ export default async function FleetCostsPage() {
       <header className="fleet-head">
         <div>
           <span className="micro">Cogent Incubator</span>
-          <h1>Spend</h1>
+          <h1>Group costs</h1>
         </div>
-        <Link href="/" className="nav-link">Back to all titles</Link>
+        <FleetNav />
       </header>
 
       <p style={{ fontSize: 13.5, opacity: 0.65, margin: "0 0 6px" }}>
