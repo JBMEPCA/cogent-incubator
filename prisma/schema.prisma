@@ -14,11 +14,26 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+// What a signed-in person is allowed to do. There are only two kinds here:
+// whoever runs the fleet, and someone who has been given a look at it.
+//
+// A viewer reaches every page and reads everything; they cannot write. That is
+// enforced server-side in lib/permissions.js rather than by hiding buttons,
+// because a server action is callable by anyone with a session whether or not
+// the interface offers a control for it.
+enum UserRole {
+  admin
+  viewer
+}
+
 model User {
   id           String   @id @default(cuid())
   username     String   @unique
   passwordHash String
   name         String
+  // Defaults to admin so every account that existed before this column keeps
+  // exactly the access it had. Read-only is opt-in, per account.
+  role         UserRole @default(admin)
   createdAt    DateTime @default(now())
 }
 
@@ -133,6 +148,57 @@ model Site {
   agentMessages     AgentMessage[]
   engineSettings    EngineSetting[]
   metricSnapshots   MetricSnapshot[]
+  referringDomains  ReferringDomain[]
+}
+
+/// A site that has sent us traffic, which is the only evidence of a link we can
+/// get without paying for a backlink index.
+///
+/// This exists as a table rather than a live GA4 read because GA4 serves a
+/// rolling window and the question JB actually asks is "when did we get this
+/// link" — a domain that first appeared in April cannot be told apart from one
+/// that appeared yesterday by looking at a 28-day report. firstSeenAt is only
+/// true from the day this started running; it is the date we first SAW the
+/// referrer, not the date the link went up, and nothing downstream should
+/// pretend otherwise.
+model ReferringDomain {
+  id     String @id @default(cuid())
+  site   Site   @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId String
+
+  // Bare host, lowercased, no www. GA4 reports the source this way already,
+  // but it also reports hand-tagged utm_source values that are not hosts at
+  // all, so this is normalised on the way in rather than trusted.
+  domain String
+  // Where on our site the traffic landed. The nearest thing GA4 will give us to
+  // "which article won the link" — the Data API has no referring-URL dimension,
+  // so the exact linking page still has to be found by hand.
+  landingPage String?
+  // The page the link is actually on. Only ever set by hand, because no source
+  // we have can supply it, and never overwritten by a sweep for the same
+  // reason: GA4 would only ever replace a known URL with nothing.
+  linkUrl String?
+  // "ga4" when traffic found it, "manual" when it was typed in. Kept because a
+  // manually recorded link is a claim and a measured one is evidence, and the
+  // two should not be silently mixed in the same count.
+  source String @default("ga4")
+
+  firstSeenAt DateTime @default(now())
+  lastSeenAt  DateTime @default(now())
+  // Sessions in the window that last reported this domain. A traffic figure,
+  // not a link count, and never to be totalled into one.
+  sessions Int @default(0)
+
+  // Referrers that are not links worth tracking: payment processors, our own
+  // staging domains, translation proxies. Hidden rather than deleted, because a
+  // deleted row comes straight back on the next sweep as a brand new find.
+  ignored Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([siteId, domain])
+  @@index([siteId, firstSeenAt])
 }
 
 /// One row per title per day: the authority picture, frozen.
@@ -528,6 +594,10 @@ model OutreachEmail {
   // Set by the check-backlinks cron once the link is live on their site.
   linkedAt     DateTime?
   linkUrl      String?
+  // When the sweep last looked, won or not. This is the rotation cursor: rows
+  // are checked nulls-first then oldest-look-first, so every brand comes round
+  // instead of the sweep re-reading the same oldest few on every run.
+  linkCheckedAt DateTime?
   createdAt    DateTime @default(now())
 
   @@index([siteId, status])
@@ -704,6 +774,19 @@ model ResearchTopic {
   impressions Int?
   clicks      Int?
   position    Float?
+  // The wire item this topic came from, when it came from the wire.
+  //
+  // Without this the link was thrown away. The Researcher is told wire items
+  // are first-class candidates, it proposed three golf news stories on 19
+  // August, and each arrived at the Director with no source at all — so each
+  // was commissioned as an evergreen guide ABOUT A SPECIFIC EVENT it had
+  // nothing to cite for. The gate refused all three, correctly, on exactly
+  // that: "the central hook is unsourced and unlinked". Around £1.20 of Opus
+  // spent on three articles that could never have passed.
+  //
+  // A plain id rather than a relation: FeedItem rows are pruned, and a topic
+  // outliving its wire item should lose its source, not block the delete.
+  sourceItemId String?  // the wire item this came from, if any
   status      String   @default("proposed")
   articleId   String?
   createdAt   DateTime @default(now())
