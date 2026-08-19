@@ -189,6 +189,52 @@ A block theme's `wp:navigation` with no inner links quietly renders whatever
 pages exist, which is how "Sample Page" ended up in the masthead. Define the
 menu explicitly in `parts/header.html`.
 
+### The desktop nav's alignment leaks into the mobile overlay
+`wp:navigation` with `justifyContent:"right"` is correct for the desktop row
+sitting beside the search. Core feeds the same value into
+`--navigation-layout-justification-setting`, which the overlay also reads, so
+every item in the open hamburger menu stacked against `flex-end`. Combined with
+the next trap it put the right edge of every menu item on the right edge of the
+screen — measured at x=375 of 375 on all three titles.
+
+Do not fix it by changing `justifyContent` in the child's `parts/header.html`:
+that moves the desktop nav in from the right and leaves a hole where it sat. The
+parent answers it for the overlay only, in the `Mobile nav overlay` section of
+`cogent-base/style.css`.
+
+### Core's overlay padding silently evaluates to zero
+Core sizes the open overlay with
+`padding: clamp(1rem, var(--wp--style--root--padding-top), 20rem)` and friends.
+`cogent-base/theme.json` sets no root padding, so each middle term is an empty
+token, all four declarations are invalid, and the overlay computes to
+`padding: 0`. Nothing warns you; the menu just touches the bezel.
+
+### `disable-default-overlay` is not the escape hatch it looks like
+Core 7.0 added a class that turns off every default overlay rule in one move,
+which is exactly what a theme restyling the overlay wants. It also carries
+`.disable-default-overlay.is-menu-open ... > :not(.wp-block-navigation__overlay-container) { display: none }`.
+It is the switch for core's own custom overlay-content block, and setting it
+without providing that block hides the entire menu. Beat core on specificity
+instead — and note that core's overlay rules wrap the gating class in `:where()`,
+which contributes nothing, so the number to beat is smaller than it looks.
+
+### Overriding core block CSS half-applies, which looks like success
+The first attempt at the overlay used `.site-nav .is-menu-open <target>` (0-3-0)
+against core's 0-4-0. `font-size` and `display` applied because nothing competed
+for them; `padding-block` silently did not. The result was a left-aligned menu
+with 23px rows instead of 55px — visibly fixed, quietly still wrong. When
+overriding a core block, measure a computed value afterwards rather than reading
+the rendered page.
+
+### The parent stylesheet was versioned by the CHILD's version number
+`wp_get_theme()` with no argument returns the child once one is active, so
+`cogent-base/functions.php` stamped both stylesheets with the child's version.
+That made the parent's version number decorative: a parent-only change shipped
+to all three titles under a query string none of them had changed, so browsers
+and the SiteGround edge both kept serving the old CSS and the change looked like
+it had never deployed. Fixed to `wp_get_theme( get_template() )` for the parent
+handle. If a shared CSS change ever appears not to land, check this first.
+
 ### `/wp/v2/users/me` omits roles without `context=edit`
 Cost a false failure in the smoke test itself. The role check needs
 `?context=edit`, and an editor is allowed it for their own record even though
@@ -616,6 +662,37 @@ arrived at this independently. **The reply is a few hundred tokens; headroom is
 free on a call that finishes early.** Also: a reply with no verdict at all is a
 broken gate, not a bad article, and must be raised as an error — never reported as
 an article fault.
+
+### A wire topic must carry its wire item, or it becomes an unsourceable guide
+
+Golf Resort wrote three articles on 19 August that could never have published,
+about £0.40 each. All three were news stories the Researcher had found on the
+wire - a Troon acquisition, a GOLF.AI launch, drought imagery - and all three
+reached the Editor as evergreen guides with no source. So the writer asserted
+the event it had been told to write about, and the gate refused every one for
+exactly that: "the central hook is unsourced and unlinked".
+
+The link was dropped twice over. `ResearchTopic` had no `sourceItemId` column at
+all, so there was nowhere to record which wire item a topic came from. And the
+Director, which does commission `pr_rewrite` when it finds a wire item, looked
+it up by exact title match against `topic.query` - a field the Researcher fills
+with a composite like `"Wire: water, irrigation and sustainability - Drone
+images reveal..."`. It never matched, so every wire topic fell through to
+`seo_original` with a null source.
+
+Both are fixed. Wire items are labelled `W1..Wn` in the Researcher's prompt, the
+model returns the `wireRef`, and the Director reads the id.
+
+**The check for a new title:** propose a wire topic, then confirm the article it
+produces is `pr_rewrite` with a non-null `sourceUrl`. If it comes out
+`seo_original` with no source, the title will burn Opus on news it cannot cite,
+and the gate will be blamed for it.
+
+Worth knowing what happens next when the source is a Google News stub: the
+pre-draft gate below parks the piece for £0.00. Verified end to end on 19
+August - a real rejected topic re-armed with its wire item was commissioned as
+`pr_rewrite`, hit the gate, and cost nothing. The same topic had cost £0.40 the
+day before.
 
 ### Do not pay to write what cannot be written
 
