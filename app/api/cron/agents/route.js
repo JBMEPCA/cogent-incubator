@@ -181,7 +181,27 @@ async function tickOne(ctx, { forced, stage }) {
   if (starved.length) worker = starved[0];
   else if (needsImage) worker = ["designer", runDesigner, "draft_ready"];
   else if (drafting) worker = ["editor", runEditor, "topic_commissioned"];
-  else if (proposed < 3 && hoursSince(lastResearch?.lastRunAt) > 6) worker = ["researcher", runResearcher, "tick"];
+  // TOPIC SUPPLY MUST MATCH THE TARGET, or the day is capped before it starts.
+  //
+  // This was a flat < 3 topics and a 6-hour cooldown, which allows two
+  // Researcher runs a day and in practice gave one. One run proposes six topics
+  // and the Director commissions about four of them, so the ceiling was four
+  // articles a day on every title regardless of what its target said. Fleet and
+  // Golf are both set to five. On 19 August all three titles ran the Researcher
+  // exactly once and Golf published nothing.
+  //
+  // The floor now follows the title's own target, and the cooldown is three
+  // hours rather than six, so a five-a-day title can restock twice in a working
+  // day instead of hoping four commissions all survive. The Researcher is on
+  // Sonnet at roughly 10p a run, which is cheap against an unfilled slot.
+  //
+  // Still gated on BOTH: a title with a full topic shelf does not research, so
+  // this cannot spin.
+  else if (
+    proposed < Math.max(3, Math.round(Number(site.articlesPerDayTarget) || 3)) &&
+    hoursSince(lastResearch?.lastRunAt) > 3
+  )
+    worker = ["researcher", runResearcher, "tick"];
   else if (due.length) worker = due[0];
 
   if (worker) {
