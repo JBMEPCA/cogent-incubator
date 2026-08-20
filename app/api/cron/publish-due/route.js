@@ -56,6 +56,29 @@ export async function GET(request) {
         continue;
       }
 
+      // No picture, no post.
+      //
+      // Every branch below is guarded on `article.imageUrl`, so an article that
+      // simply never got one fell straight past all of them and published bare.
+      // Twelve did before anyone counted: seven on Smart SME, three on Fleet,
+      // two on Golf. The header comment on this file has always said an article
+      // waits for a picture rather than going out without one; that was true of
+      // a picture the re-check rejected and untrue of one that was never
+      // sourced, and nothing was watching the second case.
+      //
+      // Deferred, not dropped. The Designer takes anything in review or
+      // approved with no imageUrl, and it now gives up after four goes and asks
+      // the Director for art direction, so nothing can queue here for ever
+      // without saying so on the board.
+      if (!article.imageUrl) {
+        results.push({
+          id: article.id,
+          title: article.title.slice(0, 60),
+          deferred: "no header image yet, so it would publish bare. Waiting for the Designer.",
+        });
+        continue;
+      }
+
       let featuredMediaId;
       // Declared out here because the result is reported after publishing, not
       // only used inside the branch that produces it.

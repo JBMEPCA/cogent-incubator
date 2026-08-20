@@ -745,6 +745,98 @@ never did, and the model was standing in for the guard. **Every model reply that
 gets stored needs the same parsing on every path** — changing the model is enough
 to expose the difference.
 
+### A rejection rule reads as a requirement, and stock photography cannot meet it
+
+The picture gate in `lib/qa.js` was told: *the article names specific brands and
+the image shows a DIFFERENT brand — reject.* That is a rule about wrong logos.
+Haiku read it as a rule about right ones, and started rejecting photographs for
+being *generic*: "no identifying features linking it to Cornerstone Club", "no
+visual confirmation this is the Quartix system". No stock library has a picture
+of a named private members' club, so for any news story about a named
+organisation the gate was unwinnable — 27 Designer runs across Fleet and Golf on
+19 and 20 August 2026, every one of them reported as a success, and not one
+picture. Twelve live articles across the three titles had no header image at
+all, and the count only came out when something finally measured it.
+
+Fixed by saying the quiet part in the prompt: the photograph is a stock image,
+it is not expected to depict the organisation, and "generic" is not a fault. The
+wrong-logo rule survives intact, and correctly still holds a story about a BYD
+Sealion 7 that stock can only illustrate with a Kia.
+
+**The general rule: a gate written as a list of rejections needs its acceptance
+condition written down too, or the model will invent one.** Check it against the
+work it will actually see — a rule that is obviously about logos when you have
+the failing example in front of you is not obviously about logos to a model
+holding one photograph.
+
+Two smaller things fell out of the same investigation, and both generalise:
+
+- **A caller that invents the reason for a failure destroys the evidence.**
+  `chooseSmartImage` returned a bare `null`, and the Designer reported "every
+  candidate failed the visual check" — which was a guess. It reads identically
+  whether the gate rejected five photographs, the search returned none, or the
+  downloads 403'd, and those need three different fixes. Return the reason.
+- **A deterministic retry is not a retry.** The Designer re-ran every 30 minutes
+  for as long as an article sat in the queue, and the search seed came from the
+  title, so run twelve reissued run one. Vary the attempt, cap it, and escalate
+  once — `MAX_IMAGE_ATTEMPTS` in `lib/agents/team.js`.
+
+And the reason it published anyway: **`publish-due` guarded every branch on
+`article.imageUrl`, so an article that never got one fell past all of them.**
+The file's own header comment said an article waits rather than going out
+without a picture. That was true of a picture the re-check rejected and untrue
+of a picture that was never sourced. When a guard is written as "if X is bad,
+stop", check what happens when X is absent.
+
+### `NOT { field: { startsWith } }` is false for a NULL field, and hides sources
+
+`app/api/cron/scan-feeds` split its sources into news searches and everything
+else, with `NOT: { feedUrl: { startsWith: "https://news.google.com/…" } }` as
+"everything else". In SQL that is `NOT (feedUrl LIKE '…%')`, which for a NULL
+`feedUrl` evaluates to NULL — not true — so the row is dropped.
+
+Every brand that had never had a feed discovered therefore had a NULL `feedUrl`
+and was invisible to the rotation, and the rotation is the only thing that runs
+discovery. Nothing new could ever be scanned: **discovery ran exclusively on
+brands that no longer needed it.** It hid 68 of Fleet's 97 sources, 30 of Golf's
+88 and 789 of Smart SME's, and it took Fleet's four trade bodies with it — BVRLA,
+Logistics UK, the RHA and Zemo — which on a fleet title is most of the news that
+is worth having.
+
+Nothing errored and no count was ever wrong on its own terms. `scripts/check-feed-coverage.mjs`
+exists to make it visible: it buckets every brand the way the cron does and
+checks that the buckets add up to the total. **Run it after seeding a title's
+sources.** A source list is not a source list until something has read it.
+
+### Aim for feeds, but budget for the ones that have none
+
+The playbook already says to autodiscover feeds and aim for 30+ before launch.
+What it did not say is what to do about the misses, and on Fleet the misses were
+the four most valuable sources on the list. Three of them have no RSS anywhere:
+
+| | what it has | how it is read |
+|---|---|---|
+| Logistics UK | WordPress whose news is a `blog` custom post type; the default `/feed` is a valid, permanently **empty** channel | the real URL, `?post_type=blog` |
+| RHA | bespoke CMS, server-rendered listing | anchors matching `/news/news/detail/` |
+| Zemo | same, with the date in the link text | anchors matching `/news-events/news,` |
+| BVRLA | Kentico, listing rendered **in the browser**, no API a server can call | `sitemap.xml`, diffed between scans |
+
+They live in `lib/newsrooms.js`, keyed by the host of the brand's `newsHubUrl`.
+Verifying one by hand takes about ten minutes and it then runs for ever, which
+makes it the best-value hour in a title's setup — do it during step 6, while
+waiting on DNS, and do the trade bodies first.
+
+Two traps in there worth carrying:
+
+- **An empty feed is not a working feed.** Logistics UK's `/feed` parses cleanly
+  to zero items, so it was recorded `feedStatus: "ok"` and showed a green tick
+  for three days while producing nothing. There is now an `empty` status.
+- **A sitemap's first scan is a baseline, not a haul.** BVRLA's lists 435 URLs
+  and stamps every one with today's `lastmod`, so it cannot be sorted by
+  recency. What it can answer is which URLs are new since last time — but only
+  if the first scan records the back catalogue as already seen instead of
+  commissioning ten arbitrary posts from 2024.
+
 ---
 
 ## 9. The one-line version
