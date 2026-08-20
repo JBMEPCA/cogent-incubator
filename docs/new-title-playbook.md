@@ -602,6 +602,34 @@ ranking slots, and it is an editorial decision. It is not a tidy-up.
 
 ---
 
+### An infrastructure fault must never wear an editorial fault's words
+
+On 20 August the deployment lost sharp's native library, so the picture gate
+threw before vision saw a pixel. The catch reported that as "image
+unreachable" - an image fault - so the Designer believed it, burned four
+attempts per article on candidates nothing ever looked at, and the ladder then
+let the "still waiting on images" count starve the Editor and Researcher for
+an afternoon, on all three titles at once. One broken .so file, read as an
+editorial problem, stopped the fleet.
+
+Three rules that came out of it:
+
+- **Every catch must say whose fault it is.** A gate that cannot run is not a
+  candidate that failed. If the error message could equally describe broken
+  tooling and a bad input, it will be read as the input, and retries will be
+  spent proving nothing.
+- **Optimisations must degrade, not gate.** Downscaling was a token saving;
+  when it broke it became a hard dependency. sharp failing now falls back to
+  judging the original bytes.
+- **A "work available" check must count actionable work.** The ladder asked
+  "any article without an image?" when it meant "any the Designer can still
+  act on?" - the difference held the whole pipeline behind a no-op.
+
+And the deployment-side fix: sharp is in next.config serverExternalPackages,
+because a bundler that wraps a native module will eventually lose its shared
+libraries, and the failure only shows at runtime, on the deployed site, in the
+one code path that uses it.
+
 ## 8. Calibrating the gates
 
 §1 noted that gates tuned for a mature site block a new one. That is broader than
