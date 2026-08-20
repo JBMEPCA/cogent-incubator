@@ -66,11 +66,21 @@ export async function GET(request) {
   const denied = cronGuard(request);
   if (denied) return denied;
 
-  // The time budget is shared across the whole fleet, not per title, so a
-  // long tail of dead hosts on title #1 cannot starve title #12 entirely.
-  const deadline = Date.now() + TIME_BUDGET_MS;
+  // The budget is fleet-wide, and it is DIVIDED rather than shared. Sharing it
+  // was first come, first served: adding discovery to the rotation pushed the
+  // first two titles past the whole 45s between them, and Golf — the newest
+  // title, the one with the least archive to fall back on — scanned nothing at
+  // all and the run reported success. The slice is recomputed from what is
+  // actually left at each title's turn, so a title that finishes early still
+  // hands its remainder to the ones behind it.
+  const startedAt = Date.now();
 
-  const out = await forEachSite(async ({ db }) => {
+  const out = await forEachSite(async ({ db, index, total }) => {
+  const share = Math.max(
+    5000,
+    Math.floor((TIME_BUDGET_MS - (Date.now() - startedAt)) / Math.max(1, total - index))
+  );
+  const deadline = Date.now() + share;
 
   const [searches, rotation, discovery] = await Promise.all([
     db.prBrand.findMany({ where: isSearch }),
@@ -108,7 +118,11 @@ export async function GET(request) {
   return {
     scanned: outcomes.length,
     searchesScanned: Math.min(searches.length, outcomes.length),
-    ok: tally("ok"),
+    // NOT `ok`. forEachSite spreads this object over its own `ok: true` flag,
+    // so a title whose feeds all failed reported ok: 0, which is falsy, and the
+    // run counted it as a crashed title. Golf showed up as `failed: 1` on a
+    // tick where nothing had thrown at all.
+    feedsOk: tally("ok"),
     none: tally("none"),
     // A feed that parses to nothing. Was counted as ok, which is how a source
     // showed a green tick for days without ever producing an item.
