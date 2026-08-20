@@ -29,7 +29,12 @@ const DISCOVERY_PER_RUN = 8;
 // is idle socket time, so a small pool multiplies throughput without adding load
 // worth worrying about.
 const CONCURRENCY = 6;
-const TIME_BUDGET_MS = 45_000;
+// 45s under a 60s function limit left no room for the overrun that is built
+// into the design: a pool checks the deadline BEFORE taking the next brand, so
+// each title can run over its slice by however long its last few brands take,
+// and three titles overran by 18s between them on the first divided run. 40s
+// makes the worst observed case land at about 50.
+const TIME_BUDGET_MS = 40_000;
 
 const isSearch = { feedUrl: { startsWith: "https://news.google.com/rss/search" } };
 
@@ -76,11 +81,12 @@ export async function GET(request) {
   const startedAt = Date.now();
 
   const out = await forEachSite(async ({ db, index, total }) => {
+  const siteStartedAt = Date.now();
   const share = Math.max(
     5000,
-    Math.floor((TIME_BUDGET_MS - (Date.now() - startedAt)) / Math.max(1, total - index))
+    Math.floor((TIME_BUDGET_MS - (siteStartedAt - startedAt)) / Math.max(1, total - index))
   );
-  const deadline = Date.now() + share;
+  const deadline = siteStartedAt + share;
 
   const [searches, rotation, discovery] = await Promise.all([
     db.prBrand.findMany({ where: isSearch }),
@@ -134,7 +140,11 @@ export async function GET(request) {
     unscanned: searches.length + rotation.length + discovery.length - outcomes.length,
     itemsAdded: outcomes.reduce((n, r) => n + (r?.added || 0), 0),
     baselined: outcomes.reduce((n, r) => n + (r?.baselined || 0), 0),
-    msElapsed: TIME_BUDGET_MS - (deadline - Date.now()),
+    // This title's own clock, not the fleet's. The old expression measured
+    // against the fleet-wide deadline, which stopped meaning anything the
+    // moment the budget was divided: a 19s run reported 49,426ms.
+    msBudget: share,
+    msElapsed: Date.now() - siteStartedAt,
   };
   });
 
