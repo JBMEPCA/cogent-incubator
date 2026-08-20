@@ -4,7 +4,7 @@ import { ensureAgents, reapStaleRuns } from "@/lib/agents/runtime";
 import { runResearcher } from "@/lib/agents/researcher";
 import { runLinkedIn } from "@/lib/agents/linkedin";
 import { runBacklink } from "@/lib/agents/backlink";
-import { runDirector, runEditor, runDesigner, runSeo, runFinance, sweepHeldArticles } from "@/lib/agents/team";
+import { runDirector, runEditor, runDesigner, runSeo, runFinance, sweepHeldArticles, imageWorkAvailable } from "@/lib/agents/team";
 import { withinOfficeHours } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
@@ -123,7 +123,11 @@ async function tickOne(ctx, { forced, stage }) {
   // started work beats starting new work.
   const [needsImage, drafting, proposed, lastResearch, lastAttempts] =
     await Promise.all([
-      db.article.count({ where: { status: { in: ["review", "approved"] }, imageUrl: null } }),
+      // True only when some waiting article still has image attempts left.
+      // A bare "no image" count stayed truthy after every candidate was
+      // exhausted, and the Designer no-op held the ladder above the Editor
+      // and Researcher for a whole afternoon on all three titles.
+      imageWorkAvailable(db),
       db.article.count({ where: { status: "drafting" } }),
       db.researchTopic.count({ where: { status: "proposed" } }),
       // findFirst, NOT findUnique. Agent's primary key became (siteId, key) in
