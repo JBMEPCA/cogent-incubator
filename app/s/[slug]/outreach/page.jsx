@@ -208,7 +208,7 @@ export default async function OutreachPage({ params }) {
                       <textarea name="body" rows={9} defaultValue={row.body || ""} />
 
                       <p className="micro" style={{ margin: 0, color: "var(--muted)" }}>
-                        The headline, the article address and the “As seen on Smart SME” link
+                        The headline, the article address and the “As seen on {site.name}” link
                         instruction are added below the body.
                       </p>
 
