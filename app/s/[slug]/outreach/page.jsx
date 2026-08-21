@@ -20,7 +20,7 @@ import AuthorityTrend from "@/app/components/AuthorityTrend";
 export const dynamic = "force-dynamic";
 
 const STATUS_CHIP = {
-  pending: { label: "Needs review", chip: "chip-general" },
+  pending: { label: "Sending soon", chip: "chip-general" },
   approved: { label: "Sending", chip: "chip-brand" },
   sent: { label: "Sent", chip: "chip-content" },
   replied: { label: "Replied", chip: "chip-monetise" },
@@ -79,7 +79,8 @@ export default async function OutreachPage({ params }) {
               <h1 style={{ margin: "0 0 6px", fontSize: 22 }}>Backlink outreach</h1>
               <p style={{ color: "var(--muted)", fontSize: 14, margin: "0 0 6px", maxWidth: 620 }}>
                 Every brand we write about gets told, with the paragraph and the LinkedIn post
-                already written for them. Nothing leaves this page without you approving it.
+                already written for them. Drafts send themselves on the hourly cycle — edit,
+                dismiss or fast-track anything here before it goes.
               </p>
               {hint && (
                 <p className="micro" style={{ color: "var(--neon-amber)", margin: "0 0 10px" }}>
@@ -123,9 +124,9 @@ export default async function OutreachPage({ params }) {
         >
           <section>
             <h2 style={{ margin: "0 0 14px", fontSize: 17 }}>
-              Ready to send{" "}
+              Sending on the next cycle{" "}
               <span style={{ color: "var(--muted)", fontWeight: 400, fontSize: 14 }}>
-                read it, change anything, then send
+                edit or dismiss now, or approve to send straight away
               </span>
             </h2>
             {queue.length === 0 && (
