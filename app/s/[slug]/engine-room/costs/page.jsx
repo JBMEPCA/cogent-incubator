@@ -48,8 +48,8 @@ export default async function CostsPage({ params }) {
   const siteRef = { id: site.id, slug: site.slug };
 
   const [report, stored] = await Promise.all([buildCostReport(site.id), getStoredReport(site.id)]);
-  const perArticleAll = report.published30
-    ? (report.projectedMonthly + report.fixedMonthly) / report.published30
+  const perArticleAll = report.produced30
+    ? (report.projectedMonthly + report.fixedMonthly) / report.produced30
     : null;
 
   return (

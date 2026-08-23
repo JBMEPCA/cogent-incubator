@@ -107,9 +107,9 @@ export default async function FleetCostsPage() {
           rather than in a headline tile competing with this.
         */}
         <Stat
-          label="Per article"
-          value={pence(totals.medianArticleUsd, rate)}
-          hint={`typical cost to write one, from ${totals.producedCount} articles`}
+          label="Per article, all-in"
+          value={pence(totals.allInPerArticleUsd, rate)}
+          hint={`every pound this month / every article produced (${totals.producedCount}), failures included`}
         />
       </div>
 
@@ -148,7 +148,7 @@ export default async function FleetCostsPage() {
                 <span>fixed {gbp(t.fixedUsd, rate)}</span>
                 <span>share of shared {gbp(t.shareOfFleetUsd, rate)}</span>
                 <span>{t.publishedThisMonth} published</span>
-                <span>{t.medianArticleUsd != null ? `${pence(t.medianArticleUsd, rate)} per article` : "nothing produced yet"}</span>
+                <span>{t.allInPerArticleUsd != null ? `${pence(t.allInPerArticleUsd, rate)} per article all-in` : "nothing produced yet"}</span>
               </div>
 
               {t.agents.length > 0 && (
