@@ -1,6 +1,7 @@
 import Link from "next/link";
 import SiteMark, { statusTone } from "./components/SiteMark";
 import FleetNav from "./components/FleetNav";
+import FleetMailWidget from "./components/FleetMailWidget";
 import { fleetSnapshot } from "@/lib/fleet";
 
 export const dynamic = "force-dynamic";
@@ -138,6 +139,8 @@ export default async function FleetOverview() {
           </Link>
         </section>
       )}
+
+      {sites.length > 0 && <FleetMailWidget sites={sites} />}
     </main>
   );
 }

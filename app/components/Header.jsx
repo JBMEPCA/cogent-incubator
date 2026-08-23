@@ -18,6 +18,10 @@ const SECTIONS = [
   { seg: "/crm", label: "CRM" },
   { seg: "/content", label: "Content" },
   { seg: "/analytics", label: "Analytics" },
+  // Promoted to the main nav from the Analytics tab row: with sending
+  // automated, "has anyone written back?" is a question asked often enough
+  // to deserve a top-level answer.
+  { seg: "/mail", label: "Mail" },
   // Sits in the main nav rather than beside "Sign out", where it read as
   // account chrome and got missed. This is where a title is set up, so on a
   // fleet it is one of the pages you reach for most, not an afterthought.
