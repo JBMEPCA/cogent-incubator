@@ -55,6 +55,7 @@ export const ANALYTICS_TABS = [
   { href: "/analytics", label: "Performance" },
   { href: "/seo", label: "SEO" },
   { href: "/outreach", label: "Backlinks" },
+  { href: "/mail", label: "Mail" },
   { href: "/newsletter", label: "Newsletter" },
 ];
 
