@@ -1007,3 +1007,31 @@ currently name one". Copy is code. A sentence in a parent theme is a
 single-title assumption exactly as much as a hardcoded category list is, and it
 survives longer because it compiles, renders, and looks completely fine on the
 site you are testing.
+
+### Analytics: three separate things must all be true
+The Fleet Magazine ran six days recording nothing while looking fine. Three
+distinct failures, each invisible on its own:
+
+1. **Site Kit was never installed.** A check for `gtag(` reported the site as
+   tagged — the match was the Consent Mode block in the theme's own
+   `functions.php`, which defines `function gtag(){}`. **Never test for
+   analytics by grepping for `gtag`.** Test for a script tag whose `src` is on
+   `googletagmanager.com`, or better, load the page in a real browser and look
+   for a `_ga_<MEASUREMENT_ID>` cookie. `curl` never fires a JavaScript tag, so
+   a fetch-based probe can only ever prove the tag is *present*, never that it
+   *runs*.
+2. **Connected is not the same as tagging.** Site Kit can have `analytics-4` in
+   its active modules while its separate `useSnippet` switch is off, and it then
+   emits nothing at all. Check
+   `wp option get googlesitekit_analytics-4_settings`.
+3. **The property in the URL is not the property you created** (see above).
+
+The parent theme can emit the tag itself from a per-title `cogent_ga4_id`
+filter, which avoids the OAuth-per-title that Site Kit needs — it stands aside
+automatically when Site Kit is genuinely tagging. Whichever route a title takes,
+verify with the cookie, and confirm the GA4 API returns non-zero for the
+property before calling analytics done:
+
+```
+node scripts/check-analytics-wiring.mjs
+```
