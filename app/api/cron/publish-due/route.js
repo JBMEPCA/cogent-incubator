@@ -28,7 +28,13 @@ export async function GET(request) {
       body: { not: null },
     },
     orderBy: { scheduledFor: "asc" },
-    take: 2,
+    // Ten candidates, two publishes. This was take: 2, and the two oldest due
+    // items are not always publishable: on 23 August both were imageless, the
+    // bare-post guard deferred them every tick, and two finished, imaged
+    // articles sat starved behind them all day - Smart SME held everything it
+    // needed to publish and published nothing. A deferral must not spend a
+    // publish slot.
+    take: 10,
   });
   if (!due.length) return { published: 0 };
 
@@ -38,8 +44,11 @@ export async function GET(request) {
   // password", which is exactly what happened before bylineMode was honoured.
   const authorId = await authorForSite(wp, site);
 
+  const PUBLISH_CAP = 2;
+  let publishedCount = 0;
   const results = [];
   for (const article of due) {
+    if (publishedCount >= PUBLISH_CAP) break;
     try {
       // No category means WordPress files it under whatever the default is, and
       // seven live articles went out that way — off every section of the front
@@ -207,6 +216,7 @@ export async function GET(request) {
         url: post.link,
         ...(check?.unchecked ? { note: check.reason } : {}),
       });
+      publishedCount++;
     } catch (e) {
       results.push({ title: article.title, error: e.message });
     }
