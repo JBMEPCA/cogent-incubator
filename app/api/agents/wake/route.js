@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { canEdit } from "@/lib/permissions";
 import { ensureAgents } from "@/lib/agents/runtime";
 import { runResearcher } from "@/lib/agents/researcher";
 import { runLinkedIn } from "@/lib/agents/linkedin";
@@ -44,6 +45,10 @@ const AGENTS = {
 export async function POST(request) {
   const session = await auth();
   if (!session) return new Response("Unauthorized", { status: 401 });
+  // Waking an agent by hand drafts articles, posts to LinkedIn and spends
+  // tokens. Read-only accounts can watch the office; they cannot start work in
+  // it.
+  if (!(await canEdit())) return new Response("Read-only account", { status: 403 });
   if (!process.env.ANTHROPIC_API_KEY) {
     return Response.json({ error: "no ANTHROPIC_API_KEY" }, { status: 400 });
   }

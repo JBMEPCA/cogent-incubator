@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { authorizeUrl, isLinkedInAppConfigured } from "@/lib/linkedin";
 import { getSite } from "@/lib/site";
+import { canEdit } from "@/lib/permissions";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +12,12 @@ export const dynamic = "force-dynamic";
 // company page, and storing it against the wrong publication would post one
 // magazine's articles to another's feed.
 export async function GET(request) {
+  // Sits behind the login, but a read-only account must not be able to bind or
+  // rebind a publication's LinkedIn page.
+  if (!(await canEdit())) {
+    redirect("/?error=" + encodeURIComponent("This account is read-only."));
+  }
+
   const slug = new URL(request.url).searchParams.get("site");
   if (!slug) redirect("/?error=" + encodeURIComponent("Connecting LinkedIn needs ?site=<slug>."));
 

@@ -3,6 +3,7 @@ import SiteMark, { statusTone } from "./components/SiteMark";
 import FleetNav from "./components/FleetNav";
 import FleetMailWidget from "./components/FleetMailWidget";
 import { fleetSnapshot } from "@/lib/fleet";
+import { visitUrl } from "@/lib/site-url";
 
 export const dynamic = "force-dynamic";
 
@@ -28,13 +29,35 @@ function Figure({ value, label, tone }) {
 function TitleCard({ site }) {
   const tone = statusTone(site.status);
   const s = site.stats;
+  const live = visitUrl(site);
   return (
-    <Link href={`/s/${site.slug}`} className="panel fleet-card">
+    <div className="panel fleet-card">
+      {/* Covers the whole panel, so the card still opens the control room from
+          anywhere on it. Sits under the visit link rather than around it. */}
+      <Link href={`/s/${site.slug}`} className="fleet-card-open" aria-label={`Open ${site.name}`} />
+
       <div className="fleet-card-head">
         <SiteMark site={site} size={46} showStatus={false} />
         <div className="fleet-card-id">
           <h2>{site.name}</h2>
-          <span className="micro">{site.domain || site.slug}</span>
+          {live ? (
+            // The domain IS the affordance — it is already the line that names
+            // the website, so making it the link needs no extra furniture.
+            <a
+              className="micro site-visit"
+              href={live}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {site.domain}
+              <span aria-hidden="true"> ↗</span>
+              <span className="sr-only"> (opens the live site in a new tab)</span>
+            </a>
+          ) : (
+            // No domain, or a title still being provisioned. Plain text beats
+            // a link to a site that is not serving yet.
+            <span className="micro">{site.domain || site.slug}</span>
+          )}
         </div>
         <span className="fleet-status">
           <span className="agent-dot" style={{ background: tone.dot, boxShadow: `0 0 10px ${tone.dot}` }} />
@@ -57,7 +80,7 @@ function TitleCard({ site }) {
         )}
         <span className="micro">last published {timeAgo(s.lastPublishedAt)}</span>
       </div>
-    </Link>
+    </div>
   );
 }
 

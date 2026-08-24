@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { completeConnection, siteSlugFromState } from "@/lib/linkedin";
 import { getSite } from "@/lib/site";
+import { canEdit } from "@/lib/permissions";
 
 export const dynamic = "force-dynamic";
 
@@ -10,6 +11,10 @@ export const dynamic = "force-dynamic";
 // One callback serves the whole fleet, so which title consented is read out of
 // the state parameter rather than the path — see authorizeUrl().
 export async function GET(request) {
+  if (!(await canEdit())) {
+    redirect("/?error=" + encodeURIComponent("This account is read-only."));
+  }
+
   const params = new URL(request.url).searchParams;
   const state = params.get("state");
   const slug = siteSlugFromState(state);

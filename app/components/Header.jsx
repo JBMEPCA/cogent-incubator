@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import SiteMark from "./SiteMark";
 import EngineRoomLight from "./EngineRoomLight";
 import { useActiveSite } from "./FleetContext";
+import { visitUrl } from "@/lib/site-url";
 
 // The header inside a title.
 //
@@ -56,6 +57,9 @@ export default function Header() {
 
   const base = `/s/${site.slug}`;
   const rest = pathname.slice(base.length) || "/";
+  // Null while a title is still in setup, which is exactly when there is
+  // nothing to visit.
+  const live = visitUrl(site);
 
   return (
     <header className="site-header">
@@ -93,6 +97,20 @@ export default function Header() {
         <span className={`agent-dot${site.engineEnabled ? " online" : ""}`} />
         {site.engineEnabled ? "Engine running" : "Engine off"}
       </span>
+
+      {live && (
+        <a
+          href={live}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="nav-link site-visit-nav"
+          title={`Open ${site.domain} in a new tab`}
+          style={{ fontSize: 13 }}
+        >
+          Visit site
+          <span aria-hidden="true"> ↗</span>
+        </a>
+      )}
 
       <Link href="/" className="nav-link" style={{ fontSize: 13 }}>
         All titles

@@ -1,5 +1,8 @@
-// Seeds the director user.
-// Usage: node scripts/seed.js <username> <password> [display name]
+// Seeds a user.
+// Usage: node scripts/seed.js <username> <password> [display name] [role]
+//
+// role is "admin" (the default, full access) or "viewer" (read-only: signs in,
+// reads every page, cannot write anything — see lib/permissions.js).
 //
 // It used to seed a sixteen-item launch checklist into LaunchItem as well. That
 // table is now read by nothing: lib/milestones.js derives launch progress from
@@ -20,19 +23,27 @@ const prisma = new PrismaClient();
 
 
 async function main() {
-  const [username, password, name] = process.argv.slice(2);
+  const [username, password, name, role = "admin"] = process.argv.slice(2);
   if (!username || !password) {
-    console.error("Usage: node scripts/seed.js <username> <password> [display name]");
+    console.error("Usage: node scripts/seed.js <username> <password> [display name] [admin|viewer]");
+    process.exit(1);
+  }
+  // Checked here rather than left to Postgres, because a typo'd role would
+  // otherwise fail as an opaque enum error after the password had been hashed.
+  if (role !== "admin" && role !== "viewer") {
+    console.error(`Unknown role '${role}'. Use "admin" or "viewer".`);
     process.exit(1);
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
   await prisma.user.upsert({
     where: { username },
-    update: { passwordHash },
-    create: { username, passwordHash, name: name || username },
+    // Re-running for an existing account resets the password AND the role, so
+    // this script is also how you demote or restore someone.
+    update: { passwordHash, role },
+    create: { username, passwordHash, name: name || username, role },
   });
-  console.log(`User '${username}' ready.`);
+  console.log(`User '${username}' ready (${role}).`);
 
 }
 

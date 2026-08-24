@@ -1443,3 +1443,107 @@ tbody tr:hover {
   font-weight: 300;
   color: var(--muted);
 }
+
+/* ---------- Read-only (Viewer) accounts ---------- */
+
+.readonly-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 18px;
+  font-size: 12.5px;
+  color: var(--text);
+  background: rgba(251, 191, 36, 0.08);
+  border-bottom: 1px solid rgba(251, 191, 36, 0.28);
+}
+
+.readonly-bar strong {
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 11px;
+  color: var(--neon-amber);
+}
+
+.readonly-bar span:last-child {
+  color: var(--muted);
+}
+
+.readonly-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--neon-amber);
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.7);
+}
+
+/* Controls that would submit stay visible — a viewer is meant to see what the
+   app does — but read as unavailable rather than as broken. ReadOnlyGuard
+   swallows the submit itself; this is only the part you can see. */
+body[data-readonly="true"] form button[type="submit"],
+body[data-readonly="true"] form button:not([type]),
+body[data-readonly="true"] form input[type="submit"],
+body[data-readonly="true"] form .btn {
+  opacity: 0.4;
+  cursor: not-allowed;
+  filter: grayscale(0.6);
+}
+
+/* ---------- Visiting the live magazines ---------- */
+
+/* Screen-reader-only text. Needed because the "↗" on a visit link is hidden
+   from assistive tech (it is decoration), which leaves the link announcing only
+   a bare domain with no hint that it leaves the app. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* The fleet card's own link to the control room, stretched over the panel.
+   The card used to BE an anchor; it stopped being one so that the link to the
+   live site could sit inside it, which nested anchors do not allow. */
+.fleet-card-open {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+}
+
+/* Above the overlay, or the card would swallow the click. */
+/* Above the overlay, or the card would swallow the click.
+
+   Coloured and underlined at rest rather than only on hover. .micro is muted
+   grey uppercase — caption styling — so a domain wearing it reads as the
+   card's subtitle and nobody discovers it is the way out to the website. */
+.site-visit {
+  position: relative;
+  z-index: 1;
+  color: var(--neon-cyan);
+  text-decoration: underline;
+  text-decoration-color: rgba(34, 211, 238, 0.4);
+  text-underline-offset: 3px;
+  transition: color 0.2s, text-decoration-color 0.2s;
+}
+
+.site-visit:hover,
+.site-visit:focus-visible {
+  color: var(--text);
+  text-decoration-color: var(--neon-cyan);
+}
+
+/* The header link already sits among labelled nav controls, so it only needs
+   the tint that says it leaves the app. */
+.site-visit-nav {
+  color: var(--neon-cyan);
+}
+
+.site-visit-nav:hover,
+.site-visit-nav:focus-visible {
+  color: var(--text);
+}

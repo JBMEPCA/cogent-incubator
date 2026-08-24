@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { CREDENTIAL_KINDS } from "@/lib/site";
+import { requireEditor, canEdit } from "@/lib/permissions";
 import NewTitleForm from "./NewTitleForm";
 
 export const dynamic = "force-dynamic";
@@ -67,6 +68,8 @@ function slugify(s) {
 async function createTitle(formData) {
   "use server";
 
+  await requireEditor();
+
   const name = String(formData.get("name") || "").trim();
   if (!name) return;
 
@@ -114,6 +117,7 @@ async function createTitle(formData) {
 }
 
 export default async function NewTitlePage() {
+  const editable = await canEdit();
   let existing = [];
   try {
     existing = await prisma.site.findMany({ select: { slug: true }, orderBy: { createdAt: "asc" } });
@@ -131,7 +135,14 @@ export default async function NewTitlePage() {
         <Link href="/" className="nav-link">Back to all titles</Link>
       </header>
 
-      <NewTitleForm action={createTitle} taken={existing.map((s) => s.slug)} kinds={CREDENTIAL_KINDS} />
+      {editable ? (
+        <NewTitleForm action={createTitle} taken={existing.map((s) => s.slug)} kinds={CREDENTIAL_KINDS} />
+      ) : (
+        <p className="micro" style={{ padding: "24px 0" }}>
+          This account is read-only, so it cannot add a title. The titles already in the
+          fleet are listed in the rail and every one of them can be opened and read.
+        </p>
+      )}
     </main>
   );
 }
