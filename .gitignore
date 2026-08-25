@@ -51,3 +51,7 @@ scripts/held-*.html
 # sensitive. They live on disk and in NewsletterProspect, never in git.
 assets/mailchimpdata/ranked-*.csv
 assets/mailchimpdata/mv-report-*.csv
+
+# Rendered newsletter proofs — real subscriber-facing content, regenerated
+# on demand by scripts/newsletter-proof.mjs. No reason to version them.
+assets/newsletter-proofs/
