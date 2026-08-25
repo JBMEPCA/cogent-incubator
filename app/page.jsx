@@ -3,6 +3,7 @@ import SiteMark, { statusTone } from "./components/SiteMark";
 import FleetNav from "./components/FleetNav";
 import FleetMailWidget from "./components/FleetMailWidget";
 import { fleetSnapshot } from "@/lib/fleet";
+import { fmtCount } from "@/lib/targets";
 import { visitUrl } from "@/lib/site-url";
 
 export const dynamic = "force-dynamic";
@@ -71,6 +72,26 @@ function TitleCard({ site }) {
         <Figure value={money(s.spendMonth)} label="spend, month" />
         <Figure value={s.awaiting} label="awaiting you" tone={s.awaiting ? "var(--neon-amber)" : undefined} />
       </div>
+
+      {site.target && (
+        <div style={{ margin: "8px 2px 0" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", gap: 8, fontSize: 11, opacity: 0.6, marginBottom: 3 }}>
+            <span>Next target: {site.target.label}</span>
+            <span>
+              {fmtCount(Math.round(site.target.value))}/{fmtCount(site.target.target)}
+            </span>
+          </div>
+          <div style={{ height: 3, borderRadius: 2, background: "rgba(255,255,255,.08)", overflow: "hidden" }}>
+            <div
+              style={{
+                width: `${Math.round(Math.min(1, site.target.progress) * 100)}%`,
+                height: "100%",
+                background: "var(--neon-cyan)",
+              }}
+            />
+          </div>
+        </div>
+      )}
 
       <div className="fleet-card-foot">
         {site.attention ? (

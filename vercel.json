@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/scan-feeds",
       "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/targets",
+      "schedule": "30 6 * * *"
     }
   ]
 }

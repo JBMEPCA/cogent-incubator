@@ -149,6 +149,8 @@ model Site {
   engineSettings    EngineSetting[]
   metricSnapshots   MetricSnapshot[]
   referringDomains  ReferringDomain[]
+  audienceSnapshots AudienceSnapshot[]
+  targetAchievements TargetAchievement[]
 }
 
 /// A site that has sent us traffic, which is the only evidence of a link we can
@@ -240,6 +242,57 @@ model MetricSnapshot {
 
   @@unique([siteId, day])
   @@index([siteId, day])
+}
+
+/// One row per title per day: the audience picture, frozen — the companion to
+/// MetricSnapshot for the numbers that only exist as live API reads. GA4 serves
+/// cumulative visitors and Mailchimp serves a member count, but neither will
+/// ever tell you what the number WAS, so "when did we cross 500 visitors" is
+/// only answerable if something wrote it down at the time.
+///
+/// Columns are nullable on purpose: a run that could reach GA4 but not
+/// Mailchimp records the half it measured rather than writing a zero that
+/// reads as a collapsed list.
+model AudienceSnapshot {
+  id     String @id @default(cuid())
+  site   Site   @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId String
+  day    DateTime
+
+  // GA4 totalUsers from launch day to today — a running total, not a daily figure.
+  visitors    Int?
+  // Mailchimp member_count as at the day.
+  subscribers Int?
+  // Issues ever sent to this audience, as at the day.
+  issuesSent  Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([siteId, day])
+  @@index([siteId, day])
+}
+
+/// A target crossed, stamped once and kept.
+///
+/// The board itself is derived live (lib/targets.js), same as launch progress —
+/// but a derived tick has no date, and a subscriber count that dips after a
+/// list clean would un-tick "2,500 subscribers" as if it never happened. So the
+/// first time a target reads as met, the fact is recorded here with the best
+/// date the evidence supports, and the board treats this table as the truth for
+/// anything it contains.
+model TargetAchievement {
+  id     String @id @default(cuid())
+  site   Site   @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId String
+  key    String // e.g. visits_500, subs_2500, articles_50 — see lib/targets.js
+  // The measured value at the moment of recording, for the audit trail.
+  value  Float?
+  achievedAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  @@unique([siteId, key])
+  @@index([siteId, achievedAt])
 }
 
 // Per-title secrets, encrypted at rest with AES-256-GCM under CREDENTIAL_KEY.

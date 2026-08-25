@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getSiteContext } from "@/lib/site";
 import { addTodo, toggleTodo, deleteTodo } from "@/lib/actions";
 import { launchProgress } from "@/lib/milestones";
+import { targetBoard, fmtCount } from "@/lib/targets";
 import { buildCostReport } from "@/lib/agents/costs";
 import { withinOfficeHours } from "@/lib/site";
 import { fmtMoney } from "@/lib/crm";
@@ -14,6 +15,16 @@ const AGENT_NAMES = {
   director: "Director", researcher: "Researcher", seo: "SEO Expert", editor: "Editor",
   designer: "Graphic Designer", finance: "Finance Manager", linkedin: "LinkedIn Manager",
 };
+
+function fmtDay(d) {
+  const date = new Date(d);
+  return date.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    ...(date.getFullYear() !== new Date().getFullYear() && { year: "2-digit" }),
+    timeZone: "Europe/London",
+  });
+}
 
 function timeAgo(d) {
   if (!d) return "never";
@@ -73,10 +84,11 @@ export default async function Dashboard({ params }) {
 
   const weekAgo = new Date(Date.now() - 7 * 864e5);
 
-  const [todos, progress, costs, agents, articles, topics, linkedIn, seoPending, publishedWeek, nextUp, leadRows] =
+  const [todos, progress, targets, costs, agents, articles, topics, linkedIn, seoPending, publishedWeek, nextUp, leadRows] =
     await Promise.all([
       db.todo.findMany({ orderBy: [{ pinned: "desc" }, { createdAt: "asc" }] }),
       launchProgress(site.id, { hasWordPress: Boolean(creds.wordpress?.url) }),
+      targetBoard(ctx),
       buildCostReport(site.id),
       db.agent.findMany(),
       db.article.groupBy({ by: ["status"], _count: true }),
@@ -271,6 +283,48 @@ export default async function Dashboard({ params }) {
                         {i.done ? "✓" : "○"}
                       </span>
                       <span style={{ opacity: i.done ? 0.85 : 0.55 }}>{i.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="panel" style={{ padding: 18, marginTop: 14 }}>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 4, flexWrap: "wrap" }}>
+            <h2 style={{ margin: 0, fontSize: 14 }}>Targets</h2>
+            <span style={{ fontSize: 11.5, opacity: 0.5 }}>
+              {targets.done}/{targets.total} achieved · a crossed target keeps its date even if the number later dips
+            </span>
+            {targets.nextUp && (
+              <span style={{ marginLeft: "auto", fontSize: 11.5, color: "var(--neon-cyan)", whiteSpace: "nowrap" }}>
+                Next up: {targets.nextUp.label} · {fmtCount(Math.round(targets.nextUp.value))}/{fmtCount(targets.nextUp.target)}
+              </span>
+            )}
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 18, marginTop: 12 }}>
+            {targets.groups.map((g) => (
+              <div key={g.key}>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 6 }}>
+                  <strong style={{ fontSize: 12.5 }}>{g.label}</strong>
+                  <span style={{ marginLeft: "auto", fontSize: 11.5, opacity: 0.55 }}>{g.done}/{g.total}</span>
+                </div>
+                <Bar value={g.done} max={g.total} tone={g.done === g.total ? "#0ca30c" : undefined} />
+                <div style={{ marginTop: 7 }}>
+                  {g.items.map((i) => (
+                    <div key={i.key} className="phase-row" title={i.evidence}>
+                      <span style={{ color: i.done ? "#0ca30c" : "rgba(255,255,255,.28)", fontWeight: 700, width: 12 }}>
+                        {i.done ? "✓" : "○"}
+                      </span>
+                      <span style={{ opacity: i.done ? 0.85 : 0.55, flex: 1 }}>{i.label}</span>
+                      <span style={{ fontSize: 10.5, opacity: 0.45, whiteSpace: "nowrap" }}>
+                        {i.done && i.achievedAt
+                          ? fmtDay(i.achievedAt)
+                          : i.tiered && i.value != null
+                            ? `${fmtCount(Math.round(i.value))}/${fmtCount(i.target)}`
+                            : ""}
+                      </span>
                     </div>
                   ))}
                 </div>
