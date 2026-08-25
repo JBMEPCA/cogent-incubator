@@ -275,8 +275,9 @@ export default async function SettingsPage({ params }) {
             <Switch
               name="outreachEnabled"
               label="Backlink outreach"
-              hint="Drafting only. Every email still waits for approval on the Backlinks page."
+              hint="Drafts AND sends on its own: queued drafts email real companies on the hourly sweep without approval. The Backlinks page is the override window before the next tick. Capped at 25 sends a day."
               checked={site.outreachEnabled}
+              warn
             />
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 10, marginTop: 12 }}>

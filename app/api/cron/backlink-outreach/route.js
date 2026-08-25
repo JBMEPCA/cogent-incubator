@@ -1,15 +1,20 @@
-import { runOutreachSends, isSendConfigured, outreachSetupHint } from "@/lib/outreach";
+import { runBacklinkOutreach, runOutreachSends, isSendConfigured, outreachSetupHint } from "@/lib/outreach";
 import { cronGuard, forEachSite } from "@/lib/cron";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 60;
+// Drafting includes model calls and contact-page fetches, so 60s across five
+// titles is not enough; fluid compute is on (see the agents route).
+export const maxDuration = 300;
 
-// Sending only. Finding mentions, chasing replies and checking for the link all
-// belong to the Backlink Manager now, so they happen once, in one place, with
-// an audit trail. This endpoint exists separately because mail due to leave —
-// the agent's drafts and anything a human fast-tracked — should go within the
-// tick rather than waiting for the agent's turn, and because sending must keep
-// working outside office hours.
+// Drafting AND sending, hourly. Drafting used to belong solely to the Backlink
+// Manager's 12-hour housekeeping slot, where it competed with six other agents
+// for one turn a tick — realistically twice a day, scanning two articles a
+// run, against the 14-day lookback after which an article is never chased.
+// That did not match the "hourly sweep" everyone believed in, or the
+// dashboard's own "within six hours" copy. Scanning here is cheap when there
+// is nothing new (the unscanned-articles query returns empty and no model is
+// called), so the hourly tick can afford it; reply/bounce/link checks and
+// reporting stay with the Backlink Manager, which keeps the audit trail.
 //
 // Fans out across the fleet: each title sends from its OWN mailbox, so a title
 // with no outreach credential is skipped by name rather than stopping the run.
@@ -21,7 +26,9 @@ export async function GET(request) {
     return Response.json(
       await forEachSite(async ({ site, creds }) => {
         if (!isSendConfigured(creds)) return { skipped: outreachSetupHint(creds) };
-        return runOutreachSends(site, creds);
+        const drafted = await runBacklinkOutreach(site, creds);
+        const sends = await runOutreachSends(site, creds);
+        return { drafted, ...sends };
       })
     );
   } catch (e) {

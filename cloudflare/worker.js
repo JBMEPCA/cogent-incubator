@@ -44,6 +44,11 @@ const STEPS = [
   "/api/cron/agents?stage=director",
   "/api/cron/agents?stage=worker",
   "/api/cron/backlink-outreach",
+  // Link-win detection. The route throttles itself to once per title per 24h,
+  // so the hourly call is a no-op thirteen times out of fourteen — but without
+  // a caller it ran only when the Backlink Manager won its contended 12-hour
+  // agent slot, and its own throttle was bypassed entirely.
+  "/api/cron/check-backlinks",
   "/api/cron/scan-feeds",
   "/api/cron/scan-feeds",
 ];
@@ -132,6 +137,29 @@ async function runAll(env, now = new Date(), steps = null) {
       results.push({ path, error: String(e).slice(0, 200) });
     }
   }
+
+  // Tell a human. These results used to be collected and then discarded by the
+  // scheduled handler, so a step failing every hour looked identical to a step
+  // succeeding and the only sign of a dead sweep was silence. The app's alert
+  // route dedupes (one email per failing step per few hours) and emails; the
+  // POST is fire-and-fail-quietly because the alarm must never be what breaks
+  // the engine — but its own failure is recorded in the results it reports on.
+  const failures = results.filter((r) => r.error || r.status >= 400);
+  if (failures.length) {
+    try {
+      await fetch(baseUrl(env) + "/api/cron/alert", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${env.CRON_SECRET}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ source: "cloudflare-worker", failures }),
+      });
+    } catch (e) {
+      results.push({ path: "/api/cron/alert", error: String(e).slice(0, 200) });
+    }
+  }
+
   return results;
 }
 
