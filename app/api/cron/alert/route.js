@@ -99,11 +99,31 @@ ${lines.join("\n\n")}
 
 Each failing step is emailed at most once every ${ALERT_COOLDOWN_HOURS} hours while it keeps failing. Check /workflows on the dashboard, Vercel logs for the route, or run the step by hand with the CRON_SECRET to see the full response.`;
 
+  // sendGmail builds a multipart/alternative message and base64s BOTH parts,
+  // so html is not optional: omitting it throws inside the MIME builder.
+  const esc = (s) =>
+    String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const html = `<div style="font-family:system-ui,sans-serif;font-size:14px;line-height:1.5">
+<p>The engine's scheduled sweep is reporting failures.</p>
+<p><strong>Source:</strong> ${esc(body.source || "cloudflare-worker")}<br>
+<strong>Time:</strong> ${new Date(now).toISOString()} (UTC)</p>
+<ul>${fresh
+    .map(
+      (f) =>
+        `<li><code>${esc(f.path)}</code> — ${f.error ? `error: ${esc(f.error)}` : `status ${esc(f.status)}`}${
+          f.body ? `<br><small>${esc(String(f.body).slice(0, 300))}</small>` : ""
+        }</li>`
+    )
+    .join("")}</ul>
+<p style="color:#666">Each failing step is emailed at most once every ${ALERT_COOLDOWN_HOURS} hours while it keeps failing.</p>
+</div>`;
+
   await sendGmail({
     outreach: sender.outreach,
     to: ALERT_TO,
     subject: `[Cogent engine] ${fresh.length} scheduled step${fresh.length === 1 ? "" : "s"} failing`,
     text,
+    html,
   });
 
   for (const f of fresh) {
