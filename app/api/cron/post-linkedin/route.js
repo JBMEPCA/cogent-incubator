@@ -30,13 +30,16 @@ export async function GET(request) {
 
   return Response.json(
     await forEachSite(async ({ site, db, creds }) => {
-      if (!isLinkedInConfigured(creds.linkedin)) return { skipped: "LinkedIn not connected for this title" };
-
       // News that sat unposted for days is not news. Expired, with the reason.
+      // BEFORE the connected check: no title is connected yet, so below it the
+      // drafts this exists to clear were exactly the ones it could never reach.
       const stale = await db.linkedInPost.updateMany({
         where: { status: { in: ["draft", "approved"] }, postedAt: null, createdAt: { lt: new Date(Date.now() - DRAFT_EXPIRY_DAYS * 864e5) } },
         data: { status: "expired", publishError: `unposted for ${DRAFT_EXPIRY_DAYS} days; expired rather than posted stale` },
       });
+
+      if (!isLinkedInConfigured(creds.linkedin))
+        return { skipped: "LinkedIn not connected for this title", expired: stale.count };
 
       const post = await db.linkedInPost.findFirst({
         where: dueFilter(),
