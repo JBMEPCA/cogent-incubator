@@ -1473,3 +1473,55 @@ and the visibility verified with the anonymous `curl` in §3. Create it empty.
    and it is the least documented title as a direct result
 □  Add what you learned HERE, the same day
 ```
+
+### Arming a title's newsletter
+
+`scripts/newsletter-readiness.mjs` answers "why is this title not sending" in
+one call, because every gate in the send path returns `skipped` rather than
+failing — a title that is not ready looks exactly like one that had a quiet
+week. Six gates: mailchimp credential, a non-empty audience, an authenticated
+sending domain, ten articles with images, its own wordmark, and the switch.
+
+Order of operations, once the list is loaded (§11):
+
+```
+node --import ./scripts/node-resolve-hook.mjs --env-file=.env scripts/newsletter-readiness.mjs <slug>
+node ... scripts/pin-lead.mjs <slug> "<headline fragment>"      # optional
+node ... scripts/newsletter-proof.mjs <slug>                    # renders to a file
+node ... scripts/send-proof.mjs "a@b.com,c@d.com" <slug>        # real Mailchimp test send
+node ... scripts/set-newsletter-enabled.mjs <slug> on           # arms Thursday
+```
+
+Send the proof to a person before arming. It is the only way to see the merge
+tags resolve and the masthead render in a real client, and it doubles as a free
+deliverability read on a young sending domain — where the proof lands is where
+the issue will land.
+
+**Ten articles with images is a hard floor**, and it is what keeps a new title
+waiting: barbering had 5 and airports 6 on the day their lists were ready.
+
+**The schedule is not per title.** The Cloudflare worker fires
+`/api/cron/newsletter` at 09:00 UK on Thursdays and the route fans out over
+every title whose switch is on. Arming a title *is* scheduling it; there is no
+second place to set a time.
+
+### The fleet run has a wall clock, and exceeding it is silent
+
+`maxDuration` is 300s. A run that overruns does not fail loudly — the titles it
+never reached simply get no issue, and the ones that did send make the week look
+fine. Measured on 25 Aug 2026: three titles took **202s**, which left no room
+for the fourth and fifth.
+
+The cause was `/reports?count=200`, a ~20s call fetching the whole ACCOUNT's
+campaign history, run twice per title — once for the deliverability gate and
+once for the repeat-send guard — for data identical across titles. Fetching it
+once per run took the same three titles to **88s**, and five to roughly 135s.
+
+The cache is invalidated immediately after any send. That is the part that
+matters: without it the repeat-send guard could read a snapshot taken before the
+issue it is checking for, and the protection against sending twice would be
+looking at the past.
+
+**Before adding the sixth title, re-measure with `?dry=1` and compare against
+300s.** Per-title marginal cost is about 23s, so the ceiling is roughly a dozen
+titles — after that the route needs to run one title per invocation.
