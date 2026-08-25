@@ -26,9 +26,18 @@ async function buildLinkGraph(wp) {
         seed: p.id,
       });
       const hrefs = (p.content?.rendered || "").match(/href="(https?:\/\/[^"]+)"/g) || [];
+      // The title's own host, from the credential this graph is being built
+      // with. This was hardcoded to smartsme.co.uk, so on every other title
+      // the map drew the site's own articles as external domains and showed
+      // zero internal links - four titles' link maps were decorative.
+      const ownHost = String(wp.url || "")
+        .replace(/^https?:\/\//, "")
+        .replace(/\/.*$/, "")
+        .replace(/^www\./, "")
+        .toLowerCase();
       for (const h of hrefs) {
         const url = h.slice(6, -1).replace(/\/$/, "");
-        if (url.includes("smartsme.co.uk")) {
+        if (ownHost && url.toLowerCase().includes(ownHost)) {
           const target = byUrl.get(url);
           if (target && target.id !== p.id) edges.push({ from: `p${p.id}`, to: `p${target.id}` });
         } else {
@@ -173,7 +182,7 @@ export default async function SeoPage({ params }) {
             <p style={{ color: "var(--muted)", fontSize: 14, margin: "0 0 14px" }}>
               {configured
                 ? audit
-                  ? `Monitoring smartsme.co.uk — last sweep ${new Date(audit.at).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })} across ${audit.posts} posts.`
+                  ? `Monitoring ${site.domain || site.name} — last sweep ${new Date(audit.at).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })} across ${audit.posts} posts.`
                   : "Connected and armed — first sweep runs shortly."
                 : "Waiting for Anthropic + WordPress connections."}
             </p>

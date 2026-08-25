@@ -1,7 +1,7 @@
 // Push a title's theme to its live site over SFTP. Replaces the zip-and-upload
 // dance, which is survivable at one title and absurd at twenty-five.
 //
-//   node scripts/deploy-theme.mjs --site=fleet-magazine --from=../fleet-magazine-website/theme
+//   node scripts/deploy-theme.mjs --site=fleet-magazine --from=../fleet-magazine-website/child
 //   node scripts/deploy-theme.mjs --site=fleet-magazine --dry-run
 //
 // Uses the system `sftp` binary rather than an npm dependency, and authenticates
@@ -47,7 +47,11 @@ if (!cfg?.host) {
   process.exit(1);
 }
 
-const from = path.resolve(arg("from") || `../${slug}-website/theme`);
+// Default to child/: every live title runs a child of cogent-base. The old
+// default was theme/, which for smart-sme and fleet-magazine was the retired
+// pre-split standalone fork — a bare `--site=` run would have pushed a stale
+// fork over the live child and reintroduced its hardcoded branding.
+const from = path.resolve(arg("from") || `../${slug}-website/child`);
 if (!fs.existsSync(path.join(from, "style.css"))) {
   console.error(`No theme at ${from} (expected a style.css there).`);
   process.exit(1);

@@ -128,6 +128,10 @@ const DATA = {
 
   audience:
     "Golf resort owners, investors, general managers, directors of golf, course managers, developers, architects, golf tour operators and their suppliers, worldwide — from single independent resorts to multi-property management companies.",
+  // Global title: keyword discovery and prompt context run US-first, UK
+  // second (Site.markets drives the Researcher's Google editions and the
+  // batch publisher's market-sensitive lines).
+  markets: ["US", "GB"],
   bylineMode: "per_title_person",
   // authorName is deliberately null. The editorial standard requires a real
   // named byline and inventing one would breach it on day one. Set it to the

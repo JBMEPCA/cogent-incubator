@@ -38,6 +38,9 @@ const ROUTING_MODEL = "claude-haiku-4-5";
 // Set per title in the runner: a SmartSMEBot user-agent crawling on behalf of
 // the fleet magazine is the kind of small dishonesty that gets a publisher blocked.
 let UA = { "user-agent": "CogentBot/1.0" };
+// The runner sets this from the title. Exported so an importing script can do
+// the same rather than crawling Pexels as a generic bot.
+const setUA = (ua) => { UA = ua; };
 const RESULTS = path.join(__dirname, ".batch-state.json");
 
 const log = (...a) => console.log(new Date().toISOString().slice(11, 19), ...a);
@@ -323,17 +326,26 @@ async function verifyImage({ file, title, keyphrase }) {
   }
   const out = await ask({
     maxTokens: 900,
-    system: `You are the picture editor for ${siteName()}, a UK trade publication. You are shown a candidate header image and the article it would illustrate. Catch mistakes before publication.
+    system: `You are the picture editor for ${siteName()}, a trade publication serving ${siteAudience()}. You are shown a candidate header image and the article it would illustrate. Catch mistakes before publication.
 
 REJECT (verdict "no") if ANY of these are true:
-- The image does not clearly relate to the article's subject.
+- The image does not relate to the article's subject or theme at all.
 - The article names specific brands or products and the image shows a DIFFERENT brand, or a logo that is not the one named. Wrong logos are the most serious failure possible.
 - The image contains text, watermarks or logos that would confuse or mislead a reader.
 - It looks like a meme, clipart, a random webpage screenshot, a map, an unreadable chart, or an obviously staged 2000s stock photo.
 - The subject is a recognisable named individual (we do not have permission).
 - Quality is poor: blurry, distorted, badly cropped, over-processed, or too dark to read at a glance.
 
-ACCEPT (verdict "yes") only if a professional editor would be comfortable seeing this at the top of the article in print quality.
+ACCEPT (verdict "yes") if a professional editor would be comfortable seeing this at the top of the article in print quality.
+
+A header photograph illustrates the theme. It is not evidence, and readers do not
+read it as a photograph OF the specific thing being reported. An article about a
+named company, product, venue or person is properly illustrated by a generic,
+unbranded, on-theme photograph, and you must NOT reject one merely because it
+does not depict that specific company, product, venue or person. The brand rule
+above is about showing the WRONG brand as though it were the subject, which is a
+different failure entirely: a plain pizzeria heads a story about a pizzeria
+closing, while a rival pizzeria's signage in shot does not.
 
 Reply ONLY with JSON:
 {"verdict":"yes"|"no","score":<0-100 relevance>,"reason":"<one sentence>","alt":"<SEO alt text under 120 chars describing what is actually visible, including the keyphrase if it fits naturally>"}`,
@@ -361,7 +373,9 @@ async function chooseImage({ title, keyphrase, brief, used, usedShoots = new Set
           routing: true,
           maxTokens: 600,
           system:
-            "You choose stock photo search queries for the header image of a UK business magazine article. Reply with ONLY a JSON array of 4 strings, most specific first. Describe the VISUAL subject wanted (real objects, people at work, screens, places), never abstract concepts. Avoid queries that would return logos, memes or charts.",
+            `You choose stock photo search queries for the header image of a business trade magazine article. Reply with ONLY a JSON array of 4 strings, most specific first. Describe the VISUAL subject wanted (real objects, screens, premises, work in progress), never abstract concepts. Avoid queries that would return logos, memes or charts.
+
+The picture gate rejects any photograph whose subject is a recognisable individual, so do not write queries that return posed portraits or headshots ("businessman smiling", "accountant at desk", "team meeting"). Where people belong in the shot, ask for framings that do not turn on a face: hands at work, over-the-shoulder, from behind, or a wide shot of a room. A query that ignores this costs a vision call and comes back rejected.`,
           user:
             `Article: "${title}"\nKeyphrase: ${keyphrase || "n/a"}\nWhat it covers: ${(brief || "").slice(0, 400)}\n` +
             (nearby.length
@@ -409,7 +423,7 @@ async function chooseImage({ title, keyphrase, brief, used, usedShoots = new Set
     routing: true,
     maxTokens: 600,
     system:
-      'You pick the most RELEVANT header image for a UK business magazine article from candidate metadata. Prefer clearly on-topic, professional, modern, uncluttered photographs. Avoid memes, maps, diagrams, identifiable individuals and anything off-topic. Reply ONLY with JSON: {"pick": <index>, "second": <index>, "third": <index>}',
+      'You pick the most RELEVANT header image for a business trade magazine article from candidate metadata. Prefer clearly on-topic, professional, modern, uncluttered photographs. Avoid memes, maps, diagrams, identifiable individuals and anything off-topic. Reply ONLY with JSON: {"pick": <index>, "second": <index>, "third": <index>}',
     user: `Article: "${title}"\nWhat it covers: ${(brief || "").slice(0, 300)}\n\nCandidates:\n${candidates
       .map((c, i) => `${i}. [${c.source}] "${c.title}" ${c.tags ? `tags: ${c.tags}` : ""} (${c.width}px wide)`)
       .join("\n")}`,
@@ -448,15 +462,51 @@ async function chooseImage({ title, keyphrase, brief, used, usedShoots = new Set
 // voice, and only the topic would give it away. A function rather than a const
 // because the site is resolved in the runner, after this module is evaluated.
 const siteName = () => global.__BATCH_SITE?.name || "this publication";
-const siteAudience = () => global.__BATCH_SITE?.audience || "UK business decision-makers";
+const siteAudience = () => global.__BATCH_SITE?.audience || "the readers of this publication";
 
-const houseStyle = () => `You write for ${global.__BATCH_SITE?.name || "this publication"}${
-  global.__BATCH_SITE?.strapline ? `, "${global.__BATCH_SITE.strapline}"` : ""
-}.
-Audience: ${global.__BATCH_SITE?.audience || "UK business decision-makers"}.
-Voice: plain English, specific, practical, confident without hype. UK spelling and UK context throughout.
+// Which markets this title serves, from the Site row. ["GB"] is the default
+// because that is what every title before the global pair actually was; a
+// global title carries its own list and every market-sensitive line below keys
+// off it. Before this, the voice line said "UK context throughout" and the
+// guide prompt demanded HMRC and the ICO by name - prompts that ran verbatim
+// for Golf Resort Magazine and Airport Business Magazine, both global titles.
+const siteMarkets = () => {
+  const m = global.__BATCH_SITE?.markets;
+  return Array.isArray(m) && m.length ? m : ["GB"];
+};
+const MARKET_NAMES = { GB: "the UK", US: "the US", AU: "Australia", IE: "Ireland" };
+const marketsPhrase = () =>
+  siteMarkets().map((c) => MARKET_NAMES[c] || c).join(" and ");
+const isUkOnly = () => siteMarkets().length === 1 && siteMarkets()[0] === "GB";
+
+const houseStyle = () => {
+  const s = global.__BATCH_SITE || {};
+  // The title's own house style wins. The generated fallback exists for a
+  // title with none set - it must write generically for its own readers, never
+  // in another title's voice (see lib/voice.js, which made the same repair for
+  // the runtime agents; this file kept its own copy and kept the old bug).
+  const identity =
+    (s.houseStyleMd || "").trim() ||
+    `You write for ${s.name || "this publication"}${s.strapline ? `, "${s.strapline}"` : ""}.
+Audience: ${s.audience || "the readers of this publication"}.
+Voice: plain English, specific, practical, confident without hype. British spelling.
+Context and examples come from the markets this title serves: ${marketsPhrase()}.
 Short paragraphs of two to four sentences. Explain jargon on first use. Every section must answer
-"what does this mean for my business, and what do I do about it?".
+"what does this mean for my business, and what do I do about it?".`;
+
+  const standard = (s.editorialStandardMd || "").trim();
+
+  return `${identity}
+${standard ? `
+THE EDITORIAL STANDARD FOR THIS TITLE. These rules outrank any other instruction
+in this prompt about what may be covered or how.
+<editorial_standard>
+${standard}
+</editorial_standard>
+` : ""}`;
+};
+
+const sharedRules = () => `
 
 HARD RULES
 1. NEVER use em dashes or en dashes anywhere: not in the headline, body, or metadata. Use commas,
@@ -472,14 +522,15 @@ HARD RULES
 LINKING (mandatory, and links must be exact URLs from the list supplied)
 - Internal links: weave links to other articles on this site into sentences using descriptive anchor
   text that reads naturally. Never "click here", never a bare URL, never a "related reading" dump.
-- Outbound links: link authoritative primary sources (gov.uk, hmrc, ico.org.uk, ncsc.gov.uk, the
+- Outbound links: link authoritative primary sources for the reader's own market${isUkOnly() ? " (gov.uk, HMRC, ico.org.uk, ncsc.gov.uk," : ` (the
+  government, regulator and industry-body pages of ${marketsPhrase()},`} the
   vendor's own page, the original announcement). Never link a source you are not certain exists.
 - Name the providers. Where the topic touches software, tools, suppliers or services, name the
-  real companies rather than writing around them. "Accounting software" is a wasted sentence;
-  "Xero, QuickBooks, FreeAgent and Sage" tells the reader where to look. Four or more named
+  real companies rather than writing around them. Naming only the category is a wasted sentence;
+  naming the companies tells the reader where to look. Four or more named
   providers wherever they are genuinely relevant, each linked to its own site on first mention,
-  covering the UK options a reader would actually shortlist rather than only the biggest American
-  names. A comparison table should carry real product names in its rows.
+  covering the options a reader in ${marketsPhrase()} would actually shortlist rather than only
+  the biggest global names. A comparison table should carry real product names in its rows.
 - The line you must not cross: name real companies and describe what they are generally known to
   do. Never invent a product, feature, price, customer or statistic to make a brand fit. If you
   are unsure whether a company offers something, say what it is known for and leave the specifics
@@ -516,7 +567,7 @@ Editorial brief:
 ${spec.brief}
 
 Structure:
-- Open with the development itself and why it matters to a UK small business, in the first two sentences. No throat-clearing.
+- Open with the development itself and why it matters to your reader (${siteAudience()}), in the first two sentences. No throat-clearing.
 - An <h2> section giving the substance of the announcement, attributed clearly to ${spec.brandName}, with one link to the original at ${spec.sourceUrl}.
 - An <h2> section on the context: what changed, what it replaces, who is affected.
 - An <h2> "What this means for your business" section with concrete implications.
@@ -529,7 +580,7 @@ ${sourceText || "(The source page could not be fetched. Write only from the brie
 ${shared}`;
   }
 
-  return `Write a definitive, original SEO guide for ${siteName()}: 1,800 to 2,400 words. Depth is the point. This should be the most useful page on the UK internet for this query, and a reader should be able to act on it without reading anything else.
+  return `Write a definitive, original SEO guide for ${siteName()}: 1,800 to 2,400 words. Depth is the point. This should be the most useful page on the internet for this query for your reader (${siteAudience()}), and a reader should be able to act on it without reading anything else.
 
 Working title: ${spec.title}
 Target keywords: ${spec.keywords}
@@ -540,7 +591,7 @@ Requirements:
 - First two paragraphs must directly answer the question implied by the title. No preamble.
 - Then <h2> sections. Use <h3> inside them where a section has distinct parts.
 - At least one real <table> comparing options, with a header row and a "best for" column. Keep it to five columns or fewer so it reads on a phone.
-- Concrete UK detail: pounds, HMRC, Companies House, the ICO, UK providers. Approximate prices only, flagged as approximate and subject to change.
+- Concrete detail for the reader's own market${isUkOnly() ? ": pounds, HMRC, Companies House, the ICO, UK providers" : `: real currencies, the named regulators and authorities of ${marketsPhrase()}, and providers a reader there would recognise`}. Approximate prices only, flagged as approximate and subject to change.
 - A short section on the mistakes people actually make.
 - An FAQ of 5 genuine questions people ask, each as an <h3> with a two to four sentence answer.
 - Close with an <h2> "What to do next" of 3 or 4 numbered, specific steps.
@@ -787,7 +838,7 @@ async function runOneMetered(spec, links, usedImages, archive) {
   const sourceText = spec.sourceUrl ? await fetchSourceText(spec.sourceUrl) : null;
   if (spec.sourceUrl) log(`[${spec.key}] source text: ${sourceText ? `${sourceText.length} chars` : "UNAVAILABLE"}`);
 
-  let draft = parseDraft(await ask({ system: houseStyle(), user: draftPrompt(spec, sourceText, links) }), spec);
+  let draft = parseDraft(await ask({ system: houseStyle() + sharedRules(), user: draftPrompt(spec, sourceText, links) }), spec);
   log(`[${spec.key}] drafted "${draft.title}"`);
 
   // Two QA gates, with one revision pass if either complains.
@@ -799,7 +850,7 @@ async function runOneMetered(spec, links, usedImages, archive) {
     log(`[${spec.key}] QA round 1: ${mech.words} words, ${issues.length} issue(s)`);
     issues.forEach((i) => log(`   - ${i}`));
     const revised = await ask({
-      system: houseStyle(),
+      system: houseStyle() + sharedRules(),
       user: `Below is a draft article for this publication and the editor's fix list. Rewrite the article so every point is resolved. Keep everything that already works: do not restructure for its own sake, do not shorten, and do not drop valid internal links. Return the full corrected article in the standard output format (the eight header lines then the HTML).
 
 EDITOR'S FIX LIST:
@@ -933,7 +984,7 @@ ${draft.body}`,
 
 /* -------------------------------------------------------------------- runner */
 
-(async () => {
+const main = async () => {
   // --- tenancy -----------------------------------------------------------
   //
   // This script predated the multi-title rebuild: it read WP_URL, WP_USERNAME
@@ -963,8 +1014,11 @@ ${draft.body}`,
   process.env.WP_URL = wp.url;
   process.env.WP_USERNAME = wp.username;
   process.env.WP_APP_PASSWORD = wp.appPassword;
+  // "Editorial", not "Bot": barberingbusiness.com's SiteGround WAF serves a
+  // server-level 403 to a "<TitleName>Bot/1.0" user-agent (24 Aug 2026), while
+  // the older sites' servers allow it. The honest identification survives.
   UA = {
-    "user-agent": `${String(SITE.name).replace(/[^A-Za-z0-9]/g, "")}Bot/1.0 (${String(wp.url).replace(/^https?:\/\//, "")} editorial)`,
+    "user-agent": `${String(SITE.name).replace(/[^A-Za-z0-9]/g, "")}Editorial/1.0 (${String(wp.url).replace(/^https?:\/\//, "")} editorial)`,
   };
 
   // Byline, honouring the title's bylineMode. Null falls back to the account
@@ -1049,8 +1103,21 @@ ${draft.body}`,
     );
   }
   await prisma.$disconnect();
-})().catch(async (e) => {
-  console.error("FATAL", e);
-  await prisma.$disconnect();
-  process.exit(1);
-});
+};
+
+// Exported so a sibling script can reuse the picture desk — query writing,
+// candidate sourcing, the vision gate, the media upload — without duplicating
+// any of it. backfill-images.js is the first caller. The batch runner fires
+// only when this file IS the command, so a require() gets the functions and
+// does not publish anything.
+module.exports = {
+  chooseImage, uploadMedia, verifyImage, ask, log, seed, shootKey, prisma, setUA, wpBase, wpAuth,
+};
+
+if (require.main === module) {
+  main().catch(async (e) => {
+    console.error("FATAL", e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });
+}

@@ -99,6 +99,15 @@ model Site {
   // QA gate holds. Every agent prompt opens with it, which is why it is a column
   // and not a sentence buried in houseStyleMd.
   audience    String?
+  // The markets this title serves, as ISO country codes in priority order.
+  // ["GB"] is what every title before the global pair actually was; Golf
+  // Resort and Airport Business carry ["US", "GB"]. This is what lets a title
+  // KNOW it is global: the Researcher's autocomplete lane picks its Google
+  // editions from this list, and the batch publisher's market-sensitive prompt
+  // lines (currencies, regulators, provider shortlists) key off it. Before the
+  // column existed, "is this title global?" was answerable only by reading
+  // prose in the audience field, and every locale decision was a code edit.
+  markets     String[]   @default(["GB"])
   bylineMode  BylineMode @default(shared_person)
   authorName  String?
   authorEmail String?

@@ -35,7 +35,10 @@ const STATE = {
   rejected: { text: "Struck out", colour: "#dc2626" },
 };
 
-export default function SuggestionBox({ suggestions = [], articles = [] }) {
+// `host` is the title's own domain. The live link was hardcoded to
+// smartsme.co.uk, which resolved against the wrong site's post IDs on every
+// other title - wrong article or a 404, presented as "read it live".
+export default function SuggestionBox({ suggestions = [], articles = [], host = null }) {
   const byTitle = new Map(articles.map((a) => [a.title, a]));
 
   return (
@@ -116,11 +119,11 @@ export default function SuggestionBox({ suggestions = [], articles = [] }) {
                   <div style={{ fontSize: 11, marginTop: 4, color: st.colour }}>
                     {st.text}
                     {article && ` · now ${article.status}`}
-                    {article?.wpPostId && (
+                    {article?.wpPostId && host && (
                       <>
                         {" · "}
                         <a
-                          href={`https://smartsme.co.uk/?p=${article.wpPostId}`}
+                          href={`https://${host}/?p=${article.wpPostId}`}
                           target="_blank"
                           rel="noreferrer"
                           style={{ color: "#7ea6ff" }}

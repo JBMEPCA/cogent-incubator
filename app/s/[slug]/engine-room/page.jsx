@@ -181,7 +181,7 @@ export default async function EngineRoomPage({ params }) {
         <AgentOffice />
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 14, marginTop: 20 }}>
-          <SuggestionBox suggestions={suggestions} articles={suggestedArticles} />
+          <SuggestionBox suggestions={suggestions} articles={suggestedArticles} host={site.domain} />
 
           <Card title="Published recently" empty="Nothing published yet.">
             {recent.length > 0 && (
@@ -192,8 +192,8 @@ export default async function EngineRoomPage({ params }) {
                   return (
                     <div key={a.id} style={{ padding: "9px 0", borderBottom: "1px solid rgba(255,255,255,.06)" }}>
                       <a
-                        href={a.wpPostId ? `https://smartsme.co.uk/?p=${a.wpPostId}` : `/content/article/${a.id}`}
-                        target={a.wpPostId ? "_blank" : undefined}
+                        href={a.wpPostId && site.domain ? `https://${site.domain}/?p=${a.wpPostId}` : `/content/article/${a.id}`}
+                        target={a.wpPostId && site.domain ? "_blank" : undefined}
                         rel="noreferrer"
                         style={{ fontSize: 13.5, lineHeight: 1.4, color: "inherit", textDecoration: "none" }}
                       >
