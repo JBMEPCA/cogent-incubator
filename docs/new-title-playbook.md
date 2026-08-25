@@ -11,6 +11,13 @@ Updated 17 August 2026: both titles now run on the shared cogent-base parent
 theme, deploy over SFTP and pass scripts/verify-title.mjs. Title #3 starts by
 copying an existing child, not by forking a theme.
 
+Updated 25 August 2026, after titles #3, #4 and #5 all launched without this
+document being revised — and after a full fleet audit found what that cost.
+Five titles are live. The new material is §3's per-child filter traps, the
+verification traps (a clicked Run button, a `G-` grep, a "private" repo), §4's
+extra checklist lines, and §12, which is the list of everything a title now
+needs that is NOT a WordPress setting. Read §12 before starting #6.
+
 ---
 
 ## THE RULE
@@ -340,6 +347,40 @@ wp post update $ID --post_name=declan-wale
 Check the rendered byline on a live post before running a batch — the value you
 passed in proves nothing.
 
+### A shared default that is one title's data blanks every other title's page
+
+`cogent-base/inc/homepage.php` held `COGENT_SECTIONS` as a bare constant
+carrying Smart SME's category slugs. The homepage plan only allocates articles
+to slugs on that list, and `cogent_category_section()` returns `''` for a
+section the plan gave nothing to — so Fleet, Golf, Barbering and Airport each
+rendered a hero, a Latest grid and then **nothing**, losing 24–32 internal
+links per homepage. `sidebar-explore.php` had its own copy of the same list and
+collapsed to a single News link.
+
+It survived four launches because the failure looks deliberate: hiding a thin
+section IS intended behaviour, so an empty middle reads as "not enough articles
+yet" rather than as a bug. And `check-title-agnostic.mjs` could not see it —
+that script matches title NAMES and DOMAINS, and `ai-automation` is one title's
+identity expressed without its name.
+
+It is now `cogent_home_sections()`, a filter every child must answer:
+
+```php
+add_filter( 'cogent_home_sections', function () {
+	return array( 'news', 'investment-ownership', /* … in home.html order */ );
+} );
+```
+
+Two rules. The list must be in the same order `home.html` renders the section
+patterns, and it must contain exactly those slugs: a slug listed here but not
+rendered has its articles reserved by the plan and then shown nowhere at all.
+
+**The general lesson, which is the one to carry into #6:** a shared default
+that happens to be correct for the title you are looking at is invisible on
+that title and broken everywhere else. When you add anything to the parent that
+holds a list, a slug, a name or a URL, make it a filter with a derived default
+on the first day, not on the day someone notices.
+
 ### A theme's parent is stored in the DATABASE, not read from style.css
 Converting a standalone theme into a child by adding `Template: cogent-base` to
 its style.css does nothing on its own. WordPress keeps `template` in wp_options
@@ -370,6 +411,41 @@ rather than uploading 41 files somewhere absurd.
 On the property-create screen the ID in the address bar is the *previously
 selected* property. Storing it silently reports the wrong title's traffic.
 Verify by name through the Admin API `accountSummaries` endpoint.
+
+### Site Kit tags with a `GT-` container ID, so grepping for `G-` finds nothing
+
+Checking a live page for `G-XXXXXXXX` to prove GA4 is firing returns **nothing
+on a correctly tagged site**. Site Kit emits a `GT-` container ID
+(`googletagmanager.com/gtag/js?id=GT-…`), which loads the GA4 config behind it.
+A 25 August audit reported two titles as recording no analytics on exactly this
+basis; all five were fine.
+
+Grep for the loader, not the measurement ID:
+
+```bash
+curl -s -A "Mozilla/5.0 …" https://<domain>/ | grep -o "gtag/js?id=[A-Z0-9-]*"
+```
+
+A false negative here is expensive in the wrong direction: it sends you
+re-tagging a site that was already tagged, and twin tags double-count every
+visit. Confirm before touching anything (and see §10's three-part check).
+
+### A new GitHub repo is PUBLIC by default, and "I made it private" needs proving
+
+Six theme repos were created on 25 August; five came out public because the
+visibility radio defaults that way, and one stayed public after they were
+"all" flipped. These repos hold the live site themes.
+
+Check it the way an outsider would, with no credentials — 404 means private,
+200 means the world can read it:
+
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" https://api.github.com/repos/JBMEPCA/<repo>
+```
+
+Also: create the repo **empty**. Ticking "Add a README" gives it a commit, and
+pushing an existing local history onto that is a rejected non-fast-forward —
+which tempts a force-push over the top on day one.
 
 ### The host blocks datacentre IPs, so we cannot read our own images back
 An image served from our own WordPress answers every request from a laptop and
@@ -411,6 +487,36 @@ deployed.** `vercel --prod --yes` from a clean working tree forces it. This
 matters more than it sounds: everything downstream was verified against code
 that was not running.
 
+### A clicked Run button is a report, not evidence — verify the effect
+
+On 25 August four commands were handed over and reported as run. None had
+executed. It was provable in seconds and only because someone looked: the live
+homepage still showed one section, `git rev-list origin/main..main` still said
+3, and the newest wrangler log was eleven days old.
+
+Never take "I ran it" as the state. Check the thing the command was supposed to
+change — the rendered page, the remote ref, the log file's date — and check it
+before building anything on top. This is the same discipline as §7: what the
+system reports about itself is not what the system did.
+
+### `npx` is blocked on this machine, so call package bins through `node`
+
+PowerShell script execution is disabled, which kills `npx <anything>` — and
+that is exactly how `cloudflare/README.md` documents deploying the worker, so
+the documented command cannot work here. Install into a scratch directory and
+invoke the bin directly:
+
+```bash
+npm install wrangler          # in a scratch dir, NOT the app
+node <scratch>/node_modules/wrangler/bin/wrangler.js deploy
+```
+
+Run it from `cogent-incubator/cloudflare` so it finds `wrangler.toml`. Do not
+add wrangler to the app's `package.json` to work around this: it is a large
+dev dependency and Vercel would install it on every build for nothing. JB's
+wrangler OAuth (3 Aug) persists in `~/AppData/Roaming/xdg.config/.wrangler`, so
+no fresh login is needed.
+
 ### The play button runs Windows PowerShell 5.1, which rejects `&&`
 Two separate instructions failed on this before anyone noticed, because the
 failure is a parser error before execution and looks like nothing happened at
@@ -420,16 +526,23 @@ PowerShell, not bash.
 
 ---
 
-## 4. Pre-flight checklist for title #3
+## 4. Pre-flight checklist for the next title
 
 Run these before touching a console.
 
 ```
+□  Read §12 — everything a title needs that is not a WordPress setting
 □  git rev-list --count origin/main..HEAD   → must be 0, or deploy first
 □  vercel ls → newest Production deploy is NEWER than your last commit
       → the git hook does not always fire; pushed is not deployed
-□  grep -rniE "<previous title name>" lib/ scripts/ --include=*.js
-      → every hit is a tenancy bug waiting to happen
+□  grep -rniE "<previous title name>" lib/ scripts/ app/ --include=*.js --include=*.jsx
+      → every hit is a tenancy bug waiting to happen. INCLUDE app/ AND .jsx:
+        the old form checked neither, so four smartsme.co.uk hardcodes sat in
+        the dashboard for months while this checklist passed clean
+□  New child declares cogent_home_sections, cogent_author_slug and
+   (if it has a page) cogent_author_linkedin
+      → miss the first and the homepage renders an empty middle that looks
+        deliberate; miss the second and the byline inherits Smart SME's
 □  cd cogent-base-theme && node scripts/check-title-agnostic.mjs --all
       → the same sweep for the themes, which the grep above never reaches.
         Add the new title to TITLES in that file FIRST, or it is not checked
@@ -967,8 +1080,17 @@ link classifiers. The rebuild made the *database* multi-tenant and left the
 *assumptions* single-tenant, and each one surfaced only when a second title
 actually ran through it.
 
-For title #3, the useful question is not "what do I need to set up" but **"what
-in this codebase still believes there is only one title?"**
+For the next title, the useful question is not "what do I need to set up" but
+**"what in this codebase still believes there is only one title?"**
+
+Titles #3, #4 and #5 proved the sharper version of it. By then the *engine* had
+been swept — every agent prompt built from the title's own row. What had not
+been swept was the parent theme's constants, the dashboard's `app/` layer and
+the batch publisher, and all three were still Smart SME's. So: **being swept
+once is not a property a codebase keeps.** Every list, slug, host and name
+added to shared code after that sweep is a fresh single-title assumption unless
+it was born as a filter. Ask the question again at every launch, of the parts
+that were clean last time.
 
 And its twin, from §§7-8: **everything that hid was something whose failure looked
 like success.** A full schedule draining a dead pipeline. A gate holding an
@@ -1226,3 +1348,128 @@ ever makes, and `MAX_BOUNCE_RATE` (2%) means a bad one blocks the *next*
 import too — the ramp stops itself. On an established domain the full 1,000 is
 fine. On a domain with no sending history, or one already seen in a spam folder,
 import ~500 (`?mode=import&size=500`) and let the Tuesday drip grow it.
+
+---
+
+## 12. Everything a title needs that is NOT a WordPress setting
+
+Added 25 August 2026, after a fleet audit found that titles #3, #4 and #5 each
+launched "successfully" and were each missing several of the items below. None
+of these are visible in wp-admin, none of them break anything loudly, and every
+one of them was found weeks later by looking rather than by being told.
+
+Work through this list AS WELL AS §2's ordered sequence.
+
+### Per-child theme filters
+
+Every one of these lives in the child's `functions.php`. The parent's defaults
+are derived and safe-looking, which is exactly why a missing filter is quiet.
+
+| Filter | Miss it and… |
+| --- | --- |
+| `cogent_brand` | copy, contact address and Mailchimp audience stay generic |
+| `cogent_home_sections` | the homepage renders a hero and an empty middle (§3) |
+| `cogent_author_slug` | the byline, author archive and schema inherit another title's person |
+| `cogent_ga4_id` | nothing, IF Site Kit is tagging — verify, do not assume (§10) |
+| `cogent_author_linkedin` | the author card simply omits the link, which is correct until a page exists |
+
+### Database facts the engine reads
+
+- **`Site.markets`** — ISO codes, in priority order, default `["GB"]`. A global
+  title MUST carry its real list (Golf and Airport are `["US","GB"]`). This is
+  what makes a title *know* it is global: it drives which Google editions the
+  Researcher's autocomplete lane queries, and the batch publisher's
+  market-sensitive prompt lines (currencies, regulators, which providers a
+  reader would recognise). Before this column existed, "is this title global?"
+  was answerable only by reading prose in `audience`, and every locale decision
+  was a code edit in two files.
+- **`Site.dailySpendCapUsd`** — set on the new title *and* confirm every
+  existing one still has theirs.
+- **`newsletterEnabled` / `linkedInEnabled` / `outreachEnabled`** — seed all
+  three OFF. See the gate below for when outreach earns its switch.
+  (`linkedInEnabled` is currently read by nothing — a known no-op, do not rely
+  on it to pause anything.)
+
+### Publisher identity
+
+Run once the site is live and has its palette:
+
+```bash
+node --import ./scripts/_register.mjs scripts/set-publisher-logo.mjs --site=<slug>
+```
+
+Yoast only emits an `Organization` node when `wpseo_titles.company_name` AND
+`company_logo` are both set. Four of five titles had `company_or_person` set to
+`company` with both fields empty, so their pages carried **no publisher entity
+at all** — every article named itself as publisher, with no logo, which is the
+one signal Google News and Discover both want. The script renders the mark the
+theme already draws as its favicon at 512px, uploads it, and patches the Yoast
+options over SSH. It skips a title that already has a logo unless `--force`, so
+it cannot overwrite real artwork.
+
+**Google News Publisher Center is not a step.** Manual publication submission
+was removed; Google auto-generates publication pages and states that
+policy-compliant content is automatically eligible via its normal crawl. A new
+title with a news sitemap and clean crawlability is already eligible. Do not
+spend an hour trying to register one.
+
+### Version control, on the first day
+
+The title's site folder is a git repo before it is a live site, not after.
+Titles #3, #4 and #5 went live with no `.git` at all and existed solely on one
+laptop and on SiteGround for a week.
+
+```bash
+git init -b main && git add -A && git commit -m "…"
+```
+
+Then a **private** GitHub repo named after the folder, remote added, pushed —
+and the visibility verified with the anonymous `curl` in §3. Create it empty.
+
+### Outreach: the gate, and the switch that lies
+
+- **Do not enable outreach until the title has ~20 published articles.** A
+  campaign that lands a prospect on a homepage with one article and six empty
+  section headings converts worse than no campaign and burns the first
+  impression with exactly the audience you most want.
+- The switch **drafts and sends autonomously** — it has since 21 Aug 2026. The
+  Backlinks page is an override window before the next hourly tick, not a gate
+  the mail waits behind. Sends are capped at 5 per run and 25 per title per day.
+- Enabling it needs four things true, not one: `engineEnabled` and a status off
+  `setup`; `outreachEnabled`; a `SiteCredential(kind:"outreach")` seeded with a
+  **real Workspace mailbox**; and domain-wide delegation carrying BOTH
+  `gmail.send` and `gmail.readonly`, entered in one go.
+- The seeds set `authorEmail` to `news@news.<domain>`, which is a Mailchimp
+  sending subdomain and **not** a Workspace user. Seeding the outreach
+  credential with it fails at token mint. It fails loudly, so this is a trap
+  rather than a hazard — but it is the likely first stumble.
+- `lib/reachability.js` is a UK SME tech/banking denylist. It has no coverage
+  for any new vertical, so a new title will start by emailing its sector's
+  household names. Add its obvious non-responders before switching on.
+
+### Mail and social, which are neither theme nor engine
+
+- A Mailchimp **audience** whose name matches the child's `mailchimp_audience`
+  exactly, AND an authenticated `news.<domain>` **sending domain**. Both were
+  missed on earlier titles; the sending-domain half is not in §2's sequence.
+- **No `news@` user on the root domain** — that decision was taken 24 Aug 2026;
+  news goes through the subdomain.
+- A **LinkedIn company page**. Four of five titles still have none, which is
+  why `cogent_author_linkedin` and the sidebar card render nothing. It is the
+  longest-outstanding item on every launch tracker, so do it early or accept it
+  will still be open at the next launch.
+
+### Before calling it launched
+
+```
+□  node scripts/verify-title.mjs --site=<slug>      → 20/20
+□  node scripts/check-all-titles.mjs                → every title, not just this one
+□  node scripts/check-pages.mjs --site=<slug>       → about/contact/privacy/editorial exist and are not thin
+□  node scripts/check-analytics-wiring.mjs          → then view-source for gtag/js?id=
+□  curl the homepage: category sections render, Explore card lists THIS title's topics
+□  curl the homepage: "@type":"Organization" with a logo
+□  Anonymous curl of the GitHub repo returns 404
+□  Write the launch tracker (docs/<slug>-launch.md) — title #3 never got one,
+   and it is the least documented title as a direct result
+□  Add what you learned HERE, the same day
+```
