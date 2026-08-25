@@ -209,3 +209,71 @@ Note the deliberate exception: the environmental critique of golf — water, lan
 use, chemicals — **is** ours to cover, and covering it straight is an advantage,
 because the incumbent titles are too close to their advertisers to do it well.
 That is reporting on the industry, not adjudicating a foreign policy.
+
+### Barbering Business — two rules
+
+**1. The owner-frame rule.** We cover the business of barbering, never haircuts
+for consumers. The consumer twin here is the worst of any title: single style
+terms ("low taper fade") pull 550,000 searches a month, and "barber near me"
+outruns branded search in most UK cities. Trend and style content is in scope —
+it is part of the commercial brief — but only when the reader is the person who
+owns the chair, not the person sitting in it: what the trend does to the
+service menu, the prices, the booking demand, and how to sell the upgrade. If
+the natural reader is someone who wants the haircut, it is not our article. The
+engine is never seeded with a bare style term or a bare "barber" query; the
+safe stems live in the vertical brief (§4) and in the title's search set.
+
+Sub-rule on figures, same lineage as fleet's: market sizes in this sector vary
+by analyst scope — men's grooming products run £1.2bn to £2.3bn for the same
+year, and services turnover £4.6bn to £6.1bn. Name the firm or quote the
+range, and never blend the products line with the services line.
+
+**2. The crime-coverage rule.** The NCA's crackdown on money-laundering
+through barbershops is a legitimate, recurring policy story — and a libel trap
+whose victims would be our own readers. We report the policy, the enforcement
+statistics and the sector bodies' responses. We never connect a named shop,
+chain, or the nationality of an owner to the laundering narrative unless
+reporting a concluded prosecution from a primary source. The national press
+has been careless with "Turkish barber" framing; a trade title cannot be,
+because the accused are the audience. When in doubt the piece runs without the
+name, or does not run.
+
+### Airport Business Magazine — four rules
+
+**1. The buyer rule.** Every article is written for someone who is *paid* to
+be at an airport: operator, director, terminal or ops manager, commercial
+director, developer, contractor, consultant, supplier. If the natural reader
+is a passenger, it is not our article.
+
+No travel tips, no lounge reviews, no "best airports" lists, no
+passenger-rights or flight-delay content. Disruption is covered as a cost line
+and a procurement consequence, never as travel news. The consumer aviation
+press (Simple Flying at Tranco 12,920, The Points Guy at 16,146, Flightradar24
+at 1,912) is stronger than any airport trade incumbent; drifting consumer
+means fighting them on their own ground, permanently. The contamination here
+lives in generic queries rather than the core beat — the raw `airport` feed is
+15–20% usable while scoped infrastructure queries run 75–85% — so the engine
+is never seeded with `airport`, `airport terminal` or `airport parking` bare.
+
+**2. The scope-and-figure rule.** Airport numbers diverge by *scope*, not just
+by analyst: duty free is $42.8bn or $94bn depending on the definition, Riyadh's
+new airport is $30bn, $50bn or $100bn depending on the programme boundary, and
+Poland's CPK figure includes railways. Every figure carries source, year and
+scope, or is quoted as a range with the firms named. Never one bare number in
+our own voice. Megaproject budgets are attributed to the promoter or a named
+report, and dated, because they move constantly.
+
+**3. The geopolitics rule.** Saudi giga-projects, Chinese vendors excluded
+from Western procurement, US security politics, national planning fights.
+Cover all of it as business only: capital, capacity, contracts, costs,
+timelines. No editorial line on human rights, trade policy or any country's
+domestic politics — same standard, and same reasoning, as golf's rule.
+
+**4. The incident rule.** We do not cover crashes, security breaches or crime
+as news. They are the tabloid layer of this sector, the fastest route to
+consumer drift, and a reputational trap for an AI-written title. Disruption
+enters our pages only as economics: what the outage cost, what the recovery
+required, what the airport then procured. Security coverage stays at
+procurement level (who bought which scanner) and never at vulnerability level
+(how screening fails). If a story's hook is that people were hurt or
+endangered, it is not our story.

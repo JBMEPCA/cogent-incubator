@@ -160,6 +160,18 @@ collection is silently narrowed to users with published posts. A freshly created
 byline account is invisible, so `?search=James Burke` returns an empty array
 while the user plainly exists. Use `?who=authors`.
 
+### A new site's WAF may 403 the title's own bot user-agent
+Barbering Business's freshly created SiteGround site (24 Aug 2026) serves a
+server-level 403 to any request whose user-agent is `<TitleName>Bot/1.0` —
+the exact string `batch-publish.js` builds — while `CogentBot/1.0` and
+non-"Bot" strings pass, and the older sites' servers allow all of them. The
+block is SiteGround's plain-text 403 page, not WordPress, so nothing in
+wp-admin shows it. The batch publisher now sends `<TitleName>Editorial/1.0`;
+own-site calls in `lib/` always used `CogentBot/1.0` and were never affected
+(`lib/newsletter.js` documents the same lesson from Mailchimp's side). Check
+for a new title: `curl -A "<TitleName>Bot/1.0" https://<domain>/wp-json/` —
+a 403 here means the WAF rule is live on that server.
+
 ### The host's default MX and SPF must be replaced, not added to
 SiteGround creates `mx*.antispam.mailspamprotection.com` MX records and its own
 SPF on every new site. Google's setup replaces the MX, but the SPF has to be
@@ -260,36 +272,73 @@ Tools are shortcodes on ordinary WordPress pages. Title #2 shipped the company
 car tax calculator in its theme for a full day while `/tools/` returned 404,
 because nobody had created the pages. Check the URL, not the registry.
 
-### The byline user's SLUG is load-bearing, and it is hardcoded in the parent
+### The byline user's SLUG is load-bearing, and each title now names its own
 `cogent-base/inc/author.php` forces the author of every post through a
-`wp_insert_post_data` filter:
+`wp_insert_post_data` filter, so whichever account publishes, the byline is the
+one the theme resolves. The identity used to be a fleet-wide constant naming one
+person. Since 25 Aug 2026 it is a filter each child answers:
 
 ```php
-const COGENT_AUTHOR_SLUG = 'james-burke';
-$user = get_user_by( 'slug', COGENT_AUTHOR_SLUG );
-$id   = $user ? (int) $user->ID : 1;   // <- silent fallback to the admin
+// child functions.php
+add_filter( 'cogent_author_slug', function () {
+	return 'declan-wale';
+} );
 ```
 
-Title #3 created its byline account as `jamesburke`, so the slug was
-`jamesburke`, the lookup missed, and **every article published under the
-administrator account**. Nothing errored. `wp post update --post_author=3`
-reported `Success:` and changed nothing, because the same filter reassigned it
-on the way back into the database, which reads exactly like a broken wp-cli.
+The parent still falls back to `james-burke`, and `cogent_author_id()` still
+falls back to **user ID 1 — the administrator — when the slug does not resolve**.
+That fallback is silent. It is how title #3 published every article under the
+admin account: it created its byline user as `jamesburke`, so the nicename was
+`jamesburke`, the lookup missed, and nothing errored. `wp post update
+--post_author=3` even reported `Success:` and changed nothing, because the filter
+reassigned it on the way back in — which reads exactly like a broken wp-cli.
 
-Two things follow. When creating the byline user, set the nicename explicitly:
+**Order matters, in both directions.**
+
+1. **Create the byline user BEFORE deploying the theme.** Deploy first and every
+   post bylines to the administrator until the user exists.
+2. **Reassign existing posts AFTER the theme is live.** The currently-deployed
+   theme forces posts back to *its* author on every save, so a reassignment run
+   before the deploy is silently undone.
+
+**`wp user get <slug>` matches the login, not the nicename.** These are different
+fields and they drift apart. On Smart SME the administrator's login was
+`jb@cimltd.co.uk` but its *nicename* was already `james-burke` — so `wp user get
+james-burke` found nothing, created a second user, and WordPress quietly assigned
+it `james-burke-2`. The theme resolves by nicename, so it kept pointing at the
+administrator while the bio and portrait sat on the new account. Check both
+fields before creating anything:
 
 ```bash
-wp user create jamesburke news@<domain> --role=author --display_name="James Burke"
-wp user update <id> --user_nicename=james-burke
+wp user list --fields=ID,user_login,user_nicename,display_name,roles --format=csv
 ```
 
-And check the rendered byline on a live post before running a batch, not the
-value you passed in. Existing posts are fixed by correcting the slug and then
-re-saving them, at which point the filter does the right thing by itself.
+If the nicename is taken by an account that should not be the public byline,
+free it first, then claim it:
 
-The deeper problem is that a fleet-wide constant names one person. When a title
-needs a different byline this has to become a filter the child can answer, the
-same shape as `cogent_mark_colour`.
+```bash
+wp user update 1 --user_nicename=jb-admin
+wp user update 3 --user_nicename=james-burke
+```
+
+**Duplicate display names break `resolveAuthor()`.** It matches on display name
+or slug and returns the first hit, so three accounts all called "James Burke"
+resolve unpredictably and `check-all-titles.mjs` fails on the byline check. Only
+the byline account should carry the person's name; call the engine account
+`Engine`, the same as every other title.
+
+**The portrait is found by attachment slug, not by user.** Drop one image into
+the media library whose slug matches the author slug and the card picks it up;
+without it the card falls back to initials, which is a deliberate design, not a
+missing asset.
+
+```bash
+ID=$(wp media import /tmp/declan-wale.jpg --title="Declan Wale" --porcelain)
+wp post update $ID --post_name=declan-wale
+```
+
+Check the rendered byline on a live post before running a batch — the value you
+passed in proves nothing.
 
 ### A theme's parent is stored in the DATABASE, not read from style.css
 Converting a standalone theme into a child by adding `Template: cogent-base` to
@@ -755,6 +804,49 @@ needs a matching power to fix what it objects to, and every objection it raises
 must be actionable by whatever runs next.** Three separate bugs this week were
 the same shape — a gate raising something the repair path had no way to act on,
 and a loop paying full rate until a counter killed it.
+
+### The gate raises a NEW objection each round — cap fresh drafts at two, then park and repair
+
+Airport's cost-to-build pillar (24 Aug 2026) was held three times at ~$0.55 a
+round, and the objections never repeated: round one questioned figures, round
+two questioned dates the brief had supplied, round three wanted a second
+outbound link. Each fresh draft is a new roll of the dice against a gate that
+can always find something, so the loop does not converge — it just bills.
+After two paid drafts, stop: the parked draft is usually 95% done with one or
+two actionable faults, and the repair path on the EXISTING draft is the owner
+of the last 5%, not another $0.60 rewrite.
+
+The countermeasure that works on the way in: **SOURCE ANCHORS in the brief.**
+For any fact newer than the model's memory — Heathrow's £49bn (Bloomberg, Nov
+2025) reads as invented to a gate that remembers £14–30bn — the brief carries
+the figure WITH its dated source and the line "these are pre-verified
+commissioning facts; carry them with their attributions, do not re-verify".
+Airport's money pillar was held on round one and published clean on its first
+re-run after anchors went in. Write the anchors into the brief BEFORE the
+first draft on any title whose beat moves faster than a training cutoff —
+which is every news title we will ever launch.
+
+### One SiteGround server, one system user PER SITE — keys and paths do not carry over
+
+All five titles sit on the same box (c1116205.sgvps.net), which invites the
+assumption that one SSH credential covers them. It does not: each site gets
+its own user (barbering u20-cylyohvu5mzm, airport u21-fqeyi6rqrqqm), the
+deploy key must be imported in EACH site's SSH Keys Manager, and the sftp
+credential's themePath embeds `/home/<that-site's-user>/` — cloning
+barbering's payload for airport silently produced a path into barbering's
+home. When cloning a credential shape, the home directory is part of the
+username, not part of the shape.
+
+### Site Kit and the parent's GA4 filter coexist correctly — verify with one option read
+
+Airport launched with JB's Site Kit install doing the tagging while the child
+also set `cogent_ga4_id`. This is fine BY DESIGN — the parent's tag stands
+aside when Site Kit is genuinely tagging — and the page served exactly one
+tag. Two things to know before calling it broken: Site Kit emits the `GT-`
+Google-tag alias, not the `G-` measurement ID, and the same property answers
+to both; and the one-command check is
+`wp option get googlesitekit_analytics-4_settings` — propertyID,
+measurementID and `useSnippet: true` in one read, no OAuth spelunking.
 
 ### A prompt is not a guard
 `repairArticle` asked for "the corrected body as HTML and nothing else" and

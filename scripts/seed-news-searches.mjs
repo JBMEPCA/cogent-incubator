@@ -29,6 +29,8 @@ import {
   NEWS_SEARCHES,
   FLEET_NEWS_SEARCHES,
   GOLF_NEWS_SEARCHES,
+  BARBERING_NEWS_SEARCHES,
+  AIRPORT_NEWS_SEARCHES,
   searchFeedUrl,
   searchHubUrl,
 } from "../lib/news-searches.js";
@@ -40,6 +42,8 @@ const SEARCH_SETS = {
   "smart-sme": NEWS_SEARCHES,
   "fleet-magazine": FLEET_NEWS_SEARCHES,
   "golf-resort-magazine": GOLF_NEWS_SEARCHES,
+  "barbering-business": BARBERING_NEWS_SEARCHES,
+  "airport-business-magazine": AIRPORT_NEWS_SEARCHES,
 };
 
 for (const f of [".env.local", ".env"]) {

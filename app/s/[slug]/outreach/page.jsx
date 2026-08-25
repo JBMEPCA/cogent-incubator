@@ -12,9 +12,12 @@ import {
   markOutreachLinked,
   markOutreachReplied,
   scanForMentionsNow,
+  ignoreReferrer,
+  recordBacklink,
 } from "@/lib/actions";
 import { isOutreachConfigured, isSendConfigured, outreachSetupHint, outreachStats } from "@/lib/outreach";
 import { authorityTrend } from "@/lib/metrics";
+import { listReferrers } from "@/lib/referrers";
 import AuthorityTrend from "@/app/components/AuthorityTrend";
 
 export const dynamic = "force-dynamic";
@@ -42,7 +45,7 @@ export default async function OutreachPage({ params }) {
   const { site, db, creds } = ctx;
   const siteRef = { id: site.id, slug: site.slug };
 
-  const [queue, live, stats, trend] = await Promise.all([
+  const [queue, live, stats, trend, referrers] = await Promise.all([
     // Bounced rows come back to the review queue rather than sitting in the sent
     // list looking like progress. The fix for one is a working address, and this
     // is the only screen with a box to type it into.
@@ -59,6 +62,7 @@ export default async function OutreachPage({ params }) {
     }),
     outreachStats(site.id),
     authorityTrend(site.id, 60),
+    listReferrers(site.id),
   ]);
 
   const configured = isOutreachConfigured(creds);
@@ -104,6 +108,11 @@ export default async function OutreachPage({ params }) {
                 { label: "Emails sent", value: stats.sent },
                 { label: "Links won", value: stats.linked },
                 { label: "Link rate", value: stats.linkRate == null ? "—" : `${stats.linkRate}%` },
+                // Counted apart from "Links won" on purpose. That one is the
+                // outreach scoreboard — brands we asked, who said yes. This is
+                // every site linking us however it found us, which is the
+                // number that actually answers "are we earning links".
+                { label: "Sites linking to us", value: referrers.length },
               ].map((s) => (
                 <div key={s.label}>
                   <div className="stat-value" style={{ fontSize: 24 }}>{s.value}</div>
@@ -112,6 +121,88 @@ export default async function OutreachPage({ params }) {
               ))}
             </div>
           </div>
+        </section>
+
+        <section className="panel stagger" style={{ marginBottom: 24 }}>
+          <h2 style={{ margin: "0 0 4px", fontSize: 16 }}>Sites linking to us</h2>
+          <p className="micro" style={{ color: "var(--muted)", margin: "0 0 14px", maxWidth: 720 }}>
+            Found from referral traffic in GA4, so a site appears here the first time a reader
+            clicks through — whether or not we ever emailed them. A link nobody has clicked yet is
+            invisible to this, and &ldquo;first seen&rdquo; is the day we noticed, not the day the
+            link went up.
+          </p>
+
+          <form
+            action={recordBacklink.bind(null, siteRef)}
+            style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}
+          >
+            <input
+              type="url"
+              name="linkUrl"
+              required
+              placeholder="https://example.com/the-page-linking-to-us"
+              style={{ flex: 1, minWidth: 280, maxWidth: 520 }}
+            />
+            <button type="submit" className="btn-ghost" style={{ color: "var(--neon-cyan)" }}>
+              + Record a link
+            </button>
+          </form>
+
+          {referrers.length === 0 ? (
+            <p className="micro" style={{ color: "var(--muted)", margin: 0 }}>
+              Nothing yet. The Backlink Manager checks on every sweep and will name any new site in
+              its report to the Director.
+            </p>
+          ) : (
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+                <thead>
+                  <tr style={{ textAlign: "left", color: "var(--muted)" }}>
+                    <th style={{ padding: "6px 10px 6px 0", fontWeight: 500 }}>Site</th>
+                    <th style={{ padding: "6px 10px", fontWeight: 500 }}>First seen</th>
+                    <th style={{ padding: "6px 10px", fontWeight: 500 }}>Landed on</th>
+                    <th style={{ padding: "6px 10px", fontWeight: 500 }}>Sessions</th>
+                    <th />
+                  </tr>
+                </thead>
+                <tbody>
+                  {referrers.map((r) => (
+                    <tr key={r.domain} style={{ borderTop: "1px solid var(--line)" }}>
+                      <td style={{ padding: "8px 10px 8px 0" }}>
+                        {/* The linking page when we know it, which is only ever
+                            when it was typed in — GA4 reports the domain and
+                            nothing more. */}
+                        <a
+                          href={r.linkUrl || `https://${r.domain}`}
+                          target="_blank"
+                          rel="noreferrer nofollow"
+                          style={{ color: "var(--neon-cyan)" }}
+                        >
+                          {r.domain}
+                        </a>
+                        {r.source === "manual" && (
+                          <span className="micro" style={{ color: "var(--muted)", marginLeft: 8 }}>
+                            added by hand
+                          </span>
+                        )}
+                      </td>
+                      <td style={{ padding: "8px 10px", color: "var(--muted)" }}>{fmtDate(r.firstSeenAt)}</td>
+                      <td style={{ padding: "8px 10px", color: "var(--muted)" }}>{r.landingPage || "—"}</td>
+                      <td style={{ padding: "8px 10px" }}>{r.sessions}</td>
+                      <td style={{ padding: "8px 0", textAlign: "right" }}>
+                        <form action={ignoreReferrer.bind(null, siteRef)}>
+                          <input type="hidden" name="domain" value={r.domain} />
+                          <button type="submit" className="btn-ghost micro" style={{ color: "var(--muted)" }}>
+                            Not a link
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </section>
 
         <div
@@ -131,7 +222,7 @@ export default async function OutreachPage({ params }) {
             </h2>
             {queue.length === 0 && (
               <div className="panel" style={{ color: "var(--muted)", fontSize: 14 }}>
-                Nothing waiting. New drafts appear within six hours of an article going live.
+                Nothing waiting. New articles are scanned for mentions on the hourly sweep; a draft usually appears within the hour of publishing, and sends itself on a later tick unless dismissed here.
               </div>
             )}
             <div className="stagger" style={{ display: "grid", gap: 14 }}>
