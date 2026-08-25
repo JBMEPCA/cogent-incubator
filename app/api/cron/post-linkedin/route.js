@@ -3,6 +3,7 @@ import {
   publishPost,
   isLinkedInConfigured,
   dueFilter,
+  DRAFT_EXPIRY_DAYS,
   withinPostingHours,
   postingHoursLabel,
   MAX_ATTEMPTS,
@@ -11,10 +12,12 @@ import {
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-// Publishes approved posts whose slot has arrived. Only ever touches posts a
-// human already approved: nothing the agent drafted can reach LinkedIn on its
-// own. One per title per run, which is plenty against an hourly cron and a
-// two-a-day target, and keeps a bad token from burning the whole queue in one go.
+// Publishes due posts, one per title per run - enough against an hourly cron,
+// and a bad token cannot burn the whole queue in one go. Since 25 Aug 2026
+// drafts post THEMSELVES after a two-hour override window (JB: nothing waits
+// for a human); the dashboard approve button just skips the window, and
+// anything older than DRAFT_EXPIRY_DAYS expires unposted instead of going out
+// stale.
 export async function GET(request) {
   const denied = cronGuard(request);
   if (denied) return denied;
@@ -28,6 +31,12 @@ export async function GET(request) {
   return Response.json(
     await forEachSite(async ({ site, db, creds }) => {
       if (!isLinkedInConfigured(creds.linkedin)) return { skipped: "LinkedIn not connected for this title" };
+
+      // News that sat unposted for days is not news. Expired, with the reason.
+      const stale = await db.linkedInPost.updateMany({
+        where: { status: { in: ["draft", "approved"] }, postedAt: null, createdAt: { lt: new Date(Date.now() - DRAFT_EXPIRY_DAYS * 864e5) } },
+        data: { status: "expired", publishError: `unposted for ${DRAFT_EXPIRY_DAYS} days; expired rather than posted stale` },
+      });
 
       const post = await db.linkedInPost.findFirst({
         where: dueFilter(),
