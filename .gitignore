@@ -44,3 +44,10 @@ scripts/held-*.html
 # has no business in version control.
 scripts/.batch-state*.json
 scripts/held-*.html
+
+# Subscriber prospect data — personal data for tens of thousands of real
+# people (emails, direct dials, employers). The ranked lists and the
+# MillionVerifier reports are derived from the Apollo exports and are just as
+# sensitive. They live on disk and in NewsletterProspect, never in git.
+assets/mailchimpdata/ranked-*.csv
+assets/mailchimpdata/mv-report-*.csv

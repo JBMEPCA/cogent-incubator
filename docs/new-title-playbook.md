@@ -1127,3 +1127,102 @@ property before calling analytics done:
 ```
 node scripts/check-analytics-wiring.mjs
 ```
+
+---
+
+## 11. Loading a title's subscriber list
+
+Written up on 25 August 2026, when Fleet, Golf and Airport were loaded from raw
+Apollo exports in one pass. Smart SME's list took weeks and a pile of one-off
+scripts; this took an afternoon because the shape was already known.
+
+**Never upload an Apollo export to Mailchimp.** Apollo's own "verified" flag was
+wrong for 11% of Smart SME's first tranche. On an established domain that is a
+bad morning; on a title whose sending domain is a week old it is the whole
+domain's reputation. Everything below exists to put only proven-deliverable
+addresses in front of a young domain.
+
+### The pipeline
+
+```
+Apollo export
+  → scripts/rank-prospects.mjs        rank, dedupe, free kills → ranked-<slug>.csv
+  → scripts/mv-bulk-verify.mjs        one bulk file per title  → mv-report-<slug>.csv
+  → scripts/seed-title-prospects.mjs  load into NewsletterProspect
+  → /api/cron/subscriber-drip         import to Mailchimp, tranche by tranche
+```
+
+The first three are one-offs per title. The fourth is the standing machinery and
+already fans out across the fleet — a title joins it by having prospect rows and
+a `mailchimp` credential, not by any new code.
+
+### Spend nothing on contacts that were never going to pass
+
+Verification is the only part that costs money, so the ranker kills as much as
+it can for free first, in this order: unparseable emails, duplicates (in-file
+and across titles — the higher-scoring title keeps a shared contact), addresses
+on **Apollo-flagged catch-all domains**, domains with no MX and no A record, and
+any address another title has already verified.
+
+Catch-all is the big one: it was 25-40% of each list. MillionVerifier can never
+return `good` for a catch-all domain, so paying to check one buys a `risky` that
+the drip suppresses anyway. Kill them at the door.
+
+Verdicts carry across titles for free, in both directions. The verdict is about
+the mailbox, not the magazine.
+
+### Rank before you verify, because verification works top-down
+
+`rank` is the column that decides everything downstream: both the bulk slice and
+the daily drip take the next N live rows by rank. So a bad ranking does not just
+reorder the list, it decides which contacts get bought and which never get
+looked at. Score on title-relevance (a strong role match is worth more than
+seniority — a course manager beats a CEO of something unrelated), then
+seniority, then a light home-market boost for a UK title, then email-freshness
+signals as a tiebreak only.
+
+Suppressed rows sort to the bottom before ranks are assigned, so rank order and
+"what to verify next" are the same thing.
+
+### The launch tranche is a bulk file, not the daily drip
+
+The 200-a-day API drip is right for the long tail and far too slow for a launch:
+1,000 contacts is a working week. MillionVerifier's bulk API does the same job
+in about fifteen minutes, so a launch tranche is one file upload per title and
+the drip takes over at tranche 2.
+
+Verify more than you intend to import — roughly 1.4x, since the good rate runs
+70-80% after the free kills. `mv-bulk-verify.mjs` refuses to start unless the
+account holds enough credits for every title in the run, because a half-verified
+list is worse than an unverified one: it looks finished.
+
+### Traps
+
+**Prospects are seeded but never marked imported.** `importedAt` stays null for
+every row the seeder writes, even ones verified good. Mailchimp membership is
+`runDrip()`'s to claim, and it stamps the tranche number itself. A seeder that
+pre-marks rows as imported produces a list that is in the database and not in
+Mailchimp, and nothing will ever notice.
+
+**A title with no `mailchimp` credential is skipped silently.** Both the drip and
+the newsletter check `mailchimp.audienceId` before doing anything and return a
+`skipped` reason rather than failing. Fleet and Golf had audiences, authenticated
+sending domains and — for a day — no credential row, so every cron would have
+reported a clean run over a title it never touched. Check
+`SiteCredential.kind = 'mailchimp'` exists per title, not that the audience
+exists in Mailchimp.
+
+**`/verified-domains` returns 10 results by default.** Pass `?count=200` or a
+sending domain that is fine looks missing.
+
+**Scripts that do not import Prisma get no `.env`.** Prisma loads it as a side
+effect, so a script using only `fetch` and `fs` sees an empty `process.env` and
+reports the key as missing. Run standalone scripts with `node --env-file=.env`.
+
+### Pacing the first sends
+
+A first issue to a cold list on a young domain is the highest-risk send a title
+ever makes, and `MAX_BOUNCE_RATE` (2%) means a bad one blocks the *next*
+import too — the ramp stops itself. On an established domain the full 1,000 is
+fine. On a domain with no sending history, or one already seen in a spam folder,
+import ~500 (`?mode=import&size=500`) and let the Tuesday drip grow it.
