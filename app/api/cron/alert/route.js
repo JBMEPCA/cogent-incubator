@@ -40,7 +40,18 @@ async function alertSender() {
 export async function POST(request) {
   const denied = cronGuard(request);
   if (denied) return denied;
+  // The alarm itself must never fail silently. An unhandled throw here is an
+  // empty 500 that the Worker records and nobody reads - the same class of
+  // blindness this endpoint exists to end - so everything below reports its
+  // own failure in the response body.
+  try {
+    return await handle(request);
+  } catch (e) {
+    return Response.json({ error: `alert route failed: ${e?.message || e}` }, { status: 500 });
+  }
+}
 
+async function handle(request) {
   let body;
   try {
     body = await request.json();
