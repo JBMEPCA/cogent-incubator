@@ -13,11 +13,6 @@
 // single-title app and the fleet app both publishing to the same WordPress:
 // moving the engine means repointing this, not running a second worker.
 //
-// Left defaulting to the old app on purpose. Setting BASE_URL in the Worker's
-// variables is a deliberate act with an obvious undo, whereas changing the
-// default here would have flipped the live engine the moment this was deployed
-// — before the new app had its environment variables.
-const DEFAULT_BASE = "https://smart-sme-app.vercel.app";
 // No fallback. The default used to be the OLD app - deliberately, during the
 // migration - which turned a wiped BASE_URL into nineteen silent hours of the
 // cron ticking a dead deployment. A worker that does not know where its engine
@@ -161,7 +156,13 @@ async function runAll(env, now = new Date(), steps = null) {
   // Nothing is hidden by this: an agent that genuinely fails records its own
   // failure against the run, and a tick that never arrives shows as no runs at
   // all. Both are read out of the database in the daily update.
-  const stillWorking = (r) => r.status === 524 && r.path.startsWith("/api/cron/agents");
+  // Every route the app gives a 300s maxDuration outlives Cloudflare's ~100s
+  // patience by design. Measured 26 August: the worker stage 94s, and
+  // backlink-outreach 207s returning HTTP 200 while this worker had already
+  // emailed to say it had failed. Naming them explicitly, so a NEW route that
+  // starts timing out is still treated as the fault it probably is.
+  const LONG_RUNNING = ["/api/cron/agents", "/api/cron/backlink-outreach", "/api/cron/newsletter"];
+  const stillWorking = (r) => r.status === 524 && LONG_RUNNING.some((path) => r.path.startsWith(path));
   const failures = results.filter((r) => (r.error || r.status >= 400) && !stillWorking(r));
   if (failures.length) {
     try {
