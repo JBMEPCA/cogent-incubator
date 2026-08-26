@@ -80,6 +80,13 @@ function scheduledExtras(now) {
   // window in BST and in GMT, which is why those two hours and not 06:00.
   if (hour === 7 || hour === 19) extra.push("/api/cron/seo-audit");
 
+  // And the sweep that applies what the audit found, an hour behind each run
+  // so it is working on a fresh list. Left unapplied, the suggestions banked
+  // up to 807 by 25 August: the audit proposes about twenty links per title
+  // per run, and nobody clicks twenty links a day for ever. Only the
+  // mechanical kinds apply themselves; titles and copy still wait for a human.
+  if (hour === 8 || hour === 20) extra.push("/api/cron/seo-apply");
+
   if (hour === 9) {
     // Chip away at verifying the Apollo list every morning.
     extra.push("/api/cron/subscriber-drip?mode=verify");
@@ -161,7 +168,7 @@ async function runAll(env, now = new Date(), steps = null) {
   // backlink-outreach 207s returning HTTP 200 while this worker had already
   // emailed to say it had failed. Naming them explicitly, so a NEW route that
   // starts timing out is still treated as the fault it probably is.
-  const LONG_RUNNING = ["/api/cron/agents", "/api/cron/backlink-outreach", "/api/cron/newsletter"];
+  const LONG_RUNNING = ["/api/cron/agents", "/api/cron/backlink-outreach", "/api/cron/newsletter", "/api/cron/seo-apply"];
   const stillWorking = (r) => r.status === 524 && LONG_RUNNING.some((path) => r.path.startsWith(path));
   const failures = results.filter((r) => (r.error || r.status >= 400) && !stillWorking(r));
   if (failures.length) {
