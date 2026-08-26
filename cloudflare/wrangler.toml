@@ -20,5 +20,12 @@ workers_dev = false
 # hourly tick could not reach them, so those articles went out 36 minutes late,
 # which was 10 of the last 14 posts. worker.js tells the two apart on
 # event.cron and runs no agent stage at half past, so this adds no model spend.
+# BASE_URL lives HERE, versioned, because wrangler deploy wipes dashboard-set
+# variables. It was set in the dashboard on 14 August; the deploy of 25 August
+# erased it, the worker fell back to its old-app default, and the whole fleet
+# went untick-ed for nineteen hours while Cloudflare reported every cron firing.
+[vars]
+BASE_URL = "https://cogent-incubator.vercel.app"
+
 [triggers]
 crons = ["5 6-19 * * *", "35 6-19 * * *"]

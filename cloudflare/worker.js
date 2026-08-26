@@ -18,7 +18,14 @@
 // default here would have flipped the live engine the moment this was deployed
 // — before the new app had its environment variables.
 const DEFAULT_BASE = "https://smart-sme-app.vercel.app";
-const baseUrl = (env) => (env.BASE_URL || DEFAULT_BASE).replace(/\/$/, "");
+// No fallback. The default used to be the OLD app - deliberately, during the
+// migration - which turned a wiped BASE_URL into nineteen silent hours of the
+// cron ticking a dead deployment. A worker that does not know where its engine
+// lives refuses to tick, loudly, instead of guessing.
+const baseUrl = (env) => {
+  if (!env.BASE_URL) throw new Error("BASE_URL is not set on this worker - refusing to tick the wrong app");
+  return env.BASE_URL.replace(/[/]$/, "");
+};
 
 // Order matters. Publishing frees slots before the schedule is refilled, and
 // the Director commissions before the worker goes looking for something to do.
