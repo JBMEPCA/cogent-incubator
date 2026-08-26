@@ -151,7 +151,18 @@ async function runAll(env, now = new Date(), steps = null) {
   // route dedupes (one email per failing step per few hours) and emails; the
   // POST is fire-and-fail-quietly because the alarm must never be what breaks
   // the engine — but its own failure is recorded in the results it reports on.
-  const failures = results.filter((r) => r.error || r.status >= 400);
+  // 524 means Cloudflare stopped waiting, not that anything broke. The agent
+  // routes run to a 300s maxDuration by design and Cloudflare's patience is
+  // about 100, so a busy fleet returns 524 while the work carries on and
+  // finishes — on 26 August every title of the 09:35 tick completed minutes
+  // after this alarm had already been emailed. Alerting on it trains the
+  // reader to ignore the alerts, which costs more than the alert is worth.
+  //
+  // Nothing is hidden by this: an agent that genuinely fails records its own
+  // failure against the run, and a tick that never arrives shows as no runs at
+  // all. Both are read out of the database in the daily update.
+  const stillWorking = (r) => r.status === 524 && r.path.startsWith("/api/cron/agents");
+  const failures = results.filter((r) => (r.error || r.status >= 400) && !stillWorking(r));
   if (failures.length) {
     try {
       await fetch(baseUrl(env) + "/api/cron/alert", {
