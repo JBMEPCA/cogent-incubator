@@ -49,11 +49,39 @@ export async function GET(request) {
     : await activeSites();
   if (!contexts.length) return Response.json({ skipped: "no titles with the engine on" });
 
+  // Cloudflare abandons a subrequest at about 100 seconds and calls the sweep
+  // failed. maxDuration is 300 and the work does finish — the 09:35 tick on 26
+  // August completed every title minutes after the worker had given up and
+  // emailed an alarm — but a tick that reports failure whenever the fleet is
+  // busy is a tick nobody can act on, and it buries the real faults. So the
+  // loop stops STARTING titles at 75s and leaves the rest to the next tick,
+  // which is half an hour away and does the same thing.
+  //
+  // The order rotates by tick, because with a fixed one the titles at the end
+  // of the list would be the only ones ever deferred.
+  const FLEET_DEADLINE_MS = 75_000;
+  const offset = Math.floor(Date.now() / 18e5) % contexts.length;
+  const ordered = contexts.slice(offset).concat(contexts.slice(0, offset));
+
+  const started = Date.now();
   const fleet = [];
-  for (const ctx of contexts) {
+  const deferred = [];
+  for (const ctx of ordered) {
+    // The first title always runs: a deadline that can skip everything is an
+    // outage with a tidy response body.
+    if (fleet.length && Date.now() - started > FLEET_DEADLINE_MS) {
+      deferred.push(ctx.site.slug);
+      continue;
+    }
     fleet.push({ site: ctx.site.slug, ...(await tickOne(ctx, { forced, stage })) });
   }
-  return Response.json({ titles: fleet.length, fleet });
+  return Response.json({
+    titles: fleet.length,
+    fleet,
+    ...(deferred.length
+      ? { deferred, deferredReason: "fleet deadline reached; the order rotates each tick, so these move up the queue" }
+      : {}),
+  });
 }
 
 // One title's tick. Everything below is the original logic, now taking the site
