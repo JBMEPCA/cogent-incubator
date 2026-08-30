@@ -48,7 +48,20 @@ export async function GET(request) {
       status: { in: ["review", "approved"] },
       qaPassed: true,
       body: { not: null },
-      OR: [{ scheduledFor: null }, { scheduledFor: { gt: lockUntil } }],
+      // A missed slot has to make the article available again, not strand it.
+      // An article usually misses its slot waiting for a picture, and once the
+      // time passes it fell outside both branches below: publish-due would not
+      // run it, and this query could not re-slot it. Ten of the fourteen
+      // finished articles on the fleet were stuck that way on 30 August, the
+      // oldest since the 22nd, every one of them written, checked and paid for.
+      //
+      // Anything older than the lock window is fair game again. Inside the
+      // window it is left alone, because it may be publishing right now.
+      OR: [
+        { scheduledFor: null },
+        { scheduledFor: { gt: lockUntil } },
+        { scheduledFor: { lt: new Date(Date.now() - LOCK_MINUTES * 60000) } },
+      ],
     },
     select: { id: true, type: true, seoScore: true, scheduledFor: true, createdAt: true },
   });
