@@ -160,6 +160,7 @@ model Site {
   referringDomains  ReferringDomain[]
   audienceSnapshots AudienceSnapshot[]
   targetAchievements TargetAchievement[]
+  interviewTargets  InterviewTarget[]
 }
 
 /// A site that has sent us traffic, which is the only evidence of a link we can
@@ -559,6 +560,7 @@ model Article {
   // article count that includes work it cannot see.
   costUsd        Float?
   outreach       OutreachEmail[]
+  interviewTargets InterviewTarget[]
   // When the backlink engine last read this article. Set even when it found
   // nothing worth sending, because "no mentions" is a result: without it, an
   // article that names no one is re-analysed by the model every six hours for
@@ -664,6 +666,86 @@ model OutreachEmail {
 
   @@index([siteId, status])
   @@index([brandId])
+}
+
+/// A named person we want to interview, and the whole two-step conversation
+/// with them.
+///
+/// Kept apart from OutreachEmail because the shape of the exchange is
+/// different: backlink outreach is one email and a chase, whereas this is a
+/// short pre-ask ("may I send you questions?"), a wait, then the questions,
+/// then their answers, then an article, then a note telling them it is live.
+/// Half the columns here exist to remember which of those steps has happened.
+///
+/// The whole point of the franchise is that the subject shares the finished
+/// piece, so `notifiedAt` is not an afterthought: an article nobody tells the
+/// subject about earns none of the links this exists to win.
+model InterviewTarget {
+  id            String   @id @default(cuid())
+  site          Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId        String
+
+  personName    String
+  personRole    String?
+  company       String
+  companyDomain String?
+
+  /// Why this person, quoted back to them in the pre-ask. Same job as
+  /// mentionQuote on OutreachEmail: it is the line that makes the mail read as
+  /// editorial interest rather than a mail merge.
+  newsHook      String?
+  hookUrl       String?
+
+  email         String?
+  /// How we came by the address, because it decides how much to trust it:
+  /// published (printed in a release) | site (on their own website) |
+  /// pattern (inferred) | generic (hello@, with a pass-it-on line).
+  emailSource   String?
+  /// Every address already tried, newline separated. The cascade walks
+  /// first@ then first.last@ then flast@ then f.last@ then generic, and this
+  /// is what stops it offering the same dead address twice.
+  triedEmails   String?
+
+  /// pending | asked | agreed | questioned | answered | drafted | published
+  /// | declined | exhausted | bounced | failed
+  ///
+  /// "exhausted" means every address pattern bounced and there is nobody left
+  /// to try, which is a different outcome from "declined" and must not be
+  /// counted as a no.
+  status        String   @default("pending")
+
+  askSubject    String?
+  askBody       String?
+  /// The tailored questions, held from the moment the target is built so the
+  /// send after a yes is a lookup rather than a fresh generation.
+  questions     String?
+
+  askedAt         DateTime?
+  agreedAt        DateTime?
+  /// Deliberately later than agreedAt by a randomised 45-90 minutes, inside
+  /// business hours. An instant reply to a yes reads as a robot.
+  questionsSentAt DateTime?
+  answeredAt      DateTime?
+  /// Exactly one chase, seven days out, same rule as backlink outreach.
+  followUpSentAt  DateTime?
+  declinedAt      DateTime?
+
+  replyBody     String?
+  headshotUrl   String?
+
+  article       Article?  @relation(fields: [articleId], references: [id], onDelete: SetNull)
+  articleId     String?
+  publishedUrl  String?
+  publishedAt   DateTime?
+  /// When we told the subject it was live. This is the share, and the link.
+  notifiedAt    DateTime?
+
+  error         String?
+  attempts      Int      @default(0)
+  createdAt     DateTime @default(now())
+
+  @@index([siteId, status])
+  @@index([articleId])
 }
 
 // Small key/value store for engine cursors and toggles, per title.

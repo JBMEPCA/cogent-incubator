@@ -65,6 +65,7 @@ export const CONTENT_TABS = [
   { href: "/content", label: "Engine" },
   { href: "/content?tab=schedule", label: "Schedule" },
   { href: "/content?tab=pr", label: "PR Sources" },
+  { href: "/interviews", label: "Interviews" },
   { href: "/linkedin", label: "LinkedIn" },
 ];
 
