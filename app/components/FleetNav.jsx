@@ -67,9 +67,20 @@ function MoneyIcon() {
   );
 }
 
+/** A head and shoulders — the interview pipeline is people, not documents. */
+function PersonIcon() {
+  return (
+    <svg {...ICON}>
+      <circle cx="12" cy="8" r="3.5" />
+      <path d="M4.5 20.5a7.5 7.5 0 0 1 15 0" />
+    </svg>
+  );
+}
+
 const LINKS = [
   { href: "/", label: "All titles", Icon: GridIcon },
   { href: "/analytics", label: "Group analytics", Icon: ChartIcon },
+  { href: "/interviews", label: "Interviews", Icon: PersonIcon },
   { href: "/costs", label: "Group costs", Icon: MoneyIcon },
 ];
 
