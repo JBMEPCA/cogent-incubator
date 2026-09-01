@@ -55,3 +55,17 @@ assets/mailchimpdata/mv-report-*.csv
 # Rendered newsletter proofs — real subscriber-facing content, regenerated
 # on demand by scripts/newsletter-proof.mjs. No reason to version them.
 assets/newsletter-proofs/
+
+# The Apollo exports and everything derived from them, matched on filename
+# wherever they sit rather than on the directory they were last seen in.
+#
+# The rules above were written against assets/mailchimpdata/. On 1 Sep 2026 the
+# same files turned up in "assets/New folder/", outside every one of them and
+# staged for the next `git add -A`: 5,097 and 9,315 rows of real people with
+# work emails and direct dial numbers. A path-scoped rule protects a path, not
+# the data, and the data is what moves.
+ranked-*.csv
+mv-report-*.csv
+**/Fleet Data.csv
+**/Golf Data.csv
+**/Airport Data.csv
