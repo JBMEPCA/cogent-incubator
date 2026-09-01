@@ -51,6 +51,15 @@ const STEPS = [
   // a caller it ran only when the Backlink Manager won its contended 12-hour
   // agent slot, and its own throttle was bypassed entirely.
   "/api/cron/check-backlinks",
+  // The interview franchise. Reads the inbox, moves people to match what they
+  // actually said, sends the questions to anyone who agreed and has waited, and
+  // asks for the backlink a day after a piece goes live. Nothing watched this
+  // queue at all before 1 Sep 2026: a row sat on "asked" whether the person had
+  // ignored us or answered the same afternoon, and the first three replies were
+  // only found because somebody went looking by hand. Hourly is right because
+  // the delays are measured in hours, and a tick with nothing to do costs one
+  // Gmail query.
+  "/api/cron/interviews",
   "/api/cron/scan-feeds",
   "/api/cron/scan-feeds",
 ];
