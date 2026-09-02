@@ -1,6 +1,7 @@
 import { forEachSite, cronGuard } from "@/lib/cron";
 import {
   publishPost,
+  authFor,
   isLinkedInConfigured,
   dueFilter,
   DRAFT_EXPIRY_DAYS,
@@ -29,7 +30,7 @@ export async function GET(request) {
   }
 
   return Response.json(
-    await forEachSite(async ({ site, db, creds }) => {
+    await forEachSite(async ({ site, db }) => {
       // News that sat unposted for days is not news. Expired, with the reason.
       // BEFORE the connected check: no title is connected yet, so below it the
       // drafts this exists to clear were exactly the ones it could never reach.
@@ -38,7 +39,7 @@ export async function GET(request) {
         data: { status: "expired", publishError: `unposted for ${DRAFT_EXPIRY_DAYS} days; expired rather than posted stale` },
       });
 
-      if (!isLinkedInConfigured(creds.linkedin))
+      if (!isLinkedInConfigured(await authFor(site)))
         return { skipped: "LinkedIn not connected for this title", expired: stale.count };
 
       const post = await db.linkedInPost.findFirst({

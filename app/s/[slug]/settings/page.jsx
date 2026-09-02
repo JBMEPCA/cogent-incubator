@@ -40,7 +40,6 @@ const FIELD_META = {
   fromName: { label: "From name", placeholder: "James Burke" },
   replyTo: { label: "Reply-to", type: "email", placeholder: "same as the from address" },
   postalAddress: { label: "Postal address (email footer)", placeholder: "Cogent Multimedia Ltd, ..." },
-  organisationUrn: { label: "Organisation URN", placeholder: "urn:li:organization:12345678" },
   accessToken: { label: "Access token", secret: true },
   refreshToken: { label: "Refresh token", secret: true },
   expiresAt: { label: "Expires", placeholder: "set by the OAuth callback" },

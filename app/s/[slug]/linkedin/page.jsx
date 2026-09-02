@@ -8,11 +8,12 @@ import {
   postLinkedInNow,
   retryLinkedInPost,
   disconnectLinkedIn,
+  selectLinkedInOrganisation,
 } from "@/lib/actions";
 import SubTabs, { CONTENT_TABS } from "@/app/components/SubTabs";
 import {
   getConnection,
-  isLinkedInConfigured,
+  isLinkedInAppConfigured,
   redirectUri,
   MAX_ATTEMPTS,
   POST_START_HOUR,
@@ -37,7 +38,7 @@ export default async function LinkedInPage({searchParams, params}) {
   const { slug } = await params;
   const ctx = await getSiteContext(slug);
   if (!ctx) notFound();
-  const { site, db, creds } = ctx;
+  const { site, db } = ctx;
   const siteRef = { id: site.id, slug: site.slug };
 
   const query = await searchParams;
@@ -45,8 +46,13 @@ export default async function LinkedInPage({searchParams, params}) {
     db.linkedInPost.findMany({ orderBy: { createdAt: "desc" }, take: 100 }),
     getConnection(site),
   ]);
-  const configured = isLinkedInConfigured(creds.linkedin);
-  const live = Boolean(connection && !connection.expired);
+  // Whether the FLEET app exists, which is an environment question and the
+  // same answer for every title. Whether this title can actually post is
+  // connection.ready, and conflating the two is why this panel showed "create
+  // an app at developer.linkedin.com" on a fleet whose app was set up weeks
+  // ago — and never rendered the Connect button at all.
+  const configured = isLinkedInAppConfigured();
+  const live = Boolean(connection?.ready);
 
   // Show which article each post came from: the LinkedIn Manager drafts from
   // whatever is performing, so provenance is the useful context when approving.
@@ -100,8 +106,9 @@ export default async function LinkedInPage({searchParams, params}) {
           {!configured ? (
             <p className="micro" style={{ margin: 0 }}>
               Not set up yet. Create an app at developer.linkedin.com, add the “Sign In with LinkedIn using OpenID
-              Connect” and “Share on LinkedIn” products, register <code>{redirectUri()}</code> as the redirect URL, then
-              put LINKEDIN_CLIENT_ID and LINKEDIN_CLIENT_SECRET in the environment.
+              Connect”, “Share on LinkedIn” and “Community Management API” products, register{" "}
+              <code>{redirectUri()}</code> as the redirect URL, then put LINKEDIN_CLIENT_ID and LINKEDIN_CLIENT_SECRET
+              in the environment. The first two are self-serve; the third is what allows posting as a company page.
             </p>
           ) : !connection ? (
             <>
@@ -136,6 +143,43 @@ export default async function LinkedInPage({searchParams, params}) {
                     Disconnect
                   </button>
                 </form>
+              </div>
+
+              {/* Signing in is only half of it: nothing publishes until a
+                  company page is bound to this title, and where the account
+                  administers several the app must not guess which. */}
+              <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid var(--line, #2a2a2a)" }}>
+                {connection.organisationUrn ? (
+                  <p className="micro" style={{ margin: 0 }}>
+                    Posting as <strong>{connection.organisationName || connection.organisationUrn}</strong>.
+                    {connection.organisations.length > 1 && " Change it below."}
+                  </p>
+                ) : (
+                  <p className="micro" style={{ margin: "0 0 10px", color: "#d97706" }}>
+                    No company page bound, so nothing will publish.{" "}
+                    {connection.organisationsError || "Pick the page this title posts as."}
+                  </p>
+                )}
+                {connection.organisations.length > 0 && (
+                  <form
+                    action={selectLinkedInOrganisation.bind(null, siteRef)}
+                    style={{ display: "flex", gap: 10, marginTop: 10, flexWrap: "wrap" }}
+                  >
+                    <select name="urn" defaultValue={connection.organisationUrn || ""} required>
+                      <option value="" disabled>
+                        Choose a company page…
+                      </option>
+                      {connection.organisations.map((o) => (
+                        <option key={o.urn} value={o.urn}>
+                          {o.name}
+                        </option>
+                      ))}
+                    </select>
+                    <button type="submit" className="btn" style={{ fontSize: 12 }}>
+                      Use this page
+                    </button>
+                  </form>
+                )}
               </div>
             </>
           )}
