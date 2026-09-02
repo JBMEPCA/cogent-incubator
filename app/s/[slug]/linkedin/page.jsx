@@ -16,8 +16,7 @@ import {
   isLinkedInAppConfigured,
   redirectUri,
   MAX_ATTEMPTS,
-  POST_START_HOUR,
-  POST_END_HOUR,
+  postingHoursLabel,
 } from "@/lib/linkedin";
 
 export const dynamic = "force-dynamic";
@@ -75,12 +74,12 @@ export default async function LinkedInPage({searchParams, params}) {
         <SubTabs items={CONTENT_TABS} active="/linkedin" />
         {query?.connected && (
           <div className="panel" style={{ marginBottom: 16, borderColor: "var(--neon-cyan)" }}>
-            Connected to LinkedIn as {params.connected}. Approved posts will now publish on their own.
+            Connected to LinkedIn as {query.connected}. Posts will now publish on their own.
           </div>
         )}
         {query?.error && (
           <div className="panel" style={{ marginBottom: 16, borderColor: "#dc2626" }}>
-            LinkedIn connection failed: {params.error}
+            LinkedIn connection failed: {query.error}
           </div>
         )}
 
@@ -188,10 +187,10 @@ export default async function LinkedInPage({searchParams, params}) {
         <section className="panel" style={{ marginBottom: 22 }}>
           <h2 style={{ margin: "0 0 6px", fontSize: 16 }}>Post queue</h2>
           <p className="micro" style={{ margin: "0 0 14px" }}>
-            The LinkedIn Manager drafts two a day from whichever articles are performing, and never posts.{" "}
+            The LinkedIn Manager drafts two a day from whichever articles are performing.{" "}
             {live
-              ? `Approving one books it a slot between ${POST_START_HOUR}:00 and ${POST_END_HOUR}:00 UK, at least three hours after the last, and it publishes itself.`
-              : "Approve here, then publish on LinkedIn yourself."}
+              ? `Each one is booked into the next free slot at ${postingHoursLabel()} and publishes itself. Approving changes nothing except the label.`
+              : "Until a company page is connected, these are a copy-and-paste list."}
           </p>
           <form action={addLinkedInPost.bind(null, siteRef)}>
             <textarea
