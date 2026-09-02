@@ -1,8 +1,9 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { runInterviewSweep } from "@/lib/interviews";
+import { runInterviewSweep, draftInterviewArticle } from "@/lib/interviews";
 import { siteCredentials } from "@/lib/site";
 import { forSite } from "@/lib/prisma";
-import { siteUrl } from "@/lib/voice";
+import { siteUrl, houseStyle } from "@/lib/voice";
+import { publishToWordPress } from "@/lib/wordpress";
 import { cronGuard, forEachSite } from "@/lib/cron";
 
 export const dynamic = "force-dynamic";
@@ -34,11 +35,27 @@ export async function GET(request) {
     return Response.json(
       await forEachSite(async ({ site }) => {
         const { creds } = await siteCredentials(site.id);
+        const db = forSite(site.id);
         return runInterviewSweep(site, {
-          db: forSite(site.id),
+          db,
           creds,
           anthropic,
           siteUrl: siteUrl(site),
+          // Drafting is injected rather than imported inside the sweep, so the
+          // sweep stays testable without a WordPress account and a model key.
+          draft: creds?.wordpress
+            ? (target, ctx) =>
+                draftInterviewArticle(site, target, {
+                  db,
+                  anthropic,
+                  wp: creds.wordpress,
+                  franchise: ctx.franchise,
+                  siteUrl: siteUrl(site),
+                  houseStyle: houseStyle(site),
+                  publish: publishToWordPress,
+                  makeArticle: (data) => db.article.create({ data }),
+                })
+            : null,
         });
       })
     );
