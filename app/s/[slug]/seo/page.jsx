@@ -95,7 +95,7 @@ export default async function SeoPage({ params }) {
   const { site, db, creds } = ctx;
   const siteRef = { id: site.id, slug: site.slug };
 
-  const [pending, resolved, scoreSetting, auditSetting, scoredArticles, publishedCount] =
+  const [pending, resolved, scoreSetting, auditSetting, scoredArticles, publishedCount, keywords] =
     await Promise.all([
       db.seoSuggestion.findMany({
         where: { status: { in: ["pending", "failed"] } },
@@ -115,7 +115,26 @@ export default async function SeoPage({ params }) {
         select: { id: true, title: true, seoScore: true, status: true },
       }),
       db.article.count({ where: { status: "published" } }),
+      // The keyword registry, best-performing first. Ordered by OUR OWN Search
+      // Console impressions rather than by Bing demand: Bing measures the whole
+      // public, and sorting on it puts consumer terms this title will never
+      // want at the top of the table.
+      db.keywordTarget.findMany({
+        orderBy: [{ gscImpressions: { sort: "desc", nulls: "last" } }, { bingImpressions: "desc" }],
+        take: 40,
+      }),
     ]);
+
+  // KeywordTarget.articleId is a plain column rather than a relation, because a
+  // registry row outliving a deleted article should lose its link, not block
+  // the delete. So the titles are looked up in one go here.
+  const keywordArticles = keywords.length
+    ? await db.article.findMany({
+        where: { id: { in: keywords.map((k) => k.articleId).filter(Boolean) } },
+        select: { id: true, title: true, status: true },
+      })
+    : [];
+  const articleById = new Map(keywordArticles.map((a) => [a.id, a]));
 
   const linkGraph = await buildLinkGraph(creds.wordpress);
   const siteScore = scoreSetting ? parseInt(scoreSetting.value, 10) : null;
@@ -224,6 +243,93 @@ export default async function SeoPage({ params }) {
             <LinkMap data={linkGraph} />
           </section>
         )}
+
+        {/* Keyword targets */}
+        <section className="panel panel-glow" style={{ marginBottom: 24, padding: 18 }}>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 6 }}>
+            <h2 style={{ margin: 0, fontSize: 17 }}>Keyword Targets</h2>
+            <span className="micro num">
+              {keywords.length} tracked · {keywords.filter((k) => k.articleId).length} with an article
+            </span>
+          </div>
+          <p className="micro" style={{ margin: "0 0 12px" }}>
+            Terms this title is chasing, best first by the impressions it already earns in Google.
+            Bing demand is a sanity check on whether anyone searches the term at all: it counts the
+            whole public rather than the trade, so it is never the reason to write something.
+          </p>
+
+          {keywords.length === 0 ? (
+            <p className="micro" style={{ margin: 0, opacity: 0.7 }}>
+              Nothing tracked yet. The registry fills as the Researcher runs, one sweep per title.
+            </p>
+          ) : (
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+                <thead>
+                  <tr>
+                    {["Keyword", "Impressions", "Position", "Bing demand", "Trend", "Article"].map((h, i) => (
+                      <th
+                        key={h}
+                        className="micro"
+                        style={{
+                          textAlign: i === 0 || i === 5 ? "left" : "right",
+                          padding: "0 0 8px",
+                          borderBottom: "1px solid var(--line)",
+                          fontWeight: 400,
+                        }}
+                      >
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {keywords.map((k) => {
+                    const article = k.articleId ? articleById.get(k.articleId) : null;
+                    // Null trend means too little history to judge, which is not
+                    // the same as flat and must not render as 1.00.
+                    const rising = k.bingTrend != null && k.bingTrend >= 1.15;
+                    const falling = k.bingTrend != null && k.bingTrend <= 0.85;
+                    const cell = { padding: "7px 0", borderBottom: "1px solid var(--line)", textAlign: "right" };
+                    return (
+                      <tr key={k.id}>
+                        <td style={{ ...cell, textAlign: "left", paddingRight: 12 }}>{k.term}</td>
+                        <td className="num" style={cell}>{k.gscImpressions ?? "—"}</td>
+                        <td className="num" style={cell}>
+                          {k.gscPosition != null ? k.gscPosition.toFixed(1) : "—"}
+                        </td>
+                        <td className="num" style={cell}>
+                          {k.bingCheckedAt ? k.bingImpressions : "—"}
+                        </td>
+                        <td
+                          className="num"
+                          style={{
+                            ...cell,
+                            color: rising ? "var(--neon-green)" : falling ? "var(--neon-cyan)" : undefined,
+                          }}
+                        >
+                          {k.bingTrend != null ? `${k.bingTrend >= 1 ? "+" : ""}${Math.round((k.bingTrend - 1) * 100)}%` : "—"}
+                        </td>
+                        <td style={{ ...cell, textAlign: "left", paddingLeft: 12 }}>
+                          {article ? (
+                            <>
+                              {article.title}{" "}
+                              <span className="micro" style={{ opacity: 0.6 }}>({article.status})</span>
+                            </>
+                          ) : (
+                            <span className="micro" style={{ opacity: 0.55 }}>
+                              {k.status === "candidate" ? "not commissioned" : k.status}
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
 
         <div
           style={{
