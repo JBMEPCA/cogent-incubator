@@ -14,7 +14,7 @@ not fit, and say so when you do.
 
 | Element | Rule |
 |---|---|
-| Headline | `<span class="franchise-eyebrow">SME Leaders:</span> ` then a person-led headline. The span goes INSIDE the post title, not in the body. |
+| Headline | The franchise name in a `<span class="franchise-eyebrow">`, then a person-led headline. The span goes INSIDE the post title, not in the body. See the names below. |
 | SEO title | The same line as plain text, set on `_yoast_wpseo_title`, so no markup reaches a search result or a browser tab. |
 | Standfirst | Two sentences. What they won or did, then what a reader gets out of it. |
 | Lead image | Supplied by the subject. Never scraped, never stock. |
@@ -22,6 +22,34 @@ not fit, and say so when you do.
 | Body | Short intro paragraph, then alternating quote and context under `<h2>` sections. |
 | Quotes | `<blockquote class="wp-block-quote interview-quote">`. |
 | Sign-off | One italic line: the franchise blurb and an edit note. |
+
+## The franchise names
+
+Set by JB on 2 Sep 2026. Deliberately NOT uniform across the fleet: each one
+uses its own trade's vocabulary, which is what signals we know the sector.
+Stored per title in `EngineSetting` under `interview_franchise`, alongside
+`interview_title_descriptor`, which is the clause after the title's name in the
+opening line of the outreach ("publisher of The Fleet Magazine, **the UK trade
+title for fleet and logistics operators**").
+
+| Title | Franchise | Headline reads |
+|---|---|---|
+| Smart SME | SME Leaders | `SME Leaders:` Martyn Barklett-Judge on proving it to the vets |
+| The Fleet Magazine | Fleet Professional | `Fleet Professional:` Chris Welch on where the money really gets made |
+| Golf Resort Magazine | Golf Resort Leader | `Golf Resort Leader:` Fraser Wilson on taking over the family firm |
+| Barbering Business | In the Chair | `In the Chair:` [name] on building a shop that lasts |
+| Airport Business | Airside with | `Airside with` [name] on running a terminal that works |
+
+**Airport is the odd one and the markup differs.** "Airside with" is a phrase,
+not a label, so it takes NO colon and runs straight into the person's name:
+
+```html
+<span class="franchise-eyebrow">Airside with</span> Sarah Jones on running a terminal that works
+```
+
+The other four take a colon inside the span, as the CSS and the live Pet Remedy
+piece do. Get this wrong on Airport and the headline reads "Airside with:
+Sarah Jones", which is nonsense.
 
 ## The company card
 
