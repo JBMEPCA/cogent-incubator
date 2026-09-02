@@ -151,6 +151,7 @@ model Site {
   advertiserProspects AdvertiserProspect[]
   launchItems       LaunchItem[]
   researchTopics    ResearchTopic[]
+  keywordTargets    KeywordTarget[]
   newsletterProspects NewsletterProspect[]
   agents            Agent[]
   agentRuns         AgentRun[]
@@ -936,6 +937,73 @@ model ResearchTopic {
   createdAt   DateTime @default(now())
 
   @@index([siteId, status, score])
+}
+
+/// One search term this title intends to own, and the fleet's memory of who
+/// claimed it.
+///
+/// Two separate failures made this necessary. The engine had no record of what
+/// it had ever TARGETED, only of what it had published, so a weekly sweep would
+/// re-propose the same query indefinitely: ResearchTopic.query held the term
+/// that justified an article and nothing ever read it back. And nothing was
+/// fleet-aware, so Smart SME commissioned against two queries The Fleet
+/// Magazine was already targeting and the two titles competed with each other
+/// in the same results page.
+///
+/// Claiming is per TERM per SITE, and the cross-title check is a read across
+/// every site (lib/keyword-registry.js), which is why the term column carries
+/// its own index rather than only the composite one.
+model KeywordTarget {
+  id     String @id @default(cuid())
+  site   Site   @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId String
+
+  /// Normalised: lowercased, collapsed whitespace, no surrounding punctuation.
+  /// Matching on the raw string would let "Fleet Management " and "fleet
+  /// management" both be claimed, which is the same failure the registry exists
+  /// to prevent.
+  term   String
+  /// The market this demand was measured in, so a term can be owned by one
+  /// title in GB and another in US without reading as a collision. Golf Resort
+  /// and Airport Business are both ["US","GB"].
+  market String @default("GB")
+  source String // gsc | autocomplete | wire | gap
+
+  // ---- Bing Webmaster demand, the validator ----
+  //
+  // Bing cannot tell a fleet manager from someone shopping for HGV training, so
+  // these numbers say whether a term has ANY measurable demand and which way it
+  // is moving. They are not the reason a topic is chosen and must never be
+  // sorted on alone: ranked by volume, four of the five titles commission
+  // consumer content. Nullable because a trade term genuinely returning no
+  // Bing data is normal and is not a failed lookup.
+  bingImpressions Int?
+  bingBroad       Int?
+  /// Recent weeks over the term's own baseline. 1.4 means running 40% above.
+  /// Null means not enough history to say, which is NOT the same as flat.
+  bingTrend       Float?
+  bingCheckedAt   DateTime?
+
+  // ---- Search Console, the winnability side ----
+  gscImpressions Int?
+  gscPosition    Float?
+
+  /// candidate  - measured, not yet spoken for
+  /// claimed    - an article is commissioned against it
+  /// published  - that article went live
+  /// won        - GSC has it inside the top 3
+  /// parked     - deliberately not pursued; keeps it out of future sweeps
+  status    String    @default("candidate")
+  topicId   String?
+  articleId String?
+  claimedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([siteId, term])
+  @@index([term])
+  @@index([siteId, status])
 }
 
 // The ranked Apollo list, drip-fed into the newsletter a thousand at a time.
