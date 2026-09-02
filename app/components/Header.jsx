@@ -71,7 +71,7 @@ export default function Header() {
         </span>
       </Link>
 
-      <nav style={{ display: "flex", gap: 6 }}>
+      <nav style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
         {SECTIONS.map((s) => {
           const href = `${base}${s.seg}`;
           const active = s.seg === "" ? rest === "/" : rest.startsWith(s.seg);

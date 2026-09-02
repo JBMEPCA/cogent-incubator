@@ -121,7 +121,7 @@ export default async function EngineRoomPage({ params }) {
   return (
     <>
       <Header />
-      <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px 24px" }}>
+      <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px clamp(14px, 4vw, 24px)" }}>
         <SubTabs items={ENGINE_TABS} active="/engine-room" />
         <div style={{ marginBottom: 18 }}>
           <h1 style={{ margin: "0 0 5px", fontSize: 25 }}>Engine Room</h1>
@@ -180,7 +180,7 @@ export default async function EngineRoomPage({ params }) {
 
         <AgentOffice />
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 14, marginTop: 20 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))", gap: 14, marginTop: 20 }}>
           <SuggestionBox suggestions={suggestions} articles={suggestedArticles} host={site.domain} />
 
           <Card title="Published recently" empty="Nothing published yet.">

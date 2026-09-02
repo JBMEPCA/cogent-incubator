@@ -368,6 +368,29 @@ textarea:focus {
   text-shadow: 0 0 14px rgba(34, 211, 238, 0.7);
 }
 
+/* ---------- Fleet analytics: one row per title ---------- */
+
+/* Name, sparkline and figure side by side. The three tracks together need
+   about 250px before the sparkline has any room left, so on a phone the
+   sparkline drops to its own full-width line under the two labels. */
+.fleet-title-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 1.2fr) 3fr minmax(96px, auto);
+  gap: 14px;
+  align-items: center;
+}
+
+@media (max-width: 560px) {
+  .fleet-title-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 4px 12px;
+  }
+
+  .fleet-title-row > *:nth-child(2) {
+    grid-column: 1 / -1;
+  }
+}
+
 /* ---------- Tables ---------- */
 
 tbody tr {
@@ -1009,7 +1032,7 @@ tbody tr:hover {
 
 .fleet-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 310px), 1fr));
   gap: 16px;
 }
 
@@ -1546,4 +1569,113 @@ body[data-readonly="true"] form .btn {
 .site-visit-nav:hover,
 .site-visit-nav:focus-visible {
   color: var(--text);
+}
+
+/* ================================================================== NARROW
+   Everything below is about one thing: nothing may push the page wider than
+   the phone it is being read on. The app is laid out with inline styles on
+   the pages themselves, so the rules here cover the shared chrome and the
+   two-column splits; the grids inside the pages are held in check by
+   `minmax(min(100%, Npx), 1fr)`, which collapses to one column rather than
+   overflowing once the viewport drops below N.
+   ========================================================================== */
+
+/* A page must never scroll sideways as a whole. Anything genuinely wider than
+   the screen - a fourteen-column table, the schedule calendar - scrolls inside
+   its own container, which each already declares.
+
+   `clip` rather than `hidden`: hidden makes body a scroll container, and both
+   the header and the title rail are position:sticky inside it, which would
+   quietly stop them sticking. clip cuts the overflow without creating one. */
+@media (max-width: 760px) {
+  body {
+    overflow-x: clip;
+  }
+}
+
+/* ---------- The two-column splits ---------- */
+
+/* Detail beside a list ("the audit and its findings"), used on SEO, Backlinks
+   and per-title Analytics. Stacks below 900px: at that width 2fr is already
+   too narrow for the figures it holds. */
+.split-main-side {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: 18px;
+  align-items: start;
+}
+
+/* Two equal columns - the content engine's queue pair, a contact's fields. */
+.split-even {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 900px) {
+  .split-main-side,
+  .split-even {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---------- Header ---------- */
+
+@media (max-width: 760px) {
+  .site-header {
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    padding: 10px 16px;
+  }
+
+  /* The engine indicator carries an inline `margin-left: auto`, which on a
+     wrapped header would strand it alone on a line of its own. Full width and
+     no auto margin keeps it with the links it follows. */
+  .site-header .micro {
+    margin-left: 0 !important;
+  }
+
+  .readonly-bar {
+    padding: 9px 16px;
+    flex-wrap: wrap;
+  }
+
+  /* A long title name is the one thing in the badge that can grow without
+     limit, so it is the one thing that gets truncated. */
+  .site-badge-name {
+    overflow: hidden;
+  }
+}
+
+
+/* ---------- Fleet overview ---------- */
+
+@media (max-width: 420px) {
+  .fleet-wrap {
+    padding: 22px 14px 40px;
+  }
+
+  .fleet-head h1 {
+    font-size: 24px;
+  }
+
+  /* 34px between figures is a desktop rhythm; on a phone it is what makes the
+     row wrap to four lines. */
+  .fleet-totals {
+    gap: 18px;
+  }
+}
+
+/* ---------- Tables ---------- */
+
+/* Every table in the app is inside a container that scrolls, but a single
+   long unbroken string - a URL in a backlink row, a subject line - can still
+   force that container wider than the screen.
+
+   break-word rather than anywhere: anywhere counts towards min-content, which
+   is exactly what an auto-layout table sizes its columns from, so it would
+   have renarrowed columns on the desktop widths this is not meant to touch. */
+td,
+th {
+  overflow-wrap: break-word;
 }

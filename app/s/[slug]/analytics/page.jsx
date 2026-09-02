@@ -81,7 +81,7 @@ function Tile({ label, value, children }) {
 
 const tileGrid = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
+  gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 170px), 1fr))",
   gap: 14,
   marginBottom: 18,
 };
@@ -173,7 +173,7 @@ export default async function AnalyticsPage({ params }) {
   return (
     <>
       <Header />
-      <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px 24px" }}>
+      <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px clamp(14px, 4vw, 24px)" }}>
         <SubTabs items={ANALYTICS_TABS} active="/analytics" />
         <section
           className="panel panel-glow"
@@ -267,7 +267,7 @@ export default async function AnalyticsPage({ params }) {
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))",
                   gap: 18,
                   marginBottom: 18,
                 }}
@@ -294,7 +294,7 @@ export default async function AnalyticsPage({ params }) {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 340px), 1fr))",
                 gap: 18,
               }}
             >
@@ -399,14 +399,7 @@ export default async function AnalyticsPage({ params }) {
               </div>
             )}
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "minmax(0, 3fr) minmax(0, 2fr)",
-                gap: 18,
-                alignItems: "start",
-              }}
-            >
+            <div className="split-main-side">
               <div style={{ display: "grid", gap: 18 }}>
                 <div className="panel" style={{ padding: 18 }}>
                   <h3 style={{ margin: "0 0 12px", fontSize: 14 }}>Users per day</h3>

@@ -61,7 +61,7 @@ export function BudgetMeter({ spentGbp, targetGbp, breakdown }) {
         <line x1={W * 0.8} y1="1" x2={W * 0.8} y2="19" stroke={GRID} strokeWidth="2" />
       </svg>
 
-      <div style={{ display: "flex", gap: 16, marginTop: 10, fontSize: 12, color: INK_2 }}>
+      <div style={{ display: "flex", gap: 16, marginTop: 10, fontSize: 12, color: INK_2, flexWrap: "wrap" }}>
         {breakdown.map((b) => (
           <span key={b.label} style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
             <span style={{ width: 9, height: 9, borderRadius: 2, background: b.colour }} />

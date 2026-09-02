@@ -70,7 +70,7 @@ export default async function LinkedInPage({searchParams, params}) {
   return (
     <>
       <Header />
-      <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px 24px" }}>
+      <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px clamp(14px, 4vw, 24px)" }}>
         <SubTabs items={CONTENT_TABS} active="/linkedin" />
         {query?.connected && (
           <div className="panel" style={{ marginBottom: 16, borderColor: "var(--neon-cyan)" }}>
@@ -87,7 +87,7 @@ export default async function LinkedInPage({searchParams, params}) {
           className="stagger"
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 150px), 1fr))",
             gap: 14,
             marginBottom: 22,
           }}
@@ -133,7 +133,7 @@ export default async function LinkedInPage({searchParams, params}) {
                   <>Token good for another {connection.daysLeft} days.</>
                 )}
               </p>
-              <div style={{ display: "flex", gap: 10 }}>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                 <a href={`/api/linkedin/connect?site=${site.slug}`} className="btn-ghost" style={{ fontSize: 12 }}>
                   Reconnect
                 </a>

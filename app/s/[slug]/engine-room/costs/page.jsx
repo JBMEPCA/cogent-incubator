@@ -55,7 +55,7 @@ export default async function CostsPage({ params }) {
   return (
     <>
       <Header />
-      <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px 24px" }}>
+      <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px clamp(14px, 4vw, 24px)" }}>
         <SubTabs items={ENGINE_TABS} active="/engine-room/costs" />
 
         <div style={{ marginBottom: 18 }}>
@@ -115,7 +115,7 @@ export default async function CostsPage({ params }) {
           </p>
         </section>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(330px, 1fr))", gap: 14, marginBottom: 14 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 330px), 1fr))", gap: 14, marginBottom: 14 }}>
           <Card title="Where the AI spend goes" sub="Last 30 days, measured from token usage.">
             <SpendDonut
               items={report.byAgent.map((a) => ({ key: a.key, label: AGENT_NAMES[a.key] || a.key, cost: a.cost }))}
@@ -145,7 +145,7 @@ export default async function CostsPage({ params }) {
           />
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(330px, 1fr))", gap: 14 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 330px), 1fr))", gap: 14 }}>
 
           <Card title="Cost per article" sub="The number that decides whether this scales.">
             <div style={{ display: "flex", gap: 10, marginBottom: 12 }}>

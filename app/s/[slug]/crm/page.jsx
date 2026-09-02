@@ -45,14 +45,14 @@ export default async function CrmPage({ params }) {
   return (
     <>
       <Header />
-      <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px 24px" }}>
+      <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px clamp(14px, 4vw, 24px)" }}>
         <SubTabs items={CRM_TABS} active="/crm" />
         {/* Summary */}
         <div
           className="stagger"
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 160px), 1fr))",
             gap: 14,
             marginBottom: 22,
           }}

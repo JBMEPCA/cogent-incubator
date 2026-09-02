@@ -124,7 +124,7 @@ export default async function SettingsPage({ params }) {
   return (
     <>
       <Header />
-      <main style={{ maxWidth: 900, margin: "0 auto", padding: "28px 24px 60px" }}>
+      <main style={{ maxWidth: 900, margin: "0 auto", padding: "28px clamp(14px, 4vw, 24px) 60px" }}>
         <h1 style={{ margin: "0 0 4px", fontSize: 25 }}>Integrations</h1>
         <p style={{ fontSize: 13.5, opacity: 0.65, margin: "0 0 22px" }}>
           Per-title credentials for {site.name}. Values are encrypted before they are stored and are never
@@ -279,7 +279,7 @@ export default async function SettingsPage({ params }) {
               warn
             />
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 10, marginTop: 12 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 180px), 1fr))", gap: 10, marginTop: 12 }}>
               <label>
                 <span style={{ display: "block", fontSize: 11.5, opacity: 0.6, marginBottom: 3 }}>
                   Daily spend cap (USD)
@@ -330,7 +330,7 @@ export default async function SettingsPage({ params }) {
               </label>
             </div>
 
-            <div style={{ display: "flex", gap: 8, marginTop: 12, alignItems: "center" }}>
+            <div style={{ display: "flex", gap: 8, marginTop: 12, alignItems: "center", flexWrap: "wrap" }}>
               <button className="btn" type="submit">Save engine settings</button>
               <span style={{ fontSize: 11.5, opacity: 0.45 }}>
                 Hours are {site.timezone} wall clock, so the clock change needs no edit.
@@ -379,7 +379,7 @@ export default async function SettingsPage({ params }) {
                 )}
 
                 <form action={saveSiteCredential.bind(null, siteRef, kind)}>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: 10 }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 230px), 1fr))", gap: 10 }}>
                     {spec.fields.map((field) => {
                       const meta = FIELD_META[field] || { label: field };
                       const current = entry.fields?.[field];
@@ -404,7 +404,7 @@ export default async function SettingsPage({ params }) {
                     })}
                   </div>
 
-                  <div style={{ display: "flex", gap: 8, marginTop: 12, alignItems: "center" }}>
+                  <div style={{ display: "flex", gap: 8, marginTop: 12, alignItems: "center", flexWrap: "wrap" }}>
                     <button className="btn" type="submit" disabled={!cryptoReady}>
                       Save and test
                     </button>

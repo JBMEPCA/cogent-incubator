@@ -27,13 +27,13 @@ export default async function ArticlePage({ params }) {
   return (
     <>
       <Header />
-      <main style={{ maxWidth: 860, margin: "0 auto", padding: "28px 24px" }}>
+      <main style={{ maxWidth: 860, margin: "0 auto", padding: "28px clamp(14px, 4vw, 24px)" }}>
         <Link href="/content" style={{ color: "var(--muted)", fontSize: 13 }}>
           ← Back to Content Engine
         </Link>
 
         <section className="panel" style={{ marginTop: 12 }}>
-          <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 14 }}>
+          <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginBottom: 14 }}>
             <span className={`chip ${article.type === "pr_rewrite" ? "chip-brand" : "chip-content"}`}>
               {article.type === "pr_rewrite" ? "PR rewrite" : "SEO original"}
             </span>

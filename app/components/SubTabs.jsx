@@ -23,7 +23,7 @@ export default function SubTabs({ items, active }) {
   const current = active ?? (base && pathname.startsWith(base) ? pathname.slice(base.length) || "/" : pathname);
 
   return (
-    <div style={{ display: "flex", gap: 8, marginBottom: 22 }}>
+    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 22 }}>
       {items.map((t) => (
         <Link
           key={t.href}

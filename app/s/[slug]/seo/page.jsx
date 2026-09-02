@@ -131,7 +131,7 @@ export default async function SeoPage({ params }) {
   return (
     <>
       <Header />
-      <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px 24px" }}>
+      <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px clamp(14px, 4vw, 24px)" }}>
         <SubTabs items={ANALYTICS_TABS} active="/seo" />
         {/* Hero: gauge + radar + stats */}
         <section
@@ -225,14 +225,7 @@ export default async function SeoPage({ params }) {
           </section>
         )}
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "minmax(0, 3fr) minmax(0, 2fr)",
-            gap: 24,
-            alignItems: "start",
-          }}
-        >
+        <div className="split-main-side" style={{ gap: 24 }}>
           {/* Suggestions */}
           <section>
             <h2 style={{ margin: "0 0 14px", fontSize: 17 }}>

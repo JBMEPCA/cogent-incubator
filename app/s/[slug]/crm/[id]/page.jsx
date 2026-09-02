@@ -27,7 +27,7 @@ export default async function LeadPage({ params }) {
   return (
     <>
       <Header />
-      <main style={{ maxWidth: 720, margin: "0 auto", padding: "28px 24px" }}>
+      <main style={{ maxWidth: 720, margin: "0 auto", padding: "28px clamp(14px, 4vw, 24px)" }}>
         <Link href="/crm" style={{ color: "var(--muted)", fontSize: 13 }}>
           ← Back to CRM
         </Link>
@@ -35,14 +35,7 @@ export default async function LeadPage({ params }) {
           <h1 style={{ margin: "0 0 18px", fontSize: 19 }}>{lead.company}</h1>
           <form action={updateLead.bind(null, siteRef)}>
             <input type="hidden" name="id" value={lead.id} />
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: 14,
-                marginBottom: 14,
-              }}
-            >
+            <div className="split-even" style={{ marginBottom: 14 }}>
               <label style={label}>
                 Company *
                 <input name="company" required defaultValue={lead.company} style={field} />

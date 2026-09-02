@@ -51,7 +51,7 @@ function Tile({ label, value, tone, children }) {
 
 const tileGrid = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(165px, 1fr))",
+  gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 165px), 1fr))",
   gap: 14,
 };
 
@@ -333,7 +333,7 @@ export default async function GroupAnalyticsPage() {
             part-to-whole at a glance · the table above is where close values get read precisely
           </span>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(330px, 1fr))", gap: 18 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 330px), 1fr))", gap: 18 }}>
           <div className="panel" style={{ padding: 18 }}>
             <h3 style={{ margin: "0 0 4px", fontSize: 14 }}>Readers, by title</h3>
             <p className="micro" style={{ margin: "0 0 14px" }}>sessions over {windowDays} days</p>
@@ -417,7 +417,7 @@ export default async function GroupAnalyticsPage() {
             one measure per chart · search console reports three days behind analytics
           </span>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 18 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))", gap: 18 }}>
           <div className="panel" style={{ padding: 18 }}>
             <h3 style={{ margin: "0 0 12px", fontSize: 14 }}>Users per day</h3>
             {trend.audience.length ? (
@@ -480,7 +480,7 @@ export default async function GroupAnalyticsPage() {
           {rows.map((r) => (
             <div
               key={r.id}
-              style={{ display: "grid", gridTemplateColumns: "minmax(120px, 1.2fr) 3fr minmax(96px, auto)", gap: 14, alignItems: "center" }}
+              className="fleet-title-row"
             >
               <Link
                 href={`/s/${r.slug}/analytics`}
@@ -514,7 +514,8 @@ export default async function GroupAnalyticsPage() {
             every title&apos;s pages ranked together, so the best page in the group is visible
           </p>
           {topPages.length ? (
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+            <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 460 }}>
               <thead>
                 <tr>
                   <th className="micro" style={{ ...headCell, textAlign: "left", paddingLeft: 0 }}>Page</th>
@@ -536,6 +537,7 @@ export default async function GroupAnalyticsPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           ) : (
             <p style={{ color: "var(--muted)", fontSize: 13, margin: 0 }}>No page views recorded yet.</p>
           )}

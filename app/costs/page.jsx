@@ -152,7 +152,8 @@ export default async function FleetCostsPage() {
               </div>
 
               {t.agents.length > 0 && (
-                <table style={{ width: "100%", marginTop: 10, borderCollapse: "collapse", fontSize: 12.5 }}>
+                <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", marginTop: 10, borderCollapse: "collapse", fontSize: 12.5, minWidth: 420 }}>
                   <thead>
                     <tr style={{ opacity: 0.5, textAlign: "left" }}>
                       <th style={{ fontWeight: 500, padding: "4px 0" }}>Agent (last {data.days} days)</th>
@@ -174,13 +175,14 @@ export default async function FleetCostsPage() {
                     ))}
                   </tbody>
                 </table>
+                </div>
               )}
             </div>
           ))}
         </div>
       </section>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 12 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))", gap: 12 }}>
         {/* Shared bills. Held once, not once per title — see lib/fleet-costs.js. */}
         <section style={{ ...SURFACE, borderRadius: 14, padding: "14px 16px" }}>
           <h2 style={{ margin: "0 0 4px", fontSize: 15 }}>Software and subscriptions</h2>

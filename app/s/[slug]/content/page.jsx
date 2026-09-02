@@ -124,7 +124,7 @@ export default async function ContentPage({searchParams, params}) {
   return (
     <>
       <Header />
-      <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px 24px" }}>
+      <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px clamp(14px, 4vw, 24px)" }}>
         <SubTabs items={CONTENT_TABS} active={tab === "engine" ? "/content" : `/content?tab=${tab}`} />
 
         {tab === "schedule" && (
@@ -133,7 +133,7 @@ export default async function ContentPage({searchParams, params}) {
               className="stagger"
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 150px), 1fr))",
                 gap: 14,
                 marginBottom: 22,
               }}
@@ -187,7 +187,7 @@ export default async function ContentPage({searchParams, params}) {
               className="stagger"
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 150px), 1fr))",
                 gap: 14,
                 marginBottom: 22,
               }}
@@ -210,14 +210,7 @@ export default async function ContentPage({searchParams, params}) {
               ))}
             </div>
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
-                gap: 24,
-                alignItems: "start",
-              }}
-            >
+            <div className="split-even" style={{ gap: 24, alignItems: "start" }}>
               {/* The wire */}
               <section className="panel">
                 <h2 style={{ margin: "0 0 4px", fontSize: 16 }}>The Wire</h2>

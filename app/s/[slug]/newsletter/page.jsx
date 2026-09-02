@@ -50,7 +50,7 @@ function Trend({ issues }) {
           <circle key={s.id} cx={x(i)} cy={y(s.openRate)} r="3" fill="#2E3EEE" />
         ))}
       </svg>
-      <div style={{ fontSize: 11.5, opacity: 0.6, display: "flex", gap: 16 }}>
+      <div style={{ fontSize: 11.5, opacity: 0.6, display: "flex", gap: 16, flexWrap: "wrap" }}>
         <span><span style={{ color: "#2E3EEE" }}>&#9632;</span> open rate</span>
         <span><span style={{ color: "#059669" }}>&#9632;</span> click rate</span>
         <span style={{ opacity: 0.6 }}>dashed: 20% benchmark</span>
@@ -70,7 +70,7 @@ export default async function NewsletterStatsPage({ params }) {
     return (
       <>
         <Header />
-        <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px 24px" }}>
+        <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px clamp(14px, 4vw, 24px)" }}>
           <SubTabs items={ANALYTICS_TABS} active="/newsletter" />
           <h1 style={{ margin: "0 0 5px", fontSize: 25 }}>Newsletter</h1>
           <p style={{ fontSize: 13.5, opacity: 0.7 }}>Mailchimp is not connected. Add MAILCHIMP_API_KEY and redeploy.</p>
@@ -89,7 +89,7 @@ export default async function NewsletterStatsPage({ params }) {
   return (
     <>
       <Header />
-      <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px 24px" }}>
+      <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px clamp(14px, 4vw, 24px)" }}>
         <SubTabs items={ANALYTICS_TABS} active="/newsletter" />
 
         <div style={{ marginBottom: 18 }}>
@@ -179,7 +179,7 @@ export default async function NewsletterStatsPage({ params }) {
           )}
         </section>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 14 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))", gap: 14 }}>
           <section style={{ ...SURFACE, borderRadius: 14, padding: 16 }}>
             <h3 style={{ margin: "0 0 4px", fontSize: 15 }}>What they clicked</h3>
             <p style={{ margin: "0 0 10px", fontSize: 11.5, opacity: 0.5 }}>Most recent issue</p>

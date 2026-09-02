@@ -123,13 +123,13 @@ export default async function Dashboard({ params }) {
   return (
     <>
       <Header />
-      <main style={{ maxWidth: 1360, margin: "0 auto", padding: "26px 24px 40px" }}>
+      <main style={{ maxWidth: 1360, margin: "0 auto", padding: "26px clamp(14px, 4vw, 24px) 40px" }}>
         <style>{`
           .widget { transition: transform .25s ease, border-color .25s ease; }
           .widget:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.16); }
           .widget-link { opacity: .6; transition: opacity .2s ease; white-space: nowrap; }
           .widget:hover .widget-link { opacity: 1; }
-          .dash-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(272px, 1fr)); }
+          .dash-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 272px), 1fr)); }
           .phase-row { display: flex; align-items: center; gap: 9px; padding: 4px 0; font-size: 12.5px; }
           @media (prefers-reduced-motion: reduce) {
             .widget, .widget-link { transition: none }
@@ -153,7 +153,7 @@ export default async function Dashboard({ params }) {
               </div>
             </div>
 
-            <div style={{ display: "flex", gap: 24, flex: 1, flexWrap: "wrap" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 100px), 1fr))", gap: 24, flex: 1 }}>
               <Figure value={progress.stats.published} label="articles live" />
               <Figure value={publishedWeek} label="published this week" />
               <Figure value={progress.stats.backlog} label="written or queued" />
@@ -268,7 +268,7 @@ export default async function Dashboard({ params }) {
             <h2 style={{ margin: 0, fontSize: 14 }}>Launch phases</h2>
             <span style={{ fontSize: 11.5, opacity: 0.5 }}>ticked from live data, not by hand. Hover any line for the evidence.</span>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 18, marginTop: 12 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 240px), 1fr))", gap: 18, marginTop: 12 }}>
             {progress.byPhase.map((p) => (
               <div key={p.key}>
                 <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 6 }}>
@@ -303,7 +303,7 @@ export default async function Dashboard({ params }) {
               </span>
             )}
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 18, marginTop: 12 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 210px), 1fr))", gap: 18, marginTop: 12 }}>
             {targets.groups.map((g) => (
               <div key={g.key}>
                 <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 6 }}>

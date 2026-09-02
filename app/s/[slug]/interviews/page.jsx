@@ -65,7 +65,7 @@ export default async function InterviewsPage({ params }) {
   return (
     <>
       <Header />
-      <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px 24px" }}>
+      <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px clamp(14px, 4vw, 24px)" }}>
         <SubTabs items={CONTENT_TABS} active="/interviews" />
 
         <section className="panel panel-glow stagger" style={{ marginBottom: 24 }}>

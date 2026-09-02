@@ -36,7 +36,7 @@ export default async function MailMessagePage({ params }) {
   return (
     <>
       <Header />
-      <main style={{ maxWidth: 900, margin: "0 auto", padding: "28px 24px" }}>
+      <main style={{ maxWidth: 900, margin: "0 auto", padding: "28px clamp(14px, 4vw, 24px)" }}>
         <SubTabs items={ANALYTICS_TABS} active="/mail" />
 
         <p style={{ margin: "0 0 14px" }}>
