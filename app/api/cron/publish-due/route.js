@@ -149,6 +149,17 @@ export async function GET(request) {
             imageUrl: article.imageUrl,
             title: article.title,
             keyphrase: article.keyphrase,
+            // The image's provenance has to travel with it. Without this the
+            // picture desk judged a source photo WITH provenance and passed it,
+            // then this re-check judged the same file as anonymous stock and
+            // refused it - so the image was stripped, the article slid to the
+            // next slot, the desk re-imaged it, and round it went.
+            //
+            // On 3 September that cost Smart SME and The Fleet an entire day:
+            // the FreeAgent VAT article was refused because "the image carries
+            // a clear rival logo and branding (FreeAgent)". The article is
+            // about FreeAgent. The picture came from freeagent.com.
+            fromSource: String(article.imageSource || "").startsWith("source:"),
           });
         } catch (e) {
           check = {
