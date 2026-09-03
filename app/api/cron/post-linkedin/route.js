@@ -34,9 +34,27 @@ export async function GET(request) {
       // News that sat unposted for days is not news. Expired, with the reason.
       // BEFORE the connected check: no title is connected yet, so below it the
       // drafts this exists to clear were exactly the ones it could never reach.
+      // Stale means its SLOT went by unposted, not that it has a birthday.
+      //
+      // This measured age from createdAt, so a post written on Friday for
+      // Thursday's 09:00 slot was killed the moment that slot arrived - doing
+      // exactly what it was booked to do. 47 posts died that way, including
+      // four due at 09:00 on 3 September, and it was invisible because no title
+      // is connected yet so nothing could post regardless.
+      //
+      // A post with no slot at all still ages out on when it was written:
+      // nothing is going to come and give it a time.
+      const cutoff = new Date(Date.now() - DRAFT_EXPIRY_DAYS * 864e5);
       const stale = await db.linkedInPost.updateMany({
-        where: { status: { in: ["draft", "approved"] }, postedAt: null, createdAt: { lt: new Date(Date.now() - DRAFT_EXPIRY_DAYS * 864e5) } },
-        data: { status: "expired", publishError: `unposted for ${DRAFT_EXPIRY_DAYS} days; expired rather than posted stale` },
+        where: {
+          status: { in: ["draft", "approved"] },
+          postedAt: null,
+          OR: [
+            { scheduledFor: { lt: cutoff } },
+            { scheduledFor: null, createdAt: { lt: cutoff } },
+          ],
+        },
+        data: { status: "expired", publishError: `slot passed unposted more than ${DRAFT_EXPIRY_DAYS} days ago; expired rather than posted stale` },
       });
 
       if (!isLinkedInConfigured(await authFor(site)))
@@ -57,6 +75,15 @@ export async function GET(request) {
 
       try {
         const result = await publishPost(site, post);
+        // No URN, no post. LinkedIn returns an identifier for anything it
+        // actually published, so a result without one means the call went
+        // through the motions and put nothing on the page. Four posts were
+        // recorded as published on 2 September with no URN against them - the
+        // record claimed publications that never happened, which is worse than
+        // a visible failure because nobody goes looking for it.
+        if (!result?.urn) {
+          throw new Error("LinkedIn returned no post id, so nothing was published");
+        }
         await db.linkedInPost.update({
           where: { id: post.id },
           data: { status: "posted", postedAt: new Date(), linkedinUrn: result.urn, publishError: null },
