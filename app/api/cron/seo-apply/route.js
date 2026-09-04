@@ -65,6 +65,7 @@ export async function GET(request) {
       let applied = 0;
       let refused = 0;
       let deferred = 0;
+      let blocked = null;
 
       for (const suggestion of pending) {
         if (Date.now() - started > DEADLINE_MS) {
@@ -79,6 +80,25 @@ export async function GET(request) {
           });
           applied++;
         } catch (e) {
+          // A retryable error is the host, not the copy: SiteGround challenged
+          // the call, or WordPress fell over, so the suggestion was never
+          // tested against the post and is still good. It keeps its pending
+          // status and its turn. Marking these failed is what silently cost
+          // the fleet 182 links on 27 and 31 August.
+          //
+          // The site stops here as well. A challenged host stays challenged
+          // for a few minutes, so grinding through the rest of the cap against
+          // it only spends that day's allowance on calls that cannot land.
+          if (e.retryable) {
+            await db.seoSuggestion.update({
+              where: { id: suggestion.id },
+              data: { error: e.message?.slice(0, 300) },
+            });
+            blocked = e.message?.slice(0, 160) || "host unavailable";
+            deferred = pending.length - applied - refused;
+            break;
+          }
+
           // A refusal is the guard doing its job, not a fault: the copy moved,
           // or the anchor is already a link. Recorded so it is visible, and
           // left out of the pending count so it cannot be retried for ever.
@@ -91,7 +111,7 @@ export async function GET(request) {
         await sleep(WRITE_GAP_MS);
       }
 
-      return { applied, refused, deferred, adviceExpired: stale.count };
+      return { applied, refused, deferred, adviceExpired: stale.count, ...(blocked ? { blocked } : {}) };
     })
   );
 }

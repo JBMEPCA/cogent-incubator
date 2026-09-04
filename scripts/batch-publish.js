@@ -539,7 +539,8 @@ LINKING (mandatory, and links must be exact URLs from the list supplied)
 
 OUTPUT
 Return the eight header lines below, then the article as clean WordPress-ready HTML using
-<h2>, <h3>, <p>, <ul>, <ol>, <li>, <table>, <strong> and <a href>. No markdown, no code fences,
+<h2>, <h3>, <p>, <ul>, <ol>, <li>, <table> (with <thead>/<tbody>/<tr>/<th>/<td>), <span class>,
+<strong> and <a href>. No markdown, no code fences,
 no <html>/<head>/<body> wrapper, no H1.
 TITLE: <the headline, 55-70 characters, keyword-bearing, no clickbait>
 SCORE: <0-100 estimate of this article's value to this publication: search demand, evergreen life, internal linking value, audience fit>
@@ -590,7 +591,8 @@ ${spec.brief}
 Requirements:
 - First two paragraphs must directly answer the question implied by the title. No preamble.
 - Then <h2> sections. Use <h3> inside them where a section has distinct parts.
-- At least one real <table> comparing options, with a header row and a "best for" column. Keep it to five columns or fewer so it reads on a phone.
+- At least one real <table> comparing options, with a <thead> header row and a "best for" or verdict column. Keep it to five columns or fewer so it reads on a phone, and keep header cells short: the theme sizes the last column to its content, so a long heading widens it for nothing.
+- Wrap every short verdict in the LAST column in a span the theme can colour: <span class="v-yes">Yes</span> for a clear yes, <span class="v-part">Rarely</span> for a qualified one, <span class="v-no">No</span> for a no. Any wording is fine inside the span; the class carries the colour. Prose cells are left bare.
 - Concrete detail for the reader's own market${isUkOnly() ? ": pounds, HMRC, Companies House, the ICO, UK providers" : `: real currencies, the named regulators and authorities of ${marketsPhrase()}, and providers a reader there would recognise`}. Approximate prices only, flagged as approximate and subject to change.
 - A short section on the mistakes people actually make.
 - An FAQ of 5 genuine questions people ask, each as an <h3> with a two to four sentence answer.

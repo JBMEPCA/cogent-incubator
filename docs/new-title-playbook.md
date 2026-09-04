@@ -1124,6 +1124,34 @@ which is the specific shape this failure takes.
 
 Neither replaces opening the site on a phone. Do that after any theme change.
 
+### The theme has to style what the engine is told to write
+
+The drafting prompt has required "at least one real comparison table" since the
+first title, and `cogent-base` had no table CSS at all. So every comparison table
+on every title rendered as core ships it: no rules, centred headers, and a
+two-column table split 50/50 so the one-word answers floated in the middle of a
+half-empty column. It looked like pasted text. Nobody caught it for two titles
+because the automated sweep only checks that a page loads, and a badly styled
+table returns 200 like anything else.
+
+The general lesson is the one this playbook keeps relearning in a new costume:
+**a rule in the drafting prompt is a promise the theme has to keep.** When you
+add a required element to the house style, style it in the parent in the same
+pass. Anything the prompt says the engine must produce, grep the parent for.
+
+Two specifics worth keeping:
+
+- **CSS cannot select on cell text**, so a verdict column cannot be coloured from
+  the stylesheet alone. The classes `.v-yes`, `.v-part` and `.v-no` live in the
+  parent and the drafting prompt emits them. A table written without them still
+  gets every other rule and reads in muted, so it degrades rather than breaks.
+- **`white-space: nowrap` belongs on the answers, not the header.** Sizing the
+  last column to its content is what stops the 50/50 split, but letting a long
+  column heading hold its line undoes the whole thing.
+
+Check contrast on anything deliberately recessive. `muted-light` on the article
+background is about 2.6:1, which fails AA for text that size, and a verdict
+column is the last place to put text nobody can read.
 ### A shared parent must not point at a semantic palette slug
 The masthead chip and the favicon in `cogent-base` both used the `amber` slug,
 because The Fleet Magazine wanted an amber mark. Amber is a slot **every** title
