@@ -112,7 +112,7 @@ export default async function FleetInterviewsPage() {
         {/* Per title */}
         <section className="panel stagger" style={{ marginBottom: 24 }}>
           <h2 style={{ margin: "0 0 14px", fontSize: 16 }}>By title</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 240px), 1fr))", gap: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 14 }}>
             {perSite.map(({ site, stats }) => (
               <Link
                 key={site.id}
@@ -120,7 +120,7 @@ export default async function FleetInterviewsPage() {
                 className="panel"
                 style={{ padding: 14, textDecoration: "none", display: "block" }}
               >
-                <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginBottom: 10 }}>
+                <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 10 }}>
                   <SiteMark site={site} size={30} showStatus={false} />
                   <strong style={{ fontSize: 14 }}>{site.name}</strong>
                 </div>
