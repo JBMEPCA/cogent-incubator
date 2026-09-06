@@ -46,7 +46,8 @@ for (const site of sites) {
   if (!agencies.length) continue;
   const settings = await prisma.engineSetting.findMany({ where: { siteId: site.id, key: "interview_title_descriptor" } });
   const descriptor = settings[0]?.value || `the trade title for ${site.audience?.split(",")[0]?.toLowerCase() || "its sector"}`;
-  const creds = SEND ? await siteCredentials(site) : null;
+  // An id, and a bundle back: see the same note in seed-alignment-interviews.
+  const { creds } = SEND ? await siteCredentials(site.id) : { creds: null };
   const senderName = creds?.outreach?.fromName || site.authorName || "James Burke";
   const senderEmail = creds?.outreach?.fromEmail || site.authorEmail || "(outreach mailbox)";
   console.log(`\n#### ${site.name}: ${agencies.length} agencies`);

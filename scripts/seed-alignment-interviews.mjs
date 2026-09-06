@@ -41,7 +41,11 @@ if (!site) { console.error(`No title with slug "${SLUG}"`); process.exit(1); }
 const settings = await prisma.engineSetting.findMany({ where: { siteId: site.id, key: { in: ["interview_franchise", "interview_title_descriptor"] } } });
 const franchise = settings.find((s) => s.key === "interview_franchise")?.value || "Interview";
 const titleDescriptor = settings.find((s) => s.key === "interview_title_descriptor")?.value || "";
-const creds = SEND ? await siteCredentials(site) : null;
+// siteCredentials takes an id and returns a bundle, not a credentials object.
+// Getting either half wrong leaves creds undefined, which only shows up in
+// --send: the dry run never touches it, and the first real send would go out
+// with no mailbox configured and mark every row failed.
+const { creds } = SEND ? await siteCredentials(site.id) : { creds: null };
 
 const elsewhere = await prisma.interviewTarget.findMany({ where: { siteId: { not: site.id } }, select: { personName: true, companyDomain: true } });
 const takenNames = new Set(elsewhere.map((r) => r.personName.toLowerCase()));
