@@ -1,0 +1,38 @@
+[
+  {
+    "personName": "Paul Hollick",
+    "personRole": "Chair, Association of Fleet Professionals, and Chief Executive, Lightfoot",
+    "company": "Association of Fleet Professionals",
+    "companyDomain": "theafp.co.uk",
+    "genericEmail": "administration@theafp.co.uk",
+    "hookUrl": "https://www.theafp.co.uk/manufacturer-information-shared-through-afp-helps-fleets-to-better-outcomes/",
+    "newsHook": "In the last six months you have told the Treasury to push the electric pay-per-mile tax back to 2030, called out over-the-air updates that quietly slow van charging, and shown that fleets reporting faults together get manufacturers to act, so operators want to hear how you would run a fleet through all of that.",
+    "questions": [
+      "You run Lightfoot as well as chairing the AFP. When you look at a fleet's accounts, where does the money actually leak: fuel, downtime, damage, or admin?",
+      "The AFP wants eVED delayed to 2030. If it lands in 2028 as planned, what does a fleet manager need to have in place by then, and who ends up carrying the mileage-reporting burden?",
+      "Your Megafleets Committee found over-the-air updates cutting EV charging speeds. What should an operator write into a supply contract now so a manufacturer cannot downgrade a van it has already bought?",
+      "You have just shown that fleets reporting faults together get better outcomes from manufacturers than fleets going in alone. What did that collaboration look like in practice, and how can a smaller operator join in?",
+      "The AFP has launched a recruitment drive for small fleet managers. What do people running ten or twenty vehicles most often get wrong, and what would you tell them to fix first?",
+      "Home charging is, in your words, probably the biggest blocker to EV adoption. What is the honest answer for a van driver who lives in a terrace with no driveway?",
+      "Where does the Association of Fleet Professionals go from here?"
+    ]
+  },
+  {
+    "personName": "Craig Andrews",
+    "personRole": "Head of Fleet Management Services, Ford Fleet Management",
+    "company": "Ford Fleet Management",
+    "companyDomain": "fordfleetmanagement.co.uk",
+    "genericEmail": "information@fordfleetmanagement.co.uk",
+    "hookUrl": "https://www.ford.co.uk/commercial-vehicles/fleet/ford-fleet-management/meet-the-team",
+    "newsHook": "You built Ford Fleet Management's uptime team around live vehicle data so that a van's fault is spotted before it goes off the road, and you have run real-world electric van trials with a parcel carrier, so operators want to know what that data actually tells you about keeping a working fleet earning.",
+    "questions": [
+      "Ford Fleet Management sells itself on uptime first. When a van goes off the road, what does a day of downtime really cost an operator once you add up the lost job, the hire vehicle and the driver standing idle?",
+      "FleetVision pulls connected-vehicle health data straight to your uptime team. What is the most common fault it catches early, and what would that fault have cost if it had been left to fail on the road?",
+      "Tail lifts, winches and stretchers each have their own compliance event. Where do operators most often fall foul of compliance on ancillary kit, and how do you stop that turning into a prohibition at the roadside?",
+      "Your parcel-carrier electric van trial ran across regions and duty cycles rather than a two-week demo. What did it show about where electric vans work today, and where the charging just is not there yet?",
+      "Ford Fleet Management is now majority controlled by Ayvens. What changes for a customer, and what stays Ford?",
+      "What would you say to someone running ten vans who does their maintenance on a spreadsheet and thinks fleet management is only for the big players?",
+      "Where does Ford Fleet Management go from here?"
+    ]
+  }
+]

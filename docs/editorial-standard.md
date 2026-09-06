@@ -277,3 +277,13 @@ required, what the airport then procured. Security coverage stays at
 procurement level (who bought which scanner) and never at vulnerability level
 (how screening fails). If a story's hook is that people were hurt or
 endangered, it is not our story.
+
+---
+
+## Where the live standards are now (6 Sep 2026)
+
+Each title's editorial standard and house style live in
+`scripts/alignment/<slug>.editorial-standard.md` and `.house-style.md`, and
+that text is what the Site row carries and every agent prompt opens with.
+This file is the original Smart SME format analysis and the per-title notes
+that predate the alignment rollout; edit the alignment files, not this one.

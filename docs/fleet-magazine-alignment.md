@@ -150,3 +150,35 @@ around them now.
 - Same structural limit as airports: Lucas is marketing, not sector. He is
   strong on commercial and PR, thin on editorial taste and people. A sector-close
   second pass would fill it.
+
+## Rolled out, 6 Sep 2026
+
+Applied by `scripts/apply-alignment.mjs`; brief text in
+`scripts/alignment/fleet-magazine.*`.
+
+- Reader line leads with the operations director of a 40-vehicle haulier and
+  names who is not the reader.
+- Editorial standard gains the commissioning test ("does the reader learn what
+  it costs them?"), the not-our-reader list, the gap statement, citable voices
+  (Hawes, Hollick, BVRLA, Logistics UK, RHA) and the events calendar.
+- Search terms registered: best van for a small business (commissioned as a
+  fleet buyer's shortlist), tax rules on company cars, cost to run an electric
+  van (both already covered). The Smart SME collision terms (UK fleet
+  platform, van mandate review, used EV sales, ZEV mandate, company car tax,
+  electric van running costs, fleet management software) are claimed by Fleet
+  so Smart SME's Researcher sees them as taken; Smart SME's own standard now
+  carries a beat-ownership rule.
+- Fifteen sources added: the four PR agencies, the six advertisers missing
+  from the list, FORS, Motor Transport, and the awards and shows. A new wire
+  search watches the awards.
+- Nineteen advertiser prospects seeded from the wishlist and the seen list.
+- Press contacts stored as notes on the Ford, Toyota, Ayvens, BVRLA and SMMT
+  rows. Two verified on 6 Sep: BVRLA's Helen is Helen Lawrence, senior
+  communications officer, helen@bvrla.co.uk (published); SMMT's media team is
+  communications@smmt.co.uk (published). The rest are unverified.
+- Quote sources verified: Hollick (AFP chair and Lightfoot CEO, confirmed
+  2026), Hawes (SMMT chief executive, confirmed), Mark Pow (BVRLA head of
+  learning and development, the promotion story is 2022 not 2026), Craig
+  Andrews (head of fleet management services at Ford Fleet Management, the
+  Ford/Ayvens JV now Ayvens-controlled; no 2026 statement found). Hollick and
+  Andrews seeded as pending Fleet Professional targets, sends held.

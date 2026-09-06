@@ -44,80 +44,12 @@ const SECTIONS = [
   { name: "Sustainability & Energy", target: 4, commissionable: true },
 ];
 
-const EDITORIAL_STANDARD = `# Airport Business Magazine editorial standard
+// The brief text lives in scripts/alignment/ so this seed, the alignment
+// rollout (scripts/apply-alignment.mjs) and the docs all read one copy.
+const ALIGN = (f) => fs.readFileSync(path.resolve("scripts/alignment", "airport-business-magazine." + f), "utf8").trim();
+const EDITORIAL_STANDARD = ALIGN("editorial-standard.md");
 
-## The buyer rule, which outranks everything else here
-
-Every article is written for someone who is paid to be at an airport: operator,
-director, terminal or ops manager, commercial director, developer, contractor,
-consultant, supplier. If the natural reader is a passenger, it is not our
-article.
-
-No travel tips, no lounge reviews, no "best airports" lists, no passenger-rights
-or flight-delay content, no "how early should I arrive". Disruption is covered
-as a cost line and a procurement consequence, never as travel news. This is a
-commercial rule: the consumer aviation press (Simple Flying, The Points Guy,
-Flightradar24) sits at Tranco 2k-16k against a trade press at 102k-645k, and
-drifting consumer means fighting them on their own ground, permanently.
-
-## The scope-and-figure rule
-
-Airport numbers diverge by SCOPE, not just by analyst. Duty free is $42.8bn or
-$94bn depending on the definition; Riyadh's new airport is $30bn, $50bn or
-$100bn depending on the programme boundary; Poland's CPK figure includes
-railways. Every figure carries source, year and scope, or is quoted as a range
-with the firms named. Never one bare number in our own voice. Project costs are
-attributed to the promoter or a named report, and dated: airport megaproject
-budgets move constantly.
-
-## The geopolitics rule
-
-Saudi giga-projects, Chinese vendors excluded from Western procurement, US
-security politics, national planning fights: this sector is threaded with
-politics. We cover all of it as business only: capital, capacity, contracts,
-costs, timelines. No editorial line on human rights, trade policy or any
-country's domestic politics. A title with no named political correspondent has
-no standing to take a side, and taking one costs advertisers on both flanks.
-
-## The incident rule
-
-We do not cover crashes, security breaches, or crime as news. They are the
-tabloid layer of this sector, the fastest route to consumer drift, and a
-reputational trap. Disruption enters our pages only as economics: what the
-outage cost, what the recovery required, what the airport then procured.
-Security coverage stays at procurement level (who bought which scanner, what
-the checkpoint upgrade cost) and never at vulnerability level (how screening
-fails). If a story's hook is that people were hurt or endangered, it is not our
-story.
-
-## Standing rules
-
-- Named bylines on everything.
-- Never invent a statistic, a source, a quote or a commentator.
-- Link out to the organisation and the original announcement on any news piece.
-- No em dashes or en dashes, per house style.
-`;
-
-const HOUSE_STYLE = `# Airport Business Magazine house style
-
-Write for someone who runs part of an airport and reads between meetings:
-direct, technical where the subject is technical, and always anchored to money,
-capacity or time. This is the most data-forward title in the fleet, by design.
-
-- Lead with the number, the decision or the change. Never with scene-setting.
-- Money in the currency of the story with a US dollar equivalent for large
-  figures. Costs always attributed and dated (the scope-and-figure rule).
-- Global title, British spelling. Dates as 24 August 2026. Metric first.
-- "The airport" is a business with a P&L. Passengers are traffic and spend per
-  head, not the reader.
-- Prefer a table to a paragraph of numbers. Every table has a source line.
-- No aviation puns in headlines. No "taking off", "ready for take-off",
-  "flying high", "cleared for landing", "turbulence ahead". It reads consumer
-  and it is beneath the title.
-- Imagery: big architectural photography of terminals, airside, and
-  construction; real infrastructure, never generic travel stock of passengers
-  with suitcases.
-`;
+const HOUSE_STYLE = ALIGN("house-style.md");
 
 const DATA = {
   slug: SLUG,
@@ -137,8 +69,7 @@ const DATA = {
   accentHex: "#123B66",
   accent2Hex: "#E8A013",
 
-  audience:
-    "Airport operators, directors, terminal and ops managers, commercial directors and anyone buying, building or running anything inside an airport, worldwide, plus the contractors, consultants and suppliers that serve them.",
+  audience: ALIGN("audience.txt"),
   // Global title: keyword discovery and prompt context run US-first, UK
   // second (Site.markets drives the Researcher's Google editions and the
   // batch publisher's market-sensitive lines).

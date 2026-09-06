@@ -113,7 +113,11 @@ async function main() {
       authorName: process.env.OUTREACH_FROM_NAME || "James Burke",
       authorEmail: "jb@smartsme.co.uk",
       sections: SECTIONS,
-      editorialStandardMd: readIfPresent("..", "docs", "editorial-standard.md"),
+      // The brief text lives in scripts/alignment/ (alignment sheet rollout,
+      // 6 Sep 2026) so this seed and scripts/apply-alignment.mjs write one copy.
+      audience: readIfPresent("alignment", "smart-sme.audience.txt").trim(),
+      editorialStandardMd: readIfPresent("alignment", "smart-sme.editorial-standard.md"),
+      houseStyleMd: readIfPresent("alignment", "smart-sme.house-style.md"),
       sectionTarget: 6,
       wordFloorGuide: 1100,
       wordFloorNews: 300,

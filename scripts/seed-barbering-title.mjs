@@ -43,71 +43,12 @@ const SECTIONS = [
   { name: "Trends & Services", target: 5, commissionable: true },
 ];
 
-const EDITORIAL_STANDARD = `# Barbering Business editorial standard
+// The brief text lives in scripts/alignment/ so this seed, the alignment
+// rollout (scripts/apply-alignment.mjs) and the docs all read one copy.
+const ALIGN = (f) => fs.readFileSync(path.resolve("scripts/alignment", "barbering-business." + f), "utf8").trim();
+const EDITORIAL_STANDARD = ALIGN("editorial-standard.md");
 
-## The owner-frame rule, which outranks everything else here
-
-Every article is written for the person who owns the chair, never the person
-sitting in it: barbershop owners, chair-renting self-employed barbers, and
-anyone running a male grooming business. If the natural reader is someone who
-wants a haircut, it is not our article.
-
-This is a commercial rule, not a taste one. Barbering has the worst consumer
-twin of any title in the fleet: single style terms pull six-figure monthly
-search volumes ("low taper fade" ~550k/month globally) and "barber near me"
-outruns branded search in most UK cities. Drifting consumer means competing
-with that volume on its own ground, and losing permanently.
-
-Trend and style content IS in scope — it is part of the commercial brief — but
-only through the owner's lens: what the trend does to the service menu, the
-prices, the booking demand, and how to sell the upgrade. No styling tutorials,
-no "how to ask your barber", no celebrity hair coverage for its own sake.
-
-## The figures rule
-
-Market sizes in this sector vary by analyst scope. UK men's grooming products
-run £1.2bn to £2.3bn for the same year depending on the firm; hair & beauty
-services turnover runs £4.6bn to £6.1bn. Name the firm and the year, or quote
-the range. Never assert a single figure in our own voice, and never blend the
-products line with the services line. Price benchmarks (haircut prices, chair
-rents, fit-out costs) are always attributed, dated ranges.
-
-## The crime-coverage rule
-
-The NCA's crackdown on money-laundering through barbershops (Operation
-Machinize) is a legitimate, recurring policy story — and a libel trap whose
-victims would be our own readers. We report the policy, the enforcement
-statistics and the sector bodies' responses. We never connect a named shop, a
-chain, or the nationality of an owner to the laundering narrative unless
-reporting a concluded prosecution from a primary source. When in doubt the
-piece runs without the name, or does not run.
-
-## Standing rules
-
-- Named bylines on everything.
-- Never invent a statistic, a source, a quote or a commentator.
-- Link out to the company and the original announcement on any news piece.
-- No em dashes or en dashes, per house style.
-`;
-
-const HOUSE_STYLE = `# Barbering Business house style
-
-Write for someone who cuts hair for a living and runs the business between
-clients: reading on their phone in the ten minutes before the next booking.
-Direct, practical, respectful of the craft without romanticising it.
-
-- Lead with the money, the decision or the change. Never with scene-setting.
-- Money in pounds. Costs and prices as attributed ranges, never invented.
-- "Shop" is the business. "Chair" is the unit of capacity and revenue. A
-  chair-renter is a business owner, not staff — write to them as one.
-- The reader's margin is thin and their time is thinner. Every piece should
-  leave them with something they can do this week.
-- No barber puns in headlines. No "a cut above", no "shear success", no
-  "trimming costs". It reads consumer and it is beneath the title.
-- Respect the trade's look: this is an image-led industry. Specify imagery of
-  real shops, real work and real kit; never sterile stock offices.
-- British spelling.
-`;
+const HOUSE_STYLE = ALIGN("house-style.md");
 
 const DATA = {
   slug: SLUG,
@@ -127,8 +68,7 @@ const DATA = {
   accentHex: "#B08D3E",
   accent2Hex: "#D4AF6A",
 
-  audience:
-    "UK barbers, barbershop owners, chair-renting self-employed barbers and anyone running a male grooming business — from a single chair to a multi-site group — plus the academies, brands and suppliers that serve them.",
+  audience: ALIGN("audience.txt"),
   bylineMode: "per_title_person",
   // authorName is deliberately null. The editorial standard requires a real
   // named byline and inventing one would breach it on day one. Set it to the

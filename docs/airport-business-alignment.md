@@ -104,3 +104,42 @@ big-airport commentary. Embarrassing = incorrect info, bad imagery.
   people — Lucas's lens is commercial, and it shows in the thin quote list.
 - Verify all guessed emails before any outreach (same rule as backlinks:
   guessed addresses need a human).
+
+## Rolled out, 6 Sep 2026
+
+Applied by `scripts/apply-alignment.mjs`; brief text in
+`scripts/alignment/airport-business-magazine.*`. Also carries Tom's note of
+6 Sep 2026, from his time on International Airport Review.
+
+- Reader line names Lucas's two tiers, including heads of cargo and passenger
+  experience. Neither beat had a wire search; both do now.
+- Editorial standard gains the commissioning frame ("steal this idea, or buy
+  this thing"), the vendor-comparison-with-costs house format (one a
+  fortnight), and two rules from Tom: **the capital programme rule** (a big
+  renovation, new terminal or government-funded programme makes every supplier
+  spend to reach that buyer, so cover each one early and repeatedly and name
+  every contractor awarded work; the airport itself is an Airside with target
+  because it wants to show off) and **the rollout rule** (technologies at the
+  point of mass adoption are where vendor budgets go; write the "what every
+  airport will be running next" piece while the curve is rising). Two new wire
+  searches watch renovation programmes and technology rollouts.
+- Section targets: Expansion and Construction 7 to 8, Technology and Systems
+  6 to 7.
+- Five commissions queued: cutting security wait times (Lucas's search), the
+  technology every airport will run by 2030 (Tom), the biggest capital
+  programmes of 2026-27 and who supplies them (Tom), sustainability programmes
+  compared, security technology vendors and mandates.
+- Sixteen sources added: 8020 Communications and Positive Story, ESRI,
+  Siemens Logistics, Cisco, Arup, Business Airport International, the four
+  events, and the Inter Airport exhibitors as small-tier prospects.
+- Eighteen advertiser prospects seeded from the wishlist and the seen list.
+- Press contacts as notes on ACI World (mediarelations@aci.aero, verified
+  published), ACI Europe and IATA (unverified), SITA (Lucas signed up).
+- Airside with: seven targets seeded as pending, sends held. Lucas's three
+  verified (Erbacci is ACI World director general since Sep 2024; Buckley is
+  Arup's global aviation leader, broader than the sheet said; Kelso's Gatwick
+  role is confirmed only to 2024 pages, check with the press office first),
+  plus four sourced for 2026 hooks: Nick Jones (Newcastle, best in Europe in
+  its band, £60m extension), Sam Samaddar (Kelowna, $108m self-funded
+  terminal phase), Julian Jäger (Vienna, 35 CT scanners for €25m in July),
+  Andrew Bell (Regional and City Airports, 23 percent growth).

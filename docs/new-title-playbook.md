@@ -1553,3 +1553,27 @@ looking at the past.
 **Before adding the sixth title, re-measure with `?dry=1` and compare against
 300s.** Per-title marginal cost is about 23s, so the ceiling is roughly a dozen
 titles — after that the route needs to run one title per invocation.
+
+## The alignment sheet, and what to do with it
+
+Every title gets a Title Alignment Sheet (`docs/Title-Alignment-Sheet.docx`)
+filled in by the person who knows the sector, within a fortnight of launch.
+Distilling it into a doc is not the job; the sheets for Fleet and Airports
+sat as docs for ten days while nothing in the running config changed. The
+sheet plugs into five places, and the rollout is `scripts/apply-alignment.mjs`:
+
+| Sheet section | Where it goes |
+|---|---|
+| Reader, not-our-reader, taste, never-touch | `scripts/alignment/<slug>.audience.txt`, `.editorial-standard.md`, `.house-style.md` (read by the Site row, the seed script and the docs) |
+| Google searches | `KeywordTarget` claims plus a JB-lane `ResearchTopic` per gap |
+| Advertisers seen and wishlist | `AdvertiserProspect` rows, and the comparison guides they want to sit beside |
+| PR agencies, press offices, competitors, events | `PrBrand` rows (category "PR agency", "Sector press (competitor)", "Events"), press contacts as notes until verified, then `scripts/request-press-lists.mjs` |
+| People who would give a quote | `scripts/alignment/<slug>.interviews.json` then `scripts/seed-alignment-interviews.mjs <slug>` (pending rows; `--send` is a separate decision) |
+| Events | the standard's "Events and pegs" section plus a wire search |
+
+Two lessons from the first four. A marketing person's sheet is strong on
+commercial and PR and thin on taste and people; a sector person's sheet is
+the reverse, and can contradict the launch brief's tone (Barbering did). And
+the three questions that teach taste fastest (least favourite, what would
+embarrass you, what the automation gets wrong) come back blank when the site
+is under a month old: re-ask them at three months.
