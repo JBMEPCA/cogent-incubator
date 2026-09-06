@@ -97,6 +97,21 @@ for (const t of targets) {
     senderName: ctx.senderName,
     siteUrl: ctx.siteUrl,
   });
+
+  // Claim the row before sending, not after. The hourly sweep sends this exact
+  // mail from the same queue, and a paced run takes twenty minutes, so a row
+  // this script has not reached yet is a row the sweep can pick up and send
+  // twice. Writing followUpSentAt first makes the two mutually exclusive; the
+  // claim is released again if the send throws.
+  const claimed = await prisma.interviewTarget.updateMany({
+    where: { id: t.id, followUpSentAt: null },
+    data: { followUpSentAt: new Date() },
+  });
+  if (claimed.count === 0) {
+    console.log(`SKIP claimed elsewhere  ${line}`);
+    continue;
+  }
+
   try {
     await sendGmail({
       outreach: ctx.outreach,
@@ -106,13 +121,17 @@ for (const t of targets) {
       text: body,
       html: htmlise(body),
     });
-    await prisma.interviewTarget.update({ where: { id: t.id }, data: { followUpSentAt: new Date() } });
     sent++;
     console.log(`chased       ${line}`);
   } catch (e) {
     failed++;
     console.log(`FAILED       ${line}  ${String(e.message).slice(0, 120)}`);
-    await prisma.interviewTarget.update({ where: { id: t.id }, data: { error: String(e.message).slice(0, 300) } });
+    // Release the claim so the sweep can try again rather than recording a
+    // chase that never left the building.
+    await prisma.interviewTarget.update({
+      where: { id: t.id },
+      data: { followUpSentAt: null, error: String(e.message).slice(0, 300) },
+    });
   }
   if (PACE > 0) await wait((PACE + Math.floor(Math.random() * PACE)) * 1000);
 }
