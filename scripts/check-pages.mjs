@@ -57,6 +57,7 @@ const urls = [
 console.log(`\n${site.name} — ${urls.length} URLs, ${MOBILE ? "mobile" : "desktop"} user agent\n`);
 
 let bad = 0;
+let blocked = false;
 for (const u of urls) {
   const sep = u.url.includes("?") ? "&" : "?";
   let res, html = "";
@@ -67,6 +68,22 @@ for (const u of urls) {
     console.log(`  FAIL  ${u.label.padEnd(9)} ${u.url}  ${e.message.slice(0, 40)}`);
     bad++;
     continue;
+  }
+
+  // SiteGround's bot protection answers with a ~200 byte interstitial that
+  // redirects to /.well-known/sgcaptcha/, usually as HTTP 202. Every check
+  // below then fails at once: no parent stylesheet, no viewport, thin body.
+  // Heavy SSH and curl traffic from a deploy is enough to trip it, and this
+  // script reported all five titles BROKEN while every one of them was
+  // serving 200s and 150KB of correct HTML to real visitors.
+  //
+  // "I cannot see the site" is not "the site is down", and the difference
+  // matters: the first is a reason to wait, the second is a reason to revert
+  // a good deploy. Once the IP is challenged every remaining URL will be
+  // challenged too, so stop rather than print twenty identical failures.
+  if (html.includes("sgcaptcha") || html.includes("Robot Challenge Screen")) {
+    blocked = true;
+    break;
   }
 
   const expect404 = u.label === "404";
@@ -90,6 +107,15 @@ for (const u of urls) {
   }
 }
 
-console.log(`\n  ${urls.length - bad}/${urls.length} healthy`);
-if (bad) process.exitCode = 1;
+if (blocked) {
+  console.log("");
+  console.log("  BLOCKED   the host is serving a bot challenge to this IP, not the site.");
+  console.log("            Nothing here says the title is unhealthy. Wait and re-run, or");
+  console.log("            have the server fetch its own homepage with wp eval-file.");
+  process.exitCode = 2;
+} else {
+  console.log("");
+  console.log("  " + (urls.length - bad) + "/" + urls.length + " healthy");
+  if (bad) process.exitCode = 1;
+}
 await prisma.$disconnect();

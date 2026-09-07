@@ -1152,6 +1152,44 @@ Two specifics worth keeping:
 Check contrast on anything deliberately recessive. `muted-light` on the article
 background is about 2.6:1, which fails AA for text that size, and a verdict
 column is the last place to put text nobody can read.
+### The host will lock you out of checking your own work
+
+A parent deploy is five SFTP sessions, five cache purges and a verification
+sweep of roughly ninety URLs, all from one IP in about two minutes. SiteGround
+reads that as a bot and starts answering with a challenge: a 202 and a 200 byte
+interstitial pointing at `/.well-known/sgcaptcha/`. Every later request gets it,
+including from a real browser.
+
+On 7 September this made `check-all-titles.mjs` report **0/10, all five titles
+BROKEN**, minutes after a deploy that was completely fine. The failures it
+listed were the exact shape of a catastrophe: parent CSS missing, no viewport
+meta, thin body, REST not authenticating, no byline, no categories, no posts.
+Every one of them was the challenge page being measured instead of the site.
+
+**"I cannot see the site" is not "the site is down."** The first is a reason to
+wait; the second is a reason to roll back a good deploy. Both scripts now
+detect the interstitial and exit **2**, which the fleet sweep reports as SKIP /
+NOT CHECKED and keeps out of the BROKEN list.
+
+To verify while locked out, have each server fetch its own homepage, which
+comes from the server's IP rather than yours:
+
+```bash
+wp eval-file selfcheck.php   # wp_remote_get( home_url('/') ), then assert on the body
+```
+
+That returned 200 and 140-165KB with the right stylesheet version on all five
+titles while every check from this desk was being challenged.
+
+Two smaller traps found the same day:
+
+- **Never `process.exit()` while Prisma holds handles.** On Windows it aborts
+  with a libuv assertion, so a clean "not checked" leaves as a crash and the
+  runner counts it as a failure. Set `process.exitCode` and let the script
+  unwind.
+- **Do not put backslash escapes in a bash heredoc here.** Even quoted, they
+  are eaten: a regex became invalid and a string literal split across two
+  lines. Build such lines with the file tools or plain string concatenation.
 ### A shared parent must not point at a semantic palette slug
 The masthead chip and the favicon in `cogent-base` both used the `amber` slug,
 because The Fleet Magazine wanted an amber mark. Amber is a slot **every** title

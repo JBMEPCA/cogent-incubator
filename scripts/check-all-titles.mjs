@@ -55,10 +55,16 @@ for (const s of sites) {
     const { code, out } = await run([script, `--site=${s.slug}`, ...extra]);
     const summary =
       out.split("\n").reverse().find((l) => /\d+\/\d+/.test(l))?.trim() || "no summary";
+    // Exit 2 means the checker never got to look: the host served a bot
+    // challenge to this IP. That is not a failing title and must not be counted
+    // as one, or a deploy that went out perfectly reads as five broken sites
+    // and somebody reverts it.
+    const blocked = code === 2;
     const ok = code === 0;
-    results.push({ site: s.name, label, ok, summary });
-    console.log(`  ${ok ? "PASS" : "FAIL"}  ${s.name.padEnd(20)} ${label}  ${summary}`);
-    if (!ok) {
+    results.push({ site: s.name, label, ok, blocked, summary });
+    const tag = ok ? "PASS" : blocked ? "SKIP" : "FAIL";
+    console.log(`  ${tag}  ${s.name.padEnd(20)} ${label}  ${blocked ? "not checked, host challenged this IP" : summary}`);
+    if (!ok && !blocked) {
       for (const line of out.split("\n").filter((l) => /FAIL/.test(l))) {
         console.log(`          ${line.trim()}`);
       }
@@ -66,11 +72,29 @@ for (const s of sites) {
   }
 }
 
-const failed = results.filter((r) => !r.ok);
-console.log(`\n  ${results.length - failed.length}/${results.length} checks passed`);
+const failed = results.filter((r) => !r.ok && !r.blocked);
+const blocked = results.filter((r) => r.blocked);
+console.log("\n  " + results.filter((r) => r.ok).length + "/" + results.length + " checks passed");
+
 if (failed.length) {
-  console.log(`  BROKEN: ${failed.map((r) => `${r.site} (${r.label.trim()})`).join(", ")}`);
+  console.log("  BROKEN: " + failed.map((r) => r.site + " (" + r.label.trim() + ")").join(", "));
+}
+
+// Kept apart from BROKEN on purpose. "I could not see the site" and "the site
+// is down" look identical in a status code and mean opposite things: the first
+// is a reason to wait, the second is a reason to roll back.
+if (blocked.length) {
+  console.log("  NOT CHECKED: " + blocked.map((r) => r.site + " (" + r.label.trim() + ")").join(", "));
+  console.log("  The host is challenging this IP, which a deploy's own SSH and HTTP traffic");
+  console.log("  is enough to trigger. Nothing above says these titles are unhealthy.");
+  console.log("  Wait for the challenge to lapse and re-run, or have each server fetch its");
+  console.log("  own homepage with wp eval-file, which comes from the server's IP.");
+}
+
+if (failed.length) {
   process.exitCode = 1;
+} else if (blocked.length) {
+  process.exitCode = 2;
 } else {
   console.log("  Every title healthy.");
 }

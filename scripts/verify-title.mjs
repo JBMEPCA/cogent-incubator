@@ -25,6 +25,10 @@ const { authorForSite } = await import("../lib/wordpress.js");
 const rows = [];
 const check = (label, ok, detail) => rows.push({ label, ok, detail });
 
+// Set when the host answers with a bot challenge instead of the REST API.
+// Top level because the decision it drives is made at the end of the run.
+let blocked = false;
+
 const site = await prisma.site.findUnique({ where: { slug } });
 if (!site) { console.error(`No title "${slug}"`); process.exit(1); }
 const db = forSite(site.id);
@@ -60,6 +64,12 @@ if (wp?.url) {
     const me = await fetch(`${base}/users/me?context=edit`, { headers: H });
     const body = await me.text();
     const captcha = /sgcaptcha/i.test(body);
+    // A challenged IP fails this check and then cascades into five more:
+    // no byline, no categories, no posts, settings not forbidden. None of that
+    // is true of the title, so stop here rather than describe a healthy site
+    // as broken. Exit 2 is "not checked", which check-all-titles reports apart
+    // from a real failure.
+    if (captcha) blocked = true;
     check("REST authenticates", me.ok && !captcha, captcha ? "CAPTCHA INTERSTITIAL — publishes will fail while looking healthy" : `HTTP ${me.status}`);
     if (me.ok) {
       const u = JSON.parse(body);
@@ -108,11 +118,25 @@ const pad = Math.max(...rows.map((r) => r.label.length));
 console.log(`\n${site.name} (${slug})\n`);
 for (const r of rows) console.log(`  ${r.ok ? "PASS" : "FAIL"}  ${r.label.padEnd(pad)}  ${r.detail || ""}`);
 const failed = rows.filter((r) => !r.ok);
+// A challenged IP fails the REST check and then cascades into five more: no
+// byline, no categories, no posts, settings not forbidden. None of that is
+// true of the title, so the run is reported as not checked rather than as a
+// broken site. Decided here rather than by an early process.exit(), because
+// exiting while Prisma still holds handles aborts the process on Windows with
+// a libuv assertion and the runner reads that crash as a failure.
+if (blocked) {
+  console.log("");
+  console.log("  BLOCKED   the host is serving a bot challenge to this IP, not the site.");
+  console.log("            Nothing above says this title is unhealthy. Wait and re-run,");
+  console.log("            or verify from the server with wp eval-file.");
+  process.exitCode = 2;
+} else {
 console.log(`\n  ${rows.length - failed.length}/${rows.length} passed`);
 if (failed.length) {
   console.log(`  NOT READY: ${failed.map((r) => r.label).join("; ")}`);
   process.exitCode = 1;
 } else {
   console.log("  Ready to run unattended.");
+}
 }
 await prisma.$disconnect();
