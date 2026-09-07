@@ -55,6 +55,49 @@ const TITLES = {
     email: "jb@airportbusinessmagazine.com",
     pages: [
       {
+        slug: "development-programmes",
+        title: "Airport development tracker",
+        body: [
+          p(
+            "Live and recently completed terminal, runway and expansion programmes, with the budget where one has been published, the phase, the opening date and every contractor named."
+          ),
+          p(
+            "A large capital programme makes every supplier in the sector spend money to reach one buyer, which is why this table is as useful to the people selling as to the people building. It is also the part of our coverage that decays fastest as news and lasts longest as a reference."
+          ),
+          "<p>[cogent_directory collection=\"development-programmes\"]</p>",
+          h2("About the budget column"),
+          p(
+            "Figures appear in the currency they were published in and are never converted. Where an airport or a contractor has explicitly declined to give a number the entry says so, because a refusal to disclose is itself reportable. A blank means no figure has been published at all, which on airport capital work is more common than not."
+          ),
+          h2("About the phase column"),
+          p(
+            "A blank phase means the source did not state one. We would rather leave it empty than infer a status from the tone of an announcement, which on a multi-year programme is how a tracker starts telling people things that are not true."
+          ),
+          h2("Something missing?"),
+          p(
+            'If you are running a programme we have not covered, or we have a detail wrong, write to <a href="mailto:jb@airportbusinessmagazine.com">jb@airportbusinessmagazine.com</a>.'
+          ),
+        ].join("\n"),
+      },
+      {
+        slug: "events",
+        title: "Airport industry events",
+        body: [
+          p(
+            "The shows and forums where airports actually buy, with attendance and exhibitor numbers where they have been published. Roughly nineteen hundred stands across the main six."
+          ),
+          "<p>[cogent_directory collection=\"events\"]</p>",
+          h2("How this list is kept"),
+          p(
+            "Every entry comes from our own coverage or our own sector research, and each one says where it came from. Months rather than exact dates, because a month is what most organisers confirm this far out and we would rather be vague than wrong."
+          ),
+          h2("Running something we have missed?"),
+          p(
+            'Tell us at <a href="mailto:jb@airportbusinessmagazine.com">jb@airportbusinessmagazine.com</a> and we will look at it. Listings are free.'
+          ),
+        ].join("\n"),
+      },
+      {
         slug: "airport-suppliers",
         title: "Airport supplier directory",
         body: [
@@ -90,6 +133,49 @@ const TITLES = {
     email: "jb@golfresortmagazine.com",
     pages: [
       {
+        slug: "water-restrictions",
+        title: "Water restrictions on golf",
+        body: [
+          p(
+            "Where irrigation is being restricted, who imposed it, and what it means for courses on the ground."
+          ),
+          h2("Read this first: it is a seed, not yet a live tracker"),
+          p(
+            "This is what our own coverage has established so far, and it is thin. Seven places, from two pieces of reporting, and not one of them has a confirmed start date or a confirmation that it is still in force. Treat it as a record of what we have reported rather than as an authoritative picture of what applies today, and check with the authority named before you plan anything around it."
+          ),
+          p(
+            "We are publishing it at this size deliberately. The alternative was to pad it out with the places our coverage describes as leaning on non-potable supply, which is a practice and a trend rather than a restriction with a rule and a body behind it. A short honest table is worth more than a long inferred one, and every new piece of regional reporting now has somewhere to land instead of disappearing into the archive."
+          ),
+          "<p>[cogent_directory collection=\"water-restrictions\"]</p>",
+          h2("Two things worth knowing"),
+          p(
+            "Hosepipe bans rarely apply to golf irrigation directly, and the entries say so where that is the case. And an enforcement investigation is not the same as a restriction, so those are marked as monitoring rather than filed alongside rules that actually bind."
+          ),
+          h2("Help us fill it in"),
+          p(
+            'If you are dealing with a restriction we have not covered, or one here has been lifted, tell us at <a href="mailto:jb@golfresortmagazine.com">jb@golfresortmagazine.com</a>. This gets useful faster with operators in it.'
+          ),
+        ].join("\n"),
+      },
+      {
+        slug: "events",
+        title: "Golf trade events",
+        body: [
+          p(
+            "The shows and conferences where the golf trade buys, with exhibitor and attendance numbers where they have been published. Between them these carry well over a thousand exhibiting companies."
+          ),
+          "<p>[cogent_directory collection=\"events\"]</p>",
+          h2("How this list is kept"),
+          p(
+            "Every entry comes from our own coverage or our own sector research, and each one says where it came from. Months rather than exact dates, because a month is what most organisers confirm this far out and we would rather be vague than wrong."
+          ),
+          h2("Running something we have missed?"),
+          p(
+            'Tell us at <a href="mailto:jb@golfresortmagazine.com">jb@golfresortmagazine.com</a> and we will look at it. Listings are free.'
+          ),
+        ].join("\n"),
+      },
+      {
         slug: "course-projects",
         title: "Course project tracker",
         body: [
@@ -121,6 +207,24 @@ const TITLES = {
     name: "The Fleet Magazine",
     email: "jb@thefleetmagazine.co.uk",
     pages: [
+      {
+        slug: "events",
+        title: "Fleet events and awards",
+        body: [
+          p(
+            "The shows and award nights worth the trip. Three of the five land in September, which is the single most useful thing on this page if you are planning a year."
+          ),
+          "<p>[cogent_directory collection=\"events\"]</p>",
+          h2("How this list is kept"),
+          p(
+            "Every entry comes from our own coverage or our own sector research, and each one says where it came from. Months rather than exact dates, because a month is what most organisers confirm this far out and we would rather be vague than wrong."
+          ),
+          h2("Running something we have missed?"),
+          p(
+            'Tell us at <a href="mailto:jb@thefleetmagazine.co.uk">jb@thefleetmagazine.co.uk</a> and we will look at it. Listings are free.'
+          ),
+        ].join("\n"),
+      },
       {
         slug: "vehicle-lessors",
         title: "Vehicle lessor directory",
@@ -154,6 +258,24 @@ const TITLES = {
     name: "Barbering Business",
     email: "jb@barberingbusiness.com",
     pages: [
+      {
+        slug: "events",
+        title: "Barbering events",
+        body: [
+          p(
+            "The shows, awards and competitions worth closing the shop for, and who goes to each."
+          ),
+          "<p>[cogent_directory collection=\"events\"]</p>",
+          h2("How this list is kept"),
+          p(
+            "Every entry comes from our own coverage or our own sector research, and each one says where it came from. Months rather than exact dates, because a month is what most organisers confirm this far out and we would rather be vague than wrong."
+          ),
+          h2("Running something we have missed?"),
+          p(
+            'Tell us at <a href="mailto:jb@barberingbusiness.com">jb@barberingbusiness.com</a> and we will look at it. Listings are free.'
+          ),
+        ].join("\n"),
+      },
       {
         slug: "kit-and-suppliers",
         title: "Kit and supplier index",
