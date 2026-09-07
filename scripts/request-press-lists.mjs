@@ -15,6 +15,10 @@
 import { PrismaClient } from "@prisma/client";
 import { siteCredentials } from "../lib/site.js";
 import { sendGmail, isGmailConfigured } from "../lib/gmail.js";
+// Every mail goes out as multipart/alternative, so the HTML half is not
+// optional: buildMime base64s both parts and throws on an undefined one.
+// Sending text only crashed the first press-list send on 7 Sep.
+import { htmlise } from "../lib/interviews.js";
 import { siteUrl } from "../lib/voice.js";
 import { resolveContact } from "../lib/outreach.js";
 
@@ -40,7 +44,7 @@ ${url}`;
 }
 
 const sites = await prisma.site.findMany({ where: ONLY ? { slug: ONLY } : { status: { in: ["live", "cold_start"] } } });
-let would = 0, sent = 0;
+let would = 0, sent = 0, failed = 0;
 for (const site of sites) {
   const agencies = await prisma.prBrand.findMany({ where: { siteId: site.id, category: "PR agency" } });
   if (!agencies.length) continue;
@@ -72,12 +76,22 @@ for (const site of sites) {
       console.log(`  ${a.name.padEnd(28)} -> would send to ${contact.email} [${contact.confidence || "found"}]`);
       continue;
     }
-    await sendGmail({ outreach: creds.outreach, to: contact.email, toName: a.name, subject: `Adding ${site.name} to your distribution list`, text });
+    // One bad address must not end the run. The first send on 7 Sep threw and
+    // took the whole script down with fourteen agencies untried; the row is
+    // only marked once the send actually succeeded, so a failure here is
+    // retried next time rather than silently recorded as done.
+    try {
+      await sendGmail({ outreach: creds.outreach, to: contact.email, toName: a.name, subject: `Adding ${site.name} to your distribution list`, text, html: htmlise(text) });
+    } catch (e) {
+      failed++;
+      console.log(`  ${a.name.padEnd(28)} -> FAILED (${String(e.message).slice(0, 80)})`);
+      continue;
+    }
     await prisma.prBrand.update({ where: { id: a.id }, data: { notes: `${a.notes ? a.notes + "\n" : ""}${MARK} ${new Date().toISOString().slice(0, 10)} to ${contact.email}.`, prContactEmail: contact.email, contactConfidence: contact.confidence || "found" } });
     sent++;
     console.log(`  ${a.name.padEnd(28)} -> sent to ${contact.email}`);
     await wait((PACE + Math.floor(Math.random() * PACE)) * 1000);
   }
 }
-console.log(SEND ? `\nsent ${sent}` : `\ndry run: ${would} would be sent. Nothing sent.`);
+console.log(SEND ? `\nsent ${sent}${failed ? `, failed ${failed}` : ""}` : `\ndry run: ${would} would be sent. Nothing sent.`);
 await prisma.$disconnect();
