@@ -63,6 +63,8 @@ const opts = {
 };
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const PACE = Number((process.argv.find((a) => a.startsWith("--pace=")) || "").split("=")[1] || 30);
+// How long one person gets before the batch gives up on them and moves on.
+const PERSON_TIMEOUT = Number((process.argv.find((a) => a.startsWith("--timeout=")) || "").split("=")[1] || 60);
 
 let sent = 0, failed = 0, skipped = 0, queued = 0;
 for (const p of PEOPLE) {
@@ -90,7 +92,16 @@ for (const p of PEOPLE) {
     console.log(`would send -> ${(pick?.email || "(nowhere)").padEnd(36)} [${pick?.source || "none"}]  ${p.personName}`);
     continue;
   }
-  const res = await sendQuestionsUpFront(prisma, withAddresses, opts);
+  // Bounded, because one person must never be able to stop the batch. The
+  // address resolver fetches the subject's own website, and on 7 Sep a shop
+  // site that never answered left the Barbering run hanging on one name with
+  // six people behind it still unsent. A timeout here leaves that row pending
+  // and moves on, so the next run picks it up rather than the whole thing
+  // needing to be killed and restarted.
+  const res = await Promise.race([
+    sendQuestionsUpFront(prisma, withAddresses, opts),
+    new Promise((r) => setTimeout(() => r({ sent: false, reason: "timeout", error: `no answer in ${PERSON_TIMEOUT}s, left pending` }), PERSON_TIMEOUT * 1000)),
+  ]);
   if (res.sent) { sent++; console.log(`sent -> ${res.email.padEnd(36)} [${res.source}]  ${p.personName}`); }
   else { failed++; console.log(`FAILED (${res.reason}) ${p.personName}: ${res.error || ""}`); }
   if (PACE > 0) await wait((PACE + Math.floor(Math.random() * PACE)) * 1000);
