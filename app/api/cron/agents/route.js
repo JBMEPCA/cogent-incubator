@@ -3,6 +3,7 @@ import { getSiteContext } from "@/lib/site";
 import { ensureAgents, reapStaleRuns } from "@/lib/agents/runtime";
 import { runResearcher } from "@/lib/agents/researcher";
 import { runLinkedIn } from "@/lib/agents/linkedin";
+import { isLinkedInConfigured, authFor } from "@/lib/linkedin";
 import { runBacklink } from "@/lib/agents/backlink";
 import { runDirector, runEditor, runDesigner, runSeo, runFinance, sweepHeldArticles, imageWorkAvailable } from "@/lib/agents/team";
 import { withinOfficeHours } from "@/lib/site";
@@ -186,9 +187,21 @@ async function tickOne(ctx, { forced, stage }) {
   // above Finance, which is only ever advisory.
   const attemptOf = (key) =>
     lastAttempts.find((r) => r.agentKey === key)?._max?.startedAt;
+  // The LinkedIn Manager only writes when the title can actually post.
+  //
+  // Community Management API has been in review since late August, so no title
+  // has a token and nothing the agent drafts can publish. Its posts also expire
+  // five days after their slot, so a queue built while disconnected is worthless
+  // by the time approval lands: 71 expired against 4 posted by 8 September, and
+  // £1.08 of the fortnight's spend went on writing them.
+  //
+  // Nothing is switched off permanently. The moment a title stores a token the
+  // agent rejoins the ladder on its own, with no redeploy.
+  const linkedInReady = isLinkedInConfigured(await authFor(site));
+
   const HOUSEKEEPING = [
     ["seo", runSeo, "link_sweep", 12],
-    ["linkedin", runLinkedIn, "daily_queue", 12],
+    ...(linkedInReady ? [["linkedin", runLinkedIn, "daily_queue", 12]] : []),
     ["backlink", runBacklink, "daily_sweep", 12],
     ["finance", runFinance, "daily_summary", 24],
   ];
