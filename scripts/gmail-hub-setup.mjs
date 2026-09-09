@@ -84,6 +84,12 @@ const TOPIC_LABELS = [
 // silently never happens.
 const INTERVIEW_SUBJECTS = 'subject:("Featuring you in" OR "Seven questions for")';
 
+// Bounces, which Gmail files as spam more often than you would think: two from
+// adrianflux.co.uk and one from a mail delivery subsystem were sitting in spam
+// on 9 Sep 2026, and `bouncedSince` searches, and Gmail search skips spam. So
+// the engine never learned those addresses were dead and kept writing to them.
+const BOUNCE_SENDERS = "from:(mailer-daemon OR postmaster OR mailer-daemon@googlemail.com)";
+
 // Out-of-office and ticket acknowledgements, in the two languages that actually
 // land in these inboxes. Kept in step with ACK_SUBJECTS in lib/mail-triage.js.
 const AUTO_REPLY =
@@ -256,6 +262,12 @@ hubFilters.push({
 });
 
 hubFilters.push({
+  what: "never spam: bounces",
+  criteria: { query: BOUNCE_SENDERS },
+  action: { removeLabelIds: ["SPAM"] },
+});
+
+hubFilters.push({
   what: "Topics/Interviews",
   criteria: { query: INTERVIEW_SUBJECTS },
   action: { addLabelIds: [labelId("Topics/Interviews")] },
@@ -372,7 +384,10 @@ for (const t of titles) {
   // thing that can hurt it is Gmail hiding a reply in spam.
   await ensureFilters(
     token,
-    [{ what: "never spam: interview replies", criteria: { query: INTERVIEW_SUBJECTS }, action: { removeLabelIds: ["SPAM"] } }],
+    [
+      { what: "never spam: interview replies", criteria: { query: INTERVIEW_SUBJECTS }, action: { removeLabelIds: ["SPAM"] } },
+      { what: "never spam: bounces", criteria: { query: BOUNCE_SENDERS }, action: { removeLabelIds: ["SPAM"] } },
+    ],
     t.name
   );
 }
