@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { getSiteContext } from "@/lib/site";
 import { addTodo, toggleTodo, deleteTodo } from "@/lib/actions";
 import { launchProgress } from "@/lib/milestones";
-import { targetBoard, fmtCount } from "@/lib/targets";
+import { targetBoard, fmtCount, TARGETS_PAGE_DEADLINE_MS } from "@/lib/targets";
 import { buildCostReport } from "@/lib/agents/costs";
 import { withinOfficeHours } from "@/lib/site";
 import { fmtMoney } from "@/lib/crm";
@@ -88,7 +88,7 @@ export default async function Dashboard({ params }) {
     await Promise.all([
       db.todo.findMany({ orderBy: [{ pinned: "desc" }, { createdAt: "asc" }] }),
       launchProgress(site.id, { hasWordPress: Boolean(creds.wordpress?.url) }),
-      targetBoard(ctx),
+      targetBoard(ctx, { record: false, deadlineMs: TARGETS_PAGE_DEADLINE_MS }),
       buildCostReport(site.id),
       db.agent.findMany(),
       db.article.groupBy({ by: ["status"], _count: true }),
