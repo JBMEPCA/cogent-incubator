@@ -12,6 +12,17 @@ import { prospectStats } from "@/lib/prospects";
 
 export const dynamic = "force-dynamic";
 
+// A page render must never wait indefinitely on a third-party API. The slow
+// promise is left running so it still warms the shared cache for the next load.
+function withDeadline(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error(`did not answer within ${ms}ms`)), ms)
+    ),
+  ]);
+}
+
 function Stat({ label, value, hint }) {
   return (
     <div style={{ flex: 1, minWidth: 150, padding: "13px 15px", borderRadius: 12, background: "var(--surface, #10182b)", border: "1px solid rgba(255,255,255,.07)" }}>
@@ -96,8 +107,20 @@ export default async function EngineRoomPage({ params }) {
     }),
     spendWindow(site.id, 7),
     // Mailchimp being down must never blank the Engine Room.
-    newsletterStatus(site.id, creds.mailchimp).catch((e) => ({ configured: true, error: e.message })),
-    prospectStats(site.id).catch(() => null),
+    // Bounded, because both of these leave the building.
+    //
+    // newsletterStatus scans 200 Mailchimp reports for the deliverability
+    // check. Its cache was a module-level variable, which on serverless is
+    // empty on nearly every cold instance, so most Engine Room loads paid the
+    // full scan: about fifteen seconds to open the page on 9 September.
+    //
+    // The catch below already renders "could not reach Mailchimp", so a
+    // deadline degrades to a message instead of a page nobody will wait for.
+    withDeadline(newsletterStatus(site.id, creds.mailchimp), 3500).catch((e) => ({
+      configured: true,
+      error: e.message,
+    })),
+    withDeadline(prospectStats(site.id), 3500).catch(() => null),
   ]);
 
   // What became of each request. Matched on title, which is what the Director
