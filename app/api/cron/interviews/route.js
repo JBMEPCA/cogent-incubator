@@ -5,6 +5,7 @@ import { forSite } from "@/lib/prisma";
 import { siteUrl, houseStyle } from "@/lib/voice";
 import { publishToWordPress } from "@/lib/wordpress";
 import { cronGuard, forEachSite } from "@/lib/cron";
+import { runInboxLabels } from "@/lib/inbox-labels";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -32,8 +33,7 @@ export async function GET(request) {
   if (!anthropic) return Response.json({ error: "ANTHROPIC_API_KEY is not set" }, { status: 500 });
 
   try {
-    return Response.json(
-      await forEachSite(async ({ site }) => {
+    const sweep = await forEachSite(async ({ site }) => {
         const { creds } = await siteCredentials(site.id);
         const db = forSite(site.id);
         return runInterviewSweep(site, {
@@ -57,8 +57,25 @@ export async function GET(request) {
                 })
             : null,
         });
-      })
-    );
+    });
+
+    // The hub inbox rides along here rather than on a cron trigger of its own.
+    // It is mail work on an hourly route that already exists, and adding a
+    // trigger would mean a wrangler deploy, which has previous for wiping the
+    // worker's dashboard-set variables and taking the whole fleet's ticks with
+    // it. Fleet-wide, so it runs once after the per-title loop, not inside it.
+    //
+    // Isolated deliberately: labelling is a convenience for JB, the interview
+    // sweep is the franchise. A Gmail hiccup must not turn a good sweep into a
+    // 500 that Cloudflare records as a failed tick.
+    let inbox;
+    try {
+      inbox = await runInboxLabels();
+    } catch (e) {
+      inbox = { available: false, reason: e.message?.slice(0, 200) };
+    }
+
+    return Response.json({ ...sweep, inbox });
   } catch (e) {
     return Response.json({ error: e.message }, { status: 500 });
   }
