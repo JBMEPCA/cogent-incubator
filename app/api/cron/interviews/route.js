@@ -5,7 +5,7 @@ import { forSite } from "@/lib/prisma";
 import { siteUrl, houseStyle } from "@/lib/voice";
 import { publishToWordPress } from "@/lib/wordpress";
 import { cronGuard, forEachSite } from "@/lib/cron";
-import { runInboxLabels } from "@/lib/inbox-labels";
+import { runInboxLabels, titleAddresses } from "@/lib/inbox-labels";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -32,6 +32,16 @@ export async function GET(request) {
     : null;
   if (!anthropic) return Response.json({ error: "ANTHROPIC_API_KEY is not set" }, { status: 500 });
 
+  // Read once, not per title: every title's mailbox address, so each sweep can
+  // ignore the four that are not its own. All five forward into Smart SME's
+  // mailbox now, so without this SME reads every title's interview replies.
+  let fleetAddresses = [];
+  try {
+    fleetAddresses = [...(await titleAddresses()).keys()];
+  } catch {
+    fleetAddresses = [];
+  }
+
   try {
     const sweep = await forEachSite(async ({ site }) => {
         const { creds } = await siteCredentials(site.id);
@@ -41,6 +51,7 @@ export async function GET(request) {
           creds,
           anthropic,
           siteUrl: siteUrl(site),
+          foreignAddresses: fleetAddresses,
           // Drafting is injected rather than imported inside the sweep, so the
           // sweep stays testable without a WordPress account and a model key.
           draft: creds?.wordpress
