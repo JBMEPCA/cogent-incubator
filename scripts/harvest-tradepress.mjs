@@ -180,8 +180,15 @@ if (!urls.length) {
   console.error(`No article URLs found for ${SITE}. Check that https://${SITE}/sitemap.xml exists.`);
   process.exit(1);
 }
-const candidates = ALL ? urls : urls.filter((u) => PEOPLE_SLUG.test(u));
-console.log(`${SITE}: ${urls.length} articles in the sitemap, ${candidates.length} look like people stories, reading ${Math.min(LIMIT, candidates.length)}\n`);
+// Articles already harvested into this roster are skipped, so a second, deeper
+// run continues where the first stopped instead of paying again for the same
+// hundred stories.
+const already = new Set(readRoster(OUT).map((r) => r.hookUrl).filter(Boolean));
+const candidates = (ALL ? urls : urls.filter((u) => PEOPLE_SLUG.test(u))).filter((u) => !already.has(u));
+console.log(
+  `${SITE}: ${urls.length} articles in the sitemap, ${candidates.length} unread people stories` +
+    `${already.size ? ` (${already.size} already harvested)` : ""}, reading ${Math.min(LIMIT, candidates.length)}\n`
+);
 
 const rows = [];
 let read = 0, named = 0, addressed = 0, failed = 0;
