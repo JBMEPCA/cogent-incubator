@@ -20,7 +20,7 @@
 
 import { findAddress } from "./lib/find-address.mjs";
 import { guessDomain } from "./lib/guess-domain.mjs";
-import { readRoster, writeRoster, summarise } from "./lib/roster.mjs";
+import { readRoster, mergeRoster, summarise } from "./lib/roster.mjs";
 
 const args = process.argv.slice(2);
 const FILE = args.find((a) => !a.startsWith("--"));
@@ -60,6 +60,7 @@ for (const row of rows) {
     row.domain = "";
     row.email = "";
     row.source = (row.source || "").replace(/,\s*(domain guessed|address on another domain)/g, "");
+    row._recheck = true;
     rechecked++;
   }
   if (row.email) continue;
@@ -97,10 +98,15 @@ for (const row of rows) {
   } catch {}
 }
 
-writeRoster(FILE, rows);
-const after = summarise(rows);
+// Merged back rather than written over the top. This script holds a snapshot
+// taken when it started, and a harvest writing to the same file while it runs
+// will have added rows since. Writing the snapshot discarded 25 airport rows
+// that a second source had just contributed, because the enrichment simply
+// finished last. mergeRoster re-reads the file and fills blanks instead.
+mergeRoster(FILE, rows, { overwrite: RECHECK ? ["domain", "email", "source"] : [] });
+const after = summarise(readRoster(FILE));
 console.log(
   `\n${RECHECK ? `re-derived ${rechecked} previously guessed rows. ` : ""}` +
     `tried ${tried} rows without an address: found ${foundDomain} new domains and ${foundEmail} new addresses.\n` +
-    `${FILE}: ${after.withEmail} of ${rows.length} now have an address, ${after.ready} have both a name and an address.`
+    `${FILE}: ${after.withEmail} of ${after.rows} now have an address, ${after.ready} have both a name and an address.`
 );

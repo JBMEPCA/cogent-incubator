@@ -63,19 +63,32 @@ export function readRoster(file) {
 // spellings of the same job title and should still be one row. Later rows fill
 // in blanks on earlier ones rather than replacing them, so an enrichment pass
 // can add an address without losing the hook that found the person.
-export function mergeRoster(file, incoming) {
+// `overwrite` names the columns where an incoming value replaces an existing
+// one instead of only filling a blank. Needed for a recheck pass: a row whose
+// domain was guessed wrongly already carries an address, so fill-blanks-only
+// would quietly keep the wrong company.
+export function mergeRoster(file, incoming, { overwrite = [] } = {}) {
   const existing = readRoster(file);
   const byKey = new Map();
+  // Keyed on the person rather than the address when a recheck may change the
+  // address, otherwise the corrected row looks like a brand new person.
   const keyOf = (r) =>
-    (r.email && r.email.toLowerCase()) ||
-    `${(r.name || "").toLowerCase()}|${(r.company || r.domain || "").toLowerCase()}`;
+    overwrite.length
+      ? `${(r.name || "").toLowerCase()}|${(r.company || r.domain || "").toLowerCase()}`
+      : (r.email && r.email.toLowerCase()) ||
+        `${(r.name || "").toLowerCase()}|${(r.company || r.domain || "").toLowerCase()}`;
 
   for (const r of [...existing, ...incoming]) {
     const k = keyOf(r);
     if (!k || k === "|") continue;
     const prev = byKey.get(k);
     if (!prev) byKey.set(k, { ...r });
-    else for (const c of COLUMNS) if (!prev[c] && r[c]) prev[c] = r[c];
+    else {
+      for (const c of COLUMNS) {
+        if (overwrite.includes(c) && r._recheck) prev[c] = r[c];
+        else if (!prev[c] && r[c]) prev[c] = r[c];
+      }
+    }
   }
   const rows = [...byKey.values()];
   writeRoster(file, rows);
