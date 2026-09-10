@@ -17,8 +17,15 @@ import { NO_REPLY } from "../../lib/interviews.js";
 
 const UA = { "user-agent": "Mozilla/5.0 (compatible; CogentBot/1.0)" };
 
-const WANTED = /media|press|newsroom|journalist|communication|contact|about/i;
-const FALLBACK_PATHS = ["contact", "contact-us", "about", "about-us"];
+// Team pages are included because they are where a subject's own address
+// turns up, and their own address is the best outcome available: Royal
+// Aberdeen publishes coursemanager@ on its club contact list and Nairn
+// publishes gm@, both alongside the person's name.
+const WANTED =
+  /media|press|newsroom|journalist|communication|contact|about|team|people|staff|leadership|management|who-we-are|meet/i;
+const FALLBACK_PATHS = [
+  "contact", "contact-us", "about", "about-us", "our-team", "team", "meet-the-team", "people",
+];
 
 // A press address outranks a general one, because a journalist writing to it is
 // the audience it was published for. A named person's address outranks both,
@@ -188,7 +195,7 @@ function candidateLinks(html, base) {
  * Returns { email, source } where source is the path it was found on, so a bad
  * row can be traced back to the page that produced it.
  */
-export async function findAddress(domain, { maxPages = 6, person = "" } = {}) {
+export async function findAddress(domain, { maxPages = 9, person = "" } = {}) {
   const bare = String(domain || "").replace(/^https?:\/\//, "").replace(/^www\./, "").split("/")[0];
   if (!bare || !bare.includes(".")) return null;
 
