@@ -1,4 +1,3 @@
-import { LOGO_PNG } from "@/lib/brand/logo";
 import { wordmarkFor } from "@/lib/brand/wordmarks";
 import { runNewsletter, isNewsletterConfigured, lastIssueHealth } from "@/lib/newsletter";
 import { cronGuard, forEachSite } from "@/lib/cron";
@@ -31,13 +30,25 @@ export async function GET(request) {
       await forEachSite(async ({ site, creds }) => {
         if (!isNewsletterConfigured(creds.mailchimp)) return { skipped: "newsletter not configured" };
         if (health) return { health: await lastIssueHealth(creds.mailchimp.audienceId) };
-        // The title's OWN wordmark. LOGO_PNG is Smart SME's, so every issue
-        // from every other title carried Smart SME's masthead — the same
-        // single-title assumption the playbook keeps finding, this time on the
-        // one image every subscriber sees first. It stays as the fallback,
-        // because a slightly wrong mark beats a broken image in a sent email.
-        const mark = wordmarkFor(site.slug)?.png ?? LOGO_PNG;
-        return runNewsletter(site, { creds, dryRun, logoBase64: mark.toString("base64") });
+        // No fallback to another title's mark, ever.
+        //
+        // This was "?? LOGO_PNG", and LOGO_PNG is Smart SME's. Airport had no
+        // wordmark, so both of its issues went out under Smart SME's masthead:
+        // 1,500 subscribers on 3 September and 1,576 on the 10th, each opening
+        // an Airport Business Magazine email branded as another publication.
+        // The comment above it even said this was the risk, and rated a
+        // slightly wrong mark above a broken image. That trade is wrong. A
+        // missing image is a gap; a rival masthead is a mistake the reader
+        // notices and remembers.
+        //
+        // Every title has a wordmark now, so this should never fire. If a new
+        // title is added without one, it sends with no logo and the run says
+        // so, which is a loud, cheap failure rather than a silent brand error.
+        const mark = wordmarkFor(site.slug)?.png ?? null;
+        if (!mark) {
+          console.error(`newsletter: no wordmark for ${site.slug}; sending without a masthead rather than another title's. Add it to scripts/build-brand-wordmarks.mjs.`);
+        }
+        return runNewsletter(site, { creds, dryRun, logoBase64: mark ? mark.toString("base64") : null });
       })
     );
   } catch (e) {

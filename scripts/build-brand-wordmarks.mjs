@@ -34,6 +34,25 @@ const LOCKUPS = {
     mag: "MAGAZINE",
     magColor: "#0B5563", // Fleet Petrol; brand-bright is too pale on white
   },
+  // Airport and Barbering were missing entirely, so wordmarkFor() returned
+  // null for both and the newsletter fell back to LOGO_PNG - Smart SME's mark.
+  // Airport sent two issues that way, to 1,500 and 1,576 subscribers, with
+  // another title's masthead at the top. Both lockups below are copied from
+  // the live themes: .logo-mark is the chip, .logo-mag the line beneath.
+  "airport-business-magazine": {
+    pre: "AIRPORT ",
+    chip: "BUSINESS",
+    chipBg: "#123B66", // --wp--preset--color--brand on airportbusinessmagazine.com
+    mag: "MAGAZINE",
+    magColor: "#123B66",
+  },
+  "barbering-business": {
+    pre: "BARBERING ",
+    chip: "BUSINESS",
+    chipBg: "#6E2B2B", // --wp--preset--color--brand on barberingbusiness.com
+    mag: "THE BUSINESS OF BARBERING",
+    magColor: "#6E2B2B",
+  },
   "golf-resort-magazine": {
     pre: "GOLF ",
     chip: "RESORT",
