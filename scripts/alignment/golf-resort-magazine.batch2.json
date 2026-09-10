@@ -1,0 +1,56 @@
+[
+  {
+    "personName": "Richard Johnstone",
+    "personRole": "Course Manager, Royal Aberdeen Golf Club",
+    "company": "Royal Aberdeen Golf Club",
+    "companyDomain": "royalaberdeengolf.com",
+    "genericEmail": "coursemanager@royalaberdeengolf.com",
+    "hookUrl": "https://www.pitchcare.com/blogs/news/btme-2026-burnham-berrow-and-royal-aberdeen-claim-bigga-awards",
+    "newsHook": "Royal Aberdeen taking the BIGGA Greenkeeping Project of the Year award this January, on a links course with a reputation to protect, is exactly the kind of story our readers want more of.",
+    "questions": [
+      "The club won Greenkeeping Project of the Year in January. What was the project, and what made it worth doing?",
+      "Balgownie is one of the oldest links in the world. How much freedom does that history give you, and how much does it take away?",
+      "Links turf behaves nothing like parkland. What do people from inland courses get wrong about it?",
+      "Weather on that coast is not negotiable. How do you plan a season around it?",
+      "Members, visitors and championship golf all want different things from the same ground. How do you hold that together?",
+      "What is the part of a course manager's job that golfers never see?",
+      "Where does the course go from here?"
+    ]
+  },
+  {
+    "personName": "Paul Mills",
+    "personRole": "General Manager, Nairn Golf Club",
+    "company": "Nairn Golf Club",
+    "companyDomain": "nairngolfclub.co.uk",
+    "genericEmail": "gm@nairngolfclub.co.uk",
+    "hookUrl": "https://golfbusinessnews.com/news/sponsorship-and-events/finalists-announced-for-2026-bigga-awards/",
+    "newsHook": "Nairn being shortlisted for Championship Greenkeeping Performance of the Year at this year's BIGGA Awards, on a links that regularly hosts championship golf, is a story our readers would want to hear.",
+    "questions": [
+      "Nairn was shortlisted for Championship Greenkeeping Performance this year. What does hosting championship golf actually demand of a club your size?",
+      "A general manager sits between members, visitors, the course and the books. Which of those is hardest to keep happy?",
+      "Championship weeks bring prestige and disruption in equal measure. Do the numbers justify them?",
+      "The Highlands are a long way from most golfers. How do you fill a tee sheet from there?",
+      "What has changed most about what a visiting golfer expects from a links club?",
+      "What is the investment you would make tomorrow if the money appeared?",
+      "Where does Nairn go from here?"
+    ]
+  },
+  {
+    "personName": "Darren McMahon",
+    "personRole": "Marketing Manager, Howardson Group",
+    "company": "Howardson Group",
+    "companyDomain": "howardsongroup.com",
+    "genericEmail": "sales@howardsongroup.com",
+    "hookUrl": "https://dennisuk.com/news/dennis-showcases-electric-innovation-and-proven-turf-machinery-at-btme-2026",
+    "newsHook": "A family engineering business in Derbyshire since 1938, now in its fourth generation and taking battery powered greens mowers to the golf industry, is exactly the kind of story our readers do not hear often enough.",
+    "questions": [
+      "The business has been in the same family since 1938 and is now on its fourth generation. What does that change about how decisions get made?",
+      "You took the ES-510 and the electric range to BTME in January. How ready is the golf industry actually to go battery powered?",
+      "Course managers care about quality of cut above almost everything. What did electrification cost you there, and what did you get back?",
+      "Dennis, SISIS, Lloyds, Syn-Pro and Hunter Grinders under one roof. Why keep separate brands rather than one?",
+      "British manufacturing of specialist machinery is a hard living. What keeps it viable in Derbyshire?",
+      "What do golf clubs ask for that you think they do not really need?",
+      "Where does the group go from here?"
+    ]
+  }
+]

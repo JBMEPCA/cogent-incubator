@@ -29,10 +29,14 @@ const prisma = new PrismaClient();
 const SEND = process.argv.includes("--send");
 const SLUG = process.argv[2];
 if (!SLUG || SLUG.startsWith("--")) {
-  console.error("usage: node --env-file=.env scripts/seed-alignment-interviews.mjs <slug> [--send] [--pace=30]");
+  console.error("usage: node --env-file=.env scripts/seed-alignment-interviews.mjs <slug> [--set=NAME] [--send] [--pace=30]");
   process.exit(1);
 }
-const file = path.resolve("scripts/alignment", `${SLUG}.interviews.json`);
+// A title gets a new batch of people every week, so the file is named rather
+// than fixed. --set=batch4 reads <slug>.batch4.json; no --set keeps the
+// original <slug>.interviews.json that the alignment sheets produced.
+const SET = (process.argv.find((a) => a.startsWith("--set=")) || "").split("=")[1] || "interviews";
+const file = path.resolve("scripts/alignment", `${SLUG}.${SET}.json`);
 if (!fs.existsSync(file)) { console.error(`No ${file}`); process.exit(1); }
 const PEOPLE = JSON.parse(fs.readFileSync(file, "utf8"));
 

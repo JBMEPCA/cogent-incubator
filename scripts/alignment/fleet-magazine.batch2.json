@@ -1,0 +1,38 @@
+[
+  {
+    "personName": "John Joseph Donovan",
+    "personRole": "Founder, Owner and Managing Director, JJX Logistics",
+    "company": "JJX Logistics",
+    "companyDomain": "jjxlogistics.co.uk",
+    "genericEmail": "info@jjxlogistics.co.uk",
+    "hookUrl": "https://fleetnewsawards.com/live/en/page/2025-winners",
+    "newsHook": "Founding a haulier that went on to win Fleet of the Year at the Fleet News Awards, judged against operators of up to 250 vehicles, is exactly the kind of story our readers want more of.",
+    "questions": [
+      "You founded the business and still run it. What did you see in haulage in 1997 that made you start?",
+      "Fleet of the Year is judged on how the fleet is run, not how big it is. What do you think won it?",
+      "Secure and high value transport is a different discipline from general haulage. What changes?",
+      "Driver shortage gets discussed endlessly and solved rarely. What actually works for you?",
+      "Compliance has grown into a job of its own. How much of your week is now paperwork and systems?",
+      "What is the most expensive mistake you made in the early years?",
+      "Where does JJX go from here?"
+    ]
+  },
+  {
+    "personName": "Simon Turner",
+    "personRole": "Campaigns Director, Driving for Better Business",
+    "company": "Driving for Better Business",
+    "companyDomain": "drivingforbetterbusiness.com",
+    "genericEmail": "support@drivingforbetterbusiness.com",
+    "hookUrl": "https://fleetnewsawards.com/live/en/page/2025-winners",
+    "newsHook": "Taking both Support Services Provider of the Year and the headline Fleet Supplier of the Year at the Fleet News Awards, for a free National Highways programme rather than a product anyone sells, is a story our readers would genuinely learn from.",
+    "questions": [
+      "You won Fleet Supplier of the Year for something nobody pays for. Why did that land with the judges?",
+      "Twenty years in work related road risk. What has genuinely improved, and what has not moved at all?",
+      "Most employers think driving for work is covered by insurance and a licence check. What are they missing?",
+      "Grey fleet is the part almost nobody manages properly. How bad is it?",
+      "What is the argument that finally makes a board take work related road risk seriously?",
+      "You are funded by National Highways rather than by the industry. What does that let you say that a supplier cannot?",
+      "Where does the campaign go from here?"
+    ]
+  }
+]
