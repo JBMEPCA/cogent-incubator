@@ -171,7 +171,26 @@ for (const row of rows) {
   }
 }
 
-writeRoster(OUT, keep);
+// Best first, so whoever works down the list spends their attention where it
+// is least likely to be wasted. Confidence is not a score out of ten, it is
+// three facts: whether the domain was published or worked out, whether the
+// address is on that domain, and whether the address belongs to a person or to
+// a room.
+const confidence = (r) => {
+  let c = 0;
+  const s = r.source || "";
+  if (/domain guessed/.test(s)) c += 2;
+  if (/another domain/.test(s)) c += 3;
+  const local = (r.email || "").split("@")[0];
+  if (/^(info|hello|enquiries|contact|admin|office|reception|sales|support|mail)$/i.test(local)) c += 1;
+  if (!r.role) c += 1;
+  return c;
+};
+keep.sort((a, b) => confidence(a) - confidence(b) || a.name.localeCompare(b.name));
+
+const CAP = Number(arg("cap", "0"));
+const capped = CAP ? keep.slice(0, CAP) : keep;
+writeRoster(OUT, capped);
 
 const before = summarise(rows);
 console.log(`${FILE}: ${rows.length} rows in, ${before.withName} named, ${before.withEmail} with an address.`);
