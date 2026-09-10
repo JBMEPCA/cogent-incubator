@@ -110,12 +110,43 @@ async function page(url) {
   }
 }
 
-function emailsIn(html) {
+// Cloudflare's email obfuscation replaces a mailto with a hex blob whose first
+// byte is an XOR key. It is on a large share of small business sites, and to a
+// scraper the page simply looks as though it publishes no address at all, which
+// is why the address rate sat at about a third. Decoding it reads the address
+// the site is already publishing to every visitor.
+function cfDecode(hex) {
+  try {
+    const key = parseInt(hex.slice(0, 2), 16);
+    let out = "";
+    for (let i = 2; i < hex.length; i += 2) {
+      out += String.fromCharCode(parseInt(hex.slice(i, i + 2), 16) ^ key);
+    }
+    return out;
+  } catch {
+    return "";
+  }
+}
+
+// Entity-encoded @ and . are the other common dodge: info&#64;example&#46;com.
+const deEntity = (s) =>
+  s
+    .replace(/&#0?64;|&#x40;/gi, "@")
+    .replace(/&#0?46;|&#x2e;/gi, ".")
+    .replace(/\s*\[at\]\s*|\s*\(at\)\s*/gi, "@")
+    .replace(/\s*\[dot\]\s*|\s*\(dot\)\s*/gi, ".");
+
+function emailsIn(rawHtml) {
+  const html = deEntity(rawHtml);
   // mailto links first: an address a human deliberately linked is better
   // evidence than one that happens to appear in body text.
   const mailtos = [...html.matchAll(/href="mailto:([^"?]+)/gi)].map((m) => m[1]);
+  const cf = [
+    ...[...html.matchAll(/data-cfemail="([0-9a-f]+)"/gi)].map((m) => cfDecode(m[1])),
+    ...[...html.matchAll(/\/cdn-cgi\/l\/email-protection#([0-9a-f]+)/gi)].map((m) => cfDecode(m[1])),
+  ].filter((a) => a.includes("@"));
   const plain = html.match(EMAIL) || [];
-  return [...mailtos, ...plain]
+  return [...mailtos, ...cf, ...plain]
     .map((a) => decodeURIComponent(a.trim()).toLowerCase().replace(/^mailto:/, ""))
     // FUNCTIONAL boxes are dropped outright rather than ranked last. Menzies
     // Aviation publishes only pensions@ on its own domain, and ranking meant
