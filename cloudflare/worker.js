@@ -97,12 +97,18 @@ function scheduledExtras(now) {
   if (hour === 8 || hour === 20) extra.push("/api/cron/seo-apply");
 
   if (hour === 9) {
-    // Chip away at verifying the Apollo list every morning.
-    extra.push("/api/cron/subscriber-drip?mode=verify");
+    // The daily verification pass is gone. MillionVerifier ran to minus eleven
+    // credits, every run answered "only -11 verification credits left, need
+    // 200", and behind that gate the drip starved: no address could become
+    // import-ready, so three of four lists had not grown since August.
+    // JB, 10 September: the data list is the list, and the verifier is not
+    // something this operation needs or can afford.
 
-    // Import the next batch on Tuesdays, two clear days before the issue, so a
-    // bad batch shows in the numbers before anything is sent to it.
-    if (weekday === "Tue") extra.push("/api/cron/subscriber-drip?mode=import");
+    // Imports twice a week rather than once. The batch is capped and the
+    // previous-issue health check still gates it, so this is a steadier drip
+    // rather than a bigger one, and there are tens of thousands of addresses
+    // sitting behind it.
+    if (weekday === "Tue" || weekday === "Fri") extra.push("/api/cron/subscriber-drip?mode=import");
 
     // The weekly issue. Last in the list so the import and any publishing have
     // already happened by the time it picks its ten stories.

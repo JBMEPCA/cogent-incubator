@@ -36,6 +36,9 @@ export async function GET(request) {
           return { skipped: "drip needs MAILCHIMP_API_KEY, MILLIONVERIFIER_API_KEY and an audience id", stats };
         }
 
+        // Retired 10 September 2026, not deleted: a bare call still works if
+        // anyone ever tops the credits up, but nothing schedules it and the
+        // import no longer waits on it.
         if (mode === "verify") {
           if (!isDripEnabled()) return { skipped: "DRIP_ENABLED=false", stats };
           return { ...(await verifyProspects(site, limit)), stats: await prospectStats(site.id) };
