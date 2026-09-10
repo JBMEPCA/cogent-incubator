@@ -32,7 +32,7 @@ const RANK = [
 // Published and useless. mysite.com is Wix's placeholder and a live barbershop
 // contact page was shipping it, which reads exactly like a real find.
 const JUNK =
-  /(\.(png|jpe?g|gif|webp|svg|css|js)$|^[0-9a-f]{16,}@|sentry|wixpress|@(example|mysite|domain|yourdomain|yoursite|email|sentry|godaddy|squarespace|wix|shopify)\.|example@|your@|@2x|u002)/i;
+  /(\.(png|jpe?g|gif|webp|svg|css|js)$|^[0-9a-f]{16,}@|sentry|wixpress|@(example|mysite|domain|yourdomain|yoursite|email|sentry|godaddy|squarespace|wix|shopify|company|yourcompany|test|localhost|sample)\.|^(example|your|you|someone|name|firstname|user|username|info)@(company|example|domain)|@2x|u002)/i;
 
 const EMAIL = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g;
 
@@ -75,8 +75,23 @@ function isFunctional(addr) {
 }
 const FUNCTIONAL = { test: isFunctional };
 
-function rankOf(addr) {
-  if (PERSONAL.test(addr)) return -1;
+// A personal address only beats a general inbox when it belongs to the person
+// we actually want. Sharrocks publishes katrina.watson@ and the story was about
+// Steve Hanlon, and preferring any personal address meant writing to a
+// colleague by name about someone else's news. A general inbox is better than
+// the wrong person's desk.
+function rankOf(addr, person = "") {
+  const nameTokens = String(person || "")
+    .toLowerCase()
+    .split(/[^a-z]+/)
+    .filter((t) => t.length > 2);
+  if (PERSONAL.test(addr) || /^[a-z]{2,14}@/i.test(addr)) {
+    const local = addr.split("@")[0].toLowerCase();
+    const mine = nameTokens.some((t) => local.includes(t));
+    if (mine) return -1;
+    // Unmatched personal addresses sit below the general inboxes, not above.
+    if (PERSONAL.test(addr)) return RANK.length - 0.4;
+  }
   for (let i = 0; i < RANK.length; i++) if (RANK[i].test(addr)) return i;
   // An unrecognised local part is more likely a person than a function, but
   // not certainly, so it sits between the general inboxes and the junk.
@@ -142,7 +157,7 @@ function candidateLinks(html, base) {
  * Returns { email, source } where source is the path it was found on, so a bad
  * row can be traced back to the page that produced it.
  */
-export async function findAddress(domain, { maxPages = 6 } = {}) {
+export async function findAddress(domain, { maxPages = 6, person = "" } = {}) {
   const bare = String(domain || "").replace(/^https?:\/\//, "").replace(/^www\./, "").split("/")[0];
   if (!bare || !bare.includes(".")) return null;
 
@@ -161,7 +176,7 @@ export async function findAddress(domain, { maxPages = 6 } = {}) {
       ...FALLBACK_PATHS.map((p) => `https://${bare}/${p}`),
     ];
     for (const url of links.slice(0, maxPages)) {
-      if ([...seen.keys()].some((a) => rankOf(a) <= 0)) break;
+      if ([...seen.keys()].some((a) => rankOf(a, person) <= 0)) break;
       const got = await page(url);
       if (got.html) record(got.html, url);
     }
@@ -173,7 +188,7 @@ export async function findAddress(domain, { maxPages = 6 } = {}) {
   // shape alone preferred the stranger.
   const own = (a) => a.endsWith(`@${bare}`) || a.endsWith(`.${bare}`);
   const best = [...seen.keys()].sort(
-    (a, b) => Number(own(b)) - Number(own(a)) || rankOf(a) - rankOf(b) || a.length - b.length
+    (a, b) => Number(own(b)) - Number(own(a)) || rankOf(a, person) - rankOf(b, person) || a.length - b.length
   )[0];
   return { email: best, source: seen.get(best), all: [...seen.keys()] };
 }

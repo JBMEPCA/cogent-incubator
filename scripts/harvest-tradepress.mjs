@@ -65,13 +65,24 @@ const PEOPLE_SLUG =
 const SKIP_URL =
   /(\/(category|tag|author|page|wp-content|wp-json|feed|privacy|cookie|terms|advertise|subscribe|contact|about|jobs?|events?|webinar|whitepaper|sitemap)\/|\.(jpe?g|png|gif|pdf|webp|svg|xml)$)/i;
 
-async function text(url, timeout = 20000) {
-  try {
-    const r = await fetch(url, { headers: UA, redirect: "follow", signal: AbortSignal.timeout(timeout) });
-    return r.ok ? await r.text() : "";
-  } catch {
-    return "";
+// Retried, because a single pass over Turf Matters fetched 200 URLs and got
+// only 47 bodies back. The misses were not 404s, they were the site shedding
+// load under a burst, and treating that as "no article" silently threw away
+// three quarters of the harvest.
+async function text(url, { timeout = 20000, attempts = 3 } = {}) {
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const r = await fetch(url, { headers: UA, redirect: "follow", signal: AbortSignal.timeout(timeout) });
+      if (r.ok) return await r.text();
+      // A real 404 will not become a 200 on a retry; only back off on the
+      // statuses that mean "not now".
+      if (![408, 425, 429, 500, 502, 503, 504].includes(r.status)) return "";
+    } catch {
+      // A timeout or a dropped connection is worth another go.
+    }
+    if (i < attempts - 1) await new Promise((r) => setTimeout(r, 800 * (i + 1)));
   }
+  return "";
 }
 
 // All in One SEO wraps every URL in CDATA and Yoast does not, so both forms
@@ -229,7 +240,7 @@ for (const url of candidates.slice(0, LIMIT)) {
   let email = "";
   if (domain && !NO_ADDRESS) {
     try {
-      email = (await findAddress(domain))?.email || "";
+      email = (await findAddress(domain, { person: got.name }))?.email || "";
     } catch {}
   }
   if (email) addressed++;
