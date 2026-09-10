@@ -30,6 +30,11 @@ const arg = (n, d) => {
 };
 const PROOF = arg("proof", "").split(",").map((s) => s.trim()).filter(Boolean);
 const LIMIT = Number(arg("limit", "400"));
+// Re-derive rows whose domain was guessed rather than published. Needed when
+// the guesser is corrected: an earlier version turned "Škoda UK" into
+// kodauk.com and "U-Drive" into drive.co.uk, both different companies, and
+// those rows are already written with an address attached.
+const RECHECK = args.includes("--recheck");
 
 if (!FILE) {
   console.error("usage: roster-enrich.mjs <roster.csv> [--proof=word,word] [--limit=400]");
@@ -46,7 +51,17 @@ const before = summarise(rows);
 console.log(`${FILE}: ${rows.length} rows, ${before.withEmail} already have an address.\n`);
 
 let tried = 0, foundDomain = 0, foundEmail = 0;
+let rechecked = 0;
 for (const row of rows) {
+  const wasGuessed = /domain guessed/.test(row.source || "");
+  if (RECHECK && wasGuessed) {
+    // Throw away what the old guesser produced and derive it again, so a
+    // corrected guess replaces a wrong company rather than sitting beside it.
+    row.domain = "";
+    row.email = "";
+    row.source = (row.source || "").replace(/,\s*(domain guessed|address on another domain)/g, "");
+    rechecked++;
+  }
   if (row.email) continue;
   if (tried >= LIMIT) break;
   tried++;
@@ -85,6 +100,7 @@ for (const row of rows) {
 writeRoster(FILE, rows);
 const after = summarise(rows);
 console.log(
-  `\ntried ${tried} rows without an address: found ${foundDomain} new domains and ${foundEmail} new addresses.\n` +
+  `\n${RECHECK ? `re-derived ${rechecked} previously guessed rows. ` : ""}` +
+    `tried ${tried} rows without an address: found ${foundDomain} new domains and ${foundEmail} new addresses.\n` +
     `${FILE}: ${after.withEmail} of ${rows.length} now have an address, ${after.ready} have both a name and an address.`
 );

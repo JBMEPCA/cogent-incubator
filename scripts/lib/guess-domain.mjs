@@ -21,17 +21,29 @@ const UA = { "user-agent": "Mozilla/5.0 (compatible; CogentBot/1.0)" };
 // discriminator, so it stays in both the candidate domain and the proof.
 const NOISE = /^(the|and|of|for|a|at|limited|ltd|llp|plc|inc|incorporated|corp|corporation|company|co)$/i;
 
-const words = (name) =>
-  String(name || "")
+// Accents are transliterated, not discarded. Stripping them turned "Škoda UK"
+// into "koda uk" and then into kodauk.com, a different company whose homepage
+// duly contained "koda" and "uk" and so passed the old proof test.
+const flatten = (s) =>
+  String(s || "")
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/g, "")
     .toLowerCase()
     .replace(/[’']/g, "")
-    .replace(/&/g, " and ")
-    .split(/[^a-z0-9]+/)
-    .filter(Boolean);
+    .replace(/&/g, " and ");
+
+const words = (name) => flatten(name).split(/[^a-z0-9]+/).filter(Boolean);
+
+// Everything that is not a letter or a digit, removed. Comparing company names
+// to page text this way survives punctuation, spacing and casing differences,
+// so "U-Drive" matches "U Drive" and "udrive" but not "drive".
+const squash = (s) => flatten(s).replace(/[^a-z0-9]/g, "");
 
 export function candidateDomains(company) {
   const all = words(company);
-  const core = all.filter((w) => !NOISE.test(w) && w.length > 1);
+  // Single letters are kept. Dropping them turned "U-Drive" into "drive" and
+  // then into drive.co.uk, which is somebody else's business.
+  const core = all.filter((w) => !NOISE.test(w));
   if (!core.length) return [];
 
   const joined = core.join("");
@@ -66,18 +78,21 @@ async function page(url) {
  * which is what stops "Kelly Group" matching any page that says "group".
  */
 export async function guessDomain(company, { extraProof = [] } = {}) {
-  const core = words(company).filter((w) => !NOISE.test(w) && w.length > 2);
-  if (!core.length) return null;
+  // The whole company name, punctuation removed, has to appear in the page.
+  // Matching its words individually was too weak: any page with "koda" and
+  // "uk" on it satisfied "Škoda UK", and any page with "drive" satisfied
+  // "U-Drive". Requiring the name as one contiguous run rejects both.
+  const needle = squash(words(company).filter((w) => !NOISE.test(w)).join(""));
+  if (needle.length < 4) return null;
 
   for (const domain of candidateDomains(company)) {
     const html = await page(`https://${domain}/`);
     if (!html) continue;
-    const plain = html.replace(/<[^>]+>/g, " ").toLowerCase();
-    const hits = core.filter((w) => plain.includes(w)).length;
-    if (hits < core.length) continue;
+    const plain = html.replace(/<[^>]+>/g, " ");
+    if (!squash(plain).includes(needle)) continue;
     // An optional second gate for sector words, for the cases where a name is
     // generic enough that naming it proves nothing.
-    if (extraProof.length && !extraProof.some((w) => plain.includes(String(w).toLowerCase()))) continue;
+    if (extraProof.length && !extraProof.some((w) => squash(plain).includes(squash(w)))) continue;
     return domain;
   }
   return null;
