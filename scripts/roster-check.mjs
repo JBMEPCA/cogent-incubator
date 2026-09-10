@@ -132,6 +132,20 @@ if (mxChecking) {
   }
 }
 
+// Harvesting a magazine's archive also picks up the magazine. BarberEVO's own
+// editor reached the barbering list, which is a person we would be writing to
+// about their own coverage. The source column records which publication the row
+// came from, so the two can be compared.
+const mainLabel = (h) => String(h || "").replace(/^www\./, "").split(".")[0].toLowerCase();
+function isThePublication(row) {
+  const pub = (row.source || "").match(/([a-z0-9-]+\.[a-z.]{2,})\s+archive/i)?.[1];
+  if (!pub) return false;
+  const label = mainLabel(pub);
+  if (!label || label.length < 4) return false;
+  const emailHost = (row.email || "").split("@")[1] || "";
+  return mainLabel(emailHost) === label || mainLabel(row.domain) === label;
+}
+
 const reasons = new Map();
 const reject = (row, why) => {
   reasons.set(why, (reasons.get(why) || 0) + 1);
@@ -156,6 +170,7 @@ for (const row of rows) {
   else if (known.has(name.toLowerCase()) || known.has(email)) ok = reject(row, "already in the pipeline");
   else if (seen.has(email)) ok = reject(row, "duplicate address in this file");
   else if (seen.has(name.toLowerCase())) ok = reject(row, "duplicate person in this file");
+  else if (isThePublication(row)) ok = reject(row, "the publication we harvested, not a subject");
 
   if (ok && mxChecking) {
     const domain = email.split("@")[1];
