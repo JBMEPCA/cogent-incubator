@@ -227,6 +227,7 @@ for (const url of candidates.slice(0, LIMIT)) {
 
   let domain = "";
   let guessed = false;
+  let offDomain = false;
   if (got.website) {
     try {
       domain = new URL(got.website.startsWith("http") ? got.website : `https://${got.website}`).hostname.replace(/^www\./, "");
@@ -247,7 +248,9 @@ for (const url of candidates.slice(0, LIMIT)) {
   let email = "";
   if (domain && !NO_ADDRESS) {
     try {
-      email = (await findAddress(domain, { person: got.name }))?.email || "";
+      const found = await findAddress(domain, { person: got.name });
+      email = found?.email || "";
+      if (found?.offDomain) offDomain = true;
     } catch {}
   }
   if (email) addressed++;
@@ -258,7 +261,7 @@ for (const url of candidates.slice(0, LIMIT)) {
     company: (got.company || "").trim(),
     domain,
     email,
-    source: `${SITE} archive${guessed ? ", domain guessed" : ""}`,
+    source: `${SITE} archive${guessed ? ", domain guessed" : ""}${offDomain ? ", address on another domain" : ""}`,
     hookUrl: url,
   });
   console.log(`${got.name.slice(0, 24).padEnd(25)} ${(got.company || "").slice(0, 26).padEnd(27)} ${(email || "-").padEnd(34)}`);

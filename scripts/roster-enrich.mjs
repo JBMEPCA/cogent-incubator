@@ -69,8 +69,15 @@ for (const row of rows) {
     const got = await findAddress(row.domain, { person: row.name });
     if (got?.email) {
       row.email = got.email;
+      // Flagged rather than dropped, because off-domain cuts both ways:
+      // hpi@hpi.co.uk on bvrla.co.uk is a different company, while
+      // sales@howardsongroup.com on dennisuk.com is the right parent group.
+      // Only a person can tell those apart, so the row says which it is.
+      if (got.offDomain) row.source = `${row.source}, address on another domain`;
       foundEmail++;
-      console.log(`${row.name.slice(0, 24).padEnd(25)} ${row.domain.padEnd(32)} ${got.email}`);
+      console.log(
+        `${row.name.slice(0, 24).padEnd(25)} ${row.domain.padEnd(32)} ${got.email}${got.offDomain ? "  (other domain)" : ""}`
+      );
     }
   } catch {}
 }

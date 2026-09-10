@@ -221,5 +221,13 @@ export async function findAddress(domain, { maxPages = 6, person = "" } = {}) {
   const best = [...seen.keys()].sort(
     (a, b) => Number(own(b)) - Number(own(a)) || rankOf(a, person) - rankOf(b, person) || a.length - b.length
   )[0];
-  return { email: best, source: seen.get(best), all: [...seen.keys()] };
+  // Say when the chosen address is not on the company's own domain. Reading
+  // bvrla.co.uk produced hpi@hpi.co.uk, a partner's inbox and a different
+  // company altogether, and it was accepted because it was the only address on
+  // the page. Sharing the main label is fine, because gateway2lease.co.uk and
+  // gateway2lease.com are one business; sharing nothing is a different company
+  // and the caller has to be able to tell.
+  const mainLabel = (h) => h.replace(/^www\./, "").split(".")[0];
+  const related = own(best) || mainLabel(best.split("@")[1]) === mainLabel(bare);
+  return { email: best, source: seen.get(best), offDomain: !related, all: [...seen.keys()] };
 }
