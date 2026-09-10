@@ -46,8 +46,11 @@ const RANK = [
 
 // Addresses that are published and useless, beyond the no-reply set: an image
 // file that regexes like an address, and the tooling most sites leak.
+// mysite.com is Wix's placeholder and egertonsbarbers.co.uk ships it on a live
+// contact page, so a template address a shop never edited reads exactly like a
+// real find.
 const JUNK =
-  /(\.(png|jpe?g|gif|webp|svg|css|js)$|^[0-9a-f]{16,}@|sentry|wixpress|example\.com|domain\.com|yourdomain|@sentry|godaddy|squarespace|@2x)/i;
+  /(\.(png|jpe?g|gif|webp|svg|css|js)$|^[0-9a-f]{16,}@|sentry|wixpress|@(example|mysite|domain|yourdomain|yoursite|email|sentry|godaddy|squarespace)\.|example@|your@|@2x)/i;
 
 const EMAIL = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g;
 
