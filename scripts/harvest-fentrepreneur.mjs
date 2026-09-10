@@ -122,6 +122,10 @@ for (const year of YEARS) {
     });
     got++;
     if (!QUIET && email) console.log(`${year}  ${name.padEnd(26)} ${domain.padEnd(32)} ${email}`);
+    // Checkpoint as we go. Eight years is roughly eight hundred profiles and
+    // several thousand HTTP requests, and writing only at the end means one
+    // stall discards the whole run.
+    if (rows.length % 10 === 0) mergeRoster(OUT, rows);
   }
   if (!QUIET) console.log(`${year}: ${got} profiles read\n`);
 }
