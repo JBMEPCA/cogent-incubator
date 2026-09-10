@@ -1,0 +1,38 @@
+[
+  {
+    "personName": "Ronan Mallaghan",
+    "personRole": "Chief Executive, Mallaghan",
+    "company": "Mallaghan",
+    "companyDomain": "mallaghangse.com",
+    "genericEmail": "marketing@mallaghangroup.com",
+    "hookUrl": "https://www.newsletter.co.uk/business/innovation-for-aviation-is-not-just-a-statement-its-the-mission-co-tyrone-aviation-truck-manufacturer-scoops-two-accolades-as-skybelt-takes-top-honours-5192739",
+    "newsHook": "Building ground support equipment in County Tyrone that now works at airports in more than a hundred countries, and taking two innovation accolades this year with SkyBelt, is exactly the kind of story our readers do not hear often enough.",
+    "questions": [
+      "Dungannon is a long way from the world's big airports. How did the company end up supplying more than a hundred countries from there?",
+      "SkyBelt took top honours this year. What problem on the ramp does it actually solve?",
+      "Ground support equipment is bought on whole-life cost and lives outdoors for twenty years. How does that shape what you build?",
+      "Airlines and handlers are under real cost pressure. Where does that show up in what they will and will not buy?",
+      "Electrification is coming to the ramp as well as the aircraft. How far along is that in practice?",
+      "You manufacture in Northern Ireland and export almost everything. What is the hardest part of that right now?",
+      "Where does Mallaghan go from here?"
+    ]
+  },
+  {
+    "personName": "Graham Corfield",
+    "personRole": "Founder and Chief Executive, Aviramp",
+    "company": "Aviramp",
+    "companyDomain": "aviramp.com",
+    "genericEmail": "sales@aviramp.com",
+    "hookUrl": "https://aviramp.com/us/about/",
+    "newsHook": "Inventing a step-free boarding ramp in Telford so that wheelchair users and passengers with reduced mobility can board an aircraft with dignity, and selling it worldwide, is a story our readers would genuinely learn from.",
+    "questions": [
+      "You built a step-free ramp because the existing options were not good enough. What were passengers actually being put through?",
+      "Accessible boarding is a legal duty and an operational headache. Which argument actually persuades an airport?",
+      "The ramp has to work in a turnaround measured in minutes. How do you make dignity fast?",
+      "You started in 2009 from Telford. What was the hardest year?",
+      "Airports buy slowly and in capital cycles. How do you sell into that as an independent business?",
+      "What do airlines and handlers still misunderstand about reduced mobility passengers?",
+      "Where does Aviramp go from here?"
+    ]
+  }
+]

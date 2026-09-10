@@ -1,0 +1,56 @@
+[
+  {
+    "personName": "Joe Pomper",
+    "personRole": "Murdock London",
+    "company": "Murdock London",
+    "companyDomain": "murdocklondon.com",
+    "genericEmail": "press@murdocklondon.com",
+    "hookUrl": "https://modernbarber.co.uk/modern-barber-awards-2025-winners",
+    "newsHook": "Winning Best Business Leader at the Modern Barber Awards, for running a barbering group rather than a single chair, is exactly the kind of story our readers do not hear often enough.",
+    "questions": [
+      "Best Business Leader is an award for running the business, not for cutting hair. Which of those is the harder job?",
+      "Murdock has several shops. What breaks first when a barbershop becomes a group?",
+      "How do you keep the standard identical across sites when the product is a person's hands?",
+      "Barbering has very high staff turnover. What actually makes a barber stay?",
+      "What do you know about the economics of a chair now that you wish you had known at the first shop?",
+      "Grooming retail and services pull in different directions. How do you decide where the money goes?",
+      "Where does Murdock London go from here?"
+    ]
+  },
+  {
+    "personName": "Rob Wood",
+    "personRole": "Novo Cabelo HQ",
+    "company": "Novo Cabelo HQ",
+    "companyDomain": "novocabelo.co.uk",
+    "genericEmail": "support@novocabelo.co.uk",
+    "hookUrl": "https://modernbarber.co.uk/modern-barber-awards-2025-winners",
+    "newsHook": "Winning Best Social Barber at the Modern Barber Awards, in a trade where social media has become the shop window, is a story our readers would genuinely learn from.",
+    "questions": [
+      "You won an award for social media in a trade built on walk-ins. How much of your business now starts on a phone?",
+      "Most barbers post constantly and get nothing back. What are they doing wrong?",
+      "What kind of post actually fills a chair, as opposed to getting likes?",
+      "Being visible online invites opinions. What has that cost you?",
+      "How much time does it really take, and who does it in your shop?",
+      "Platforms change the rules every year. How do you build on ground that keeps moving?",
+      "Where does Novo Cabelo go from here?"
+    ]
+  },
+  {
+    "personName": "Josh Lamonaca",
+    "personRole": "Founder, MENSPIRE",
+    "company": "MENSPIRE",
+    "companyDomain": "menspire.com",
+    "genericEmail": "store@menspire.co.uk",
+    "hookUrl": "https://modernbarber.co.uk/modern-barber-awards-2025-winners",
+    "newsHook": "Winning Best Photographic Image at the Modern Barber Awards, on top of building a global mentoring programme for barbers, is exactly the kind of story our readers want more of.",
+    "questions": [
+      "You won for a photograph. How much of a modern barber's reputation is made by the picture rather than the cut?",
+      "Mentored by Menspire puts you in the teaching business as well as the barbering one. What made you build it?",
+      "What do barbers ask you for most often, and what do they actually need?",
+      "You work internationally. What does British barbering do better than anywhere else, and what does it do worse?",
+      "What is the most common mistake a talented barber makes when they open their own shop?",
+      "How do you protect your own time when your name is the brand?",
+      "Where does MENSPIRE go from here?"
+    ]
+  }
+]
