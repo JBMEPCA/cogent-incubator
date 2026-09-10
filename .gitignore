@@ -69,3 +69,13 @@ mv-report-*.csv
 **/Fleet Data.csv
 **/Golf Data.csv
 **/Airport Data.csv
+
+# Harvested interview rosters: name, role, company and work email for real
+# people, five hundred of them. Same rule as the Mailchimp and Apollo data
+# above, and ignored by shape rather than by path, because the lesson from
+# "assets/New folder/" is that a path-scoped rule protects a path and the data
+# is what moves. scripts/roster/ is where the harvesters write today.
+scripts/roster/
+**/roster/*.csv
+*.leads.csv
+*.clean.csv
