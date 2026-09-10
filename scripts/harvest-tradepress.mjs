@@ -255,6 +255,11 @@ for (const url of candidates.slice(0, LIMIT)) {
     hookUrl: url,
   });
   console.log(`${got.name.slice(0, 24).padEnd(25)} ${(got.company || "").slice(0, 26).padEnd(27)} ${(email || "-").padEnd(34)}`);
+
+  // Checkpoint as we go. A run over two hundred articles takes long enough
+  // that finishing is not guaranteed, and writing only at the end means a
+  // stall throws away every row already paid for.
+  if (rows.length % 10 === 0) mergeRoster(OUT, rows);
 }
 
 const { total, added } = mergeRoster(OUT, rows);
