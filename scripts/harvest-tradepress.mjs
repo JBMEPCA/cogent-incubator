@@ -97,7 +97,15 @@ const locsIn = (xml) =>
 // so the highest numbered ones are read first.
 async function articleUrls(host) {
   const index = await text(`https://${host}/sitemap.xml`) || await text(`https://${host}/sitemap_index.xml`);
-  const subs = locsIn(index).filter((u) => /\.xml/i.test(u));
+  // Whether this is an index of sitemaps or already a list of pages is stated
+  // by the root element, so read that rather than guessing from the URLs.
+  // professionalbeauty.co.uk points at /sitemap/posts with no .xml extension,
+  // and filtering sub-sitemaps on ".xml" discarded every one of them and
+  // reported the site as having no articles at all.
+  const isIndex = /<sitemapindex/i.test(index);
+  const locs = locsIn(index);
+  if (!isIndex) return [...new Set(locs)].filter((u) => !SKIP_URL.test(u));
+  const subs = locs;
   const posty = subs
     .filter((u) => !/(category|tag|author|user|page|product|attachment|image|video)/i.test(u))
     .sort((a, b) => {
