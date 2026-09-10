@@ -267,6 +267,27 @@ hubFilters.push({
   action: { removeLabelIds: ["SPAM"] },
 });
 
+// The defect this whole design was always going to have, and it bit on 9 Sep
+// 2026: a forwarded copy is re-delivered by us, not by the original sender, so
+// SPF and DKIM no longer align at the second hop and Gmail can score it as
+// spam. Paul Mummery of the RHA replied to a Fleet outreach email, the copy
+// landed in the hub's spam folder, and it would never have been seen here.
+// Every forwarded copy is addressed to one of the four title mailboxes, so
+// that is the thing to whitelist. The cost is that real spam sent to those
+// addresses reaches this inbox too, which at one or two a week is a trade
+// worth making against losing a reply.
+const FEEDER_ADDRESSES = titles
+  .filter((t) => t.fromEmail !== HUB)
+  .map((t) => t.fromEmail)
+  .join(" OR ");
+if (FEEDER_ADDRESSES) {
+  hubFilters.push({
+    what: "never spam: copies forwarded from the other titles",
+    criteria: { query: `to:(${FEEDER_ADDRESSES}) OR cc:(${FEEDER_ADDRESSES}) OR deliveredto:(${FEEDER_ADDRESSES})` },
+    action: { removeLabelIds: ["SPAM"] },
+  });
+}
+
 hubFilters.push({
   what: "Topics/Interviews",
   criteria: { query: INTERVIEW_SUBJECTS },
