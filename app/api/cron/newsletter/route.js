@@ -29,7 +29,20 @@ export async function GET(request) {
     return Response.json(
       await forEachSite(async ({ site, creds }) => {
         if (!isNewsletterConfigured(creds.mailchimp)) return { skipped: "newsletter not configured" };
-        if (health) return { health: await lastIssueHealth(creds.mailchimp.audienceId) };
+        // The masthead rides along in every reply, health and dry run included.
+        //
+        // Airport sent two issues under Smart SME's logo and nobody caught it,
+        // because every pre-send check answered a question about a number -
+        // subscribers, stories, bounce rate, hours since the last issue - and
+        // not one of them said what the reader would see at the top of the
+        // page. A check that cannot fail on branding will never catch a
+        // branding fault, however often it is run.
+        const masthead = wordmarkFor(site.slug)
+          ? `${site.slug}-wordmark.png`
+          : "NONE - this title has no wordmark and will send without a masthead";
+        if (health) {
+          return { masthead, health: await lastIssueHealth(creds.mailchimp.audienceId) };
+        }
         // No fallback to another title's mark, ever.
         //
         // This was "?? LOGO_PNG", and LOGO_PNG is Smart SME's. Airport had no
@@ -48,7 +61,8 @@ export async function GET(request) {
         if (!mark) {
           console.error(`newsletter: no wordmark for ${site.slug}; sending without a masthead rather than another title's. Add it to scripts/build-brand-wordmarks.mjs.`);
         }
-        return runNewsletter(site, { creds, dryRun, logoBase64: mark ? mark.toString("base64") : null });
+        const result = await runNewsletter(site, { creds, dryRun, logoBase64: mark ? mark.toString("base64") : null });
+        return { masthead, ...result };
       })
     );
   } catch (e) {
