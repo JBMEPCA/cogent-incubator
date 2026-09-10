@@ -194,7 +194,12 @@ writeRoster(OUT, capped);
 
 const before = summarise(rows);
 console.log(`${FILE}: ${rows.length} rows in, ${before.withName} named, ${before.withEmail} with an address.`);
-console.log(`${OUT}: ${keep.length} rows a person could be written to today.\n`);
+// Reports what was written, not what survived the checks. Those differ once a
+// cap is applied, and printing the larger number overstates the deliverable.
+console.log(
+  `${OUT}: ${capped.length} rows a person could be written to today` +
+    `${CAP && keep.length > CAP ? `, capped from ${keep.length} usable` : ""}.\n`
+);
 if (reasons.size) {
   console.log("dropped:");
   for (const [why, n] of [...reasons.entries()].sort((a, b) => b[1] - a[1])) {
