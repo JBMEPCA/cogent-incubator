@@ -149,9 +149,50 @@ const HALF_PAST = [
   "/api/cron/agents?stage=worker",
 ];
 
+/**
+ * One import request per title, rather than one for the fleet.
+ *
+ * Measured on live audiences 11 September 2026: Mailchimp's batch endpoint runs
+ * at roughly 90s per 500 members, so one title's thousand takes about three
+ * minutes. Five of them in a single invocation is fifteen minutes against a 300s
+ * limit — the route was killed part way every time, which is why Golf and
+ * Airport imported that morning and Smart SME and Fleet did not. It read as a
+ * clean run either way.
+ *
+ * The route's own ?mode=due says which titles have allowance and queue left, so
+ * this never hardcodes a slug and a new title joins by existing. If that call
+ * fails the fleet-wide path is used unchanged: a slow sweep beats no sweep.
+ */
+async function expandDrip(env, path) {
+  try {
+    const res = await fetch(`${baseUrl(env)}/api/cron/subscriber-drip?mode=due`, {
+      headers: { Authorization: `Bearer ${env.CRON_SECRET}` },
+    });
+    if (!res.ok) return [path];
+    const { due } = await res.json();
+    if (!Array.isArray(due)) return [path];
+    // Nothing due is a real answer, not a failure: every title has already had
+    // its week's worth. Returning no steps is how that stays silent.
+    return due.map((slug) => `${path}&site=${encodeURIComponent(slug)}`);
+  } catch {
+    return [path];
+  }
+}
+
 async function runAll(env, now = new Date(), steps = null) {
+  const planned = steps || [...STEPS, ...scheduledExtras(now)];
+
+  const plan = [];
+  for (const path of planned) {
+    if (path.startsWith("/api/cron/subscriber-drip?mode=import")) {
+      plan.push(...(await expandDrip(env, path)));
+    } else {
+      plan.push(path);
+    }
+  }
+
   const results = [];
-  for (const path of steps || [...STEPS, ...scheduledExtras(now)]) {
+  for (const path of plan) {
     try {
       const res = await fetch(baseUrl(env) + path, {
         headers: { Authorization: `Bearer ${env.CRON_SECRET}` },

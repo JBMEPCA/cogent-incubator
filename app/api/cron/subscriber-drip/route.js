@@ -1,4 +1,13 @@
-import { verifyProspects, runDrip, prospectStats, isDripConfigured, isDripEnabled } from "@/lib/prospects";
+import {
+  verifyProspects,
+  runDrip,
+  prospectStats,
+  isDripConfigured,
+  isDripEnabled,
+  getWeeklyTarget,
+  importedThisWeek,
+  countImportable,
+} from "@/lib/prospects";
 import { cronGuard, forEachSite } from "@/lib/cron";
 
 export const dynamic = "force-dynamic";
@@ -33,8 +42,28 @@ export async function GET(request) {
 
   const url = new URL(request.url);
   const mode = url.searchParams.get("mode") ?? "stats";
-  if (!["stats", "verify", "import"].includes(mode)) {
+  if (!["stats", "verify", "import", "due"].includes(mode)) {
     return Response.json({ error: `unknown mode "${mode}"` }, { status: 400 });
+  }
+
+  // Which titles have something to do, so the worker can call this once per
+  // title instead of asking one invocation to do the fleet. Deliberately cheap:
+  // two counts and a setting each, no Mailchimp call, so it answers in a second
+  // and the worker can afford it before every import sweep.
+  if (mode === "due") {
+    const due = [];
+    await forEachSite(async ({ site, creds }) => {
+      if (!isDripConfigured(creds.mailchimp)) return { due: false };
+      const [target, used, queue] = await Promise.all([
+        getWeeklyTarget(site.id),
+        importedThisWeek(site.id),
+        countImportable(site.id),
+      ]);
+      const remaining = Math.max(0, target - used);
+      if (remaining > 0 && queue > 0) due.push(site.slug);
+      return { remaining, queue };
+    });
+    return Response.json({ due });
   }
 
   const only = url.searchParams.get("site");

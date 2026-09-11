@@ -1297,18 +1297,30 @@ Two separate things, and confusing them is how the rate gets set wrong:
   how much of that a title actually takes, counted against the UK calendar week.
   Smart SME is on 2,000, the other four on 1,000.
 
-A run takes the whole **remaining** allowance, not a fixed thousand, capped at
-`DRIP_MAX_PER_RUN` (2,000) so a mistyped allowance cannot become a hundred
-Mailchimp calls inside one function. Every title therefore finishes its week on
-the Tuesday and its Friday run correctly reports nothing to do, which is the
-shape working rather than a fault. Friday exists so that a failed Tuesday costs
-a title a few days instead of a whole week.
+A run takes whatever is left of the allowance, capped at `DRIP_MAX_PER_RUN`
+(1,000). So a title on 1,000 spends it on Tuesday and its Friday run correctly
+reports nothing to do; Smart SME on 2,000 uses both runs, and **needs** both.
 
-Taking the remaining allowance rather than a fixed batch is also what keeps the
-rate right when only half of this ships. The schedule lives in a Cloudflare
-Worker deployed separately from the app, so if the app ships and the worker does
-not, Tuesday is the only run there is — and a fixed thousand would leave Smart
-SME quietly running at half its rate.
+**Know how slow Mailchimp actually is.** Measured against live audiences on
+11 September 2026: Fleet's thousand took 184s, Smart SME's two thousand took
+113s and 155s. That is roughly **90 seconds per 500 members**, and it is the
+number every limit here is set against:
+
+- 1,000 per run, because 2,000 is about six minutes against a 300s function.
+- 2,000 a week is therefore two runs, which is what Tuesday and Friday are for.
+- Five titles in one invocation is fifteen minutes and cannot work at any
+  function limit worth having.
+
+**So the worker calls the route once per title.** `expandDrip()` in
+`cloudflare/worker.js` asks `?mode=due` which titles have allowance and queue
+left, then issues one `?mode=import&site=<slug>` each. Nothing hardcodes a slug,
+so a new title joins by existing; if the due call fails it falls back to the
+fleet-wide path, because a slow sweep beats no sweep.
+
+Before that, one invocation did the fleet sequentially and was killed part way
+every time. On 8 September it finished Airport's 609 and never reached the four
+titles behind it; on 11 September, mid-repair, it did Golf's 1,000 and Airport's
+391 and then died. Both read as clean runs.
 
 ```bash
 node --import ./scripts/_register.mjs scripts/set-drip-rate.mjs                 # show
