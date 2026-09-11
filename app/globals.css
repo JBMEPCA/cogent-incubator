@@ -2455,3 +2455,25 @@ th {
     order: -1;
   }
 }
+
+/* ---------- Loading placeholders ---------- */
+
+/* Used by the loading.js boundaries. Reuses the shimmer already defined for
+   progress bars rather than introducing a second one, so a page filling in and
+   a bar filling up move at the same rhythm. prefers-reduced-motion is handled
+   globally further up and stops the sweep along with everything else, leaving a
+   plain grey block, which still says the right thing. */
+.skel {
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+  background: rgba(101, 125, 255, 0.09);
+}
+
+.skel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 18%, rgba(122, 143, 255, 0.15) 50%, transparent 82%);
+  animation: shimmer 1.4s linear infinite;
+}

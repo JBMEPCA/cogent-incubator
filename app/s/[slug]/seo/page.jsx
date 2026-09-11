@@ -2,6 +2,7 @@ import Header from "@/app/components/Header";
 import SubTabs, { ANALYTICS_TABS } from "@/app/components/SubTabs";
 import LinkMap from "@/app/components/LinkMap";
 import { notFound } from "next/navigation";
+import { unstable_cache } from "next/cache";
 import { getSiteContext } from "@/lib/site";
 import { approveSeoSuggestion, dismissSeoSuggestion, retrySeoSuggestion } from "@/lib/actions";
 import { isSeoAgentConfigured } from "@/lib/seo-agent";
@@ -89,6 +90,23 @@ function scoreColor(score) {
   return { color: "#fcd34d", bg: "rgba(217,119,6,0.14)" };
 }
 
+// The graph above is drawn from fifty live posts, and lib/wordpress.js fetches
+// those ten at a time with a deliberate 1500ms pause between pages, because
+// SiteGround’s WAF rate-limits harder than the REST API itself does. Five round
+// trips to the host plus six full seconds of sleeping, uncached, in front of
+// every single load of this page. That is not a slow page, it is a page that
+// waits on a background job it should never have been doing in the foreground.
+//
+// Fifteen minutes is the window the dashboard already uses for its Google and
+// Mailchimp reads, so this matches what the rest of the app considers fresh. A
+// link map a quarter of an hour old is still a link map; a link map that costs
+// six seconds is a page nobody opens twice.
+//
+// The credential is closed over rather than passed in the key: cache keys get
+// written down, and this one would be writing down an application password.
+const cachedLinkGraph = (wp, siteId) =>
+  unstable_cache(() => buildLinkGraph(wp), ["seo-link-graph", String(siteId)], { revalidate: 900 })();
+
 export default async function SeoPage({ params }) {
   const { slug } = await params;
   const ctx = await getSiteContext(slug);
@@ -137,7 +155,7 @@ export default async function SeoPage({ params }) {
     : [];
   const articleById = new Map(keywordArticles.map((a) => [a.id, a]));
 
-  const linkGraph = await buildLinkGraph(creds.wordpress);
+  const linkGraph = await cachedLinkGraph(creds.wordpress, site.id);
   const siteScore = scoreSetting ? parseInt(scoreSetting.value, 10) : null;
   const audit = auditSetting ? JSON.parse(auditSetting.value) : null;
   const appliedCount = resolved.filter((s) => s.status === "applied").length;
