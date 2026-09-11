@@ -22,6 +22,20 @@ export const metadata = {
   description: "Control room for the Cogent title portfolio",
 };
 
+// Next supplies a width=device-width viewport by default, but not the two
+// things a phone build actually needs: viewportFit so the bottom title rail can
+// clear the home indicator with env(safe-area-inset-bottom), and a themeColor
+// so the browser chrome matches the app instead of sitting on a white bar above
+// a near-black page. maximumScale is deliberately left alone — capping zoom is
+// an accessibility regression, and the 16px input rule in globals.css is what
+// stops iOS auto-zooming on focus.
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#05070f",
+};
+
 export default async function RootLayout({ children }) {
   // The rail is on every screen, so a database that is unreachable or not yet
   // migrated must not take the whole app down with it. An empty rail plus a

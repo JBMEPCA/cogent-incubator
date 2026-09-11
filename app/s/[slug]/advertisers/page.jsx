@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getSiteContext } from "@/lib/site";
 import { addProspect, deleteProspect, promoteProspect } from "@/lib/actions";
 import { PRODUCTS, productLabel } from "@/lib/crm";
+import Scroller from "@/app/components/Scroller";
 
 export const dynamic = "force-dynamic";
 
@@ -95,70 +96,72 @@ export default async function AdvertisersPage({ params }) {
         </section>
 
         {categories.map((cat) => (
-          <section key={cat} className="panel" style={{ marginBottom: 18, overflowX: "auto" }}>
+          <section key={cat} className="panel" style={{ marginBottom: 18 }}>
             <h2 style={{ margin: "0 0 10px", fontSize: 15 }}>
               {cat}{" "}
               <span style={{ color: "var(--muted)", fontWeight: 400, fontSize: 13 }}>
                 ({prospects.filter((p) => p.category === cat).length})
               </span>
             </h2>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
-              <tbody>
-                {prospects
-                  .filter((p) => p.category === cat)
-                  .map((p) => (
-                    <tr key={p.id} style={{ borderTop: "1px solid var(--line)" }}>
-                      <td style={{ padding: "8px", fontWeight: 600, whiteSpace: "nowrap" }}>
-                        {p.website ? (
-                          <a
-                            href={p.website}
-                            target="_blank"
-                            rel="noreferrer"
-                            style={{ color: "var(--neon-cyan)" }}
-                          >
-                            {p.company} ↗
-                          </a>
-                        ) : (
-                          p.company
-                        )}
-                      </td>
-                      <td style={{ padding: "8px", color: "var(--muted)", fontSize: 13 }}>
-                        {p.rationale || ""}
-                      </td>
-                      <td style={{ padding: "8px", whiteSpace: "nowrap" }}>
-                        {p.suggestedProduct && (
-                          <span className="chip chip-general">{productLabel(p.suggestedProduct)}</span>
-                        )}
-                      </td>
-                      <td style={{ padding: "8px", whiteSpace: "nowrap", textAlign: "right" }}>
-                        {p.promotedLeadId ? (
-                          <span className="micro" style={{ color: "var(--neon-green)" }}>
-                            ✓ in CRM
-                          </span>
-                        ) : (
-                          <form action={promoteProspect.bind(null, siteRef)} style={{ display: "inline" }}>
-                            <input type="hidden" name="id" value={p.id} />
-                            <button
-                              type="submit"
-                              className="btn-ghost"
-                              style={{ color: "var(--neon-cyan)", fontSize: 12 }}
-                              title="Create a CRM lead from this prospect"
+            <Scroller>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+                <tbody>
+                  {prospects
+                    .filter((p) => p.category === cat)
+                    .map((p) => (
+                      <tr key={p.id} style={{ borderTop: "1px solid var(--line)" }}>
+                        <td style={{ padding: "8px", fontWeight: 600, whiteSpace: "nowrap" }}>
+                          {p.website ? (
+                            <a
+                              href={p.website}
+                              target="_blank"
+                              rel="noreferrer"
+                              style={{ color: "var(--neon-cyan)" }}
                             >
-                              → CRM
+                              {p.company} ↗
+                            </a>
+                          ) : (
+                            p.company
+                          )}
+                        </td>
+                        <td style={{ padding: "8px", color: "var(--muted)", fontSize: 13 }}>
+                          {p.rationale || ""}
+                        </td>
+                        <td style={{ padding: "8px", whiteSpace: "nowrap" }}>
+                          {p.suggestedProduct && (
+                            <span className="chip chip-general">{productLabel(p.suggestedProduct)}</span>
+                          )}
+                        </td>
+                        <td style={{ padding: "8px", whiteSpace: "nowrap", textAlign: "right" }}>
+                          {p.promotedLeadId ? (
+                            <span className="micro" style={{ color: "var(--neon-green)" }}>
+                              ✓ in CRM
+                            </span>
+                          ) : (
+                            <form action={promoteProspect.bind(null, siteRef)} style={{ display: "inline" }}>
+                              <input type="hidden" name="id" value={p.id} />
+                              <button
+                                type="submit"
+                                className="btn-ghost"
+                                style={{ color: "var(--neon-cyan)", fontSize: 12 }}
+                                title="Create a CRM lead from this prospect"
+                              >
+                                → CRM
+                              </button>
+                            </form>
+                          )}
+                          <form action={deleteProspect.bind(null, siteRef)} style={{ display: "inline", marginLeft: 6 }}>
+                            <input type="hidden" name="id" value={p.id} />
+                            <button type="submit" className="btn-ghost" title="Delete">
+                              ✕
                             </button>
                           </form>
-                        )}
-                        <form action={deleteProspect.bind(null, siteRef)} style={{ display: "inline", marginLeft: 6 }}>
-                          <input type="hidden" name="id" value={p.id} />
-                          <button type="submit" className="btn-ghost" title="Delete">
-                            ✕
-                          </button>
-                        </form>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </Scroller>
           </section>
         ))}
         {prospects.length === 0 && (

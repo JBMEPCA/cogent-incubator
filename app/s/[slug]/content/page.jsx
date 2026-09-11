@@ -5,6 +5,7 @@ import ScheduleCalendar from "@/app/components/ScheduleCalendar";
 import { upcomingSlots, slotsFor } from "@/lib/schedule";
 import { notFound } from "next/navigation";
 import { getSiteContext } from "@/lib/site";
+import Scroller from "@/app/components/Scroller";
 import {
   addPrBrand,
   togglePrSubscribed,
@@ -425,7 +426,7 @@ export default async function ContentPage({searchParams, params}) {
               </form>
             </section>
 
-            <section className="panel" style={{ overflowX: "auto" }}>
+            <section className="panel">
               <div
                 style={{
                   display: "flex",
@@ -475,96 +476,98 @@ export default async function ContentPage({searchParams, params}) {
                 <p style={{ color: "var(--muted)", fontSize: 14 }}>No sources yet.</p>
               )}
               {brands.length > 0 && (
-                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
-                  <thead>
-                    <tr style={{ textAlign: "left" }}>
-                      <th className="micro" style={{ padding: "6px 8px" }}>Brand</th>
-                      <th className="micro" style={{ padding: "6px 8px" }}>Category</th>
-                      <th className="micro" style={{ padding: "6px 8px" }}>News hub</th>
-                      <th className="micro" style={{ padding: "6px 8px" }}>Email signup</th>
-                      <th className="micro" style={{ padding: "6px 8px" }}>Subscribed</th>
-                      <th className="micro" style={{ padding: "6px 8px" }}>Notes</th>
-                      <th style={{ padding: "6px 8px" }}></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {brands.map((b) => (
-                      <tr key={b.id} style={{ borderTop: "1px solid var(--line)" }}>
-                        <td style={{ padding: "8px", fontWeight: 600 }}>
-                          {b.website ? (
-                            <a
-                              href={b.website}
-                              target="_blank"
-                              rel="noreferrer"
-                              style={{ color: "var(--text)" }}
-                            >
-                              {b.name}
-                            </a>
-                          ) : (
-                            b.name
-                          )}
-                        </td>
-                        <td style={{ padding: "8px", color: "var(--muted)", fontSize: 12 }}>
-                          {b.category || "—"}
-                        </td>
-                        <td style={{ padding: "8px" }}>
-                          {b.newsHubUrl ? (
-                            <a
-                              href={b.newsHubUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              style={{ color: "var(--neon-cyan)", fontSize: 13 }}
-                            >
-                              News hub ↗
-                            </a>
-                          ) : (
-                            "—"
-                          )}
-                        </td>
-                        <td style={{ padding: "8px" }}>
-                          {b.newsletterUrl ? (
-                            <a
-                              href={b.newsletterUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              style={{ color: "var(--neon-green)", fontSize: 13 }}
-                            >
-                              Sign up ↗
-                            </a>
-                          ) : (
-                            "—"
-                          )}
-                        </td>
-                        <td style={{ padding: "8px" }}>
-                          <form action={togglePrSubscribed.bind(null, siteRef)}>
-                            <input type="hidden" name="id" value={b.id} />
-                            <button
-                              type="submit"
-                              className="btn-ghost"
-                              title="Toggle subscribed"
-                              style={{
-                                color: b.subscribed ? "var(--neon-green)" : "var(--muted)",
-                              }}
-                            >
-                              {b.subscribed ? "✓ yes" : "○ no"}
-                            </button>
-                          </form>
-                        </td>
-                        <td style={{ padding: "8px", color: "var(--muted)", fontSize: 12 }}>
-                          {b.notes || ""}
-                        </td>
-                        <td style={{ padding: "8px" }}>
-                          <form action={deletePrBrand.bind(null, siteRef)}>
-                            <input type="hidden" name="id" value={b.id} />
-                            <button type="submit" className="btn-ghost" title="Delete">
-                              ✕
-                            </button>
-                          </form>
-                        </td>
+                <Scroller>
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+                    <thead>
+                      <tr style={{ textAlign: "left" }}>
+                        <th className="micro" style={{ padding: "6px 8px" }}>Brand</th>
+                        <th className="micro" style={{ padding: "6px 8px" }}>Category</th>
+                        <th className="micro" style={{ padding: "6px 8px" }}>News hub</th>
+                        <th className="micro" style={{ padding: "6px 8px" }}>Email signup</th>
+                        <th className="micro" style={{ padding: "6px 8px" }}>Subscribed</th>
+                        <th className="micro" style={{ padding: "6px 8px" }}>Notes</th>
+                        <th style={{ padding: "6px 8px" }}></th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {brands.map((b) => (
+                        <tr key={b.id} style={{ borderTop: "1px solid var(--line)" }}>
+                          <td style={{ padding: "8px", fontWeight: 600 }}>
+                            {b.website ? (
+                              <a
+                                href={b.website}
+                                target="_blank"
+                                rel="noreferrer"
+                                style={{ color: "var(--text)" }}
+                              >
+                                {b.name}
+                              </a>
+                            ) : (
+                              b.name
+                            )}
+                          </td>
+                          <td style={{ padding: "8px", color: "var(--muted)", fontSize: 12 }}>
+                            {b.category || "—"}
+                          </td>
+                          <td style={{ padding: "8px" }}>
+                            {b.newsHubUrl ? (
+                              <a
+                                href={b.newsHubUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                style={{ color: "var(--neon-cyan)", fontSize: 13 }}
+                              >
+                                News hub ↗
+                              </a>
+                            ) : (
+                              "—"
+                            )}
+                          </td>
+                          <td style={{ padding: "8px" }}>
+                            {b.newsletterUrl ? (
+                              <a
+                                href={b.newsletterUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                style={{ color: "var(--neon-green)", fontSize: 13 }}
+                              >
+                                Sign up ↗
+                              </a>
+                            ) : (
+                              "—"
+                            )}
+                          </td>
+                          <td style={{ padding: "8px" }}>
+                            <form action={togglePrSubscribed.bind(null, siteRef)}>
+                              <input type="hidden" name="id" value={b.id} />
+                              <button
+                                type="submit"
+                                className="btn-ghost"
+                                title="Toggle subscribed"
+                                style={{
+                                  color: b.subscribed ? "var(--neon-green)" : "var(--muted)",
+                                }}
+                              >
+                                {b.subscribed ? "✓ yes" : "○ no"}
+                              </button>
+                            </form>
+                          </td>
+                          <td style={{ padding: "8px", color: "var(--muted)", fontSize: 12 }}>
+                            {b.notes || ""}
+                          </td>
+                          <td style={{ padding: "8px" }}>
+                            <form action={deletePrBrand.bind(null, siteRef)}>
+                              <input type="hidden" name="id" value={b.id} />
+                              <button type="submit" className="btn-ghost" title="Delete">
+                                ✕
+                              </button>
+                            </form>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </Scroller>
               )}
             </section>
           </>

@@ -195,6 +195,24 @@ export default function AgentOffice() {
         }
         .iso-wrap.night { background: linear-gradient(160deg,#d7e2f4 0%,#c6d5ec 55%,#b8cbe6 100%); }
 
+        /* The floor plan is a 1100-unit-wide campus of seven rooms. Fitted to a
+           375px screen each room is about 45px across and every agent at their
+           desk is a smudge, which is the whole point of the drawing gone. So on
+           a phone it keeps a legible size and the room pans instead: the same
+           bargain the wide tables make, and the more natural one here, because
+           panning a floor plan is what you would expect to do to a map.
+           The rules live in this block rather than globals.css because this one
+           is written inline and would otherwise win on cascade order. */
+        @media (max-width: 760px) {
+          .iso-wrap {
+            overflow-x: auto;
+            overflow-y: hidden;
+            overscroll-behavior-x: contain;
+            -webkit-overflow-scrolling: touch;
+          }
+          .iso-wrap > svg { display: block; min-width: 720px; }
+        }
+
         .room { cursor: pointer; transition: transform .35s cubic-bezier(.2,.8,.3,1); }
         /* Mouse users should never see the focus box, but keyboard users must
            still be able to tell where they are. */

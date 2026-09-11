@@ -1679,3 +1679,779 @@ td,
 th {
   overflow-wrap: break-word;
 }
+
+/* ============================================================== PHONE BUILD
+   Everything below turns the desktop control room into something worth using
+   on a phone. It is additive: every rule sits inside a `max-width`, `pointer`
+   or `hover` query, so a desktop browser never reaches any of it.
+
+   Three ideas run through it.
+
+   One, the two axes of navigation stay separate. Desktop puts titles in a rail
+   down the right and sections in a header across the top; a phone puts titles
+   in a strip along the bottom and sections in a sheet behind one button. Same
+   model, different furniture, so the app you learn on a laptop is the app you
+   already know on a train.
+
+   Two, hover is not a thing that exists on a phone. Every lift, glow and
+   tooltip in this file is a mouse affordance, and left alone they latch on
+   after a tap and stay lit. They are switched off under `hover: none` and
+   replaced by press states, which is the feedback a finger actually wants.
+
+   Three, nothing may be narrower than a thumb, and no field may be smaller
+   than the 16px below which iOS zooms the page on focus.
+   ========================================================================== */
+
+/* ---------- Ambient field ---------- */
+
+@media (max-width: 760px) {
+  body {
+    /* `background-attachment: fixed` is a full repaint per scroll frame on
+       mobile GPUs, and iOS Safari declines to honour it at all. Dropping to
+       `scroll` positions the radials against the whole document instead of the
+       viewport, which would put the 110%-down violet glow several thousand
+       pixels below the fold, so the field is restated as a pair of top glows
+       sized in viewport units. The same light, painted once, scrolling away
+       with the page rather than chasing it. */
+    background-attachment: scroll;
+    background-image:
+      radial-gradient(130vw 58vh at 8% -6%, rgba(46, 62, 238, 0.32), transparent 62%),
+      radial-gradient(100vw 40vh at 98% 1%, rgba(34, 211, 238, 0.14), transparent 62%);
+  }
+
+  /* The grid is a texture, and a 44px cell that reads as texture on a 27-inch
+     monitor reads as graph paper on a 375px screen. */
+  body::before {
+    background-size: 32px 32px;
+    mask-image: radial-gradient(ellipse 140% 42% at 50% 0%, black 18%, transparent 74%);
+  }
+}
+
+/* ---------- Touch ---------- */
+
+@media (hover: none) {
+  /* Hover states latch after a tap and stay lit until something else is
+     tapped, which reads as a stuck selection rather than as feedback. */
+  .panel:hover,
+  .panel.fleet-card:hover {
+    border-color: var(--line);
+    box-shadow: none;
+  }
+
+  .panel.panel-glow:hover {
+    border-color: rgba(34, 211, 238, 0.35);
+    box-shadow: 0 0 30px rgba(34, 211, 238, 0.12);
+  }
+
+  .btn:hover {
+    transform: none;
+    filter: none;
+    box-shadow: var(--glow-brand);
+  }
+
+  .btn-ghost:hover,
+  .nav-link:hover {
+    color: var(--muted);
+    background: transparent;
+    text-shadow: none;
+  }
+
+  .fleet-nav-btn:hover,
+  .rail-item:hover,
+  .newtitle-swatch:hover,
+  .rail-home:hover .rail-home-mark {
+    transform: none;
+  }
+
+  .fleet-nav-btn:hover {
+    color: var(--muted);
+    border-color: var(--line);
+    background: var(--surface-2);
+  }
+
+  .fleet-nav-btn.is-active:hover {
+    color: var(--neon-cyan);
+    border-color: rgba(34, 211, 238, 0.45);
+    background: rgba(34, 211, 238, 0.1);
+  }
+
+  tbody tr:hover {
+    background: transparent;
+  }
+
+  /* Declared in a page-level <style> block, so it is later in the cascade than
+     this file and equal on specificity. !important is the only lever. */
+  .widget:hover {
+    transform: none !important;
+    border-color: var(--line) !important;
+  }
+
+  .widget .widget-link {
+    opacity: 1;
+  }
+
+  /* What replaces all of the above: the page answering the finger. */
+  .btn:active {
+    transform: scale(0.985);
+    filter: brightness(1.12);
+  }
+
+  .nav-link:active,
+  .fleet-nav-btn:active,
+  .btn-ghost:active {
+    color: var(--text);
+    background: rgba(101, 125, 255, 0.16);
+  }
+
+  .panel.fleet-card:active,
+  .panel.widget:active {
+    border-color: var(--line-bright);
+  }
+
+  .rail-item:active .site-mark {
+    filter: brightness(1.15);
+  }
+}
+
+@media (pointer: coarse) {
+  /* The grey flash Android paints over any tapped link, which on a dark UI
+     lands as a pale box a beat behind the finger. The :active states above are
+     the replacement. */
+  a,
+  button,
+  [role="button"],
+  summary,
+  label {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  /* 30px is a comfortable mouse target and an uncomfortable thumb one. */
+  .nav-link {
+    padding: 10px 13px;
+  }
+
+  .btn {
+    min-height: 44px;
+    padding: 11px 20px;
+  }
+
+  .btn-ghost {
+    min-height: 38px;
+    padding: 8px 12px;
+  }
+
+  .fleet-nav-btn {
+    min-height: 42px;
+    padding: 9px 15px;
+  }
+
+  .newtitle-swatch {
+    width: 38px;
+    height: 38px;
+  }
+
+  /* A one-line link inside body copy cannot grow without moving the text
+     around it, so it grows into its own line box instead. */
+  .site-visit {
+    display: inline-block;
+    padding: 3px 0;
+  }
+}
+
+/* ---------- Forms ---------- */
+
+@media (max-width: 760px) {
+  /* Below 16px, iOS Safari zooms the page on focus and does not zoom back out,
+     which leaves every form in the app one tap away from a sideways-scrolling
+     layout. Capping user-scalable in the viewport would also fix it, at the
+     price of taking pinch-zoom away from everyone who needs it. This is the
+     version that costs nobody anything. */
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    font-size: 16px;
+    padding: 11px 12px;
+    border-radius: 10px;
+  }
+
+  input[type="checkbox"],
+  input[type="radio"] {
+    width: 19px;
+    height: 19px;
+  }
+
+  button,
+  .btn {
+    font-size: 15px;
+  }
+
+  /* A form laid out as a row of flexed fields has nowhere to go on a phone. */
+  form .field input,
+  form .field select,
+  form .field textarea {
+    width: 100%;
+  }
+}
+
+/* ---------- The header on a phone ---------- */
+
+.mnav-toggle,
+.mnav-scrim,
+.mnav-sheet {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .site-header {
+    flex-wrap: nowrap;
+    gap: 10px;
+    padding: 8px 10px 8px 14px;
+    padding-top: calc(8px + env(safe-area-inset-top));
+    /* A blurred bar over a scrolling page is a per-frame readback of
+       everything behind it. Near-opaque costs nothing and, at this alpha over
+       this background, looks the same. */
+    backdrop-filter: none;
+    background: rgba(6, 9, 20, 0.94);
+  }
+
+  /* Everything the sheet now holds. */
+  .site-nav,
+  .site-engine,
+  .site-util {
+    display: none;
+  }
+
+  .site-badge {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .site-badge-name {
+    font-size: 14.5px;
+  }
+
+  .mnav-toggle {
+    position: relative;
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    margin-left: auto;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: rgba(101, 125, 255, 0.07);
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.18s, border-color 0.18s;
+  }
+
+  .mnav-toggle[aria-expanded="true"] {
+    border-color: rgba(34, 211, 238, 0.45);
+    background: rgba(34, 211, 238, 0.12);
+  }
+
+  .mnav-scrim,
+  .mnav-sheet {
+    display: flex;
+  }
+}
+
+.burger {
+  position: relative;
+  width: 17px;
+  height: 12px;
+}
+
+.burger span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.16s;
+}
+
+.burger span:nth-child(1) { top: 0; }
+.burger span:nth-child(2) { top: 5px; }
+.burger span:nth-child(3) { top: 10px; }
+
+.burger.is-open span:nth-child(1) { transform: translateY(5px) rotate(45deg); }
+.burger.is-open span:nth-child(2) { opacity: 0; }
+.burger.is-open span:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
+
+/* The engine light, kept from the header caption the sheet replaced. Whether
+   the title is running is the one thing worth knowing without tapping. */
+.mnav-pip {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid #060914;
+  box-sizing: content-box;
+}
+
+/* ---------- The section sheet ---------- */
+
+.mnav-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: rgba(3, 5, 12, 0.62);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease;
+}
+
+.mnav-scrim.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mnav-sheet {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 71;
+  width: min(86vw, 336px);
+  flex-direction: column;
+  padding: calc(14px + env(safe-area-inset-top)) 14px calc(16px + env(safe-area-inset-bottom));
+  background:
+    radial-gradient(120% 60% at 100% 0%, rgba(46, 62, 238, 0.24), transparent 65%),
+    linear-gradient(180deg, #0c1330 0%, #070b1c 100%);
+  border-left: 1px solid var(--line-bright);
+  box-shadow: -26px 0 64px rgba(0, 0, 0, 0.6);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  transform: translateX(101%);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mnav-sheet.is-open {
+  transform: none;
+}
+
+.mnav-sheet:focus {
+  outline: none;
+}
+
+/* The same cyan hairline the desktop rail wears down its left edge, so the
+   sheet reads as the same piece of furniture arriving from the same side. */
+.mnav-sheet::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(34, 211, 238, 0.55), transparent);
+}
+
+.mnav-head {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 2px 4px 14px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 10px;
+}
+
+.mnav-head-name {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mnav-head-name em {
+  font-style: normal;
+  font-family: var(--font-mono), monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 400;
+  margin-top: 4px;
+}
+
+.mnav-close {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  margin-right: -6px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.mnav-close:active {
+  background: rgba(101, 125, 255, 0.14);
+  color: var(--text);
+}
+
+.mnav-list,
+.mnav-foot {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.mnav-foot {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.mnav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  font-size: 15.5px;
+  font-weight: 600;
+  color: var(--muted);
+  transition: color 0.16s, background 0.16s;
+}
+
+.mnav-item:active {
+  background: rgba(101, 125, 255, 0.14);
+  color: var(--text);
+}
+
+.mnav-item.is-active {
+  color: var(--text);
+  background: linear-gradient(90deg, rgba(46, 62, 238, 0.26), rgba(34, 211, 238, 0.08));
+  border-color: rgba(34, 211, 238, 0.28);
+}
+
+/* The page you are on, marked in form as well as in colour. */
+.mnav-item.is-active::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 19px;
+  border-radius: 2px;
+  background: var(--neon-cyan);
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.8);
+}
+
+.mnav-item-quiet {
+  font-size: 14.5px;
+  font-weight: 500;
+  min-height: 44px;
+}
+
+.mnav-item-out {
+  color: var(--neon-cyan);
+  min-height: 44px;
+}
+
+.mnav-item:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mnav-sheet {
+    transition: none;
+  }
+}
+
+/* ---------- Sub-navigation ---------- */
+
+/* Written as a class rather than inline so the phone rules below can reach it.
+   Desktop behaviour is unchanged: a wrapping row of pills. */
+.subtabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+@media (max-width: 760px) {
+  /* Five sub-tabs wrapping to three lines is three lines of chrome above the
+     content. One line that scrolls is one line. The negative margin lets the
+     strip bleed to both screen edges, so a half-visible fifth pill is what
+     says there is more, the same job the fades do on a table. */
+  .subtabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 6px;
+    margin: 0 calc(-1 * clamp(14px, 4vw, 24px)) 16px;
+    padding: 2px clamp(14px, 4vw, 24px) 8px;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+
+  .subtabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .subtabs > * {
+    flex: none;
+    white-space: nowrap;
+  }
+}
+
+/* ---------- The title rail, along the bottom ---------- */
+
+@media (max-width: 760px) {
+  .rail {
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px calc(9px + env(safe-area-inset-bottom));
+    background: rgba(5, 7, 15, 0.9);
+    box-shadow: 0 -16px 36px rgba(0, 0, 0, 0.5);
+    /* The rail itself must not be a scroller, only the list of marks inside
+       it, or the home button and the divider scroll away with them. */
+    overflow: hidden;
+  }
+
+  /* The desktop rail is separated from the page by a cyan hairline down its
+     left edge. Along the bottom, that edge is the top one. */
+  .rail::before {
+    display: block;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: auto;
+    width: auto;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.5), transparent);
+  }
+
+  .rail-list {
+    flex: 1;
+    min-width: 0;
+    gap: 8px;
+    padding: 4px 2px;
+    scroll-snap-type: x proximity;
+  }
+
+  .rail-item {
+    scroll-snap-align: center;
+  }
+
+  .rail-home {
+    flex: none;
+    padding: 0;
+    gap: 2px;
+  }
+
+  /* "5 titles" is a caption, and on a phone it is a caption eating three
+     marks worth of the only row they have. */
+  .rail-foot {
+    display: none;
+  }
+}
+
+/* ---------- Horizontal scrollers ---------- */
+
+.scroller-wrap {
+  position: relative;
+  min-width: 0;
+}
+
+.scroller {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(101, 125, 255, 0.3) transparent;
+}
+
+.scroller::-webkit-scrollbar {
+  height: 7px;
+}
+
+.scroller::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroller::-webkit-scrollbar-thumb {
+  background: rgba(101, 125, 255, 0.28);
+  border-radius: 4px;
+}
+
+@media (hover: hover) {
+  .scroller::-webkit-scrollbar-thumb:hover {
+    background: rgba(101, 125, 255, 0.5);
+  }
+}
+
+/* The edges that say there is more. Drawn only on the side that actually has
+   more, which is why Scroller measures rather than painting both permanently:
+   a fade on a table that fits promises columns that do not exist. */
+.scroller-wrap::before,
+.scroller-wrap::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 42px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 2;
+}
+
+.scroller-wrap::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--surface) 12%, rgba(11, 16, 34, 0));
+}
+
+.scroller-wrap::after {
+  right: 0;
+  background: linear-gradient(270deg, var(--surface) 12%, rgba(11, 16, 34, 0));
+}
+
+.scroller-wrap[data-edge="left"]::before,
+.scroller-wrap[data-edge="both"]::before,
+.scroller-wrap[data-edge="right"]::after,
+.scroller-wrap[data-edge="both"]::after {
+  opacity: 1;
+}
+
+/* ---------- Density ---------- */
+
+@media (max-width: 760px) {
+  .panel {
+    padding: 15px;
+    border-radius: 14px;
+  }
+
+  .stat-tile {
+    padding: 12px 14px;
+  }
+
+  .stat-value {
+    font-size: 23px;
+  }
+
+  /* A third of a second of staggered entrance is a flourish on a grid of six
+     desktop cards and a wait on a single column of six phone ones. */
+  .stagger > * {
+    animation-delay: 0s !important;
+  }
+}
+
+/* ---------- Tables ---------- */
+
+@media (max-width: 760px) {
+  /* Every table in the app carries its font size and cell padding as inline
+     styles, so an ordinary rule cannot reach them. This is the one place in
+     the file where !important is the mechanism rather than a symptom, and it
+     is bounded: three properties, inside a max-width query. */
+  table {
+    font-size: 12.5px !important;
+  }
+
+  th,
+  td {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+  }
+}
+
+/* ---------- Fleet overview ---------- */
+
+@media (max-width: 760px) {
+  .fleet-head {
+    gap: 16px;
+    padding-bottom: 14px;
+  }
+
+  .fleet-head h1 {
+    font-size: 26px;
+  }
+
+  /* Four buttons on one scrolling line rather than two wrapped rows, matching
+     what the sub-tabs do one level down. */
+  .fleet-nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    width: 100%;
+    margin: 0 -16px;
+    padding: 2px 16px 6px;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+
+  .fleet-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .fleet-nav-btn {
+    flex: none;
+  }
+
+  .fleet-totals {
+    gap: 14px 26px;
+  }
+
+  .panel.fleet-card {
+    padding: 15px;
+    gap: 13px;
+  }
+
+  .fleet-card-foot {
+    padding-top: 11px;
+  }
+}
+
+/* ---------- Sign in ---------- */
+
+@media (max-width: 760px) {
+  .login-mark {
+    width: 48px;
+    height: 48px;
+    font-size: 23px;
+  }
+
+  .login-wordmark {
+    font-size: 21px;
+  }
+}
+
+/* ---------- Add a title ---------- */
+
+@media (max-width: 760px) {
+  .newtitle-main,
+  .newtitle-side {
+    padding: 16px;
+  }
+
+  /* The preview panel is the point of the screen, so on a phone it goes above
+     the form rather than a scroll below it. */
+  .newtitle {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .newtitle-side {
+    order: -1;
+  }
+}

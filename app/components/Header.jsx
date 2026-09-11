@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import SiteMark from "./SiteMark";
 import EngineRoomLight from "./EngineRoomLight";
 import { useActiveSite } from "./FleetContext";
+import MobileNav from "./MobileNav";
 import { visitUrl } from "@/lib/site-url";
 
 // The header inside a title.
@@ -71,7 +72,7 @@ export default function Header() {
         </span>
       </Link>
 
-      <nav style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+      <nav className="site-nav" style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
         {SECTIONS.map((s) => {
           const href = `${base}${s.seg}`;
           const active = s.seg === "" ? rest === "/" : rest.startsWith(s.seg);
@@ -91,7 +92,7 @@ export default function Header() {
       </nav>
 
       <span
-        className="micro"
+        className="micro site-engine"
         style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}
       >
         <span className={`agent-dot${site.engineEnabled ? " online" : ""}`} />
@@ -103,7 +104,7 @@ export default function Header() {
           href={live}
           target="_blank"
           rel="noopener noreferrer"
-          className="nav-link site-visit-nav"
+          className="nav-link site-visit-nav site-util"
           title={`Open ${site.domain} in a new tab`}
           style={{ fontSize: 13 }}
         >
@@ -112,12 +113,15 @@ export default function Header() {
         </a>
       )}
 
-      <Link href="/" className="nav-link" style={{ fontSize: 13 }}>
+      <Link href="/" className="nav-link site-util" style={{ fontSize: 13 }}>
         All titles
       </Link>
-      <a href="/logout" className="nav-link" style={{ fontSize: 13 }}>
+      <a href="/logout" className="nav-link site-util" style={{ fontSize: 13 }}>
         Sign out
       </a>
+
+      {/* Renders nothing above 760px; below it, this is the whole nav. */}
+      <MobileNav sections={SECTIONS} base={base} rest={rest} site={site} live={live} />
     </header>
   );
 }

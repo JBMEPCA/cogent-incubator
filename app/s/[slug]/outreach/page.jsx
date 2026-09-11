@@ -19,6 +19,7 @@ import { isOutreachConfigured, isSendConfigured, outreachSetupHint, outreachStat
 import { authorityTrend } from "@/lib/metrics";
 import { listReferrers } from "@/lib/referrers";
 import AuthorityTrend from "@/app/components/AuthorityTrend";
+import Scroller from "@/app/components/Scroller";
 
 export const dynamic = "force-dynamic";
 
@@ -154,7 +155,7 @@ export default async function OutreachPage({ params }) {
               its report to the Director.
             </p>
           ) : (
-            <div style={{ overflowX: "auto" }}>
+            <Scroller>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                 <thead>
                   <tr style={{ textAlign: "left", color: "var(--muted)" }}>
@@ -201,7 +202,7 @@ export default async function OutreachPage({ params }) {
                   ))}
                 </tbody>
               </table>
-            </div>
+            </Scroller>
           )}
         </section>
 

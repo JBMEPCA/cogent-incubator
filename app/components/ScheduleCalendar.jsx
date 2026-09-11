@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { TYPE_LABEL, TYPE_STYLE, SLOTS } from "@/lib/schedule";
+import Scroller from "./Scroller";
 
 const DAY = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -10,7 +11,7 @@ const DAY = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 // still read "07:30 · 09:00 · 10:30 · … daily" underneath a two-row calendar.
 export default function ScheduleCalendar({ days, slots = SLOTS }) {
   return (
-    <div style={{ overflowX: "auto" }}>
+    <Scroller>
       <div
         className="stagger"
         style={{
@@ -120,6 +121,6 @@ export default function ScheduleCalendar({ days, slots = SLOTS }) {
         {slots.join(" · ")} daily · articles publish automatically once QA passes ·
         click any title to review or edit before it goes out
       </p>
-    </div>
+    </Scroller>
   );
 }

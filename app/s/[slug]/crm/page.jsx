@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { getSiteContext } from "@/lib/site";
 import { addLead, markContacted } from "@/lib/actions";
 import { STAGES, PRODUCTS, OPEN_STAGES, stageInfo, productLabel, fmtMoney } from "@/lib/crm";
+import Scroller from "@/app/components/Scroller";
 
 export const dynamic = "force-dynamic";
 
@@ -115,7 +116,7 @@ export default async function CrmPage({ params }) {
         </section>
 
         {/* Leads table */}
-        <section className="panel" style={{ overflowX: "auto" }}>
+        <section className="panel">
           <h2 style={{ margin: "0 0 12px", fontSize: 16 }}>
             Leads <span style={{ color: "var(--muted)", fontWeight: 400 }}>({leads.length})</span>
           </h2>
@@ -125,86 +126,88 @@ export default async function CrmPage({ params }) {
             </p>
           )}
           {leads.length > 0 && (
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
-              <thead>
-                <tr style={{ textAlign: "left", color: "var(--muted)", fontSize: 12 }}>
-                  <th style={{ padding: "6px 8px" }}>Company</th>
-                  <th style={{ padding: "6px 8px" }}>Contact</th>
-                  <th style={{ padding: "6px 8px" }}>Stage</th>
-                  <th style={{ padding: "6px 8px" }}>Product</th>
-                  <th style={{ padding: "6px 8px" }}>Value</th>
-                  <th style={{ padding: "6px 8px" }}>Last contact</th>
-                  <th style={{ padding: "6px 8px" }}>Follow up</th>
-                  <th style={{ padding: "6px 8px" }}></th>
-                </tr>
-              </thead>
-              <tbody>
-                {sorted.map((l) => {
-                  const info = stageInfo(l.stage);
-                  const overdue =
-                    l.nextFollowUp &&
-                    new Date(l.nextFollowUp) <= now &&
-                    OPEN_STAGES.includes(l.stage);
-                  return (
-                    <tr key={l.id} style={{ borderTop: "1px solid var(--line)" }}>
-                      <td style={{ padding: "8px" }}>
-                        <Link
-                          href={`/crm/${l.id}`}
-                          style={{ fontWeight: 600, color: "var(--neon-cyan)" }}
-                        >
-                          {l.company}
-                        </Link>
-                      </td>
-                      <td style={{ padding: "8px", color: "var(--muted)" }}>
-                        {l.contactName || "—"}
-                        {l.email && (
-                          <div style={{ fontSize: 12 }}>
-                            <a href={`mailto:${l.email}`} style={{ color: "var(--muted)" }}>
-                              {l.email}
-                            </a>
-                          </div>
-                        )}
-                      </td>
-                      <td style={{ padding: "8px" }}>
-                        <span
-                          className="chip"
-                          style={{ background: info.bg, color: info.color }}
-                        >
-                          {info.label}
-                        </span>
-                      </td>
-                      <td style={{ padding: "8px" }}>{productLabel(l.product)}</td>
-                      <td style={{ padding: "8px" }}>{fmtMoney(l.offerValue, l.perMonth)}</td>
-                      <td style={{ padding: "8px", color: "var(--muted)" }}>
-                        {l.lastContacted ? fmtDate(l.lastContacted) : "never"}
-                      </td>
-                      <td
-                        style={{
-                          padding: "8px",
-                          color: overdue ? "var(--neon-red)" : "var(--muted)",
-                          fontWeight: overdue ? 700 : 400,
-                        }}
-                      >
-                        {l.nextFollowUp ? fmtDate(l.nextFollowUp) : "—"}
-                      </td>
-                      <td style={{ padding: "8px", whiteSpace: "nowrap" }}>
-                        <form action={markContacted.bind(null, siteRef)} style={{ display: "inline" }}>
-                          <input type="hidden" name="id" value={l.id} />
-                          <button
-                            type="submit"
-                            className="btn-ghost"
-                            title="Log contact today"
-                            style={{ fontSize: 12 }}
+            <Scroller>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+                <thead>
+                  <tr style={{ textAlign: "left", color: "var(--muted)", fontSize: 12 }}>
+                    <th style={{ padding: "6px 8px" }}>Company</th>
+                    <th style={{ padding: "6px 8px" }}>Contact</th>
+                    <th style={{ padding: "6px 8px" }}>Stage</th>
+                    <th style={{ padding: "6px 8px" }}>Product</th>
+                    <th style={{ padding: "6px 8px" }}>Value</th>
+                    <th style={{ padding: "6px 8px" }}>Last contact</th>
+                    <th style={{ padding: "6px 8px" }}>Follow up</th>
+                    <th style={{ padding: "6px 8px" }}></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sorted.map((l) => {
+                    const info = stageInfo(l.stage);
+                    const overdue =
+                      l.nextFollowUp &&
+                      new Date(l.nextFollowUp) <= now &&
+                      OPEN_STAGES.includes(l.stage);
+                    return (
+                      <tr key={l.id} style={{ borderTop: "1px solid var(--line)" }}>
+                        <td style={{ padding: "8px" }}>
+                          <Link
+                            href={`/crm/${l.id}`}
+                            style={{ fontWeight: 600, color: "var(--neon-cyan)" }}
                           >
-                            ✓ contacted
-                          </button>
-                        </form>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                            {l.company}
+                          </Link>
+                        </td>
+                        <td style={{ padding: "8px", color: "var(--muted)" }}>
+                          {l.contactName || "—"}
+                          {l.email && (
+                            <div style={{ fontSize: 12 }}>
+                              <a href={`mailto:${l.email}`} style={{ color: "var(--muted)" }}>
+                                {l.email}
+                              </a>
+                            </div>
+                          )}
+                        </td>
+                        <td style={{ padding: "8px" }}>
+                          <span
+                            className="chip"
+                            style={{ background: info.bg, color: info.color }}
+                          >
+                            {info.label}
+                          </span>
+                        </td>
+                        <td style={{ padding: "8px" }}>{productLabel(l.product)}</td>
+                        <td style={{ padding: "8px" }}>{fmtMoney(l.offerValue, l.perMonth)}</td>
+                        <td style={{ padding: "8px", color: "var(--muted)" }}>
+                          {l.lastContacted ? fmtDate(l.lastContacted) : "never"}
+                        </td>
+                        <td
+                          style={{
+                            padding: "8px",
+                            color: overdue ? "var(--neon-red)" : "var(--muted)",
+                            fontWeight: overdue ? 700 : 400,
+                          }}
+                        >
+                          {l.nextFollowUp ? fmtDate(l.nextFollowUp) : "—"}
+                        </td>
+                        <td style={{ padding: "8px", whiteSpace: "nowrap" }}>
+                          <form action={markContacted.bind(null, siteRef)} style={{ display: "inline" }}>
+                            <input type="hidden" name="id" value={l.id} />
+                            <button
+                              type="submit"
+                              className="btn-ghost"
+                              title="Log contact today"
+                              style={{ fontSize: 12 }}
+                            >
+                              ✓ contacted
+                            </button>
+                          </form>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </Scroller>
           )}
         </section>
       </main>

@@ -3,6 +3,7 @@ import SubTabs, { CONTENT_TABS } from "@/app/components/SubTabs";
 import { notFound } from "next/navigation";
 import { getSiteContext } from "@/lib/site";
 import { interviewStats, interviewSetupHint, STATUS_LABEL, EMAIL_SOURCES } from "@/lib/interviews";
+import Scroller from "@/app/components/Scroller";
 
 export const dynamic = "force-dynamic";
 
@@ -65,7 +66,7 @@ export default async function InterviewsPage({ params }) {
   return (
     <>
       <Header />
-      <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px 24px" }}>
+      <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px clamp(14px, 4vw, 24px)" }}>
         <SubTabs items={CONTENT_TABS} active="/interviews" />
 
         <section className="panel panel-glow stagger" style={{ marginBottom: 24 }}>
@@ -182,7 +183,7 @@ function PeopleTable({ rows, showPublished }) {
     );
   }
   return (
-    <div style={{ overflowX: "auto" }}>
+    <Scroller>
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
         <thead>
           <tr style={{ textAlign: "left", color: "var(--muted)" }}>
@@ -239,6 +240,6 @@ function PeopleTable({ rows, showPublished }) {
           ))}
         </tbody>
       </table>
-    </div>
+    </Scroller>
   );
 }

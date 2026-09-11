@@ -5,6 +5,7 @@ import SubTabs, { ANALYTICS_TABS } from "@/app/components/SubTabs";
 import TrendChart from "@/app/components/TrendChart";
 import { fetchAnalytics } from "@/lib/analytics";
 import { googleServiceAccountEmail } from "@/lib/google";
+import Scroller from "@/app/components/Scroller";
 
 export const dynamic = "force-dynamic";
 
@@ -91,7 +92,7 @@ function Table({ head, rows, empty }) {
     return <p style={{ color: "var(--muted)", fontSize: 13, margin: 0 }}>{empty}</p>;
   }
   return (
-    <div style={{ overflowX: "auto" }}>
+    <Scroller>
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
         <thead>
           <tr>
@@ -137,7 +138,7 @@ function Table({ head, rows, empty }) {
           ))}
         </tbody>
       </table>
-    </div>
+    </Scroller>
   );
 }
 

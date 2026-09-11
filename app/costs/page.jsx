@@ -1,6 +1,7 @@
 import Link from "next/link";
 import FleetNav from "../components/FleetNav";
 import { fleetCosts } from "@/lib/fleet-costs";
+import Scroller from "@/app/components/Scroller";
 
 export const dynamic = "force-dynamic";
 
@@ -152,7 +153,7 @@ export default async function FleetCostsPage() {
               </div>
 
               {t.agents.length > 0 && (
-                <div style={{ overflowX: "auto" }}>
+                <Scroller>
                 <table style={{ width: "100%", marginTop: 10, borderCollapse: "collapse", fontSize: 12.5, minWidth: 420 }}>
                   <thead>
                     <tr style={{ opacity: 0.5, textAlign: "left" }}>
@@ -175,7 +176,7 @@ export default async function FleetCostsPage() {
                     ))}
                   </tbody>
                 </table>
-                </div>
+                </Scroller>
               )}
             </div>
           ))}

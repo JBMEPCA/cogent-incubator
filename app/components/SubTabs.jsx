@@ -23,7 +23,9 @@ export default function SubTabs({ items, active }) {
   const current = active ?? (base && pathname.startsWith(base) ? pathname.slice(base.length) || "/" : pathname);
 
   return (
-    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 22 }}>
+    // Styling moved to .subtabs in globals.css so the phone rules can turn
+    // this from a wrapping block into a single scrolling line.
+    <div className="subtabs">
       {items.map((t) => (
         <Link
           key={t.href}

@@ -5,7 +5,9 @@ export default async function LoginPage({ searchParams }) {
   const error = params?.error;
 
   return (
-    <div style={{ maxWidth: 400, margin: "110px auto", padding: "0 20px" }}>
+    // 110px of headroom is a tenth of a desktop window and a fifth of a phone
+    // screen, most of which the keyboard takes the moment the field focuses.
+    <div style={{ maxWidth: 400, margin: "clamp(40px, 11vh, 110px) auto", padding: "0 20px" }}>
       <div
         style={{
           display: "flex",

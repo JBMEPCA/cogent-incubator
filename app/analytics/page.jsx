@@ -3,6 +3,7 @@ import FleetNav from "../components/FleetNav";
 import TrendChart from "../components/TrendChart";
 import { SharePie, Sparkline, colourMap } from "../components/FleetCharts";
 import { fleetAnalytics } from "@/lib/fleet-analytics";
+import Scroller from "@/app/components/Scroller";
 
 export const dynamic = "force-dynamic";
 
@@ -218,77 +219,79 @@ export default async function GroupAnalyticsPage() {
             output and spend from our own records · audience from google · biggest audience first
           </span>
         </div>
-        <div className="panel" style={{ padding: "16px 18px", overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 880 }}>
-            <thead>
-              <tr>
-                <th className="micro" style={{ ...headCell, textAlign: "left", paddingLeft: 0 }}>Title</th>
-                <th className="micro" style={headCell}>Published</th>
-                <th className="micro" style={headCell}>Pipeline</th>
-                <th className="micro" style={headCell}>Awaiting</th>
-                <th className="micro" style={headCell}>Spend, mo</th>
-                <th className="micro" style={headCell}>Users</th>
-                <th className="micro" style={headCell}>Sessions</th>
-                <th className="micro" style={headCell}>Clicks</th>
-                <th className="micro" style={headCell}>Impr.</th>
-                <th className="micro" style={headCell}>Pos.</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r) => {
-                const dark = !r.ga4 && !r.gsc;
-                return (
-                  <tr key={r.id}>
-                    <td style={{ ...cell, textAlign: "left", paddingLeft: 0, maxWidth: 260 }}>
-                      <Link
-                        href={`/s/${r.slug}/analytics`}
-                        style={{ color: "var(--text)", textDecoration: "none", display: "flex", alignItems: "center", gap: 9 }}
-                      >
-                        <span
-                          style={{
-                            width: 8,
-                            height: 8,
-                            borderRadius: "50%",
-                            background: r.accentHex || "var(--brand-2)",
-                            flex: "none",
-                          }}
-                        />
-                        <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{r.name}</span>
-                      </Link>
-                      {dark && <span className="micro" style={{ paddingLeft: 17 }}>google not connected</span>}
-                    </td>
-                    <td className="num" style={cell}>{int(r.publishedWindow)}</td>
-                    <td className="num" style={{ ...cell, color: "var(--muted)" }}>{int(r.pipeline)}</td>
-                    <td className="num" style={{ ...cell, color: r.awaiting ? "var(--neon-amber)" : "var(--muted)" }}>
-                      {int(r.awaiting)}
-                    </td>
-                    <td className="num" style={{ ...cell, color: "var(--muted)" }}>{money(r.spendMonth)}</td>
-                    <td className="num" style={cell}>{r.ga4 ? int(r.ga4.users) : "—"}</td>
-                    <td className="num" style={{ ...cell, color: "var(--muted)" }}>{r.ga4 ? int(r.ga4.sessions) : "—"}</td>
-                    <td className="num" style={cell}>{r.gsc ? int(r.gsc.clicks) : "—"}</td>
-                    <td className="num" style={{ ...cell, color: "var(--muted)" }}>{r.gsc ? int(r.gsc.impressions) : "—"}</td>
-                    <td className="num" style={{ ...cell, color: "var(--muted)" }}>{r.gsc ? pos(r.gsc.position) : "—"}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-            <tfoot>
-              <tr style={{ fontWeight: 700 }}>
-                <td style={{ ...cell, textAlign: "left", paddingLeft: 0, borderBottom: "none" }}>Fleet</td>
-                <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.publishedWindow)}</td>
-                <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.pipeline)}</td>
-                <td className="num" style={{ ...cell, borderBottom: "none", color: totals.awaiting ? "var(--neon-amber)" : undefined }}>
-                  {int(totals.awaiting)}
-                </td>
-                <td className="num" style={{ ...cell, borderBottom: "none" }}>{money(totals.spendMonth)}</td>
-                <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.users)}</td>
-                <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.sessions)}</td>
-                <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.clicks)}</td>
-                <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.impressions)}</td>
-                <td className="num" style={{ ...cell, borderBottom: "none" }}>{pos(totals.position)}</td>
-              </tr>
-            </tfoot>
-          </table>
+        <div className="panel" style={{ padding: "16px 18px" }}>
+          <Scroller>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 880 }}>
+              <thead>
+                <tr>
+                  <th className="micro" style={{ ...headCell, textAlign: "left", paddingLeft: 0 }}>Title</th>
+                  <th className="micro" style={headCell}>Published</th>
+                  <th className="micro" style={headCell}>Pipeline</th>
+                  <th className="micro" style={headCell}>Awaiting</th>
+                  <th className="micro" style={headCell}>Spend, mo</th>
+                  <th className="micro" style={headCell}>Users</th>
+                  <th className="micro" style={headCell}>Sessions</th>
+                  <th className="micro" style={headCell}>Clicks</th>
+                  <th className="micro" style={headCell}>Impr.</th>
+                  <th className="micro" style={headCell}>Pos.</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r) => {
+                  const dark = !r.ga4 && !r.gsc;
+                  return (
+                    <tr key={r.id}>
+                      <td style={{ ...cell, textAlign: "left", paddingLeft: 0, maxWidth: 260 }}>
+                        <Link
+                          href={`/s/${r.slug}/analytics`}
+                          style={{ color: "var(--text)", textDecoration: "none", display: "flex", alignItems: "center", gap: 9 }}
+                        >
+                          <span
+                            style={{
+                              width: 8,
+                              height: 8,
+                              borderRadius: "50%",
+                              background: r.accentHex || "var(--brand-2)",
+                              flex: "none",
+                            }}
+                          />
+                          <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{r.name}</span>
+                        </Link>
+                        {dark && <span className="micro" style={{ paddingLeft: 17 }}>google not connected</span>}
+                      </td>
+                      <td className="num" style={cell}>{int(r.publishedWindow)}</td>
+                      <td className="num" style={{ ...cell, color: "var(--muted)" }}>{int(r.pipeline)}</td>
+                      <td className="num" style={{ ...cell, color: r.awaiting ? "var(--neon-amber)" : "var(--muted)" }}>
+                        {int(r.awaiting)}
+                      </td>
+                      <td className="num" style={{ ...cell, color: "var(--muted)" }}>{money(r.spendMonth)}</td>
+                      <td className="num" style={cell}>{r.ga4 ? int(r.ga4.users) : "—"}</td>
+                      <td className="num" style={{ ...cell, color: "var(--muted)" }}>{r.ga4 ? int(r.ga4.sessions) : "—"}</td>
+                      <td className="num" style={cell}>{r.gsc ? int(r.gsc.clicks) : "—"}</td>
+                      <td className="num" style={{ ...cell, color: "var(--muted)" }}>{r.gsc ? int(r.gsc.impressions) : "—"}</td>
+                      <td className="num" style={{ ...cell, color: "var(--muted)" }}>{r.gsc ? pos(r.gsc.position) : "—"}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+              <tfoot>
+                <tr style={{ fontWeight: 700 }}>
+                  <td style={{ ...cell, textAlign: "left", paddingLeft: 0, borderBottom: "none" }}>Fleet</td>
+                  <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.publishedWindow)}</td>
+                  <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.pipeline)}</td>
+                  <td className="num" style={{ ...cell, borderBottom: "none", color: totals.awaiting ? "var(--neon-amber)" : undefined }}>
+                    {int(totals.awaiting)}
+                  </td>
+                  <td className="num" style={{ ...cell, borderBottom: "none" }}>{money(totals.spendMonth)}</td>
+                  <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.users)}</td>
+                  <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.sessions)}</td>
+                  <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.clicks)}</td>
+                  <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.impressions)}</td>
+                  <td className="num" style={{ ...cell, borderBottom: "none" }}>{pos(totals.position)}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </Scroller>
           <p className="micro" style={{ margin: "12px 0 0" }}>
             published and pipeline over {windowDays} days · spend is this calendar month, in USD —{" "}
             <Link href="/costs" className="nav-link" style={{ padding: 0, fontSize: 11 }}>
@@ -514,7 +517,7 @@ export default async function GroupAnalyticsPage() {
             every title&apos;s pages ranked together, so the best page in the group is visible
           </p>
           {topPages.length ? (
-            <div style={{ overflowX: "auto" }}>
+            <Scroller>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 460 }}>
               <thead>
                 <tr>
@@ -537,7 +540,7 @@ export default async function GroupAnalyticsPage() {
                 ))}
               </tbody>
             </table>
-            </div>
+            </Scroller>
           ) : (
             <p style={{ color: "var(--muted)", fontSize: 13, margin: 0 }}>No page views recorded yet.</p>
           )}
@@ -550,7 +553,7 @@ export default async function GroupAnalyticsPage() {
           queries ranked by clicks, fleet-wide · the title each one landed on is beside it
         </p>
         {topQueries.length ? (
-          <div style={{ overflowX: "auto" }}>
+          <Scroller>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
               <thead>
                 <tr>
@@ -575,7 +578,7 @@ export default async function GroupAnalyticsPage() {
                 ))}
               </tbody>
             </table>
-          </div>
+          </Scroller>
         ) : (
           <p style={{ color: "var(--muted)", fontSize: 13, margin: 0 }}>
             No queries have surfaced any title yet.

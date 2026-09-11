@@ -3,6 +3,7 @@ import FleetNav from "@/app/components/FleetNav";
 import SiteMark from "@/app/components/SiteMark";
 import { prisma } from "@/lib/prisma";
 import { interviewStats, STATUS_LABEL } from "@/lib/interviews";
+import Scroller from "@/app/components/Scroller";
 
 export const dynamic = "force-dynamic";
 
@@ -112,7 +113,7 @@ export default async function FleetInterviewsPage() {
         {/* Per title */}
         <section className="panel stagger" style={{ marginBottom: 24 }}>
           <h2 style={{ margin: "0 0 14px", fontSize: 16 }}>By title</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 240px), 1fr))", gap: 14 }}>
             {perSite.map(({ site, stats }) => (
               <Link
                 key={site.id}
@@ -175,7 +176,7 @@ function FleetTable({ rows, dateField, dateLabel }) {
     return <p className="micro" style={{ color: "var(--muted)", margin: 0 }}>Nothing yet.</p>;
   }
   return (
-    <div style={{ overflowX: "auto" }}>
+    <Scroller>
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
         <thead>
           <tr style={{ textAlign: "left", color: "var(--muted)" }}>
@@ -209,6 +210,6 @@ function FleetTable({ rows, dateField, dateLabel }) {
           ))}
         </tbody>
       </table>
-    </div>
+    </Scroller>
   );
 }

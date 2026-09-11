@@ -5,6 +5,7 @@ import SubTabs, { ANALYTICS_TABS } from "@/app/components/SubTabs";
 import { newsletterReport } from "@/lib/newsletter-stats";
 import { isNewsletterConfigured } from "@/lib/newsletter";
 import { prospectStats } from "@/lib/prospects";
+import Scroller from "@/app/components/Scroller";
 
 export const dynamic = "force-dynamic";
 
@@ -130,7 +131,7 @@ export default async function NewsletterStatsPage({ params }) {
               No issue has been sent yet. The Newsletter Manager runs Thursdays at 09:05.
             </p>
           ) : (
-            <div style={{ overflowX: "auto" }}>
+            <Scroller>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 760 }}>
                 <thead>
                   <tr style={{ textAlign: "left", fontSize: 11, textTransform: "uppercase", letterSpacing: ".06em", opacity: 0.5 }}>
@@ -175,7 +176,7 @@ export default async function NewsletterStatsPage({ params }) {
                   })}
                 </tbody>
               </table>
-            </div>
+            </Scroller>
           )}
         </section>
 
