@@ -182,7 +182,9 @@ if (existingTopic) {
     data: {
       siteId: site.id,
       title: TOPIC_TITLE,
-      category: "electric-charging",
+      // The section NAME, not its slug. This field is validated against
+      // Site.sections by name, and a slug reads as a hallucinated section.
+      category: "Electric & Charging",
       source: "gsc",
       query: "depot charging costs",
       rationale: RATIONALE,
