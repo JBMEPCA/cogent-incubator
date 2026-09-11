@@ -222,8 +222,26 @@ async function tickOne(ctx, { forced, stage }) {
     // outranks a 24h agent three days late.
     .sort((a, b) => overdueBy(b[0], b[3]) - overdueBy(a[0], a[3]));
 
+  // How many imaged, publishable articles this title is actually holding.
+  // Not the bank: a piece with no picture cannot fill a slot, and counting it
+  // is how a title looks stocked right up until the moment it publishes
+  // nothing.
+  const readyToPublish = await db.article.count({
+    where: { status: { in: ["review", "approved"] }, qaPassed: true, imageUrl: { not: null } },
+  });
+  const target = Math.max(1, Math.round(Number(site.articlesPerDayTarget) || 3));
+  const thin = readyToPublish < target;
+
   let worker = null;
-  if (starved.length) worker = starved[0];
+  // Housekeeping never pre-empts content on a title that cannot fill tomorrow.
+  //
+  // Starved agents jump the queue so nothing waits days, which is right when
+  // the shelf is full and wrong when it is bare: on 11 September Golf,
+  // Barbering and Airport published NOTHING while each held six articles that
+  // were finished but unillustrated, and the ticks that could have fixed that
+  // went to link sweeps and cost reports. An SEO sweep can wait an hour. A
+  // title with an empty shelf cannot.
+  if (starved.length && !thin) worker = starved[0];
   else if (needsImage) worker = ["designer", runDesigner, "draft_ready"];
   else if (drafting) worker = ["editor", runEditor, "topic_commissioned"];
   // TOPIC SUPPLY MUST MATCH THE TARGET, or the day is capped before it starts.
@@ -247,6 +265,9 @@ async function tickOne(ctx, { forced, stage }) {
     hoursSince(lastResearch?.lastRunAt) > 3
   )
     worker = ["researcher", runResearcher, "tick"];
+  // Thin titles fall back to starved housekeeping only once content has
+  // nothing left to do, so an overdue agent still gets its turn eventually.
+  else if (starved.length) worker = starved[0];
   else if (due.length) worker = due[0];
 
   if (worker) {

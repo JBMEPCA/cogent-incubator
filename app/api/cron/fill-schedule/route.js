@@ -60,10 +60,23 @@ export async function GET(request) {
       OR: [
         { scheduledFor: null },
         { scheduledFor: { gt: lockUntil } },
-        { scheduledFor: { lt: new Date(Date.now() - LOCK_MINUTES * 60000) } },
+        // A missed slot only goes back in the pot if the article STILL cannot
+        // publish. One that has since got its picture is due right now, and
+        // publish-due will take it on the very next tick.
+        //
+        // Re-slotting it instead was costing whole days. On 11 September Golf,
+        // Barbering and Airport each missed the 10:30 round by minutes waiting
+        // on an image, got that image by 14:36, and were promptly booked for
+        // SATURDAY - so three of five titles published nothing at all while
+        // holding six finished articles apiece. The piece was ready at 11:00
+        // and the next tick was at 11:05.
+        //
+        // Late is better than tomorrow. A trade reader does not know what time
+        // the slot was.
+        { scheduledFor: { lt: new Date(Date.now() - LOCK_MINUTES * 60000) }, imageUrl: null },
       ],
     },
-    select: { id: true, type: true, seoScore: true, scheduledFor: true, createdAt: true },
+    select: { id: true, type: true, seoScore: true, scheduledFor: true, createdAt: true, imageUrl: true },
   });
 
   // Locked articles keep their slots, so those slots are not up for grabs.
@@ -102,9 +115,35 @@ export async function GET(request) {
   const byScore = (a, b) =>
     effectiveScore(b) - effectiveScore(a) || new Date(a.createdAt) - new Date(b.createdAt);
 
-  const pool = {};
-  for (const a of waiting) (pool[a.type] ||= []).push(a);
-  for (const type of Object.keys(pool)) pool[type].sort(byScore);
+  // AN ARTICLE WITH NO PICTURE CANNOT PUBLISH, so it must not take a slot ahead
+  // of one that can. publish-due defers it on the bare-post guard, which means
+  // the slot goes to nobody at all.
+  //
+  // Ranked purely on score it did not merely take a slot, it took the EARLIEST
+  // one, and the ageing term above is why: an article waiting on a picture is
+  // by definition the one that has waited longest, so it collects the full
+  // twenty-point bonus and wins the front of the queue on every rebalance. Then
+  // it defers, publishes nothing, and wins the next slot half an hour later
+  // while every ready article behind it is pushed back one place. At three
+  // slots a day against a rebalance every thirty minutes the queue never
+  // advances at all.
+  //
+  // That is what closed two titles down. Between 8 and 11 September 2026 Golf
+  // and Airport published NOTHING - six finished, checked, imaged articles
+  // banked on each - and Barbering thinned to one a day, while Smart SME and
+  // The Fleet, the only two titles with no imageless article, ran normally
+  // throughout. One stuck picture per title was the whole difference.
+  //
+  // They keep a slot rather than losing one, just the LAST slot going. The
+  // picture desk in lib/agents/team.js orders its queue by scheduledFor so it
+  // can tell an article due tomorrow from one due on Friday, and clearing the
+  // times would flatten that back to newest-first.
+  const ready = {};
+  const pending = {};
+  for (const a of waiting) ((a.imageUrl ? ready : pending)[a.type] ||= []).push(a);
+  for (const group of [ready, pending]) {
+    for (const type of Object.keys(group)) group[type].sort(byScore);
+  }
 
   // The slot's type is a preference, not a lock. On 5 August two news slots
   // stood empty while nine finished SEO guides waited for somewhere to go, and
@@ -115,7 +154,7 @@ export async function GET(request) {
   // Preference still shapes the week: the right type always wins its own slot,
   // and a substitution only happens where the alternative is publishing nothing.
   // `substituted` is reported so the mix drifting is visible rather than silent.
-  const takeBest = (type) => {
+  const takeFrom = (pool, type) => {
     if (pool[type]?.length) return { article: pool[type].shift(), swapped: false };
     const best = Object.keys(pool)
       .filter((t) => pool[t].length)
@@ -124,6 +163,12 @@ export async function GET(request) {
     if (!best) return null;
     return { article: pool[best.t].shift(), swapped: true };
   };
+
+  // Everything publishable first, whatever its type, before anything waiting on
+  // a picture is offered a slot at all. Type preference still decides the order
+  // WITHIN each of those two groups, so the weekly mix is unchanged on any day
+  // the pictures are in place - which is every day this has worked properly.
+  const takeBest = (type) => takeFrom(ready, type) || takeFrom(pending, type);
 
   let assigned = 0;
   let moved = 0;
@@ -142,12 +187,17 @@ export async function GET(request) {
   // Whatever is left did not make the week. Its old slot has to be released:
   // that time may have just been given to a better article, and two articles
   // holding the same instant is how you get a double publish.
+  // Both groups, or the release stops covering half the queue. An article
+  // waiting on a picture is the likeliest thing to be left over now that it is
+  // offered a slot last, and it is also the likeliest to be holding an old one.
   let released = 0;
-  for (const type of Object.keys(pool)) {
-    for (const a of pool[type]) {
-      if (!a.scheduledFor) continue;
-      await db.article.update({ where: { id: a.id }, data: { scheduledFor: null } });
-      released++;
+  for (const group of [ready, pending]) {
+    for (const type of Object.keys(group)) {
+      for (const a of group[type]) {
+        if (!a.scheduledFor) continue;
+        await db.article.update({ where: { id: a.id }, data: { scheduledFor: null } });
+        released++;
+      }
     }
   }
 
