@@ -84,6 +84,16 @@ const TOPIC_LABELS = [
 // silently never happens.
 const INTERVIEW_SUBJECTS = 'subject:("Featuring you in" OR "Seven questions for")';
 
+// The same subjects, but only on mail we did not send.
+//
+// Gmail runs filters over outgoing mail as well as incoming, and a never-spam
+// action on a message you sent lands it in the INBOX. The interview engine
+// sends these subjects all day, so between 8 and 11 Sep sixty-seven of our own
+// interview asks were quietly filed into JB's inbox, already read because sent
+// mail is read by definition. He reported it as "we are not receiving any
+// email": the real mail was still there, drowning in our own outbox.
+const INTERVIEW_INBOUND = `${INTERVIEW_SUBJECTS} -from:me`;
+
 // Bounces, which Gmail files as spam more often than you would think: two from
 // adrianflux.co.uk and one from a mail delivery subsystem were sitting in spam
 // on 9 Sep 2026, and `bouncedSince` searches, and Gmail search skips spam. So
@@ -257,7 +267,7 @@ for (const t of titles) {
 // allowed to go missing.
 hubFilters.push({
   what: "never spam: interview replies",
-  criteria: { query: INTERVIEW_SUBJECTS },
+  criteria: { query: INTERVIEW_INBOUND },
   action: { removeLabelIds: ["SPAM"] },
 });
 
@@ -290,7 +300,7 @@ if (FEEDER_ADDRESSES) {
 
 hubFilters.push({
   what: "Topics/Interviews",
-  criteria: { query: INTERVIEW_SUBJECTS },
+  criteria: { query: INTERVIEW_INBOUND },
   action: { addLabelIds: [labelId("Topics/Interviews")] },
 });
 
@@ -406,7 +416,7 @@ for (const t of titles) {
   await ensureFilters(
     token,
     [
-      { what: "never spam: interview replies", criteria: { query: INTERVIEW_SUBJECTS }, action: { removeLabelIds: ["SPAM"] } },
+      { what: "never spam: interview replies", criteria: { query: INTERVIEW_INBOUND }, action: { removeLabelIds: ["SPAM"] } },
       { what: "never spam: bounces", criteria: { query: BOUNCE_SENDERS }, action: { removeLabelIds: ["SPAM"] } },
     ],
     t.name
