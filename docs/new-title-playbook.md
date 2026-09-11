@@ -1258,18 +1258,27 @@ Written up on 25 August 2026, when Fleet, Golf and Airport were loaded from raw
 Apollo exports in one pass. Smart SME's list took weeks and a pile of one-off
 scripts; this took an afternoon because the shape was already known.
 
-**Never upload an Apollo export to Mailchimp.** Apollo's own "verified" flag was
-wrong for 11% of Smart SME's first tranche. On an established domain that is a
-bad morning; on a title whose sending domain is a week old it is the whole
-domain's reputation. Everything below exists to put only proven-deliverable
-addresses in front of a young domain.
+**Never upload an Apollo export to Mailchimp** — as a *bulk* action, onto a young
+domain. Apollo's own "verified" flag was wrong for 11% of Smart SME's first
+tranche. On an established domain that is a bad morning; on a title whose sending
+domain is a week old it is the whole domain's reputation.
+
+**Amended 11 September 2026.** MillionVerifier is out of the standing drip. It
+ran to minus eleven credits, and because nothing could become import-ready behind
+that gate the drip starved: three of five lists did not grow at all between
+mid-August and mid-September while 33,749 cleared contacts sat queued. The rule
+above still holds for a *launch* tranche onto a brand-new sending domain, which
+is a one-off you can afford to verify. It does not justify a standing gate that
+silently switches the whole fleet off when an account runs dry. An unchecked
+address is now simply an address; anything a verifier already condemned stays
+out, and Mailchimp removes hard bounces itself.
 
 ### The pipeline
 
 ```
 Apollo export
   → scripts/rank-prospects.mjs        rank, dedupe, free kills → ranked-<slug>.csv
-  → scripts/mv-bulk-verify.mjs        one bulk file per title  → mv-report-<slug>.csv
+  → scripts/mv-bulk-verify.mjs        OPTIONAL, launch tranche only
   → scripts/seed-title-prospects.mjs  load into NewsletterProspect
   → /api/cron/subscriber-drip         import to Mailchimp, tranche by tranche
 ```
@@ -1277,6 +1286,56 @@ Apollo export
 The first three are one-offs per title. The fourth is the standing machinery and
 already fans out across the fleet — a title joins it by having prospect rows and
 a `mailchimp` credential, not by any new code.
+
+### How fast a list grows
+
+Two separate things, and confusing them is how the rate gets set wrong:
+
+- **The schedule** (`cloudflare/worker.js`) offers every title a run at 09:00 UK
+  on **Tuesday and Friday**. It is fleet-wide and cannot be per title.
+- **The allowance** (`drip.weeklyTarget` in `EngineSetting`, per title) decides
+  how much of that a title actually takes, counted against the UK calendar week.
+  Smart SME is on 2,000, the other four on 1,000.
+
+A run takes the whole **remaining** allowance, not a fixed thousand, capped at
+`DRIP_MAX_PER_RUN` (2,000) so a mistyped allowance cannot become a hundred
+Mailchimp calls inside one function. Every title therefore finishes its week on
+the Tuesday and its Friday run correctly reports nothing to do, which is the
+shape working rather than a fault. Friday exists so that a failed Tuesday costs
+a title a few days instead of a whole week.
+
+Taking the remaining allowance rather than a fixed batch is also what keeps the
+rate right when only half of this ships. The schedule lives in a Cloudflare
+Worker deployed separately from the app, so if the app ships and the worker does
+not, Tuesday is the only run there is — and a fixed thousand would leave Smart
+SME quietly running at half its rate.
+
+```bash
+node --import ./scripts/_register.mjs scripts/set-drip-rate.mjs                 # show
+node --import ./scripts/_register.mjs scripts/set-drip-rate.mjs smart-sme 2000  # set
+```
+
+A **calendar** week, not a rolling seven days. Rolling would let Tuesday's
+thousand still count against the following Tuesday and quietly halve the rate.
+
+**The route needs its 300s.** Five titles uploading a thousand members each is
+minutes of Mailchimp calls. At 60s it got through one title and the clock ran
+out, which reads as four clean skips: on 8 September it finished Airport's 609
+and never reached the other four. Cloudflare gives up at about 100s and reports
+524 while Vercel carries on, so `/api/cron/subscriber-drip` is in the worker's
+`LONG_RUNNING` list and a 524 from it is patience, not a fault.
+
+**`runDrip` records each slice of 500 as it uploads it**, not all of them at the
+end. The single write at the end is how 1,000 Smart SME contacts came to be
+subscribed in Mailchimp while the database still had them queued — twice, on
+11 and 18 August. Because the queue is ordered by rank, the same people were then
+re-sent on every run, so the drip burned a batch a week and added nobody.
+`scripts/reconcile-imported.mjs` reads the audience and repairs that drift,
+backdating to Mailchimp's own `timestamp_opt` so a repair does not eat the
+current week's allowance.
+
+**`?site=<slug>`** narrows any mode to one title, which is how a single title is
+re-run by hand without giving the other four an unplanned extra import.
 
 ### Spend nothing on contacts that were never going to pass
 
@@ -1347,7 +1406,7 @@ A first issue to a cold list on a young domain is the highest-risk send a title
 ever makes, and `MAX_BOUNCE_RATE` (2%) means a bad one blocks the *next*
 import too — the ramp stops itself. On an established domain the full 1,000 is
 fine. On a domain with no sending history, or one already seen in a spam folder,
-import ~500 (`?mode=import&size=500`) and let the Tuesday drip grow it.
+import ~500 (`?mode=import&size=500`) and let the Tuesday and Friday runs grow it.
 
 ---
 

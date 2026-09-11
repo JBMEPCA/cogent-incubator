@@ -97,12 +97,20 @@ function scheduledExtras(now) {
   if (hour === 8 || hour === 20) extra.push("/api/cron/seo-apply");
 
   if (hour === 9) {
-    // Chip away at verifying the Apollo list every morning.
-    extra.push("/api/cron/subscriber-drip?mode=verify");
+    // The daily verification pass is gone. MillionVerifier ran to minus eleven
+    // credits, every run answered "only -11 verification credits left, need
+    // 200", and behind that gate the drip starved: no address could become
+    // import-ready, so three of four lists had not grown since August.
+    // JB, 10 September: the data list is the list, and the verifier is not
+    // something this operation needs or can afford.
 
-    // Import the next batch on Tuesdays, two clear days before the issue, so a
-    // bad batch shows in the numbers before anything is sent to it.
-    if (weekday === "Tue") extra.push("/api/cron/subscriber-drip?mode=import");
+    // Two chances a week at the allowance, not two thousand a week for
+    // everybody. How many a title may take is a per-title setting the route
+    // reads (drip.weeklyTarget, Smart SME 2000 and the rest 1000), so a title on
+    // a thousand spends it on Tuesday and finds nothing left to do on Friday.
+    // The second run also means a Tuesday that fails costs that title a few
+    // days rather than a whole week.
+    if (weekday === "Tue" || weekday === "Fri") extra.push("/api/cron/subscriber-drip?mode=import");
 
     // The weekly issue. Last in the list so the import and any publishing have
     // already happened by the time it picks its ten stories.
@@ -177,7 +185,16 @@ async function runAll(env, now = new Date(), steps = null) {
   // backlink-outreach 207s returning HTTP 200 while this worker had already
   // emailed to say it had failed. Naming them explicitly, so a NEW route that
   // starts timing out is still treated as the fault it probably is.
-  const LONG_RUNNING = ["/api/cron/agents", "/api/cron/backlink-outreach", "/api/cron/newsletter", "/api/cron/seo-apply"];
+  // subscriber-drip joined this list on 11 September, when it went to 300s:
+  // five titles uploading a thousand members each is minutes of Mailchimp calls,
+  // and at 60s it had been giving up after the first title.
+  const LONG_RUNNING = [
+    "/api/cron/agents",
+    "/api/cron/backlink-outreach",
+    "/api/cron/newsletter",
+    "/api/cron/seo-apply",
+    "/api/cron/subscriber-drip",
+  ];
   const stillWorking = (r) => r.status === 524 && LONG_RUNNING.some((path) => r.path.startsWith(path));
   const failures = results.filter((r) => (r.error || r.status >= 400) && !stillWorking(r));
   if (failures.length) {
