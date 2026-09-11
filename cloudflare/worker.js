@@ -104,10 +104,12 @@ function scheduledExtras(now) {
     // JB, 10 September: the data list is the list, and the verifier is not
     // something this operation needs or can afford.
 
-    // Imports twice a week rather than once. The batch is capped and the
-    // previous-issue health check still gates it, so this is a steadier drip
-    // rather than a bigger one, and there are tens of thousands of addresses
-    // sitting behind it.
+    // Two chances a week at the allowance, not two thousand a week for
+    // everybody. How many a title may take is a per-title setting the route
+    // reads (drip.weeklyTarget, Smart SME 2000 and the rest 1000), so a title on
+    // a thousand spends it on Tuesday and finds nothing left to do on Friday.
+    // The second run also means a Tuesday that fails costs that title a few
+    // days rather than a whole week.
     if (weekday === "Tue" || weekday === "Fri") extra.push("/api/cron/subscriber-drip?mode=import");
 
     // The weekly issue. Last in the list so the import and any publishing have
@@ -183,7 +185,16 @@ async function runAll(env, now = new Date(), steps = null) {
   // backlink-outreach 207s returning HTTP 200 while this worker had already
   // emailed to say it had failed. Naming them explicitly, so a NEW route that
   // starts timing out is still treated as the fault it probably is.
-  const LONG_RUNNING = ["/api/cron/agents", "/api/cron/backlink-outreach", "/api/cron/newsletter", "/api/cron/seo-apply"];
+  // subscriber-drip joined this list on 11 September, when it went to 300s:
+  // five titles uploading a thousand members each is minutes of Mailchimp calls,
+  // and at 60s it had been giving up after the first title.
+  const LONG_RUNNING = [
+    "/api/cron/agents",
+    "/api/cron/backlink-outreach",
+    "/api/cron/newsletter",
+    "/api/cron/seo-apply",
+    "/api/cron/subscriber-drip",
+  ];
   const stillWorking = (r) => r.status === 524 && LONG_RUNNING.some((path) => r.path.startsWith(path));
   const failures = results.filter((r) => (r.error || r.status >= 400) && !stillWorking(r));
   if (failures.length) {
