@@ -161,3 +161,46 @@ contribution or attribute one to a person who did not send it.
 - Never invent a statistic, a source, a quote or a commentator.
 - Link out to the company and the original announcement on any news piece.
 - No em dashes or en dashes, per house style.
+## The headline length rule
+
+Google shows about 60 characters of a headline. Everything past that is cut off
+and the reader never sees it.
+
+So the news goes in the first 60 characters: who, what happened, and the number
+if there is one. The explainer clause after the colon is written for somebody
+already on the page, and nothing load-bearing belongs in it. If the only way to
+understand your headline is to read past the colon, the headline is the wrong
+way round.
+
+This was measured on 11 September 2026. Median headline length across the fleet
+was 89 to 107 characters, so between 99% and 100% of search results were being
+truncated mid-clause, and on the longest ones the actual news never appeared at
+all. It is the cheapest fixable thing on any of these sites.
+
+Aim for 60 characters before the colon. Sixty-five is the ceiling. A headline
+that needs more than that is usually two stories or one unmade decision.
+
+## Openings and closures
+
+Named UK small businesses opening, closing, expanding, relocating or going
+into administration. Independents and owner-managed firms, not corporates.
+
+Why this is a standing beat and not an occasional story: one story about a named pizza restaurant closing over rising costs
+accounts for 20% of every impression this title has had in ninety days, at
+position 6.9. Nothing else on the site comes close, and it was not commissioned
+as part of any beat.
+
+How to write one, because ranking for these is easy and getting the click is not.
+Name the business in the first three words. Use the plain word a person would
+type, closes or opens or reopens, not ceases trading or commences operations.
+Put the place in the headline where there is one. Keep the whole headline inside
+60 characters, per the headline length rule above.
+
+The trade angle still has to be there, and it is what makes the piece ours rather
+than the local paper's: what it cost, what went wrong, what the numbers were, and
+what someone else in the same position should do differently. That belongs in the
+standfirst and the body. It does not belong in the headline, where it pushes the
+news out of sight.
+
+Never speculate about why a named business failed, and never imply wrongdoing.
+Report what has been announced or filed, attribute it, and link the source.

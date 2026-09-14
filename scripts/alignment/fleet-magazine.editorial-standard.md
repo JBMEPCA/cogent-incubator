@@ -90,3 +90,48 @@ shortlists are Fleet Professional interview targets.
 - UK only. Do not carry US or EU fleet rules across without saying so.
 - Treat any supplier claim about savings, range or uptime as a claim, attributed
   to the supplier, never as fact.
+## The headline length rule
+
+Google shows about 60 characters of a headline. Everything past that is cut off
+and the reader never sees it.
+
+So the news goes in the first 60 characters: who, what happened, and the number
+if there is one. The explainer clause after the colon is written for somebody
+already on the page, and nothing load-bearing belongs in it. If the only way to
+understand your headline is to read past the colon, the headline is the wrong
+way round.
+
+This was measured on 11 September 2026. Median headline length across the fleet
+was 89 to 107 characters, so between 99% and 100% of search results were being
+truncated mid-clause, and on the longest ones the actual news never appeared at
+all. It is the cheapest fixable thing on any of these sites.
+
+Aim for 60 characters before the colon. Sixty-five is the ceiling. A headline
+that needs more than that is usually two stories or one unmade decision.
+
+## Openings and closures
+
+Named operators failing, being acquired, opening depots or losing licences.
+Haulier and coach administrations, O-licence revocations and public inquiry
+outcomes, new depots, charging hubs and distribution centres, and fleet
+operators moving sites.
+
+Why this is a standing beat and not an occasional story: this title has published no closure story at all, while the two
+sister titles that have both show the same pattern. Operator failures are among
+the most-read stories in this sector and the trade press covers them routinely,
+so the absence is a gap rather than a judgement.
+
+How to write one, because ranking for these is easy and getting the click is not.
+Name the business in the first three words. Use the plain word a person would
+type, closes or opens or reopens, not ceases trading or commences operations.
+Put the place in the headline where there is one. Keep the whole headline inside
+60 characters, per the headline length rule above.
+
+The trade angle still has to be there, and it is what makes the piece ours rather
+than the local paper's: what it cost, what went wrong, what the numbers were, and
+what someone else in the same position should do differently. That belongs in the
+standfirst and the body. It does not belong in the headline, where it pushes the
+news out of sight.
+
+Never speculate about why a named business failed, and never imply wrongdoing.
+Report what has been announced or filed, attribute it, and link the source.

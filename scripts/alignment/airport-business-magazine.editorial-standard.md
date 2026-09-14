@@ -113,3 +113,21 @@ prospects and award winners are interview targets.
 - Never invent a statistic, a source, a quote or a commentator.
 - Link out to the organisation and the original announcement on any news piece.
 - No em dashes or en dashes, per house style.
+## The headline length rule
+
+Google shows about 60 characters of a headline. Everything past that is cut off
+and the reader never sees it.
+
+So the news goes in the first 60 characters: who, what happened, and the number
+if there is one. The explainer clause after the colon is written for somebody
+already on the page, and nothing load-bearing belongs in it. If the only way to
+understand your headline is to read past the colon, the headline is the wrong
+way round.
+
+This was measured on 11 September 2026. Median headline length across the fleet
+was 89 to 107 characters, so between 99% and 100% of search results were being
+truncated mid-clause, and on the longest ones the actual news never appeared at
+all. It is the cheapest fixable thing on any of these sites.
+
+Aim for 60 characters before the colon. Sixty-five is the ceiling. A headline
+that needs more than that is usually two stories or one unmade decision.
