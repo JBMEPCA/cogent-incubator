@@ -45,7 +45,7 @@ export async function GET(request) {
   const authorId = await authorForSite(wp, site);
 
   const PUBLISH_CAP = 2;
-  const publishOne = async (article) => {
+  const publishOne = async (article, { standIn = false } = {}) => {
     try {
       // No category means WordPress files it under whatever the default is, and
       // seven live articles went out that way — off every section of the front
@@ -122,6 +122,29 @@ export async function GET(request) {
         }
       }
 
+      // A picture the Designer chose has ALREADY passed the gate, and is not
+      // judged a second time.
+      //
+      // The second look was meant to catch a flaky first one. Measured on
+      // 14 September 2026 it does the opposite: run twice on each of the 15
+      // banked pictures, it refused the same 4 both times, for reasons the gate's
+      // own instructions list as never grounds for refusal - a Quartix dashboard
+      // screenshot called a "watermark", a Dropbox office shot refused as generic,
+      // a wristwatch read as a rival's logo. Every one of those had been approved
+      // at selection. At publish time a refusal strips the picture and empties
+      // the slot, which is what cost six slots over 12-14 September. The
+      // watermark rule is enforced where the picture is chosen; one pass is
+      // the rule, not two.
+      //
+      // imageSource is written by the picture desk and nowhere else, so an
+      // image with no provenance - pasted in by hand - is still looked at.
+      if (article.imageUrl && !featuredMediaId && article.imageSource) {
+        const slug = article.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 60);
+        const media = await uploadMedia(wp, { imageUrl: article.imageUrl, alt: article.imageAlt, filename: slug });
+        featuredMediaId = media.id;
+        check = { ok: true, reason: "approved by the picture gate at selection" };
+      }
+
       if (article.imageUrl && !featuredMediaId) {
         // `site` matters: without it titleBrief() renders empty, so the picture
         // editor judges the image with no idea which publication it is for, and
@@ -186,6 +209,20 @@ export async function GET(request) {
           // and publishing is deferred. The Designer takes anything in review or
           // approved with no imageUrl, so it sources a fresh one and this
           // publishes on the next tick with a picture that has passed twice.
+          //
+          // EXCEPT for a stand-in, which is only being tried because something
+          // else could not go out. It is not due, so a refusal costs it nothing
+          // and it keeps its picture for its own slot. Stripping here emptied
+          // Airport's shelf in one round on 14 September 2026: the stand-in loop
+          // tried three banked articles, the re-check refused all three, and
+          // three approved pictures were thrown away before a fourth got through.
+          if (standIn) {
+            return {
+              id: article.id,
+              title: article.title.slice(0, 60),
+              skipped: `stand-in image failed the re-check (${check.reason || "no reason given"}); left untouched for its own slot`,
+            };
+          }
           await db.article.update({
             where: { id: article.id },
             data: { imageUrl: null, imageAlt: null, imageCredit: null, imageSource: null },
@@ -273,7 +310,7 @@ export async function GET(request) {
     let owed = Math.min(deferred.length, PUBLISH_CAP - publishedCount);
     for (const article of standby) {
       if (owed <= 0) break;
-      const r = await publishOne(article);
+      const r = await publishOne(article, { standIn: true });
       if (r.url) {
         owed--;
         publishedCount++;
