@@ -1,7 +1,7 @@
 import Link from "next/link";
 import FleetNav from "@/app/components/FleetNav";
 import SiteMark from "@/app/components/SiteMark";
-import { prisma } from "@/lib/prisma";
+import { prisma, fleetRead } from "@/lib/prisma";
 import { interviewStats, STATUS_LABEL } from "@/lib/interviews";
 
 export const dynamic = "force-dynamic";
@@ -32,25 +32,28 @@ function fmtDateTime(d) {
 }
 
 export default async function FleetInterviewsPage() {
+  // Every title at once, deliberately: this is the fleet view. Interview
+  // targets are site-scoped, so the guarded default handle refuses them.
+  const fleet = fleetRead();
   const sites = await prisma.site.findMany({ orderBy: { name: "asc" } });
 
   const perSite = await Promise.all(
     sites.map(async (s) => ({
       site: s,
-      stats: await interviewStats(prisma, s.id),
+      stats: await interviewStats(fleet, s.id),
     }))
   );
 
   // Anything a person has actually done sits above the per-title tiles: across
   // five titles the interesting row is always a reply, never a send.
-  const needsEyes = await prisma.interviewTarget.findMany({
+  const needsEyes = await fleet.interviewTarget.findMany({
     where: { status: { in: ["agreed", "answered", "drafted"] } },
     include: { site: { select: { slug: true, name: true } } },
     orderBy: [{ agreedAt: "desc" }, { createdAt: "desc" }],
     take: 40,
   });
 
-  const recent = await prisma.interviewTarget.findMany({
+  const recent = await fleet.interviewTarget.findMany({
     where: { status: { in: ["asked", "questioned", "published", "declined", "bounced", "exhausted"] } },
     include: { site: { select: { slug: true, name: true } } },
     orderBy: [{ askedAt: "desc" }, { createdAt: "desc" }],
