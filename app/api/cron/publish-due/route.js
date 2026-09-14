@@ -45,10 +45,7 @@ export async function GET(request) {
   const authorId = await authorForSite(wp, site);
 
   const PUBLISH_CAP = 2;
-  let publishedCount = 0;
-  const results = [];
-  for (const article of due) {
-    if (publishedCount >= PUBLISH_CAP) break;
+  const publishOne = async (article) => {
     try {
       // No category means WordPress files it under whatever the default is, and
       // seven live articles went out that way — off every section of the front
@@ -57,12 +54,11 @@ export async function GET(request) {
       // article is how Marketing pieces end up in Operations, and the fix is one
       // dropdown in the pipeline view.
       if (!article.category) {
-        results.push({
+        return {
           id: article.id,
           title: article.title.slice(0, 60),
           deferred: "no category set, so it would publish as Uncategorised. Set one on /content.",
-        });
-        continue;
+        };
       }
 
       // No picture, no post.
@@ -80,12 +76,11 @@ export async function GET(request) {
       // the Director for art direction, so nothing can queue here for ever
       // without saying so on the board.
       if (!article.imageUrl) {
-        results.push({
+        return {
           id: article.id,
           title: article.title.slice(0, 60),
           deferred: "no header image yet, so it would publish bare. Waiting for the Designer.",
-        });
-        continue;
+        };
       }
 
       let featuredMediaId;
@@ -195,12 +190,11 @@ export async function GET(request) {
             where: { id: article.id },
             data: { imageUrl: null, imageAlt: null, imageCredit: null, imageSource: null },
           });
-          results.push({
+          return {
             id: article.id,
             title: article.title.slice(0, 60),
             deferred: `image failed the re-check (${check.reason || "no reason given"}); sent back to the Designer`,
-          });
-          continue;
+          };
         }
       }
       let body = stripEmDashes(article.body);
@@ -222,17 +216,80 @@ export async function GET(request) {
         data: { status: "published", publishedAt: new Date(), wpPostId: post.id },
       });
       // Surfaced, not swallowed: if the second look was skipped, the run says so.
-      results.push({
+      return {
         title: article.title,
         url: post.link,
         ...(check?.unchecked ? { note: check.reason } : {}),
-      });
-      publishedCount++;
+      };
     } catch (e) {
-      results.push({ title: article.title, error: e.message });
+      return { title: article.title, error: e.message };
+    }
+  };
+
+  let publishedCount = 0;
+  const results = [];
+  const deferred = [];
+  for (const article of due) {
+    if (publishedCount >= PUBLISH_CAP) break;
+    const r = await publishOne(article);
+    results.push(r);
+    if (r.url) publishedCount++;
+    if (r.deferred) deferred.push(article);
+  }
+
+  // A DEFERRAL MUST NOT COST THE SLOT, so a ready article steps in.
+  //
+  // The weekend of 12-13 September lost five slots this way with nothing
+  // failing: Airport at 07:30 and 13:30 on Saturday, Fleet at 07:30, Smart SME
+  // at 13:30, Barbering at 10:30 on Sunday, and Airport again at 07:30 on
+  // Monday. Each time the article due had an approved picture, the re-check
+  // above refused it on a second look, the picture was stripped and the slot
+  // went out empty, while four to six finished, imaged articles sat booked into
+  // later slots. The gate is not deterministic, so this will keep happening.
+  //
+  // The stand-in is the next ready article already on the calendar, so the
+  // order the schedule chose is kept. The deferred piece gives up its time so
+  // it does not also publish late on a later tick and put two out in one slot;
+  // fill-schedule runs straight after this and books it again, and refills the
+  // stand-in's vacated slot at the same time.
+  //
+  // Only deferrals, never errors: a WordPress outage would fail the stand-in
+  // too, and publishing is not the thing that is wrong.
+  const standIns = [];
+  if (deferred.length && publishedCount < PUBLISH_CAP) {
+    const standby = await db.article.findMany({
+      where: {
+        status: { in: ["review", "approved"] },
+        qaPassed: true,
+        body: { not: null },
+        imageUrl: { not: null },
+        category: { not: null },
+        id: { notIn: due.map((a) => a.id) },
+      },
+      // ASC puts unbooked articles last, so the calendar's own order wins.
+      orderBy: [{ scheduledFor: "asc" }, { createdAt: "asc" }],
+      take: 5,
+    });
+    let owed = Math.min(deferred.length, PUBLISH_CAP - publishedCount);
+    for (const article of standby) {
+      if (owed <= 0) break;
+      const r = await publishOne(article);
+      if (r.url) {
+        owed--;
+        publishedCount++;
+        standIns.push({ ...r, standingInFor: deferred[standIns.length]?.title.slice(0, 60) });
+      } else {
+        results.push({ ...r, standIn: true });
+      }
+    }
+    if (standIns.length) {
+      await db.article.updateMany({
+        where: { id: { in: deferred.slice(0, standIns.length).map((a) => a.id) } },
+        data: { scheduledFor: null },
+      });
     }
   }
-  return { published: results.filter((r) => r.url).length, results };
+  return { published: publishedCount, results: [...results, ...standIns] };
   });
 
   return Response.json(out);
