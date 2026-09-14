@@ -1,11 +1,10 @@
 /**
  * Proves runInterviewSweep only ever reads its own title's interview rows.
  *
- * InterviewTarget is not in TENANTED (lib/prisma.js), so forSite() does not
- * scope it and every query in the sweep has to carry siteId itself. On 14 Sep
- * 2026 they did not: each title's sweep chased the whole fleet's queue under its
+ * The sweep receives a forSite() handle, but InterviewTarget was missing from
+ * TENANTED (lib/prisma.js) until 14 Sep 2026, so none of its queries were scoped: each title's sweep chased the whole fleet's queue under its
  * own name, and nine people were chased by a magazine that had never written to
- * them. This runs the sweep against a fake db that records every interviewTarget
+ * them. The sweep now carries siteId itself as well. This runs it against a fake db that records every interviewTarget
  * query and fails if any of them is missing the site's id.
  *
  * No network, no database. Run it after touching the sweep:
