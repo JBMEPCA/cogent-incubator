@@ -1,4 +1,3 @@
-import { LOGO_PNG } from "@/lib/brand/logo";
 import { wordmarkFor } from "@/lib/brand/wordmarks";
 import { runNewsletter, isNewsletterConfigured, lastIssueHealth } from "@/lib/newsletter";
 import { cronGuard, forEachSite } from "@/lib/cron";
@@ -31,13 +30,20 @@ export async function GET(request) {
       await forEachSite(async ({ site, creds }) => {
         if (!isNewsletterConfigured(creds.mailchimp)) return { skipped: "newsletter not configured" };
         if (health) return { health: await lastIssueHealth(creds.mailchimp.audienceId) };
-        // The title's OWN wordmark. LOGO_PNG is Smart SME's, so every issue
-        // from every other title carried Smart SME's masthead — the same
-        // single-title assumption the playbook keeps finding, this time on the
-        // one image every subscriber sees first. It stays as the fallback,
-        // because a slightly wrong mark beats a broken image in a sent email.
-        const mark = wordmarkFor(site.slug)?.png ?? LOGO_PNG;
-        return runNewsletter(site, { creds, dryRun, logoBase64: mark.toString("base64") });
+        // The title's OWN masthead, and no fallback to another title's, ever.
+        //
+        // This used to fall back to LOGO_PNG, which is Smart SME's. Barbering
+        // and Airport had no entry in wordmarks.js, so their issues went out
+        // under Smart SME's masthead. A missing image is a gap; a rival
+        // masthead is a mistake the reader notices and remembers. Every title
+        // has its own mark now, so this should never fire, and if a new title
+        // is added without one it sends with its name as text and says so.
+        const mark = wordmarkFor(site.slug);
+        if (!mark) {
+          console.error(`newsletter: no masthead for ${site.slug}; sending with the name as text. Add it to scripts/build-brand-wordmarks.mjs.`);
+        }
+        const logo = mark?.masthead || mark?.png || null;
+        return runNewsletter(site, { creds, dryRun, logoBase64: logo ? logo.toString("base64") : null });
       })
     );
   } catch (e) {
