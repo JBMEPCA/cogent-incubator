@@ -326,7 +326,34 @@ export async function GET(request) {
       });
     }
   }
-  return { published: publishedCount, results: [...results, ...standIns] };
+  const outcome = { published: publishedCount, results: [...results, ...standIns] };
+
+  // Kept, so a missed slot can be explained afterwards. This response goes back
+  // to the Cloudflare worker, which throws it away, and Vercel keeps no bodies:
+  // on 15 September Barbering's 07:30 went out empty and there was nothing left
+  // anywhere to say why. The last sixty rounds that had something due, per title.
+  try {
+    const key = "publish-due:log";
+    const prior = await db.engineSetting.findUnique({ where: { siteId_key: { siteId: site.id, key } } });
+    let log = [];
+    try {
+      log = JSON.parse(prior?.value || "[]");
+    } catch {}
+    log.unshift({
+      at: new Date().toISOString(),
+      due: due.map((a) => ({ title: a.title.slice(0, 60), slot: a.scheduledFor, image: !!a.imageUrl })),
+      ...outcome,
+    });
+    const value = JSON.stringify(log.slice(0, 60));
+    await db.engineSetting.upsert({
+      where: { siteId_key: { siteId: site.id, key } },
+      update: { value },
+      create: { key, value },
+    });
+  } catch {
+    // The record must never be what stops a publish.
+  }
+  return outcome;
   });
 
   return Response.json(out);
