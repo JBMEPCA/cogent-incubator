@@ -137,7 +137,7 @@ const DATA = {
   // named byline and inventing one would breach it on day one. Set it to the
   // actual person before the first publish.
   authorName: null,
-  authorEmail: "news@golfresortmagazine.com",
+  authorEmail: "press@golfresortmagazine.com",
   sections: SECTIONS,
   editorialStandardMd: EDITORIAL_STANDARD,
   houseStyleMd: HOUSE_STYLE,

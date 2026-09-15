@@ -5,6 +5,7 @@ import { forSite } from "@/lib/prisma";
 import { siteUrl, houseStyle } from "@/lib/voice";
 import { publishToWordPress } from "@/lib/wordpress";
 import { cronGuard, forEachSite } from "@/lib/cron";
+import { runInboxLabels, titleAddresses } from "@/lib/inbox-labels";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -31,9 +32,18 @@ export async function GET(request) {
     : null;
   if (!anthropic) return Response.json({ error: "ANTHROPIC_API_KEY is not set" }, { status: 500 });
 
+  // Read once, not per title: every title's mailbox address, so each sweep can
+  // ignore the four that are not its own. All five forward into Smart SME's
+  // mailbox now, so without this SME reads every title's interview replies.
+  let fleetAddresses = [];
   try {
-    return Response.json(
-      await forEachSite(async ({ site }) => {
+    fleetAddresses = [...(await titleAddresses()).keys()];
+  } catch {
+    fleetAddresses = [];
+  }
+
+  try {
+    const sweep = await forEachSite(async ({ site }) => {
         const { creds } = await siteCredentials(site.id);
         const db = forSite(site.id);
         return runInterviewSweep(site, {
@@ -41,6 +51,7 @@ export async function GET(request) {
           creds,
           anthropic,
           siteUrl: siteUrl(site),
+          foreignAddresses: fleetAddresses,
           // Drafting is injected rather than imported inside the sweep, so the
           // sweep stays testable without a WordPress account and a model key.
           draft: creds?.wordpress
@@ -57,8 +68,25 @@ export async function GET(request) {
                 })
             : null,
         });
-      })
-    );
+    });
+
+    // The hub inbox rides along here rather than on a cron trigger of its own.
+    // It is mail work on an hourly route that already exists, and adding a
+    // trigger would mean a wrangler deploy, which has previous for wiping the
+    // worker's dashboard-set variables and taking the whole fleet's ticks with
+    // it. Fleet-wide, so it runs once after the per-title loop, not inside it.
+    //
+    // Isolated deliberately: labelling is a convenience for JB, the interview
+    // sweep is the franchise. A Gmail hiccup must not turn a good sweep into a
+    // 500 that Cloudflare records as a failed tick.
+    let inbox;
+    try {
+      inbox = await runInboxLabels();
+    } catch (e) {
+      inbox = { available: false, reason: e.message?.slice(0, 200) };
+    }
+
+    return Response.json({ ...sweep, inbox });
   } catch (e) {
     return Response.json({ error: e.message }, { status: 500 });
   }

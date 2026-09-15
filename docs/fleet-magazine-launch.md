@@ -50,7 +50,7 @@ the provisioning checklist, and `FLEET_NEWS_SEARCHES` has been added to
 | **Mark text** | `FM` |
 | **Byline** | Own named editor |
 | **Author name** | *see §5 — this must be a real person* |
-| **Editorial intake address** | `news@thefleetmagazine.co.uk` |
+| **Editorial intake address** | `press@thefleetmagazine.co.uk` |
 | **Accent** | The amber preset (`#d97706` / `#fbbf24`) — visually distinct from Smart SME's blue in the rail |
 
 **Readers.** This is the single most load-bearing field in the system: every
@@ -185,7 +185,7 @@ steps will break something silently if skipped.
 | 6 | **Categories** | Create categories spelled *exactly* as the seven sections | — |
 | 7 | **Engine user** | New user, **Editor** role, generate an application password | `username`, `appPassword` |
 | 8 | **Byline user** | New user whose **display name exactly matches** the author name | — |
-| 9 | **Intake page** | Publish `/submit-news/`, monitored at `news@thefleetmagazine.co.uk` | — |
+| 9 | **Intake page** | Publish `/submit-news/`, monitored at `press@thefleetmagazine.co.uk` | — |
 | 10 | **Search Console & GA4** | Add the property to both, grant the service account | `gscSiteUrl`, `ga4PropertyId` |
 | 11 | **Mailchimp** | Create the audience, authenticate the sending domain | `audienceId`, `fromEmail` |
 | 12 | **LinkedIn** | Create the company page, run the OAuth connect flow | `organisationUrn` and tokens |
