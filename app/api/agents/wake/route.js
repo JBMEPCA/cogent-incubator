@@ -6,7 +6,7 @@ import { runLinkedIn } from "@/lib/agents/linkedin";
 import { runBacklink } from "@/lib/agents/backlink";
 import { runDirector, runEditor, runDesigner, runSeo, runFinance } from "@/lib/agents/team";
 import { runNewsletter } from "@/lib/newsletter";
-import { LOGO_PNG } from "@/lib/brand/logo";
+import { wordmarkFor } from "@/lib/brand/wordmarks";
 import { getSiteContext } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
@@ -36,7 +36,8 @@ const AGENTS = {
   linkedin: runLinkedIn,
   backlink: runBacklink,
   newsletter: (site, trigger, ctx) =>
-    runNewsletter(site, { creds: ctx.creds, dryRun: true, logoBase64: LOGO_PNG.toString("base64") }),
+    // The title's own masthead, never Smart SME's LOGO_PNG for every title.
+    runNewsletter(site, { creds: ctx.creds, dryRun: true, logoBase64: wordmarkFor(site.slug)?.masthead?.toString("base64") ?? null }),
 };
 
 // Manual wake from the office view, so you can watch an agent work on demand

@@ -104,10 +104,12 @@ function scheduledExtras(now) {
     // JB, 10 September: the data list is the list, and the verifier is not
     // something this operation needs or can afford.
 
-    // Imports twice a week rather than once. The batch is capped and the
-    // previous-issue health check still gates it, so this is a steadier drip
-    // rather than a bigger one, and there are tens of thousands of addresses
-    // sitting behind it.
+    // Two chances a week at the allowance, not two thousand a week for
+    // everybody. How many a title may take is a per-title setting the route
+    // reads (drip.weeklyTarget, Smart SME 2000 and the rest 1000), so a title on
+    // a thousand spends it on Tuesday and finds nothing left to do on Friday.
+    // The second run also means a Tuesday that fails costs that title a few
+    // days rather than a whole week.
     if (weekday === "Tue" || weekday === "Fri") extra.push("/api/cron/subscriber-drip?mode=import");
 
     // The weekly issue. Last in the list so the import and any publishing have
@@ -147,9 +149,50 @@ const HALF_PAST = [
   "/api/cron/agents?stage=worker",
 ];
 
+/**
+ * One import request per title, rather than one for the fleet.
+ *
+ * Measured on live audiences 11 September 2026: Mailchimp's batch endpoint runs
+ * at roughly 90s per 500 members, so one title's thousand takes about three
+ * minutes. Five of them in a single invocation is fifteen minutes against a 300s
+ * limit — the route was killed part way every time, which is why Golf and
+ * Airport imported that morning and Smart SME and Fleet did not. It read as a
+ * clean run either way.
+ *
+ * The route's own ?mode=due says which titles have allowance and queue left, so
+ * this never hardcodes a slug and a new title joins by existing. If that call
+ * fails the fleet-wide path is used unchanged: a slow sweep beats no sweep.
+ */
+async function expandDrip(env, path) {
+  try {
+    const res = await fetch(`${baseUrl(env)}/api/cron/subscriber-drip?mode=due`, {
+      headers: { Authorization: `Bearer ${env.CRON_SECRET}` },
+    });
+    if (!res.ok) return [path];
+    const { due } = await res.json();
+    if (!Array.isArray(due)) return [path];
+    // Nothing due is a real answer, not a failure: every title has already had
+    // its week's worth. Returning no steps is how that stays silent.
+    return due.map((slug) => `${path}&site=${encodeURIComponent(slug)}`);
+  } catch {
+    return [path];
+  }
+}
+
 async function runAll(env, now = new Date(), steps = null) {
+  const planned = steps || [...STEPS, ...scheduledExtras(now)];
+
+  const plan = [];
+  for (const path of planned) {
+    if (path.startsWith("/api/cron/subscriber-drip?mode=import")) {
+      plan.push(...(await expandDrip(env, path)));
+    } else {
+      plan.push(path);
+    }
+  }
+
   const results = [];
-  for (const path of steps || [...STEPS, ...scheduledExtras(now)]) {
+  for (const path of plan) {
     try {
       const res = await fetch(baseUrl(env) + path, {
         headers: { Authorization: `Bearer ${env.CRON_SECRET}` },
@@ -183,7 +226,16 @@ async function runAll(env, now = new Date(), steps = null) {
   // backlink-outreach 207s returning HTTP 200 while this worker had already
   // emailed to say it had failed. Naming them explicitly, so a NEW route that
   // starts timing out is still treated as the fault it probably is.
-  const LONG_RUNNING = ["/api/cron/agents", "/api/cron/backlink-outreach", "/api/cron/newsletter", "/api/cron/seo-apply"];
+  // subscriber-drip joined this list on 11 September, when it went to 300s:
+  // five titles uploading a thousand members each is minutes of Mailchimp calls,
+  // and at 60s it had been giving up after the first title.
+  const LONG_RUNNING = [
+    "/api/cron/agents",
+    "/api/cron/backlink-outreach",
+    "/api/cron/newsletter",
+    "/api/cron/seo-apply",
+    "/api/cron/subscriber-drip",
+  ];
   const stillWorking = (r) => r.status === 524 && LONG_RUNNING.some((path) => r.path.startsWith(path));
   const failures = results.filter((r) => (r.error || r.status >= 400) && !stillWorking(r));
   if (failures.length) {

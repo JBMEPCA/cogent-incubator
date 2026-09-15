@@ -29,39 +29,31 @@ export async function GET(request) {
     return Response.json(
       await forEachSite(async ({ site, creds }) => {
         if (!isNewsletterConfigured(creds.mailchimp)) return { skipped: "newsletter not configured" };
-        // The masthead rides along in every reply, health and dry run included.
+        // The title's OWN masthead, and no fallback to another title's, ever.
         //
-        // Airport sent two issues under Smart SME's logo and nobody caught it,
-        // because every pre-send check answered a question about a number -
-        // subscribers, stories, bounce rate, hours since the last issue - and
-        // not one of them said what the reader would see at the top of the
-        // page. A check that cannot fail on branding will never catch a
-        // branding fault, however often it is run.
-        const masthead = wordmarkFor(site.slug)
-          ? `${site.slug}-wordmark.png`
-          : "NONE - this title has no wordmark and will send without a masthead";
+        // This used to fall back to LOGO_PNG, which is Smart SME's. Barbering
+        // and Airport had no entry in wordmarks.js, so their issues went out
+        // under Smart SME's masthead: Airport's 1,500 subscribers on 3 September
+        // and 1,576 on the 10th. A missing image is a gap; a rival masthead is
+        // a mistake the reader notices and remembers. If a new title is added
+        // without a mark it sends with its name as text and the run says so.
+        const mark = wordmarkFor(site.slug);
+        const logo = mark?.masthead || mark?.png || null;
+
+        // The masthead rides along in every reply, health and dry run included.
+        // Every pre-send check used to answer a question about a number and not
+        // one said what the reader would see at the top of the page, which is
+        // how Airport's issues went out branded as another publication.
+        const masthead = logo
+          ? `${site.slug}, ${mark.mastheadWidth || mark.width}x${mark.mastheadHeight || mark.height}`
+          : "NONE - this title has no masthead and will send its name as text";
         if (health) {
           return { masthead, health: await lastIssueHealth(creds.mailchimp.audienceId) };
         }
-        // No fallback to another title's mark, ever.
-        //
-        // This was "?? LOGO_PNG", and LOGO_PNG is Smart SME's. Airport had no
-        // wordmark, so both of its issues went out under Smart SME's masthead:
-        // 1,500 subscribers on 3 September and 1,576 on the 10th, each opening
-        // an Airport Business Magazine email branded as another publication.
-        // The comment above it even said this was the risk, and rated a
-        // slightly wrong mark above a broken image. That trade is wrong. A
-        // missing image is a gap; a rival masthead is a mistake the reader
-        // notices and remembers.
-        //
-        // Every title has a wordmark now, so this should never fire. If a new
-        // title is added without one, it sends with no logo and the run says
-        // so, which is a loud, cheap failure rather than a silent brand error.
-        const mark = wordmarkFor(site.slug)?.png ?? null;
-        if (!mark) {
-          console.error(`newsletter: no wordmark for ${site.slug}; sending without a masthead rather than another title's. Add it to scripts/build-brand-wordmarks.mjs.`);
+        if (!logo) {
+          console.error(`newsletter: no masthead for ${site.slug}; sending with the name as text. Add it to scripts/build-brand-wordmarks.mjs.`);
         }
-        const result = await runNewsletter(site, { creds, dryRun, logoBase64: mark ? mark.toString("base64") : null });
+        const result = await runNewsletter(site, { creds, dryRun, logoBase64: logo ? logo.toString("base64") : null });
         return { masthead, ...result };
       })
     );
