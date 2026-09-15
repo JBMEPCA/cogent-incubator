@@ -18,7 +18,6 @@ import { PrismaClient } from "@prisma/client";
 import { decryptJson } from "../lib/crypto.js";
 import { runNewsletter } from "../lib/newsletter.js";
 import { wordmarkFor } from "../lib/brand/wordmarks.js";
-import { LOGO_PNG } from "../lib/brand/logo.js";
 
 const [emailArg, ...slugs] = process.argv.slice(2);
 if (!emailArg || !slugs.length) {
@@ -35,13 +34,14 @@ for (const slug of slugs) {
 
   const rows = await prisma.siteCredential.findMany({ where: { siteId: site.id } });
   const creds = Object.fromEntries(rows.map((r) => [r.kind, decryptJson(r.payloadEnc)]));
-  const mark = wordmarkFor(site.slug)?.png ?? LOGO_PNG;
+  // The title's own masthead; a proof must show what subscribers will get.
+  const mark = wordmarkFor(site.slug)?.masthead ?? null;
 
   console.log(`=== ${site.name} ===`);
   try {
     const res = await runNewsletter(
       { ...site, newsletterEnabled: true },
-      { creds, testEmails, force: true, logoBase64: mark.toString("base64") }
+      { creds, testEmails, force: true, logoBase64: mark ? mark.toString("base64") : null }
     );
     if (res?.skipped) { console.log(`  SKIPPED: ${res.skipped}`); continue; }
     const out = res?.result ?? res;
