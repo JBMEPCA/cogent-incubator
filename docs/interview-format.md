@@ -106,6 +106,11 @@ does nothing to one that is already tight. Run it on every logo.
 
 - Publish through `publishToWordPress`, which defaults to `draft`. Show JB the
   draft before it goes live.
+- Inline photos go in as a real `wp:image` block (block comments included),
+  never a bare `<figure>`. Core only loads the image stylesheet when the post
+  contains the block, and cogent-base has no global img rule, so a bare figure
+  renders at native size and breaks the column. Caught on Penny Joyner-Platt's
+  and Rob Wood's portraits, 16 Sep 2026. Hold portraits to 480px wide.
 - Featured image: the supplied photo. Put the credit in the media `caption`
   field, because that is the field a person about to publish actually reads.
   **Never leave an instruction to ourselves in a caption**, it renders on the

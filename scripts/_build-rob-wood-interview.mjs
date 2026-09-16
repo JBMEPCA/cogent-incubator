@@ -63,8 +63,12 @@ const q = (...paras) =>
   `<blockquote class="wp-block-quote interview-quote">\n${paras.map((p) => `<p>${p}</p>`).join("\n")}\n</blockquote>`;
 const h2 = (s) => `<h2 class="wp-block-heading">${s}</h2>`;
 const p = (s) => `<p>${s}</p>`;
-const figure = (src, alt, size = "large") =>
-  `<figure class="wp-block-image size-${size}"><img src="${src}" alt="${alt}" loading="lazy" decoding="async"></figure>`;
+// A real wp:image block, not bare HTML. Core only loads the image stylesheet
+// (max-width:100%, height:auto) when the post contains the block, and this
+// theme has no img rule of its own, so a bare figure renders at native size and
+// breaks the column. Portraits are held to 480px. See _fix-interview-inline-images.mjs.
+const figure = (src, alt) =>
+  `<!-- wp:image {"width":"480px","sizeSlug":"full","linkDestination":"none","align":"center"} -->\n<figure class="wp-block-image aligncenter size-full is-resized"><img src="${src}" alt="${alt}" style="width:480px"/></figure>\n<!-- /wp:image -->`;
 
 function buildBody({ logoUrl, logoW, logoH, portraitUrl }) {
   return [

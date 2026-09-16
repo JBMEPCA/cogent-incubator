@@ -53,8 +53,12 @@ const q = (...paras) =>
   `<blockquote class="wp-block-quote interview-quote">\n${paras.map((p) => `<p>${p}</p>`).join("\n")}\n</blockquote>`;
 const h2 = (s) => `<h2 class="wp-block-heading">${s}</h2>`;
 const p = (s) => `<p>${s}</p>`;
+// A real wp:image block, not bare HTML. Core only loads the image stylesheet
+// (max-width:100%, height:auto) when the post contains the block, and this
+// theme has no img rule of its own, so a bare figure renders at native size and
+// breaks the column. Portraits are held to 480px. See _fix-interview-inline-images.mjs.
 const figure = (src, alt) =>
-  `<figure class="wp-block-image size-full"><img src="${src}" alt="${alt}" loading="lazy" decoding="async"></figure>`;
+  `<!-- wp:image {"width":"480px","sizeSlug":"full","linkDestination":"none","align":"center"} -->\n<figure class="wp-block-image aligncenter size-full is-resized"><img src="${src}" alt="${alt}" style="width:480px"/></figure>\n<!-- /wp:image -->`;
 // Curly quotes and apostrophes as entities, the way WordPress stores them.
 const t = (s) => s.replace(/'/g, "&#8217;").replace(/“/g, "&#8220;").replace(/”/g, "&#8221;").replace(/…/g, "&#8230;");
 
