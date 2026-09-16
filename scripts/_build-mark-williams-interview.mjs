@@ -11,9 +11,11 @@
  * Photos. He sent five and said full length shots suit them better. Used: the
  * studio full-length of Mark with Rachael as the lead, framed onto a landscape
  * canvas so the homepage and social crops do not cut them off at the knees,
- * and the solo full-length inline. Not used: an HSBC advert (a bank's marketing
- * creative, not ours to republish) and a Facebook screenshot of the investiture
- * (a screenshot, and the photographer's rights are unknown).
+ * and, at JB's request on 16 Sep, the investiture photo with the Princess Royal
+ * beside the OBE section. That photo arrived as a Facebook screenshot with no
+ * photographer credit; it was first held back for that reason and JB chose to
+ * use it. It replaced the solo studio full-length. Not used: an HSBC advert (a
+ * bank's marketing creative, not ours to republish).
  *
  * Quotes are his own sentences, selected and kept in his order. The only edits
  * are punctuation: spaced dashes become commas, under the house rule.
@@ -33,7 +35,11 @@ const DRY = process.argv.includes("--dry");
 const PHOTOS = (process.argv.find((a) => a.startsWith("--photos=")) || "").split("=")[1];
 if (!PHOTOS) throw new Error("--photos=<dir with LIMB_ART_1914-(1).jpg, LIMB_ART_1999.jpg, mark-email.json>");
 const DUO_FILE = path.join(PHOTOS, "LIMB_ART_1914-(1).jpg"); // Mark and Rachael, full length, 2561x3840
-const SOLO_FILE = path.join(PHOTOS, "LIMB_ART_1999.jpg"); // Mark, full length, 2561x3840
+// JB chose this over the solo studio shot. It arrived as a Facebook screenshot
+// with no interface in frame; the photographer is not credited.
+const ROYAL_FILE = path.join(PHOTOS, "Screenshot_20260609_164902_Facebook.jpg"); // 1079x1352
+
+const ROYAL_ALT = "Dr Mark Williams OBE showing his LIMB-art prosthetic leg cover to the Princess Royal at his investiture";
 
 const SME = "https://smartsme.co.uk";
 const L = {
@@ -62,7 +68,7 @@ const figure = (src, alt) =>
   `<!-- wp:image {"width":"480px","sizeSlug":"full","linkDestination":"none","align":"center"} -->\n<figure class="wp-block-image aligncenter size-full is-resized"><img src="${src}" alt="${alt}" style="width:480px"/></figure>\n<!-- /wp:image -->`;
 const t = (s) => s.replace(/'/g, "&#8217;").replace(/“/g, "&#8220;").replace(/”/g, "&#8221;");
 
-function buildBody({ logoUrl, logoW, logoH, soloUrl }) {
+function buildBody({ logoUrl, logoW, logoH, royalUrl }) {
   return [
     `<section class="interview-company">
 <div class="interview-company-head">
@@ -110,6 +116,7 @@ function buildBody({ logoUrl, logoW, logoH, soloUrl }) {
     ),
 
     h2(`What the OBE changed`),
+    figure(royalUrl, ROYAL_ALT),
     q(
       t(`Interestingly, I don't think it changed me very much, but it definitely changed how some other people initially perceive me.`),
       t(`An OBE gives you a certain amount of credibility before you've even walked into the room. People who don't know you perhaps take a little more notice of what you've done and what you've got to say.`),
@@ -147,7 +154,6 @@ function buildBody({ logoUrl, logoW, logoH, soloUrl }) {
     q(t(`Some of our best product development hasn't come from sitting around a table discussing what amputees might want. It has come from amputees telling us directly.`)),
 
     h2(`What comes next for LIMB-art`),
-    figure(soloUrl, "Dr Mark Williams OBE, founder of LIMB-art, holding a Union flag prosthetic leg cover and wearing one of his own designs"),
     q(
       t(`International growth.`),
       t(`We've proved the product, we've proved the manufacturing process and we've shown that a small company in North Wales can sell into major healthcare systems and export around the world.`),
@@ -220,12 +226,12 @@ async function framedHero(file) {
 
 const logo = await logoPng();
 const hero = await framedHero(DUO_FILE);
-const solo = await sharp(SOLO_FILE).rotate().resize({ width: 1200 }).jpeg({ quality: 86, mozjpeg: true }).toBuffer();
-console.log(`hero ${hero.length} bytes, solo ${solo.length} bytes`);
+const royal = await sharp(ROYAL_FILE).rotate().jpeg({ quality: 88, mozjpeg: true }).toBuffer();
+console.log(`hero ${hero.length} bytes, royal ${royal.length} bytes`);
 
 if (DRY) {
   const data = (buf, type) => `data:${type};base64,${buf.toString("base64")}`;
-  const body = buildBody({ logoUrl: data(logo.buf, "image/png"), logoW: logo.width, logoH: logo.height, soloUrl: data(solo, "image/jpeg") });
+  const body = buildBody({ logoUrl: data(logo.buf, "image/png"), logoW: logo.width, logoH: logo.height, royalUrl: data(royal, "image/jpeg") });
   const words = body.replace(/<[^>]+>/g, " ").split(/\s+/).filter(Boolean).length;
   const proof = `<title>Proof: ${SEO_TITLE}</title>
 <style>
@@ -285,13 +291,13 @@ const stamp = Date.now();
 const put = (name, buf) => ssh(`base64 -d > /tmp/${name}`, buf.toString("base64"));
 put(`limbart-logo-${stamp}.png`, logo.buf);
 put(`mark-hero-${stamp}.jpg`, hero);
-put(`mark-solo-${stamp}.jpg`, solo);
+put(`mark-royal-${stamp}.jpg`, royal);
 const imp = (file, title, alt) => wp(`media import /tmp/${file} --title=${sq(title)} --alt=${sq(alt)} --porcelain`);
 const logoId = imp(`limbart-logo-${stamp}.png`, "LIMB-art logo", "LIMB-art");
 const heroId = imp(`mark-hero-${stamp}.jpg`, "Dr Mark Williams OBE and Rachael, LIMB-art", "Dr Mark Williams OBE and Rachael of LIMB-art, each holding a prosthetic leg cover");
-const soloId = imp(`mark-solo-${stamp}.jpg`, "Dr Mark Williams OBE, LIMB-art", "Dr Mark Williams OBE, founder of LIMB-art, holding a Union flag prosthetic leg cover and wearing one of his own designs");
+const royalId = imp(`mark-royal-${stamp}.jpg`, "Dr Mark Williams OBE at his investiture", ROYAL_ALT);
 const url = (id) => wp(`post get ${id} --field=guid`);
-const body = buildBody({ logoUrl: url(logoId), logoW: logo.width, logoH: logo.height, soloUrl: url(soloId) });
+const body = buildBody({ logoUrl: url(logoId), logoW: logo.width, logoH: logo.height, royalUrl: url(royalId) });
 put(`mark-body-${stamp}.html`, Buffer.from(body, "utf8"));
 
 const postId = wp(
@@ -302,7 +308,7 @@ wp(`post meta update ${postId} _thumbnail_id ${heroId}`);
 wp(`post meta update ${postId} _yoast_wpseo_title ${sq(SEO_TITLE)}`);
 wp(`post meta update ${postId} _yoast_wpseo_metadesc ${sq(META)}`);
 wp(`post meta update ${postId} _yoast_wpseo_focuskw ${sq(KEYPHRASE)}`);
-ssh(`rm -f /tmp/limbart-logo-${stamp}.png /tmp/mark-hero-${stamp}.jpg /tmp/mark-solo-${stamp}.jpg /tmp/mark-body-${stamp}.html`);
+ssh(`rm -f /tmp/limbart-logo-${stamp}.png /tmp/mark-hero-${stamp}.jpg /tmp/mark-royal-${stamp}.jpg /tmp/mark-body-${stamp}.html`);
 
 const db = forSite(site.id);
 const target = await db.interviewTarget.findFirst({ where: { companyDomain: "limb-art.com" } });
@@ -311,6 +317,6 @@ await prisma.$disconnect();
 
 console.log(wp(`post get ${postId} --fields=ID,post_status,post_name --format=json`));
 console.log(`image block: ${wp(`eval 'echo has_block("core/image", ${postId}) ? "yes" : "no";'`)}`);
-console.log(`media: logo ${logoId}, hero ${heroId}, solo ${soloId}`);
+console.log(`media: logo ${logoId}, hero ${heroId}, royal ${royalId}`);
 console.log(`preview: ${SME}/?p=${postId}&preview=true`);
 console.log(`edit:    ${SME}/wp-admin/post.php?post=${postId}&action=edit`);
