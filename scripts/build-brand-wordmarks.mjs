@@ -36,6 +36,11 @@ const TITLES = [
   ["golf-resort-magazine", "Golf Resort Magazine"],
   ["barbering-business", "Barbering Business"],
   ["airport-business-magazine", "Airport Business Magazine"],
+  ["gym-business-news", "Gym Business News"],
+  ["nursery-daily", "Nursery Daily"],
+  ["senior-lifestyle-business", "Senior Lifestyle Business"],
+  ["dental-business-news", "Dental Business News"],
+  ["smart-farming-news", "Smart Farming News"],
 ];
 
 async function load(slug, file) {
