@@ -342,7 +342,7 @@ export const TITLES = {
   },
 
   "senior-lifestyle-business": {
-    name: "Senior Lifestyle Business",
+    name: "Senior Living Business",
     domain: "seniorlifestylebusiness.com",
     email: "jb@seniorlifestylebusiness.com",
     linkedin: null,
@@ -351,14 +351,14 @@ export const TITLES = {
     global: true,
 
     oneLiner:
-      "Senior Lifestyle Business is written for the people who develop, fund and run retirement communities.",
+      "Senior Living Business is written for the people who develop, fund and run retirement communities.",
     aboutBody: [
       "Retirement communities are one of the fastest-growing corners of property and one of the least covered as a business. We write for developers, operators, investors, lenders, architects and advisers: how schemes are funded, how they get through planning, how the fee models work and what the operators' numbers look like.",
       "We cover the UK first, with Australia and New Zealand alongside, because their retirement village markets are more mature and their lessons travel. Where a story is about a care home rather than a community with its own front doors, it is not ours.",
     ],
     adLede: "Reach the developers, operators and investors building the retirement communities sector.",
     audienceForAds:
-      "Senior Lifestyle Business reaches the decision-makers in retirement living: developers, operators, investors and lenders, and the architects, advisers, technology and interiors suppliers who serve them. It is a small, senior, high-value audience with money in motion.",
+      "Senior Living Business reaches the decision-makers in retirement living: developers, operators, investors and lenders, and the architects, advisers, technology and interiors suppliers who serve them. It is a small, senior, high-value audience with money in motion.",
     adFormats: [
       "<strong>Display advertising</strong> in leaderboard, billboard and MPU positions across the site.",
       "<strong>Category sponsorship</strong>, your brand against Development &amp; Planning, Capital &amp; Investment, Operators &amp; Economics or Design &amp; Amenities.",
@@ -380,9 +380,9 @@ export const TITLES = {
       "Announcements with nothing an operator or investor would act on",
     ],
     interviewLine:
-      "Senior Lifestyle Business runs a regular interview with a developer, operator or investor about how they actually run the business. If you or a client would make a good subject, say so in the same email and tell us in a line or two what makes the story worth a reader's time.",
+      "Senior Living Business runs a regular interview with a developer, operator or investor about how they actually run the business. If you or a client would make a good subject, say so in the same email and tell us in a line or two what makes the story worth a reader's time.",
     prLine:
-      "If you are building a retirement living, later living or seniors housing trade media list, please add Senior Lifestyle Business. We cover the UK, Australia and New Zealand.",
+      "If you are building a retirement living, later living or seniors housing trade media list, please add Senior Living Business. We cover the UK, Australia and New Zealand.",
     newsletterBullets: [
       "The development pipeline: schemes, planning decisions and who is building what.",
       "Where the capital is coming from, and what investors are buying.",
