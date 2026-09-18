@@ -34,13 +34,8 @@ const MAX = arg("max", 400);
 const SCOPES = ["https://www.googleapis.com/auth/gmail.modify"];
 const API = "https://gmail.googleapis.com/gmail/v1/users/me";
 
-const TITLE_LABEL = {
-  "smart-sme": "Titles/SME",
-  "fleet-magazine": "Titles/Fleet",
-  "golf-resort-magazine": "Titles/Golf",
-  "barbering-business": "Titles/Barbering",
-  "airport-business-magazine": "Titles/Airports",
-};
+// One list, kept in lib/inbox-labels.js, so a new title is added in one place.
+import { TITLE_LABEL } from "../lib/inbox-labels.js";
 
 async function api(token, path, { method = "GET", body } = {}) {
   const res = await fetch(`${API}${path}`, {
