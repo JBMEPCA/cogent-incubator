@@ -128,7 +128,7 @@ try {
     const site = await prisma.site.create({ data: DATA });
     console.log(`Created ${site.name} (${site.slug})`);
     console.log(`  sections            ${SECTIONS.length}`);
-    console.log(`  engineEnabled       ${site.engineEnabled}  <- stays false until launch AND until human review exists`);
+    console.log(`  engineEnabled       ${site.engineEnabled}  <- stays false until launch`);
     console.log(`  dailySpendCapUsd    ${site.dailySpendCapUsd}`);
     console.log(`  articlesPerDayTarget ${site.articlesPerDayTarget}`);
     console.log(`  authorName          ${site.authorName ?? "(unset, must be a real person before first publish)"}`);

@@ -44,6 +44,11 @@ const CHILD_DIRS = {
   "golf-resort-magazine": "golf-resort-magazine-website",
   "barbering-business": "barbering-business-website",
   "airport-business-magazine": "airport-business-magazine-website",
+  "gym-business-news": "gym-business-news-website",
+  "nursery-daily": "nursery-daily-website",
+  "senior-lifestyle-business": "senior-lifestyle-business-website",
+  "dental-business-news": "dental-business-news-website",
+  "smart-farming-news": "smart-farming-news-website",
 };
 
 function palette(slug) {

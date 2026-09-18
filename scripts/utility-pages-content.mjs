@@ -244,6 +244,247 @@ export const TITLES = {
       "The systems airports are actually buying, compared, with costs attached.",
     ],
   },
+
+  "gym-business-news": {
+    name: "Gym Business News",
+    domain: "gymbusinessnews.com",
+    email: "jb@gymbusinessnews.com",
+    linkedin: null,
+    consentKey: "cogent-consent",
+    skip: [],
+
+    oneLiner:
+      "Gym Business News is written for the people who own and run independent gyms, studios and personal training businesses.",
+    aboutBody: [
+      "Plenty of people write about fitness. Very few write about the business of it: what it really costs to open a gym, how to price a membership, whether to employ trainers or rent them space, which software is worth the monthly fee, and what the latest rules on subscriptions, music licensing and employment status mean for a small operator.",
+      "That is what we cover. Money, compliance, members, kit, software, people and deals, written for the owner rather than the member. We never tell anyone how to train.",
+    ],
+    adLede: "Reach the owners who buy the equipment, the software, the insurance and the fit-out.",
+    audienceForAds:
+      "Gym Business News reaches independent gym and studio owners, franchisees and personal training businesses: the people who choose management software, payments, equipment, flooring, insurance and finance. Most of the sector is small businesses, and very little trade media is written for them.",
+    adFormats: [
+      "<strong>Display advertising</strong> in leaderboard, billboard and MPU positions across the site.",
+      "<strong>Category sponsorship</strong>, your brand against Tech &amp; Software, Equipment &amp; Fit-Out, Money &amp; Compliance or Franchise &amp; Deals.",
+      "<strong>Sponsored articles</strong>, written to the same standard as our editorial and clearly labelled.",
+      "<strong>Newsletter sponsorship</strong>, a fixed slot in the weekly send, and solus email to our subscribers.",
+    ],
+    sourcing:
+      "We check facts against primary sources: HMRC and gov.uk for employment status, VAT and subscription rules, PPL PRS for music licensing, published market reports for sector figures, and published vendor pricing for anything we quote a price on. Health, results and savings claims are always attributed to whoever made them, never asserted by us. Where we are uncertain, we say so.",
+    newsWanted: [
+      "<strong>Openings, expansions and deals.</strong> New sites, franchise growth, acquisitions and investment.",
+      "<strong>Software, equipment and payments launches</strong> an operator would realistically buy.",
+      "<strong>Money and policy</strong> where the consequence for an operator is clear: subscription rules, wage rates, business rates, energy.",
+      "<strong>Research and market data</strong> with a named source and a method.",
+      "<strong>People.</strong> Owners doing something worth copying, and appointments at operators and suppliers.",
+    ],
+    newsNotWanted: [
+      "Workouts, nutrition, weight loss or results content aimed at members",
+      "Celebrity fitness and consumer product reviews",
+      "Announcements with nothing an owner would do differently on Monday",
+    ],
+    interviewLine:
+      "Gym Business News runs a regular interview with an owner about how they actually run the business. If you or a client would make a good subject, say so in the same email and tell us in a line or two what makes the story worth a reader's time.",
+    prLine:
+      "If you are building a fitness industry or leisure trade media list, please add Gym Business News.",
+    newsletterBullets: [
+      "What things cost and what to charge: rent, kit, software, wages and membership pricing.",
+      "The rules that change how you run the business, explained with what to do about them.",
+      "Deals, openings and the operators growing fastest, and how they are doing it.",
+    ],
+  },
+
+  "nursery-daily": {
+    name: "Nursery Daily",
+    domain: "nurserydaily.com",
+    email: "jb@nurserydaily.com",
+    linkedin: null,
+    consentKey: "cogent-consent",
+    skip: [],
+
+    oneLiner:
+      "Nursery Daily is written for the people who own and run nurseries, pre-schools and childcare businesses: whoever signs the lease and the payroll.",
+    aboutBody: [
+      "Early years has excellent writing about practice and child development. It has much less about the business: what each council really pays for a funded hour, what a setting is worth, what occupancy it needs to break even, and what the latest changes to ratios, pay and inspection will cost.",
+      "That is what we cover. Funding and fees, deals and valuations, staffing and pay, compliance, property and operations, with the numbers attached. Teaching and child development we leave to the people who do them best.",
+    ],
+    adLede: "Reach the owners and operators who buy the software, the insurance, the food and the furniture.",
+    audienceForAds:
+      "Nursery Daily reaches nursery owners, group operators and pre-school managers: the people who choose management software, insurance, catering, furniture and equipment, recruitment and professional advisers. It is a sector under financial pressure, and the owners want practical, numerate help.",
+    adFormats: [
+      "<strong>Display advertising</strong> in leaderboard, billboard and MPU positions across the site.",
+      "<strong>Category sponsorship</strong>, your brand against Funding &amp; Fees, Operations &amp; Tech, Property &amp; Premises or Deals &amp; Valuations.",
+      "<strong>Sponsored articles</strong>, written to the same standard as our editorial and clearly labelled.",
+      "<strong>Newsletter sponsorship</strong>, a fixed slot in the weekly send, and solus email to our subscribers.",
+    ],
+    sourcing:
+      "We check facts against primary sources: the Department for Education and each local authority for funding rates, Ofsted for inspection data, gov.uk for pay and employment rules, and named advisers for valuations. We do not report on harm to individual children, we cover enforcement at group level only, and we do not publish images of children created by software. Where we are uncertain, we say so.",
+    newsWanted: [
+      "<strong>Funding rate announcements</strong> from councils and government, with the numbers.",
+      "<strong>Openings, acquisitions and group expansion.</strong> New settings, deals and investment.",
+      "<strong>Policy and regulation</strong> where the cost or consequence for a provider is clear.",
+      "<strong>Research and sector data</strong> with a named source and a method.",
+      "<strong>People.</strong> Owners doing something worth copying, and senior appointments at groups and suppliers.",
+    ],
+    newsNotWanted: [
+      "Stories about individual children or live legal cases",
+      "Parenting advice and content aimed at parents choosing a nursery",
+      "Announcements with nothing an owner would do differently on Monday",
+    ],
+    interviewLine:
+      "Nursery Daily runs a regular interview with an owner or operator about how they actually run the business. If you or a client would make a good subject, say so in the same email and tell us in a line or two what makes the story worth a reader's time.",
+    prLine:
+      "If you are building an early years or childcare trade media list, please add Nursery Daily.",
+    newsletterBullets: [
+      "Funding rates, fees and occupancy: the numbers that decide whether a setting makes money.",
+      "Deals and valuations: who is buying, who is selling and at what price.",
+      "The rule changes coming, with what they will cost and what to do now.",
+    ],
+  },
+
+  "senior-lifestyle-business": {
+    name: "Senior Lifestyle Business",
+    domain: "seniorlifestylebusiness.com",
+    email: "jb@seniorlifestylebusiness.com",
+    linkedin: null,
+    consentKey: "cogent-consent",
+    skip: [],
+    global: true,
+
+    oneLiner:
+      "Senior Lifestyle Business is written for the people who develop, fund and run retirement communities.",
+    aboutBody: [
+      "Retirement communities are one of the fastest-growing corners of property and one of the least covered as a business. We write for developers, operators, investors, lenders, architects and advisers: how schemes are funded, how they get through planning, how the fee models work and what the operators' numbers look like.",
+      "We cover the UK first, with Australia and New Zealand alongside, because their retirement village markets are more mature and their lessons travel. Where a story is about a care home rather than a community with its own front doors, it is not ours.",
+    ],
+    adLede: "Reach the developers, operators and investors building the retirement communities sector.",
+    audienceForAds:
+      "Senior Lifestyle Business reaches the decision-makers in retirement living: developers, operators, investors and lenders, and the architects, advisers, technology and interiors suppliers who serve them. It is a small, senior, high-value audience with money in motion.",
+    adFormats: [
+      "<strong>Display advertising</strong> in leaderboard, billboard and MPU positions across the site.",
+      "<strong>Category sponsorship</strong>, your brand against Development &amp; Planning, Capital &amp; Investment, Operators &amp; Economics or Design &amp; Amenities.",
+      "<strong>Sponsored articles</strong>, written to the same standard as our editorial and clearly labelled.",
+      "<strong>Newsletter sponsorship</strong>, a fixed slot in the weekly send, and solus email to our subscribers.",
+    ],
+    sourcing:
+      "We check facts against primary sources: planning decisions and appeal records, company accounts and filings, government and regulator publications in each market, and trade body data with its method stated. We report fee structures and the rules around them; we never give financial advice to residents or their families. Where we are uncertain, we say so.",
+    newsWanted: [
+      "<strong>Schemes and planning.</strong> New developments, approvals, refusals and appeals, with unit numbers.",
+      "<strong>Capital and deals.</strong> Funding rounds, joint ventures, acquisitions and investment in the sector.",
+      "<strong>Operator results and strategy</strong> with figures attached.",
+      "<strong>Regulation and fees</strong> where the consequence for operators is clear.",
+      "<strong>People.</strong> Senior appointments at operators, developers and investors.",
+    ],
+    newsNotWanted: [
+      "Care home inspections, care workforce and care home development",
+      "Consumer guides to choosing a retirement home",
+      "Announcements with nothing an operator or investor would act on",
+    ],
+    interviewLine:
+      "Senior Lifestyle Business runs a regular interview with a developer, operator or investor about how they actually run the business. If you or a client would make a good subject, say so in the same email and tell us in a line or two what makes the story worth a reader's time.",
+    prLine:
+      "If you are building a retirement living, later living or seniors housing trade media list, please add Senior Lifestyle Business. We cover the UK, Australia and New Zealand.",
+    newsletterBullets: [
+      "The development pipeline: schemes, planning decisions and who is building what.",
+      "Where the capital is coming from, and what investors are buying.",
+      "Fee models and operator economics, compared across markets.",
+    ],
+  },
+
+  "dental-business-news": {
+    name: "Dental Business News",
+    domain: "dentalbusinessnews.com",
+    email: "jb@dentalbusinessnews.com",
+    linkedin: null,
+    consentKey: "cogent-consent",
+    skip: [],
+
+    oneLiner:
+      "Dental Business News is written for the people who own and run dental practices: principals, practice owners and practice managers.",
+    aboutBody: [
+      "Dentistry is a £12bn market that is changing hands and changing shape: practices leaving the NHS, groups consolidating, contracts being handed back and valuations moving. We cover the practice as a business and as an asset, with the numbers attached.",
+      "That means deals and groups, NHS contract values, private conversion, finance and tax, workforce, regulation and premises. We never cover clinical practice, and we never write for patients.",
+    ],
+    adLede: "Reach the owners who buy the equipment, the software, the finance and the advice.",
+    audienceForAds:
+      "Dental Business News reaches practice owners, principals and practice managers: the people who choose practice management software, equipment, finance, plan providers, accountants, brokers and advisers. It is a senior audience making large decisions about a valuable asset.",
+    adFormats: [
+      "<strong>Display advertising</strong> in leaderboard, billboard and MPU positions across the site.",
+      "<strong>Category sponsorship</strong>, your brand against Deals &amp; Groups, Private &amp; Plans, Finance &amp; Tax or Premises &amp; Technology.",
+      "<strong>Sponsored articles</strong>, written to the same standard as our editorial and clearly labelled.",
+      "<strong>Newsletter sponsorship</strong>, a fixed slot in the weekly send, and solus email to our subscribers.",
+    ],
+    sourcing:
+      "We check facts against primary sources: NHS Business Services Authority and NHS England data for contracts, the Care Quality Commission for registrations, the General Dental Council for published determinations, company filings for deals, and named advisers for valuations. Clinical and treatment claims are always attributed, never asserted by us. Where we are uncertain, we say so.",
+    newsWanted: [
+      "<strong>Practice sales, acquisitions and group growth</strong>, with values where they are public.",
+      "<strong>NHS contract changes</strong>, handbacks and commissioning decisions by area.",
+      "<strong>Openings and closures</strong> of practices.",
+      "<strong>Software, equipment and finance launches</strong> a practice would realistically buy.",
+      "<strong>People.</strong> Owners doing something worth copying, and senior appointments at groups and suppliers.",
+    ],
+    newsNotWanted: [
+      "Clinical techniques, case studies and treatment advice",
+      "Content aimed at patients",
+      "Fitness to practise cases that are still live",
+    ],
+    interviewLine:
+      "Dental Business News runs a regular interview with a practice owner about how they actually run the business. If you or a client would make a good subject, say so in the same email and tell us in a line or two what makes the story worth a reader's time.",
+    prLine:
+      "If you are building a dental trade or practice management media list, please add Dental Business News.",
+    newsletterBullets: [
+      "Deals and valuations: who is buying practices, and at what price.",
+      "NHS contracts and private conversion, with the real numbers.",
+      "The costs, rules and technology that change how a practice makes money.",
+    ],
+  },
+
+  "smart-farming-news": {
+    name: "Smart Farming News",
+    domain: "smartfarmingnews.com",
+    email: "jb@smartfarmingnews.com",
+    linkedin: null,
+    consentKey: "cogent-consent",
+    skip: [],
+
+    oneLiner:
+      "Smart Farming News is written for farmers and landowners who run the farm as a business.",
+    aboutBody: [
+      "Every farm now makes decisions that are as much about money as about farming: whether to lease land for solar, what a biodiversity unit is worth, whether a robot pays for itself, how to let a redundant building, and what the changes to tax and succession mean for the next generation.",
+      "That is what we cover. Technology judged by its payback, and the land income most farm press leaves out, always with the question answered: what does it cost, what does it return, and who has done it.",
+    ],
+    adLede: "Reach the farmers and landowners deciding where the next pound of investment goes.",
+    audienceForAds:
+      "Smart Farming News reaches farm owners, managers and landowners weighing investment in technology, energy, diversification and natural capital, along with the advisers, lenders and suppliers who serve them.",
+    adFormats: [
+      "<strong>Display advertising</strong> in leaderboard, billboard and MPU positions across the site.",
+      "<strong>Category sponsorship</strong>, your brand against Farm Tech, Energy &amp; Land Use, Natural Capital or Finance &amp; Grants.",
+      "<strong>Sponsored articles</strong>, written to the same standard as our editorial and clearly labelled.",
+      "<strong>Newsletter sponsorship</strong>, a fixed slot in the weekly send, and solus email to our subscribers.",
+    ],
+    sourcing:
+      "We check facts against primary sources: Defra, the Rural Payments Agency, Natural England and HMRC for schemes, grants and tax, published land agent and adviser research for rents and values, and named farms for costs and returns. Vendor and yield claims are always attributed, never asserted by us. On tax and succession we report the rules and name the advisers; we do not give advice, and we take no political side. Where we are uncertain, we say so.",
+    newsWanted: [
+      "<strong>Energy and land use deals</strong>: solar, battery storage, biodiversity and carbon, with terms where public.",
+      "<strong>Diversification projects</strong> with the numbers attached.",
+      "<strong>Technology launches and trials</strong> where the cost and payback are stated.",
+      "<strong>Grants, schemes and tax changes</strong> where the consequence for a farm business is clear.",
+      "<strong>People.</strong> Farmers doing something worth copying, and appointments across the sector.",
+    ],
+    newsNotWanted: [
+      "Daily commodity prices and general farming news without a business decision attached",
+      "Consumer food and farm shop promotion",
+      "Political campaigning for or against any policy",
+    ],
+    interviewLine:
+      "Smart Farming News runs a regular interview with a farmer or landowner about how they actually run the business. If you or a client would make a good subject, say so in the same email and tell us in a line or two what makes the story worth a reader's time.",
+    prLine:
+      "If you are building an agriculture, agtech or rural business media list, please add Smart Farming News.",
+    newsletterBullets: [
+      "What land earns beyond farming: energy, nature markets and diversification, with real rents and prices.",
+      "Farm technology judged by its payback, not its brochure.",
+      "The grant, tax and succession changes coming, explained with what to do now.",
+    ],
+  },
 };
 
 // ── Page templates ───────────────────────────────────────────────────────────
