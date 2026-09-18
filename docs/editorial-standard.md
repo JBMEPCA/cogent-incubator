@@ -278,6 +278,217 @@ procurement level (who bought which scanner) and never at vulnerability level
 (how screening fails). If a story's hook is that people were hurt or
 endangered, it is not our story.
 
+### Gym Business News: two rules
+
+**1. The scope rule.** We cover the *business* of fitness, never the
+*practice* of it. Every article is written for someone who carries the lease,
+the payroll or the direct-debit book: independent gym and studio owners,
+self-employed personal trainers running their own business, and franchisees.
+If the natural reader is someone who wants to get fitter, it is not our
+article.
+
+No training advice, no programmes, no nutrition or supplement guidance, no
+treatment efficacy (recovery, sauna, cold water, wearables are revenue lines we
+can cover, not therapies we can assess). Weight-loss drugs are a live sector
+story: GLP-1 is covered only as a business and liability story (what it does
+to demand, what an operator may say or offer, who carries the risk), never how
+the drugs work or who should take them. This is a commercial rule as much as a
+safety one: almost every term here has a consumer twin ("gym near me" runs at
+roughly 100,000 searches a month), and health advice is YMYL ground a new
+domain with no named clinician cannot win. The engine is never seeded with a
+bare "gym", "fitness", "workout" or "personal trainer" query; the safe stems
+live in the title's search set.
+
+Trends are in scope through the till: what a trend does to the timetable, the
+price list and the kit budget, never how to do it.
+
+**2. The claims rule.** Every health, results, savings or performance claim is
+attributed to the party making it and never asserted in our voice. That covers
+supplier payback claims, vendor churn and retention statistics, and anything
+from a press release. Vendor content owns most of this sector's search results
+and many of its most-repeated statistics ("the average member stays 4.7
+months") have no traceable primary source: if a figure cannot be traced to a
+named report, survey or filing, it does not run. UK market totals are
+attributed to the UK Health and Fitness Market Report (ukactive with 4GLOBAL,
+Sport England and Grant Thornton) every time, and US figures are never blended
+with UK ones.
+
+### Nursery Daily: five rules
+
+**1. The safeguarding rule, which outranks everything else.** We do not
+cover abuse, injury, death or neglect of children as news. Ever. No named
+children, no named accused individuals, no named individual setting in
+connection with harm. Regulatory enforcement is covered only at group or
+policy level, only from an official source (Ofsted, DfE, a gov.uk notice, or a
+court outcome after verdict), and only for its business consequence: what a
+chain-level welfare notice means for operators, what mandatory CCTV would
+cost, how insurance premiums move. A single setting's grade, suspension or
+closure after inspection is not our story. Live criminal cases and
+prosecutions are off-limits entirely, including a council-authorised
+prosecution, because of contempt risk. Any draft that mentions a child's
+death, abuse, injury or a criminal case goes to a human before publishing,
+with no automatic path to publish. When in doubt, the piece runs without the
+detail or does not run.
+
+**2. The buyer rule.** Every article is written for someone paid to run a
+setting: owner, director, nursery manager, childminder as a business,
+pre-school chair, out-of-school club operator, group operations or finance
+lead, investor, lender, broker, supplier. If the natural reader is a parent,
+it is not our article: no "how to choose a nursery", no "how to claim 30
+hours", no child-development tips, no nursery rankings for parents. Parents
+enter our pages only as demand data. Operator intent is about 1% of
+"childcare" searches and 12% of "nursery" searches, the worst consumer twin in
+the fleet, so the engine is never seeded with `nursery`, `childcare`, `day
+nursery`, `nursery staff`, `early years sector` or `30 hours childcare` bare.
+
+**3. The no-children-imagery rule.** No AI-generated images of children and no
+stock photos of identifiable children. Buildings, empty rooms, outdoor spaces,
+kitchens, adults at work, data graphics.
+
+**4. The nation-and-scope figure rule.** Funding, ratios, entitlements and
+regulators differ across England, Scotland, Wales, Northern Ireland and
+Ireland, and English council rates vary about 54%. Every figure carries
+nation, source, year and scope, or is quoted as a range. A national average is
+always called an average. Market-size figures differ by definition (day
+nurseries only versus all registered childcare): name the firm and the scope.
+
+**5. The politics rule.** Funding is a live political fight. Cover it as
+economics: rates, costs, margins, capacity, cashflow. No party line, and no
+campaigning voice borrowed from the sector bodies; attribute theirs beside the
+government's.
+
+### Senior Lifestyle Business: five rules
+
+The retirement community as a business, UK-led with Australia and New Zealand
+second and US capital as the benchmark.
+
+**1. The front-door rule (scope, and the line with Care Home Magazine).** If the
+resident has their own front door and holds a lease, licence or tenancy, the
+story is ours: retirement villages, integrated retirement communities, extra
+care, assisted living, housing with care, retirement housing. If the resident
+has a room and a care plan in a CQC-registered care home, it belongs to CIM's
+Care Home Magazine and we do not write it. Care home development, planning and
+deals, CQC inspections and ratings, and the care workforce all stay with Care
+Home Magazine. On a mixed campus we cover the development, the capital and the
+village operation, never the care home's operation, ratings or staffing.
+Domiciliary care inside a village is an operating model and a cost line only.
+In Australia "aged care" means residential care and sits on the other side of
+the line. We never target a search query containing "care home", "nursing home"
+or "residential care"; Care Home Magazine never targets "retirement village",
+"retirement community", "later living" or "extra care". The two titles are sold
+together, never against each other.
+
+**2. The operator rule.** Every article is written for someone paid to develop,
+fund, run, design, supply or regulate a retirement community: operator,
+developer, investor, lender, planner, architect, council commissioner, adviser,
+supplier. If the natural reader is a resident or their family, it is not our
+article. No "how to choose a retirement village", no "is it worth it", no fee
+explainers written for buyers. Resident complaints are regulatory and
+reputational risk to operators, never advice to residents.
+
+**3. The no-advice rule.** No financial, legal or care advice to consumers. Event
+fees and deferred management fees are explained from the operator's P&L;
+planning law is described and the reader is pointed to counsel. Retirement
+finance for older people is a textbook YMYL topic.
+
+**4. The resident-harm rule.** Insolvencies, fee rulings, tribunal decisions and
+regulation are business and regulatory risk, and we cover them as such. We do
+not cover individual deaths, abuse, crime or safety incidents as news, and we
+never name a private resident.
+
+**5. The scope-and-figure rule.** "Senior housing", "integrated retirement
+community" and "retirement housing" are different stock and their numbers
+differ by definition. ARCO's investment and turnover projections and operators'
+savings claims are advocacy figures. Every figure carries source, year and
+scope, or is quoted as a range with the sources named; never an ARCO or
+operator claim in our own voice.
+
+### Dental Business News: four rules
+
+**1. The owner rule.** Every article is written for someone who runs, owns, finances, buys, sells,
+supplies or manages a dental practice: principals and owners, practice
+managers, group operations and M&A teams, associates planning ownership, and
+the brokers, accountants, lawyers, lenders and suppliers around them. We write
+for principals, owners and practice managers, never patients. If the natural
+reader is a patient, it is not our article: no "how to find an NHS dentist",
+no treatment price guides for patients, no oral-health advice. Access-crisis
+stories enter only as contract economics and capacity.
+
+**2. The scope rule.** The business of dentistry, never clinical practice. No technique, treatment
+choice, materials recommendations or outcomes. Product launches are commercial
+news (price, distribution, what it does to a practice's costs or revenue),
+never a clinical recommendation.
+
+**3. The claims rule.** Clinical, whitening and aesthetics claims are attributed to a named source,
+never asserted in our voice. Botulinum toxin and similar injectables are
+prescription-only medicines: never describe or encourage their promotion to
+the public, and never imply a non-prescriber may supply them. Tooth whitening
+above 0.1% hydrogen peroxide may be supplied only by or under registered dental
+professionals: cover the law, the enforcement and the lawful business, never
+how to whiten. State the status of England's non-surgical cosmetics licensing
+scheme as of the source's date, attributed. Cover the revenue, regulation and
+liability of aesthetics, never how-to or before-and-after.
+
+**4. The fitness-to-practise rule.** GDC and CQC enforcement stories carry libel risk because the accused are our
+readers. Report only published determinations and concluded outcomes, from the
+regulator's or court's own record. Name only what the regulator names, in the
+form it names it; if a determination anonymises a registrant, so do we. No live
+cases: nothing from a complaint, investigation, interim order, referral or
+unconcluded hearing, and nothing from a report that precedes a determination.
+Policy, statistics and aggregate outcomes are always fine. When in doubt the
+piece runs without the name, or does not run.
+
+The fleet's figures rule applies: LaingBuisson's £12.16bn (2023/24) is the
+high-street market, not the NHS budget or practice income; name source and year
+on every figure and never blend them.
+
+### Smart Farming News: four rules
+
+**1. The money-question rule.** Every piece answers three questions for a farm
+or land business: what does it cost, what does it return, and who has done it.
+A robot, a software package, a solar lease, a habitat bank and a holiday let are
+all capital decisions, and the article is not finished until the reader can see
+the payback, or the reason it cannot yet be known. If a piece cannot name a
+cost, a return or a real farm or business that has done it, it is a press
+release and does not run. The reader owns, runs, finances or advises a farm or
+rural land business: never a shopper, a tourist, a Clarkson viewer or a
+smallholding dreamer. No farm-shop reviews, no days out, no property listings.
+
+**2. The no-advice rule.** APR and BPR, inheritance tax, succession, tenancy
+terms and energy or BNG lease terms are high-value money decisions, often on
+estates worth millions. We report the rules, the numbers, the deadlines and
+named advisers' views, and we never tell a reader what to do with their estate,
+their tenancy or their land. No "you should" on a tax or succession point. Every
+tax piece names the rule's source (HMRC, the Finance Act, the Commons Library)
+and its date, says to take professional advice, and is re-reviewed when the
+rules change. The farm inheritance tax change is politically charged: we take
+no line on the government, the campaigns, the protests or the reversal
+pressure. We report who pays, how much, from when, and what advisers say.
+
+**3. The claims rule.** Vendors, energy developers, carbon and BNG brokers and
+lead-gen sites all publish yields, savings, rents and paybacks. Every such
+figure is attributed to whoever claimed it, dated, and never asserted in our
+own voice: "up to 30% less spray" is the vendor's sentence, not ours. Where
+independent data exists (AHDB, Defra, a university trial, a land agent's
+survey), set it beside the claim. Lease rents, BNG unit prices and carbon prices
+are always attributed ranges, because the sources define them differently.
+
+**4. The stay-off-the-daily-beat rule.** Commodity prices, general SFI and
+Countryside Stewardship news, livestock disease, machinery launches for their
+own sake and contractor charges are the incumbents' daily ground (Farmers
+Weekly, Farmers Guardian, FarmingUK), and they will always have it first. We
+cover them only when the story changes a payback sum or a land-use decision,
+and the headline says which. The engine is never seeded with the bare queries
+"farmers", "farm shop", "farm for sale" or "farm subsidies".
+
+Two standing sub-rules from the brief carry over. Solar-on-farmland fights and
+planning objections are reported as business (who is paid, how much, what was
+decided), never as a side taken. Farm deaths and rural crime are not covered as
+news; farmer mental health only as a business-support topic with named
+charities. Vehicle tax and double-cab pickups belong to The Fleet Magazine, and
+generic small-business queries (starting a farm shop, business rates for any
+business) to Smart SME.
+
 ---
 
 ## Where the live standards are now (6 Sep 2026)

@@ -31,6 +31,11 @@ import {
   GOLF_NEWS_SEARCHES,
   BARBERING_NEWS_SEARCHES,
   AIRPORT_NEWS_SEARCHES,
+  GYM_BUSINESS_NEWS_SEARCHES,
+  NURSERY_DAILY_NEWS_SEARCHES,
+  SENIOR_LIFESTYLE_BUSINESS_NEWS_SEARCHES,
+  DENTAL_BUSINESS_NEWS_SEARCHES,
+  SMART_FARMING_NEWS_SEARCHES,
   searchFeedUrl,
   searchHubUrl,
 } from "../lib/news-searches.js";
@@ -44,6 +49,11 @@ const SEARCH_SETS = {
   "golf-resort-magazine": GOLF_NEWS_SEARCHES,
   "barbering-business": BARBERING_NEWS_SEARCHES,
   "airport-business-magazine": AIRPORT_NEWS_SEARCHES,
+  "gym-business-news": GYM_BUSINESS_NEWS_SEARCHES,
+  "nursery-daily": NURSERY_DAILY_NEWS_SEARCHES,
+  "senior-lifestyle-business": SENIOR_LIFESTYLE_BUSINESS_NEWS_SEARCHES,
+  "dental-business-news": DENTAL_BUSINESS_NEWS_SEARCHES,
+  "smart-farming-news": SMART_FARMING_NEWS_SEARCHES,
 };
 
 for (const f of [".env.local", ".env"]) {
