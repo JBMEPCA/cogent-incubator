@@ -96,6 +96,11 @@ function scheduledExtras(now) {
   // mechanical kinds apply themselves; titles and copy still wait for a human.
   if (hour === 8 || hour === 20) extra.push("/api/cron/seo-apply");
 
+  // The Monday briefing, approved by JB on 18 September 2026 for 14:00 on
+  // Mondays. UK 14:00 is 13:00 UTC in BST and 14:00 UTC in GMT, both inside
+  // the 06:00-19:00 UTC trigger window.
+  if (hour === 14 && weekday === "Mon") extra.push("/api/cron/briefing");
+
   if (hour === 9) {
     // The daily verification pass is gone. MillionVerifier ran to minus eleven
     // credits, every run answered "only -11 verification credits left, need
@@ -233,6 +238,7 @@ async function runAll(env, now = new Date(), steps = null) {
     "/api/cron/agents",
     "/api/cron/backlink-outreach",
     "/api/cron/newsletter",
+    "/api/cron/briefing",
     "/api/cron/seo-apply",
     "/api/cron/subscriber-drip",
   ];
