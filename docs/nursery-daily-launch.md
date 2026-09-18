@@ -379,7 +379,7 @@ tables do not publish them per council, and the data rule forbids guessing.
   `["GB"]`. Keep or drop.
 - **Palette collision within the wave (found and fixed, one still open):**
   this title was first drafted in plum with Playfair Display, then checked
-  against the other four wave scaffolds on disk. Senior Lifestyle Business had
+  against the other four wave scaffolds on disk. Senior Living Business had
   already taken plum (#4E2A51) with Playfair Display, so Nursery Daily moved to
   ochre with Zilla Slab. Still open between two siblings, not this title:
   Gym Business News (#C0431A) and Smart Farming News (#C2410C) are both burnt

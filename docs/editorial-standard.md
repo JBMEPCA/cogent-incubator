@@ -357,7 +357,7 @@ economics: rates, costs, margins, capacity, cashflow. No party line, and no
 campaigning voice borrowed from the sector bodies; attribute theirs beside the
 government's.
 
-### Senior Lifestyle Business: five rules
+### Senior Living Business: five rules
 
 The retirement community as a business, UK-led with Australia and New Zealand
 second and US capital as the benchmark.

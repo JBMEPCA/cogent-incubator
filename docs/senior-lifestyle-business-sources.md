@@ -1,4 +1,4 @@
-# Senior Lifestyle Business: verified wire sources
+# Senior Living Business: verified wire sources
 
 Every feedUrl below was fetched on 18 Sep 2026 and returned a valid RSS or Atom
 document with items; the newest-item date is recorded. **48 direct feeds**

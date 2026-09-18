@@ -1,4 +1,4 @@
-# Senior Lifestyle Business: launch tracking
+# Senior Living Business: launch tracking
 
 The retirement communities title, one of the five-title wave announced 18 Sep
 2026. Domain **seniorlifestylebusiness.com**, bought 18 Sep 2026 at GoDaddy,
@@ -28,7 +28,7 @@ name. Slug, folder and file names stay as they are.
 | 2 | **Register domains** | ✅ partial, 18 Sep | .com bought at GoDaddy. No .co.uk: a UK-led title without its .co.uk is exposed to anyone who takes it (~£10) |
 | 3 | **Create the site at SiteGround**, then at GoDaddy point nameservers to `ns1/ns2.siteground.net` (that order, never the reverse) | ☐ | SSL only issues after DNS propagates; start this first. Then HTTPS Enforce on |
 | 4 | **Google Workspace: add seniorlifestylebusiness.com as a SECONDARY domain** to the existing org; user `jb@seniorlifestylebusiness.com`; generate DKIM | ☐ | No `news@` user on the root (decision of 24 Aug 2026). Edit SiteGround's SPF in place to add `include:_spf.google.com`; never a second `v=spf1` |
-| 5 | **Mailchimp audience** named exactly as the title (today: `Senior Lifestyle Business`), plus an authenticated **`news.seniorlifestylebusiness.com` sending domain** | ☐ | The child theme already sets `mailchimp_audience` to the name. The seed's `authorEmail` is `news@news.seniorlifestylebusiness.com` |
+| 5 | **Mailchimp audience** named exactly as the title (today: `Senior Living Business`), plus an authenticated **`news.seniorlifestylebusiness.com` sending domain** | ☐ | The child theme already sets `mailchimp_audience` to the name. The seed's `authorEmail` is `news@news.seniorlifestylebusiness.com` |
 | 6 | **GA4 property + Search Console** (`sc-domain:seniorlifestylebusiness.com`), service account granted both | ☐ | Verify the GA4 property by NAME through the Admin API; the console URL shows the previously selected property |
 | 7 | **LinkedIn company page** | ☐ | `linkedin_url` is deliberately unset in the child; the sidebar card renders nothing until it exists |
 | 8 | **The Care Home Magazine publisher conversation** | ☐ **gate** | Brief §12 item 1: would CHM sell a joint later-life package, and which of its 350+ suppliers already ask about retirement villages? **If CHM sees this title as a competitor, stop**: the crossover is the case. Also agree the front-door rule with CHM's editor so both titles hold the same line |
@@ -115,7 +115,7 @@ same pattern an earlier title uses for its plan-fed section.
 
 ```js
 /**
- * Senior Lifestyle Business: UK-led, AU/NZ second, US capital only.
+ * Senior Living Business: UK-led, AU/NZ second, US capital only.
  *
  * The retirement community as a business (docs/vertical-brief-retirement-villages.md).
  * Measured 18 Sep 2026 in GB, AU and US editions (docs/senior-lifestyle-business-launch.md).
@@ -266,7 +266,7 @@ The same text, expanded, is the title's `editorialStandardMd` via
 `scripts/alignment/senior-lifestyle-business.editorial-standard.md`.
 
 ```markdown
-## Senior Lifestyle Business: five rules
+## Senior Living Business: five rules
 
 The retirement community as a business, UK-led with Australia and New Zealand
 second and US capital as the benchmark.

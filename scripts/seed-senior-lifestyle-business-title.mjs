@@ -1,4 +1,4 @@
-// Create the Senior Lifestyle Business title record.
+// Create the Senior Living Business title record.
 //
 // One of the five-title wave of 18 Sep 2026. Everything here comes from
 // docs/vertical-brief-retirement-villages.md; the per-title rules in
@@ -59,7 +59,7 @@ const HOUSE_STYLE = ALIGN("house-style.md");
 
 const DATA = {
   slug: SLUG,
-  name: "Senior Lifestyle Business",
+  name: "Senior Living Business",
   strapline: "The business of retirement communities.",
   domain: "seniorlifestylebusiness.com",
   status: "setup",

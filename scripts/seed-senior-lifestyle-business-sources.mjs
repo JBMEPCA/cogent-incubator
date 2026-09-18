@@ -1,4 +1,4 @@
-// Seed Senior Lifestyle Business's newswire with direct feeds, trade bodies
+// Seed Senior Living Business's newswire with direct feeds, trade bodies
 // and the operator map from docs/vertical-brief-retirement-villages.md.
 //
 // Same structure as the other titles' source seeds, same lesson behind it: a Google
