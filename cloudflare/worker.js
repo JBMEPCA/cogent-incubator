@@ -154,6 +154,15 @@ const HALF_PAST = [
   "/api/cron/agents?stage=worker",
 ];
 
+// The press desk, on its own trigger every fifteen minutes, day and night.
+//
+// JB, 21 September 2026: a release sent to press@ goes live within the hour.
+// The engine's ticks above only run at :05 and :35 inside UK office hours, so
+// an evening release would sit until morning. This trigger runs nothing else:
+// no agent stage, no publishing calendar, just the one route, which costs a
+// Gmail query per title when there is no new mail.
+const PRESS = ["/api/cron/press"];
+
 /**
  * One import request per title, rather than one for the fleet.
  *
@@ -241,6 +250,7 @@ async function runAll(env, now = new Date(), steps = null) {
     "/api/cron/briefing",
     "/api/cron/seo-apply",
     "/api/cron/subscriber-drip",
+    "/api/cron/press",
   ];
   const stillWorking = (r) => r.status === 524 && LONG_RUNNING.some((path) => r.path.startsWith(path));
   const failures = results.filter((r) => (r.error || r.status >= 400) && !stillWorking(r));
@@ -272,7 +282,8 @@ const handler = {
     // engine including the feed scan, the half-past one runs publishing and a
     // second agent tick.
     const halfPast = event.cron?.startsWith("35 ");
-    ctx.waitUntil(runAll(env, new Date(event.scheduledTime), halfPast ? HALF_PAST : null));
+    const press = event.cron?.startsWith("*/15 ");
+    ctx.waitUntil(runAll(env, new Date(event.scheduledTime), press ? PRESS : halfPast ? HALF_PAST : null));
   },
 
   // Manual trigger, the equivalent of GitHub's workflow_dispatch. Behind the

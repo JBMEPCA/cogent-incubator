@@ -20,6 +20,12 @@
 // A STATE MACHINE THE AUTOMATION WRITES AND A HUMAN CAN READ. Press/Published,
 // Press/Needs review and Press/Replied are applied by the intake job, so the
 // labels answer "what happened to that release" without opening a database.
+// The job is lib/press-intake.js, since 21 Sep 2026; it also adds Scheduled
+// (an embargoed piece waiting in WordPress) and Skipped (sorted out as noise).
+//
+// SEND-AS press@. The desk thanks each sender from the address they wrote to,
+// which Gmail only allows once press@ is a send-as identity on the mailbox.
+// Same organisation, so it is accepted at once with no confirmation email.
 import { PrismaClient } from "@prisma/client";
 import { decryptJson } from "../lib/crypto.js";
 import { getGoogleAccessToken } from "../lib/google.js";
@@ -29,12 +35,23 @@ const HUB = process.env.GMAIL_HUB || "jb@smartsme.co.uk";
 const SCOPES = [
   "https://www.googleapis.com/auth/gmail.labels",
   "https://www.googleapis.com/auth/gmail.settings.basic",
+  "https://www.googleapis.com/auth/gmail.settings.sharing",
 ];
 const API = "https://gmail.googleapis.com/gmail/v1/users/me";
 
 // One list, kept in lib/inbox-labels.js, so a new title is added in one place.
 import { TITLE_LABEL } from "../lib/inbox-labels.js";
-const PRESS_LABELS = ["Topics/Press", "Press/Published", "Press/Needs review", "Press/Replied"];
+const PRESS_LABELS = [
+  "Topics/Press",
+  "Press/Published",
+  "Press/Scheduled",
+  "Press/Needs review",
+  "Press/Skipped",
+  "Press/Replied",
+];
+
+// "Gym Business News News Desk" reads as a typo.
+const deskName = (name) => (/\bnews$/i.test(name) ? `${name} Desk` : `${name} News Desk`);
 
 const say = (s) => console.log(`${APPLY ? "" : "[dry run] "}${s}`);
 
@@ -71,8 +88,19 @@ async function ensureLabels(token, names, who) {
 const norm = (a = {}) =>
   JSON.stringify({ add: [...(a.addLabelIds || [])].sort(), remove: [...(a.removeLabelIds || [])].sort() });
 
-async function ensureFilter(token, who, { query, action, what }) {
-  const live = (await api(token, "/settings/filters")).filter || [];
+// -from:me because Gmail filters also run on mail a mailbox SENDS, and a
+// never-spam action on an outgoing message drops it into the inbox (the 11 Sep
+// outbox leak). Without it a reply to a PR agency lands in the hub as Press.
+const pressQuery = (press) => `(to:${press} OR deliveredto:${press} OR cc:${press}) -from:me`;
+const legacyQuery = (press) => `to:${press} OR deliveredto:${press} OR cc:${press}`;
+
+async function ensureFilter(token, who, { query, legacy, action, what }) {
+  let live = (await api(token, "/settings/filters")).filter || [];
+  // A changed query leaves the old rule running unless something removes it.
+  for (const old of live.filter((l) => legacy && l.criteria?.query === legacy)) {
+    say(`${who}: remove superseded filter: ${legacy}`);
+    if (APPLY) await api(token, `/settings/filters/${old.id}`, { method: "DELETE" });
+  }
   const match = live.find((l) => l.criteria?.query === query);
   if (match && norm(match.action) === norm(action)) {
     say(`${who}: filter unchanged: ${what}`);
@@ -101,10 +129,24 @@ for (const t of titles) {
   const token = await getGoogleAccessToken(SCOPES, t.fromEmail);
   const labels = await ensureLabels(token, PRESS_LABELS, t.name);
   await ensureFilter(token, t.name, {
-    query: `to:${press} OR deliveredto:${press} OR cc:${press}`,
+    query: pressQuery(press),
+    legacy: legacyQuery(press),
     action: { addLabelIds: [labels.get("Topics/Press").id], removeLabelIds: ["SPAM"] },
     what: `${press} -> Topics/Press, never spam`,
   });
+  const sendAs = (await api(token, "/settings/sendAs")).sendAs || [];
+  const mine = sendAs.find((x) => x.sendAsEmail.toLowerCase() === press);
+  if (mine) say(`${t.name}: send-as ${press} already there (${mine.verificationStatus || "primary"})`);
+  else {
+    say(`${t.name}: add send-as ${press} as "${deskName(t.name)}"`);
+    if (APPLY) {
+      const made = await api(token, "/settings/sendAs", {
+        method: "POST",
+        body: { sendAsEmail: press, displayName: `${deskName(t.name)}`, treatAsAlias: true },
+      });
+      say(`${t.name}:   -> ${made.verificationStatus}`);
+    }
+  }
 }
 
 // ---- the hub ----------------------------------------------------------------
@@ -122,7 +164,8 @@ for (const t of titles) {
   if (domain === hubDomain) continue;
   const press = `press@${domain}`;
   await ensureFilter(hubToken, "hub", {
-    query: `to:${press} OR deliveredto:${press} OR cc:${press}`,
+    query: pressQuery(press),
+    legacy: legacyQuery(press),
     action: { addLabelIds: [hubLabels.get("Topics/Press").id], removeLabelIds: ["SPAM"] },
     what: `${press} (forwarded copy) -> Topics/Press, never spam`,
   });

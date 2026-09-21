@@ -27,5 +27,9 @@ workers_dev = false
 [vars]
 BASE_URL = "https://cogent-incubator.vercel.app"
 
+#
+# The third trigger is the press desk only (worker.js PRESS), every fifteen
+# minutes around the clock, so a release is live within the hour of being sent
+# whatever time it arrives. It never overlaps the other two: :00/:15/:30/:45.
 [triggers]
-crons = ["5 6-19 * * *", "35 6-19 * * *"]
+crons = ["5 6-19 * * *", "35 6-19 * * *", "*/15 * * * *"]
