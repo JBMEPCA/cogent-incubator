@@ -2494,7 +2494,7 @@ th {
 .bb-titles {
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 8px 16px;
+  gap: 8px;
   border: none;
   padding: 0;
   margin: 0;
@@ -2506,16 +2506,54 @@ th {
 }
 
 .bb-check {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  padding: 6px 13px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted);
   font-size: 13px;
+  white-space: nowrap;
   cursor: pointer;
+  user-select: none;
+  transition: border-color 0.15s, background 0.15s, color 0.15s, box-shadow 0.2s, opacity 0.2s;
 }
 
+.bb-check:hover {
+  border-color: rgba(34, 211, 238, 0.5);
+  color: var(--text);
+}
+
+/* The real checkbox stays in the form and the tab order, just unseen. */
 .bb-check input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
   padding: 0;
-  accent-color: var(--neon-cyan);
+  pointer-events: none;
+}
+
+.bb-check:has(input:checked) {
+  border-color: var(--neon-cyan);
+  background: rgba(34, 211, 238, 0.14);
+  color: #fff;
+  box-shadow: 0 0 14px rgba(34, 211, 238, 0.35);
+}
+
+.bb-check:has(input:focus-visible) {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 2px;
+}
+
+.bb-all:has(input:checked) {
+  border-color: var(--neon-amber);
+  background: rgba(251, 191, 36, 0.14);
+  box-shadow: 0 0 14px rgba(251, 191, 36, 0.35);
 }
 
 .bb-actions {

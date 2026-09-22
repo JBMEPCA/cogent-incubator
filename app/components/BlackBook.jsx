@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import BlackBookForm from "./BlackBookForm";
 import BlackBookDelete from "./BlackBookDelete";
+import { shortTitle } from "@/lib/black-book-labels";
 
 // The Black Book on the fleet overview: advertising contacts (mostly agencies
 // asking for a media pack) kept so someone can come back to them later.
@@ -73,11 +74,11 @@ export default async function BlackBook({ sites }) {
                 </div>
                 <div className="bb-tags">
                   {c.siteIds.length === 0 ? (
-                    <span className="chip chip-brand">All titles</span>
+                    <span className="chip chip-brand">🌍 All titles</span>
                   ) : (
                     c.siteIds.map((id) => (
                       <span key={id} className="chip chip-general">
-                        {names.get(id) || "Removed title"}
+                        {names.has(id) ? `${shortTitle(names.get(id)).emoji} ${shortTitle(names.get(id)).label}` : "Removed title"}
                       </span>
                     ))
                   )}

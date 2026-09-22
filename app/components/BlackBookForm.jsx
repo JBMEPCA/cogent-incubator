@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { saveBlackBookContact } from "@/lib/black-book-actions";
+import { shortTitle } from "@/lib/black-book-labels";
 
 // The input half of the Black Book. A client component so the form can say
 // what happened (added, or merged into an existing entry). React clears the
@@ -43,20 +44,24 @@ export default function BlackBookForm({ sites }) {
         <input name="followUpDate" type="date" />
       </label>
 
-      {/* When All titles is ticked the individual boxes grey out (CSS :has),
-          and the server ignores them. */}
+      {/* Pills rather than bare checkboxes: the input is visually hidden and
+          the label lights up when checked (CSS :has). When All titles is on
+          the individual pills grey out, and the server ignores them. */}
       <fieldset className="field field-wide bb-titles">
         <legend className="micro">Relevant to</legend>
-        <label className="bb-check">
+        <label className="bb-check bb-all">
           <input type="checkbox" name="allTitles" />
-          All titles
+          <span aria-hidden="true">🌍</span> All titles
         </label>
-        {sites.map((s) => (
-          <label key={s.id} className="bb-check bb-site">
-            <input type="checkbox" name="siteIds" value={s.id} />
-            {s.name}
-          </label>
-        ))}
+        {sites.map((s) => {
+          const t = shortTitle(s.name);
+          return (
+            <label key={s.id} className="bb-check bb-site" title={s.name}>
+              <input type="checkbox" name="siteIds" value={s.id} aria-label={s.name} />
+              <span aria-hidden="true">{t.emoji}</span> {t.label}
+            </label>
+          );
+        })}
       </fieldset>
 
       <label className="field field-wide">
