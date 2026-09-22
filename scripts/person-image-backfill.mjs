@@ -20,7 +20,7 @@ import { execFileSync } from "node:child_process";
 
 const { prisma, forSite } = await import("../lib/prisma.js");
 const { siteCredentials } = await import("../lib/site.js");
-const { classifySubject, personImage, nameCard, subjectFields } = await import("../lib/person-image.js");
+const { classifySubject, personImage, nameCard, subjectFields, isAboutPerson } = await import("../lib/person-image.js");
 
 const arg = (k, d = null) => (process.argv.find((a) => a.startsWith(`--${k}=`)) || "").split("=")[1] || d;
 const APPLY = process.argv.includes("--apply");
@@ -28,6 +28,11 @@ const ALL = process.argv.includes("--all");
 const DAYS = Number(arg("days", "60"));
 const LIMIT = Number(arg("limit", "400"));
 const DONE = /^(person:|card:|subject:person)/;
+// Never replaced: a photo someone sent us. press: is the press desk's email
+// photo, supplied: an interview or contributed piece's own. On Golf's first run
+// Terre Blanche's press@ photo and Fraser Wilson's Leaders headshot were both
+// one broken card link away from being overwritten.
+const PROTECTED = /^(press:|supplied:|interview:)/;
 
 const slugs = ALL
   ? (await prisma.site.findMany({ where: { status: { in: ["live", "cold_start"] } }, select: { slug: true } })).map((s) => s.slug)
@@ -52,6 +57,9 @@ for (const slug of slugs) {
   const scp = (local, remote) => execFileSync("scp", ["-i", s.privateKeyPath.replace(/^~/, os.homedir()), "-o", "BatchMode=yes", "-P", String(s.port || 18765), local, `${s.username}@${s.host}:${remote}`]);
 
   // Bytes in, media id and URL out.
+  // A crop is uploaded during the search; its media id is kept here so it is
+  // attached directly. Fetching it back from the site trips the WAF (403).
+  const uploaded = new Map();
   const importMedia = (buffer, ext, name, postId, alt, caption) => {
     const file = `${name}.${ext}`;
     const local = path.join(tmp, file);
@@ -61,7 +69,9 @@ for (const slug of slugs) {
     if (caption) args.push(`--caption="$(echo ${b64(caption)} | base64 -d)"`);
     if (postId) args.push(`--post_id=${postId}`, "--featured_image");
     const id = ssh(`wp media import /tmp/${file} --porcelain ${args.join(" ")}; rm -f /tmp/${file}`).split("\n").pop();
-    return { id, url: ssh(`wp post get ${id} --field=guid`) };
+    const url = ssh(`wp post get ${id} --field=guid`);
+    uploaded.set(url, id);
+    return { id, url };
   };
 
   const setCredit = (postId, credit) => {
@@ -71,7 +81,9 @@ $re = '#<p><em style="font-size:0\\.85em">(Image|Photo):[^<]*</em></p>#';
 $line = ${credit ? `'<p><em style="font-size:0.85em">' . base64_decode('${b64(credit)}') . '</em></p>'` : "''"};
 $n = preg_replace($re, $line, $c, 1, $hits);
 if (!$hits && $line) $n = rtrim($c) . "\\n" . $line;
-if ($n !== $c) wp_update_post(['ID' => ${postId}, 'post_content' => $n]);
+// Always saved, even with no text change: Yoast rebuilds its og:image
+// record on save, and without one the share image stays the old stock photo.
+wp_update_post(['ID' => ${postId}, 'post_content' => $n]);
 echo $hits ? "replaced" : ($line ? "appended" : "none");`;
     return ssh(`echo ${b64(php)} | base64 -d > /tmp/pbf.php && wp eval-file /tmp/pbf.php; rm -f /tmp/pbf.php`);
   };
@@ -86,19 +98,22 @@ echo $hits ? "replaced" : ($line ? "appended" : "none");`;
     },
     orderBy: { publishedAt: "desc" },
     take: LIMIT,
-    select: { id: true, title: true, body: true, wpPostId: true, sourceUrl: true, imageSource: true, subjectKind: true, subjectName: true, subjectRole: true, subjectOrg: true, sourceItem: { select: { link: true } } },
+    select: { id: true, title: true, body: true, wpPostId: true, sourceUrl: true, imageSource: true, imageUrl: true, interviewTargets: { select: { id: true } }, subjectKind: true, subjectName: true, subjectRole: true, subjectOrg: true, sourceItem: { select: { link: true } } },
   });
   console.log(`\n== ${site.name}: ${rows.length} published news piece(s) in ${DAYS} days`);
 
   let people = 0, photos = 0, cards = 0;
   for (const a of rows) {
-    if (DONE.test(a.imageSource || "")) continue;
+    if (DONE.test(a.imageSource || "") || PROTECTED.test(a.imageSource || "") || a.interviewTargets?.length) continue;
+    // A picture placed by hand in the media library, with no record of where it
+    // came from, is somebody's deliberate choice.
+    if (!a.imageSource && site.domain && String(a.imageUrl || "").includes(String(site.domain).replace(/^www./, ""))) continue;
     let subject = a.subjectKind
       ? { kind: a.subjectKind, name: a.subjectName, role: a.subjectRole, org: a.subjectOrg }
       : await classifySubject(a.title, a.body).catch(() => null);
     if (!subject) continue;
     if (APPLY && !a.subjectKind) await db.article.update({ where: { id: a.id }, data: subjectFields(subject) });
-    if (subject.kind !== "person" || !subject.name) continue;
+    if (!isAboutPerson(a.title, subject)) continue;
     people++;
 
     const upload = APPLY && ssh
@@ -111,6 +126,14 @@ echo $hits ? "replaced" : ($line ? "appended" : "none");`;
     if (!APPLY || !ssh) continue;
 
     try {
+      if (uploaded.has(pick.url)) {
+        const id = uploaded.get(pick.url);
+        ssh(`wp post meta update ${a.wpPostId} _thumbnail_id ${id} >/dev/null && wp post update ${id} --post_parent=${a.wpPostId} >/dev/null; echo ok`);
+        const how = setCredit(a.wpPostId, pick.credit);
+        await db.article.update({ where: { id: a.id }, data: { imageUrl: pick.url, imageAlt: pick.alt, imageCredit: pick.credit, imageSource: pick.source } });
+        console.log(`   applied: media ${id} (cropped), credit ${how}`);
+        continue;
+      }
       const res = await fetch(pick.url, { headers: { "user-agent": "Mozilla/5.0 (compatible; CogentBot/1.0)" } });
       if (!res.ok) throw new Error(`fetch ${res.status}`);
       const type = res.headers.get("content-type") || "image/jpeg";
