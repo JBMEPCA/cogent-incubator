@@ -548,6 +548,20 @@ model Article {
   // Scoped per title on purpose: one title's spent shoot is another title's
   // fresh one, and a shared archive would make images scarcer as the fleet grows.
   imageSource    String?
+  // Who or what the story is about, from lib/person-image.js classifySubject.
+  // A "person" story leads with that person's photo or, failing that, a name
+  // card (imageSource "card:person") while lib/headshots.js asks the company
+  // for a real one. Stored so no later stage has to ask the model again.
+  subjectKind    String? // person | venue | company | none
+  subjectName    String?
+  subjectRole    String?
+  subjectOrg     String?
+  // The headshot request for a card-led story. headshotAskedAt set with no
+  // headshotAskTo means we looked and found nobody to ask.
+  headshotAskedAt   DateTime?
+  headshotAskTo     String?
+  headshotThreadId  String?
+  headshotSwappedAt DateTime?
   category       String?
   qaReport       String?
   qaPassed       Boolean       @default(false)

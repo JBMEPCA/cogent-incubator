@@ -10,7 +10,9 @@ export const config = {
   // email has to work for a stranger, and a login wall in front of it would make
   // the promise in the footer a lie. api/brand is public for the same reason,
   // one step removed: the wordmark is loaded by every recipient's mail client
-  // and by any news page that pastes the badge.
+  // and by any news page that pastes the badge. api/card is the name card a
+  // story about a person leads with until a photo arrives: the publisher fetches
+  // it with a plain request, no session, to upload it to WordPress.
   // api/version is excluded for the same reason as api/cron: it is a machine
   // endpoint guarded by CRON_SECRET, and a login redirect in front of it makes
   // it useless for the one job it has. A route left in the matcher answers 307
@@ -18,6 +20,6 @@ export const config = {
   // route not being deployed, and cost an hour of chasing a Vercel build that
   // had been fine all along.
   matcher: [
-    "/((?!api/auth|api/cron|api/version|api/unsubscribe|api/brand|login|_next/static|_next/image|favicon.ico).*)",
+    "/((?!api/auth|api/cron|api/version|api/unsubscribe|api/brand|api/card|login|_next/static|_next/image|favicon.ico).*)",
   ],
 };

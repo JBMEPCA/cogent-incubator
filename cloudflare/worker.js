@@ -60,6 +60,11 @@ const STEPS = [
   // the delays are measured in hours, and a tick with nothing to do costs one
   // Gmail query.
   "/api/cron/interviews",
+  // Photos for people. A story about a person that went out under a name card
+  // gets one email to the company asking for a headshot, and the photo goes on
+  // the story when they reply (lib/headshots.js). Hourly, like interviews, and
+  // for the same reason: it is waiting on a human's inbox.
+  "/api/cron/headshots",
   "/api/cron/scan-feeds",
   "/api/cron/scan-feeds",
 ];
