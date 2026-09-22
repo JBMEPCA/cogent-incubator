@@ -2,6 +2,7 @@ import Link from "next/link";
 import SiteMark, { statusTone } from "./components/SiteMark";
 import FleetNav from "./components/FleetNav";
 import FleetMailWidget from "./components/FleetMailWidget";
+import BlackBook from "./components/BlackBook";
 import { fleetSnapshot } from "@/lib/fleet";
 import { fmtCount } from "@/lib/targets";
 import { visitUrl } from "@/lib/site-url";
@@ -185,6 +186,8 @@ export default async function FleetOverview() {
       )}
 
       {sites.length > 0 && <FleetMailWidget sites={sites} />}
+
+      {sites.length > 0 && <BlackBook sites={sites} />}
     </main>
   );
 }

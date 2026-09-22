@@ -369,6 +369,26 @@ model OutreachOptOut {
   note       String?
 }
 
+// The Black Book: people who asked about advertising (mostly agencies wanting a
+// media pack) and are worth coming back to later. Fleet-wide rather than
+// tenanted because one agency often buys across several titles; siteIds holds
+// every title the contact is relevant to, and an empty list means all of them.
+// One row per email, so a second request from the same person adds titles to
+// their record instead of creating a duplicate. Entered by hand from the fleet
+// overview; source exists so an inbox step can write here later.
+model BlackBookContact {
+  id           String    @id @default(cuid())
+  company      String
+  name         String?
+  email        String    @unique
+  siteIds      String[]  @default([])
+  notes        String?
+  followUpDate DateTime?
+  source       String    @default("manual")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
 // Fleet-wide toggles and cursors. Per-title settings live on EngineSetting.
 model GlobalSetting {
   key   String @id
