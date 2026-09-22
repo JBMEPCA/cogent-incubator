@@ -115,6 +115,11 @@ export async function GET(request) {
 // company tags. The picture goes as a public JPEG at LinkedIn's 1.91:1.
 async function publishViaBridge(site, post) {
   const { url, alt } = await imageForPost(site, post);
+  // Never hand Make a post with no picture. Its image download fails on an
+  // empty address, and one failed run makes Make switch the whole scenario off
+  // for every title (22 Sep 2026). The post waits here instead, recorded as a
+  // failure, until it has a picture or expires.
+  if (!url) throw new Error("no picture for this post; not sent to Make");
   const { id } = await sendToBridge(site, {
     destination: "linkedin",
     text: post.text.trim(),
