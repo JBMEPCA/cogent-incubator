@@ -77,6 +77,17 @@ function PersonIcon() {
   );
 }
 
+/** A door with an arrow leaving it. */
+function ExitIcon() {
+  return (
+    <svg {...ICON}>
+      <path d="M9.5 20.5h-4a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2h4" />
+      <path d="M15.5 16.5l4.5-4.5-4.5-4.5" />
+      <path d="M20 12H9.5" />
+    </svg>
+  );
+}
+
 const LINKS = [
   { href: "/", label: "All titles", Icon: GridIcon },
   { href: "/analytics", label: "Group analytics", Icon: ChartIcon },
