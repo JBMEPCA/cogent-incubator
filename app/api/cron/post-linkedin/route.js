@@ -8,7 +8,9 @@ import {
   withinPostingHours,
   postingHoursLabel,
   MAX_ATTEMPTS,
+  imageForPost,
 } from "@/lib/linkedin";
+import { bridgeReady, sendToBridge, socialImage } from "@/lib/social-bridge";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -57,7 +59,11 @@ export async function GET(request) {
         data: { status: "expired", publishError: `slot passed unposted more than ${DRAFT_EXPIRY_DAYS} days ago; expired rather than posted stale` },
       });
 
-      if (!isLinkedInConfigured(await authFor(site)))
+      // Direct first; the Make bridge when the title has no approved connection
+      // of its own (see lib/social-bridge.js).
+      const direct = isLinkedInConfigured(await authFor(site));
+      const viaBridge = !direct && (await bridgeReady(site, "linkedin"));
+      if (!direct && !viaBridge)
         return { skipped: "LinkedIn not connected for this title", expired: stale.count };
 
       const post = await db.linkedInPost.findFirst({
@@ -74,7 +80,7 @@ export async function GET(request) {
       });
 
       try {
-        const result = await publishPost(site, post);
+        const result = direct ? await publishPost(site, post) : await publishViaBridge(site, post);
         // No URN, no post. LinkedIn returns an identifier for anything it
         // actually published, so a result without one means the call went
         // through the motions and put nothing on the page. Four posts were
@@ -103,4 +109,18 @@ export async function GET(request) {
       }
     })
   );
+}
+
+// A post through Make carries the same text and picture as a direct one, minus
+// company tags. The picture goes as a public JPEG at LinkedIn's 1.91:1.
+async function publishViaBridge(site, post) {
+  const { url, alt } = await imageForPost(site, post);
+  const { id } = await sendToBridge(site, {
+    destination: "linkedin",
+    text: post.text.trim(),
+    imageUrl: socialImage(url, { width: 1200, height: 628 }),
+    imageAlt: (alt || site.name || "").slice(0, 300),
+    link: post.sourceUrl || null,
+  });
+  return { urn: id, url: null };
 }

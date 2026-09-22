@@ -101,6 +101,10 @@ function scheduledExtras(now) {
   // the 06:00-19:00 UTC trigger window.
   if (hour === 14 && weekday === "Mon") extra.push("/api/cron/briefing");
 
+  // One Instagram post a day at midday UK, for titles that have switched it on
+  // (lib/instagram.js). The route skips every title that has not.
+  if (hour === 12) extra.push("/api/cron/post-instagram");
+
   if (hour === 9) {
     // The daily verification pass is gone. MillionVerifier ran to minus eleven
     // credits, every run answered "only -11 verification credits left, need

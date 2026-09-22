@@ -4,6 +4,7 @@ import { ensureAgents, reapStaleRuns } from "@/lib/agents/runtime";
 import { runResearcher } from "@/lib/agents/researcher";
 import { runLinkedIn } from "@/lib/agents/linkedin";
 import { isLinkedInConfigured, authFor } from "@/lib/linkedin";
+import { bridgeReady } from "@/lib/social-bridge";
 import { runBacklink } from "@/lib/agents/backlink";
 import { runDirector, runEditor, runDesigner, runSeo, runFinance, sweepHeldArticles, imageWorkAvailable } from "@/lib/agents/team";
 import { withinOfficeHours } from "@/lib/site";
@@ -197,7 +198,8 @@ async function tickOne(ctx, { forced, stage }) {
   //
   // Nothing is switched off permanently. The moment a title stores a token the
   // agent rejoins the ladder on its own, with no redeploy.
-  const linkedInReady = isLinkedInConfigured(await authFor(site));
+  // Or posting through the Make bridge, which needs drafts just the same.
+  const linkedInReady = isLinkedInConfigured(await authFor(site)) || (await bridgeReady(site, "linkedin"));
 
   const HOUSEKEEPING = [
     ["seo", runSeo, "link_sweep", 12],
