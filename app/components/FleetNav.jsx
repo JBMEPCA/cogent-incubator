@@ -88,6 +88,19 @@ function ExitIcon() {
   );
 }
 
+/** A folder: the shared Drive of media packs and documents. */
+function FolderIcon() {
+  return (
+    <svg {...ICON}>
+      <path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2.5h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z" />
+    </svg>
+  );
+}
+
+// Media packs and other team documents live in a shared Google Drive folder,
+// not in the app. Opens in a new tab because it leaves the dashboard.
+const FILES_URL = "https://drive.google.com/drive/folders/1mgveqN4PRsWVqYDcU6dd1H63GZSST6vM";
+
 const LINKS = [
   { href: "/", label: "All titles", Icon: GridIcon },
   { href: "/analytics", label: "Group analytics", Icon: ChartIcon },
@@ -116,6 +129,11 @@ export default function FleetNav() {
           </Link>
         );
       })}
+      <a href={FILES_URL} target="_blank" rel="noopener noreferrer" className="fleet-nav-btn">
+        <FolderIcon />
+        Files
+        <span aria-hidden="true">↗</span>
+      </a>
     </nav>
   );
 }
