@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { saveBlackBookContact } from "@/lib/black-book-actions";
-import { shortTitle } from "@/lib/black-book-labels";
+import BlackBookTitlePills, { hasTitle } from "./BlackBookTitlePills";
 
 // The input half of the Black Book. A client component so the form can say
 // what happened (added, or merged into an existing entry). React clears the
@@ -13,9 +13,7 @@ export default function BlackBookForm({ sites }) {
   const [localErr, setLocalErr] = useState("");
 
   const onSubmit = (e) => {
-    const f = e.currentTarget;
-    const any = f.querySelector('input[name="allTitles"]:checked, input[name="siteIds"]:checked');
-    if (!any) {
+    if (!hasTitle(e.currentTarget)) {
       e.preventDefault();
       setLocalErr("Pick at least one title, or All titles.");
     } else {
@@ -44,25 +42,7 @@ export default function BlackBookForm({ sites }) {
         <input name="followUpDate" type="date" />
       </label>
 
-      {/* Pills rather than bare checkboxes: the input is visually hidden and
-          the label lights up when checked (CSS :has). When All titles is on
-          the individual pills grey out, and the server ignores them. */}
-      <fieldset className="field field-wide bb-titles">
-        <legend className="micro">Relevant to</legend>
-        <label className="bb-check bb-all">
-          <input type="checkbox" name="allTitles" />
-          <span aria-hidden="true">🌍</span> All titles
-        </label>
-        {sites.map((s) => {
-          const t = shortTitle(s.name);
-          return (
-            <label key={s.id} className="bb-check bb-site" title={s.name}>
-              <input type="checkbox" name="siteIds" value={s.id} aria-label={s.name} />
-              <span aria-hidden="true">{t.emoji}</span> {t.label}
-            </label>
-          );
-        })}
-      </fieldset>
+      <BlackBookTitlePills sites={sites} />
 
       <label className="field field-wide">
         <span className="micro">Notes</span>

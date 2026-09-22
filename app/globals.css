@@ -2614,10 +2614,6 @@ th {
   color: var(--muted);
 }
 
-.bb-meta form {
-  margin-left: auto;
-}
-
 @media (max-width: 760px) {
   .bb-form {
     grid-template-columns: 1fr 1fr;
@@ -2634,4 +2630,16 @@ th {
 .bb-titles:has(input[name="allTitles"]:checked) .bb-site {
   opacity: 0.4;
   pointer-events: none;
+}
+
+.bb-row-actions {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.bb-row-editing {
+  grid-template-columns: 1fr;
+  padding: 14px 0 16px;
 }

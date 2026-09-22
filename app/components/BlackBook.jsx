@@ -1,27 +1,23 @@
 import { prisma } from "@/lib/prisma";
 import BlackBookForm from "./BlackBookForm";
-import BlackBookDelete from "./BlackBookDelete";
-import { shortTitle } from "@/lib/black-book-labels";
+import BlackBookRow from "./BlackBookRow";
 
 // The Black Book on the fleet overview: advertising contacts (mostly agencies
 // asking for a media pack) kept so someone can come back to them later.
 // Entered by hand; see BlackBookContact in the schema for why it is fleet-wide.
 
-const fmtDate = (d) =>
-  d
-    ? new Date(d).toLocaleDateString("en-GB", {
-        timeZone: "Europe/London",
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      })
-    : "";
-
 // Outside the component so the follow-up check is data, not render logic.
 async function loadContacts() {
   const rows = await prisma.blackBookContact.findMany({ orderBy: { createdAt: "desc" } });
   const now = Date.now();
-  return rows.map((c) => ({ ...c, due: !!c.followUpDate && c.followUpDate.getTime() <= now }));
+  // Dates go to client rows, so they travel as ISO strings.
+  return rows.map((c) => ({
+    ...c,
+    createdAt: c.createdAt.toISOString(),
+    updatedAt: c.updatedAt.toISOString(),
+    followUpDate: c.followUpDate ? c.followUpDate.toISOString() : null,
+    due: !!c.followUpDate && c.followUpDate.getTime() <= now,
+  }));
 }
 
 export default async function BlackBook({ sites }) {
@@ -34,7 +30,9 @@ export default async function BlackBook({ sites }) {
     unavailable = true;
   }
 
-  const names = new Map(sites.map((s) => [s.id, s.name]));
+  const pillSites = sites
+    .map((s) => ({ id: s.id, name: s.name }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <section className="panel" style={{ marginTop: 24 }} id="black-book">
@@ -53,50 +51,14 @@ export default async function BlackBook({ sites }) {
       {unavailable ? (
         <p className="field-err">The Black Book table isn&apos;t in the database yet.</p>
       ) : (
-        <BlackBookForm
-          sites={sites
-            .map((s) => ({ id: s.id, name: s.name }))
-            .sort((a, b) => a.name.localeCompare(b.name))}
-        />
+        <BlackBookForm sites={pillSites} />
       )}
 
       {contacts.length > 0 && (
         <div className="bb-list">
-          {contacts.map((c) => {
-            return (
-              <div key={c.id} className="bb-row">
-                <div className="bb-who">
-                  <strong>{c.company}</strong>
-                  <span className="micro">
-                    {c.name ? `${c.name} · ` : ""}
-                    <a href={`mailto:${c.email}`}>{c.email}</a>
-                  </span>
-                </div>
-                <div className="bb-tags">
-                  {c.siteIds.length === 0 ? (
-                    <span className="chip chip-brand">🌍 All titles</span>
-                  ) : (
-                    c.siteIds.map((id) => (
-                      <span key={id} className="chip chip-general">
-                        {names.has(id) ? `${shortTitle(names.get(id)).emoji} ${shortTitle(names.get(id)).label}` : "Removed title"}
-                      </span>
-                    ))
-                  )}
-                </div>
-                {c.notes && <p className="bb-notes">{c.notes}</p>}
-                <div className="bb-meta micro">
-                  <span>added {fmtDate(c.createdAt)}</span>
-                  {c.followUpDate && (
-                    <span style={c.due ? { color: "var(--neon-amber)" } : undefined}>
-                      {c.due ? "follow up due " : "follow up "}
-                      {fmtDate(c.followUpDate)}
-                    </span>
-                  )}
-                  <BlackBookDelete id={c.id} company={c.company} />
-                </div>
-              </div>
-            );
-          })}
+          {contacts.map((c) => (
+            <BlackBookRow key={c.id} contact={c} sites={pillSites} />
+          ))}
         </div>
       )}
     </section>
