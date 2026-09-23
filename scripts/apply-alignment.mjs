@@ -374,6 +374,96 @@ const TITLES = {
       "new retirement village",
     ],
   },
+  // Lucas, marketing, 22 Sep 2026. He contradicted nothing in the launch brief:
+  // all three articles he named as what this title should be are ours already.
+  // What he added is the people-first beat, groups and profitability, twenty
+  // advertiser names into an empty table, and the first PR agencies this title
+  // has had. Sections are left as launch set them. Spellings are corrected here
+  // (Colgate not Clogate, Schein not Sheine, contract not contact) because a
+  // typo in a keyword claim targets nothing.
+  "dental-business-news": {
+    sources: [
+      ["Barker PR", "https://barkerpr.com", "PR agency", "The dental PR agency Lucas named as a good source of news. London, founded 2008, Gemma Barker, dental only. Press-list request sent by Lucas himself on 22 Sep 2026, so the mailer must not ask again."],
+      ["Kate Clark PR", "https://kateclarkpr.co.uk", "PR agency", "Named by Lucas as having dental clients. Kate Clark is also Director of Communications and Membership at the Association of Dental Groups and PR consultant to the British Society of Paediatric Dentistry, so this one contact is the route into the ADG press list and to Neil Carmichael."],
+      ["Dentsply Sirona newsroom", "https://www.dentsplysirona.com/en-gb/company/newsroom.html", "Press office", "Named by Lucas: a brand with a press room worth being on. Also an advertiser prospect."],
+      ["Straumann Group newsroom", "https://www.straumann.com/group/en/home/media/newsroom.html", "Press office", "Named by Lucas: a brand with a press room worth being on. Wishlist advertiser number 8."],
+      ["Align Technology (Invisalign, iTero)", "https://www.aligntech.com", "Press office", "Wishlist advertiser number 3, and the company behind the iTero advertising Lucas saw in Dentistry. One company, two names on his sheet."],
+      ["Solventum", "https://www.solventum.com", "Press office", "Seen by Lucas advertising on the Dentistry website. 3M's health care spin-off, so dental consumables at scale."],
+      ["Durr Dental", "https://www.duerrdental.com", "Equipment & fit-out", "Seen by Lucas advertising on the Dentistry website."],
+      ["A-dec", "https://www.a-dec.com", "Equipment & fit-out", "Seen by Lucas advertising in Dentistry, September 2026."],
+      ["Bien-Air Dental", "https://www.bienair.com", "Equipment & fit-out", "Seen by Lucas advertising in Dentistry, September 2026."],
+      ["Philips Oral Healthcare", "https://www.philips.co.uk", "Oral care brands", "Sonicare had the Dentistry magazine front cover (Lucas). Wishlist advertiser number 5."],
+      ["Colgate Professional UK", "https://www.colgateprofessional.co.uk", "Oral care brands", "Wishlist advertiser number 1, and seen by Lucas as a pop-up on The Probe. The professional arm, not the consumer brand: everything we run stays on the practice side."],
+      ["Listerine Professional (Kenvue)", "https://kenvuepro.com/en-gb/listerine", "Oral care brands", "Wishlist advertiser number 10, seen by Lucas at Dentistry Show London. The professional arm, not the consumer brand."],
+      ["Damira Dental Studios", "https://www.damiradental.co.uk", "Dental groups", "Anushika Brogan's group. She is one of Lucas's five interview targets."]
+    ],
+    contactNotes: {
+      "The Probe": "The Dental Awards is theirs (May, 28th year in 2026) at the-probe.co.uk/awards. Winners, shortlists and the people on them are news and interview targets; we never promote a competitor's entry deadline, tickets or sponsorship. The 2026 sponsors were B.A. International, Colosseum Dental, Dental Elite, Tempdent and Waterpik, all now advertiser prospects.",
+      "Dentistry.co.uk (FMC)": "Lucas rates this competitor for up-to-date news from proper sources and for its section structure, and says its imagery and layout are its weakness and where we should beat it. Monitoring only, never a source to rewrite from.",
+      "British Dental Association": "Lucas names the BDA as where NHS dentistry and government news breaks first. Press-list request outstanding; he has said he will ask. Martin Woodrow is an interview target.",
+      "Association of Dental Groups": "Press list runs through Kate Clark PR, whose principal is the ADG's Director of Communications and Membership. Neil Carmichael is an interview target.",
+      "Dentistry Show London": "Press-office list request outstanding (Lucas). October, ExCeL. The 180-plus exhibitor list is the advertiser prospect database, and Lucas saw Henry Schein, Dentsply Sirona and Listerine exhibiting there."
+    },
+    prospects: [
+      ["Colgate Professional", "https://www.colgateprofessional.co.uk", "Oral care brands", "Wishlist number 1 (Lucas): massive brand, already advertising elsewhere, and seen as a pop-up on The Probe. Approach the professional arm. Chasing the consumer brand would pull coverage patient-side, which the owner rule forbids.", "banner"],
+      ["Henry Schein UK", "https://www.henryschein.co.uk", "Equipment & consumables", "Wishlist number 2 (Lucas), and seen exhibiting at Dentistry Show London. Vikki Goodall there is also an interview target.", "banner"],
+      ["Align Technology (Invisalign, iTero)", "https://www.aligntech.com", "Technology & scanners", "Wishlist number 3 (Lucas), who also listed iTero separately from the Dentistry September issue. Same company: one approach, not two.", "banner"],
+      ["Practice Plan", "https://www.practiceplan.co.uk", "Plans & patient finance", "Wishlist number 4 (Lucas): dental membership plans, a category of its own and already a source here.", "web_story"],
+      ["Philips Oral Healthcare (Sonicare)", "https://www.philips.co.uk", "Oral care brands", "Wishlist number 5 (Lucas), and it had the Dentistry magazine front cover.", "banner"],
+      ["Agilio Software", "https://agiliosoftware.com", "Compliance & software", "Wishlist number 6 (Lucas): compliance and HR software, a different budget from the equipment money.", "web_story"],
+      ["Dental Elite", "https://dentalelite.co.uk", "Brokers & recruitment", "Wishlist number 7 (Lucas), and a 2026 Dental Awards sponsor, so the spend is proven. Sits directly on the practice-as-an-asset seam.", "web_story"],
+      ["Straumann Group", "https://www.straumann.com", "Implants & technology", "Wishlist number 8 (Lucas): does a lot of marketing, and runs a newsroom we should be on.", "banner"],
+      ["Dental Protection (MPS)", "https://www.dentalprotection.org/uk", "Indemnity & insurance", "Wishlist number 9 (Lucas): indemnity is a fixed cost every reader pays and every reader shops.", "banner"],
+      ["Listerine Professional (Kenvue)", "https://kenvuepro.com/en-gb/listerine", "Oral care brands", "Wishlist number 10 (Lucas), seen exhibiting at Dentistry Show London. Professional arm only, same rule as Colgate.", "banner"],
+      ["Dentsply Sirona", "https://www.dentsplysirona.com", "Equipment & consumables", "Seen by Lucas exhibiting at Dentistry Show London. One of the two largest suppliers in the sector.", "banner"],
+      ["Solventum", "https://www.solventum.com", "Consumables", "Seen by Lucas advertising on the Dentistry website.", "banner"],
+      ["Durr Dental", "https://www.duerrdental.com", "Equipment & fit-out", "Seen by Lucas advertising on the Dentistry website.", "banner"],
+      ["Takara Belmont UK", "https://belmontdental.co.uk", "Equipment & fit-out", "Lucas listed the Eurus S6 from the Dentistry September issue. That is a Takara Belmont chair, so the advertiser is Takara Belmont, trading here as Belmont Dental. Already a source.", "banner"],
+      ["A-dec", "https://www.a-dec.com", "Equipment & fit-out", "Seen by Lucas advertising in Dentistry, September 2026. Chairs and surgery fit-out: the largest single capital purchase a practice makes.", "banner"],
+      ["Bien-Air Dental", "https://www.bienair.com", "Equipment & fit-out", "Seen by Lucas advertising in Dentistry, September 2026.", "banner"],
+      ["B.A. International", "https://www.bainternational.co.uk", "Equipment & fit-out", "Sponsor of The Dental Awards 2026, so the budget is documented rather than assumed.", "banner"],
+      ["Waterpik UK", "https://www.waterpik.co.uk", "Oral care brands", "Sponsor of The Dental Awards 2026.", "banner"],
+      ["Tempdent", "https://www.tempdent.co.uk", "Recruitment & training", "Sponsor of The Dental Awards 2026. Staffing is the cost line Lucas says owners are trying hardest to control.", "web_story"],
+      ["Colosseum Dental UK", "https://www.colosseumdental.co.uk", "Dental groups", "Sponsor of The Dental Awards 2026, and already a source. Groups advertise to recruit associates, which is a budget separate from the supplier money.", "other"],
+      ["Planmeca UK", "https://www.planmeca.com", "Equipment & fit-out", "Running display advertising on the incumbent titles (vertical brief, 18 Sep 2026). Not on Lucas's sheet.", "banner"],
+      ["W&H UK", "https://www.wh.com", "Equipment & fit-out", "Running display advertising on the incumbent titles (vertical brief, 18 Sep 2026). Not on Lucas's sheet.", "banner"],
+      ["Acteon UK", "https://www.acteongroup.com", "Equipment & fit-out", "Running display advertising on the incumbent titles (vertical brief, 18 Sep 2026), and the subject of a wire story the Director rejected as vendor content in September.", "banner"],
+      ["Carestream Dental", "https://www.carestreamdental.com", "Technology & imaging", "Running display advertising on the incumbent titles (vertical brief, 18 Sep 2026). Already a source.", "banner"],
+      ["Dentists' Provident", "https://www.dentistsprovident.co.uk", "Indemnity & insurance", "Running display advertising on the incumbent titles (vertical brief, 18 Sep 2026). Already a source.", "banner"],
+      ["Den Marketing", "https://denmarketing.co.uk", "Marketing agency", "Lucas found it running a paid Google ad aimed at practices, which is the point: an agency already buying audience to reach our readers. Patient-acquisition marketing is a practice cost line, so it is coverable and sellable.", "web_story"]
+    ],
+    topics: [
+      ["What It Costs To Buy a Dental Practice in 2026", "Deals & Groups",
+        "Lucas's first answer when asked what a reader types into Google, and the money question underneath the whole title. Not a broker explainer: the actual cost of acquisition assembled from named sources. Asking prices and what they are achieving (Christie & Co, Frank Taylor & Associates, Dental Elite), EBITDA multiples by practice type and size with the firm and date on every figure, goodwill as a share of price (NASDAL), what the lenders are advancing and on what terms, the legal, agent and finance fees, the working capital needed on day one, and what an NHS contract inside the deal does to the number. Say plainly where the ranges disagree and why. Every figure carries source, year and scope under the figures rule.",
+        "how much does it cost to buy a dental practice"],
+      ["What an NHS Dental Contract Is Actually Worth", "NHS Contract",
+        "Lucas's third reader question, typed as 'how much is an NHS dental contact worth', which is the contract. This is the contract as an asset, and it is deliberately not the UDA-value piece already queued: that one answers what a UDA pays in each nation, this one answers what a contract is worth to the owner who holds it and to the buyer who wants it. Annual contract value against UDA count, what the contract adds to or takes off a sale price, what happens to it on sale, merger or handback, the clawback exposure, and the four nations handled separately because they are four different contracts. Anchor on NHSBSA and the commissioners' own published figures, never on a broker blog.",
+        "how much is an nhs dental contract worth"],
+      ["Where Practice Owners Are Actually Saving Money in 2026", "Finance & Tax",
+        "Lucas's account of the reader is that this is an expensive sector and anywhere they can save they will, across equipment, staffing and technology. Written as a cost base, line by line, with real numbers: staff and the associate percentage, lab bills, materials and consumables, rent, rates and energy, indemnity, software subscriptions, employer National Insurance and the wage floors. What each line typically runs at as a share of turnover (NASDAL, Dental Earnings and Expenses), which lines have moved most in the last two years, and where owners are actually finding savings against where they only think they are. Name suppliers and benchmarks, and end on what an owner could change this month.",
+        "dental practice running costs"],
+      ["Who Is Buying Dental Practices Now, and What They Are Paying", "Deals & Groups",
+        "Group dentistry news, acquisitions and expansion is the second thing Lucas says the advertisers want to sit beside, and his favourite of our own articles is the ownership map. Make it a standing quarterly tracker: every practice and group deal completed in the quarter, with buyer, seller, number of sites, place, price and multiple where published, and the funder behind the buyer. Add who is selling and why, who has stopped buying, and any group closing sites or handing back contracts. Sourced from Companies House, the buyers' own announcements and the brokers' published completions, never from a competitor's report alone.",
+        "dental practice acquisitions uk"],
+      ["Dental Equipment in 2026: What It Costs and What It Pays Back", "Premises & Technology",
+        "Two of Lucas's reader searches are equipment ones: high quality equipment at a lower price, and the latest equipment. This is the business answer, not a product round-up. By category (chairs, imaging, scanners, CAD/CAM, decontamination, practice software): what the kit costs new and refurbished, what the finance and lease terms look like, the running and servicing cost, what it replaces, how much chair time or lab spend it saves, and what a realistic payback period is. Named manufacturers and named prices where published. Never a clinical comparison, and no claim repeated from marketing copy: that is the scope rule and the claims rule together.",
+        "latest dental equipment"],
+      ["The Dental Business Interview: Owners and Group Chiefs on the Record", "News",
+        "The format Lucas says nobody in this sector does well and that he wants the title known for: content where we have actually sat down with someone, which shows we work with the sector rather than reporting at it, and which is what the wishlist advertisers want to appear beside. A standing series, one named person at a time, from practice owners and group chief executives to trade-body figures and the people who did the deals. Business questions only: what the numbers are, what they decided and why, what it cost, what they would do differently. Every piece runs with a photograph of the person. The five people on Lucas's sheet are the first round and are seeded as targets.",
+        "dental practice owner interview"]
+    ],
+    claims: [
+      "how much does it cost to buy a dental practice",
+      "how much is an nhs dental contract worth",
+      "dental practice running costs",
+      "dental practice profit margins",
+      "dental practice acquisitions uk",
+      "buying a dental practice uk",
+      "latest dental equipment",
+      "dental equipment suppliers uk",
+      "dental practice owner interview"
+    ]
+  },
 };
 
 // ------------------------------------------------------------------ helpers

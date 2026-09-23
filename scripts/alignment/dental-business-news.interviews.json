@@ -1,0 +1,92 @@
+[
+  {
+    "personName": "Martin Woodrow",
+    "personRole": "Chief Executive, British Dental Association",
+    "company": "British Dental Association",
+    "companyDomain": "bda.org",
+    "genericEmail": "mediaprandparliamentary@bda.org",
+    "hookUrl": "",
+    "newsHook": "The BDA is where NHS dentistry and government policy break first, and its chief executive is the one person who sees the contract negotiation, the workforce numbers and the practice economics at the same time, which is exactly the view a practice owner cannot get anywhere else.",
+    "questions": [
+      "The NHS contract has been called broken for years. What is the realistic best case for reform in the next two years, and what would owners have to plan for if it does not come?",
+      "What does the BDA's own evidence say about what it actually costs a practice to deliver a UDA today, against what it is paid?",
+      "How many practices are handing back NHS work now compared with two years ago, and what is driving the decision?",
+      "The four nations have diverged a long way. Which nation is getting closest to a contract that works, and what are the others missing?",
+      "What is the single biggest cost pressure on a practice this year that is not the contract?",
+      "Recruitment keeps coming up as the binding constraint. What is the BDA's read on the workforce pipeline and on overseas registration?",
+      "If you could get one change through for practice owners in the next twelve months, what would it be?"
+    ]
+  },
+  {
+    "personName": "Neil Carmichael",
+    "personRole": "Executive Chair, Association of Dental Groups",
+    "company": "Association of Dental Groups",
+    "companyDomain": "theadg.co.uk",
+    "genericEmail": "admin@theadg.co.uk",
+    "hookUrl": "",
+    "newsHook": "The ADG speaks for the groups that now own a large share of UK practices, and its position that the NHS contract needs funding and flexibility rather than a rewrite is one of the live arguments in the sector, so owners on both sides of it want to hear the case made directly.",
+    "questions": [
+      "The ADG's position is that the contract needs funding and flexibility, not a rewrite. Why is that the better route for practices, and what do the people calling for a rewrite get wrong?",
+      "What does a realistic route to a contract fit for purpose look like, step by step, and how long does it take?",
+      "Group consolidation has changed who owns UK dentistry. What does that mean for an independent practice owner competing for the same patients and the same associates?",
+      "Where is the money coming from for group expansion at the moment, and has the cost of capital changed what the groups can buy?",
+      "What do your members say is the hardest cost line to control right now?",
+      "Recruitment and retention of associates is the constraint everyone names. What is actually working?",
+      "Where does the ADG want the sector to be in three years, and what has to happen first?"
+    ]
+  },
+  {
+    "personName": "Nilesh Pandya",
+    "personRole": "Chief Executive, mydentist",
+    "company": "mydentist",
+    "companyDomain": "mydentist.co.uk",
+    "genericEmail": "mydentistpressoffice@mccann.com",
+    "hookUrl": "",
+    "newsHook": "mydentist is the largest dental group in the UK and its chief executive came to the job from the finance side, so how he reads practice economics, the NHS contract and the cost of capital is the clearest signal available of where the corporate end of the market is going.",
+    "questions": [
+      "You came to the role from the finance side. What did the numbers tell you about UK dentistry that you had not expected?",
+      "What does the mix between NHS and private look like across your practices now, and where is it heading?",
+      "What is the cost per practice that has moved most in the last two years, and how have you dealt with it?",
+      "How do you decide whether to invest in an existing site, buy another, or hand a contract back?",
+      "What does mydentist look for when it does buy a practice, and what makes you walk away?",
+      "You have said you want mydentist to be the best place to work in UK dentistry. What have you changed to make that true, and what has it cost?",
+      "What should an independent owner with one or two practices take from how a group of your size runs?"
+    ]
+  },
+  {
+    "personName": "Anushika Brogan",
+    "personRole": "Chief Executive and Founder, Damira Dental Studios",
+    "company": "Damira Dental Studios",
+    "companyDomain": "damiradental.co.uk",
+    "genericEmail": "none-published",
+    "hookUrl": "",
+    "newsHook": "Damira went from a single Oxford practice in 2003 to one of the largest UK groups, built by a clinician who still practises, which makes it the clearest worked example of the route most of our readers are actually on: one practice, then several, then a group.",
+    "questions": [
+      "You went from one practice to a group of more than forty. What was the hardest step, and where did the model have to change?",
+      "How did you fund the early acquisitions, and what would you do differently with the cost of money where it is now?",
+      "What do you look at first when you are valuing a practice you might buy?",
+      "What does a practice need to get right before an owner should think about buying a second one?",
+      "You are still in clinical practice. What does that tell you about the business that the reports do not?",
+      "Where do you sit on NHS against private at the moment, and has that moved?",
+      "What is the one cost or process you would tell a single-site owner to fix this year?"
+    ]
+  },
+  {
+    "personName": "Vikki Goodall",
+    "personRole": "Vice President and Managing Director, Henry Schein UK and Ireland",
+    "company": "Henry Schein UK",
+    "companyDomain": "henryschein.co.uk",
+    "genericEmail": "none-published",
+    "hookUrl": "",
+    "newsHook": "Henry Schein supplies a very large share of UK practices, so what practices are buying, what they have stopped buying and what they are paying is visible from there before it is visible anywhere else, which is the supply-side read on practice economics that no trade body can give.",
+    "questions": [
+      "What has changed in what practices are actually buying in the last two years, and what does that tell you about how they are trading?",
+      "Where are owners cutting back first when money is tight, and where do they refuse to cut?",
+      "What are practices paying now for the equipment that matters most, and how much of it is being financed rather than bought outright?",
+      "Refurbished and finance options are a bigger part of the market than they were. What is the honest case for and against each?",
+      "What does a practice typically get wrong when it plans a surgery refit or a new site?",
+      "Which technology is genuinely paying for itself in a normal practice, and which is not there yet?",
+      "What do you expect practices to be spending on differently in two years?"
+    ]
+  }
+]

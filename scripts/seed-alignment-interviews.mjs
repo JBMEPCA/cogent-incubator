@@ -80,6 +80,14 @@ for (const p of PEOPLE) {
   const existing = await prisma.interviewTarget.findFirst({ where: { siteId: site.id, personName: p.personName } });
   if (existing && existing.status !== "pending") { console.log(`skip (${existing.status}): ${p.personName}`); continue; }
 
+  // "none-published" means the sheet named a person with no published inbox
+  // behind them. The hunter always finds SOMETHING on a big company site, and
+  // what it finds is a data-protection or customer-service address: two of the
+  // five on the dental sheet resolved that way. An interview ask sent there
+  // burns the approach and teaches us nothing, so the row is created and left
+  // pending for a human to route. "none" still hunts, as before.
+  const noAddress = p.genericEmail === "none-published";
+
   const row = existing || (await prisma.interviewTarget.create({
     data: {
       siteId: site.id, personName: p.personName, personRole: p.personRole, company: p.company,
@@ -89,6 +97,12 @@ for (const p of PEOPLE) {
   }));
   queued++;
   const withAddresses = { ...row, genericEmail: generic };
+
+
+  if (noAddress) {
+    console.log(`left pending (no published inbox, needs a human): ${p.personName}`);
+    continue;
+  }
 
   if (!SEND) {
     let pick = null;
