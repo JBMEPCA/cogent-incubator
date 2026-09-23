@@ -40,6 +40,10 @@ const arg = (name, fallback) => {
   return hit ? hit.split("=").slice(1).join("=") : fallback;
 };
 const SEND = process.argv.includes("--send");
+// Queue mode: write the candidates into the queue as "pending" and send
+// nothing. The daily drip (scripts/drip-interview-outreach.mjs) takes them a
+// few at a time, which reads like a publisher working rather than a mailshot.
+const QUEUE = process.argv.includes("--queue");
 const DIR = arg("dir");
 const ONLY = (arg("slug", "") || "").split(",").filter(Boolean);
 const LIMIT = Number(arg("limit", 5));
@@ -108,7 +112,7 @@ for (const pack of packs) {
       continue;
     }
 
-    if (!SEND) {
+    if (!SEND && !QUEUE) {
       const pick = await resolveAddress({ ...c, triedEmails: null }, { hunt: huntContact });
       console.log(`  would send -> ${(pick?.email || "(nowhere)").padEnd(36)} [${pick?.source || "none"}] ${c.personName}, ${c.company}`);
       if (pick?.email) { totals.queued++; done++; } else totals.noAddress++;
@@ -131,6 +135,16 @@ for (const pack of packs) {
     }));
     const target = { ...row, genericEmail: c.genericEmail || null };
 
+    if (QUEUE) {
+      // The published address the researcher read off their site is kept on the
+      // row, so the drip does not have to hunt it again days later.
+      if (c.genericEmail && !row.email) await db.interviewTarget.update({ where: { id: row.id }, data: { email: c.genericEmail, emailSource: "generic" } });
+      console.log(`  queued: ${c.personName}, ${c.company}`);
+      totals.queued++;
+      done++;
+      continue;
+    }
+
     const res = await sendQuestionsUpFront(db, target, opts);
     if (res.sent) {
       console.log(`  sent -> ${res.email.padEnd(36)} [${res.source}] ${c.personName}, ${c.company}`);
@@ -149,5 +163,5 @@ for (const pack of packs) {
   }
 }
 
-console.log(`\n${SEND ? "SENT" : "DRY RUN"}:`, JSON.stringify(totals));
+console.log(`\n${SEND ? "SENT" : QUEUE ? "QUEUED" : "DRY RUN"}:`, JSON.stringify(totals));
 await prisma.$disconnect();
