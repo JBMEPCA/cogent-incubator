@@ -12,6 +12,14 @@
 // Only ever touches posts whose featured_media is 0. A post that already has an
 // image is never re-shot, so a re-run after a partial failure resumes cleanly
 // rather than replacing work.
+//
+// --replace re-shoots a post that already HAS an image, and only ever the post
+// ids named on the command line, never a whole title. It exists because a bad
+// header does get through: Dental Business News ran an ADG conference story
+// under a photograph of lanyards carrying the competing publisher's logo. The
+// old attachment is left in the media library, unreferenced.
+//
+//   node scripts/backfill-images.js --site=dental-business-news --replace 52
 const {
   chooseImage, uploadMedia, log, prisma, setUA, wpBase, wpAuth,
 } = require("./batch-publish.js");
@@ -19,6 +27,9 @@ const {
 const arg = (k) => (process.argv.find((a) => a.startsWith(`--${k}=`)) || "").split("=")[1];
 const DRY = process.argv.includes("--dry-run");
 const onlyIds = process.argv.slice(2).filter((a) => /^\d+$/.test(a)).map(Number);
+// Re-shoot posts that already have an image. Named ids only: without them this
+// would re-shoot a whole title and throw away work that is already right.
+const REPLACE = process.argv.includes("--replace");
 
 const headers = () => ({ authorization: `Basic ${wpAuth()}` });
 
@@ -102,19 +113,23 @@ async function setFeatured(postId, mediaId, credit, existingContent, title) {
 
   log(`${SITE.name} — ${wp.url}`);
 
-  const posts = (await allPublished()).filter((p) => !p.featured_media);
+  if (REPLACE && !onlyIds.length) {
+    console.error("--replace needs the post ids to re-shoot. Refusing to re-shoot a whole title.");
+    process.exit(1);
+  }
+  const posts = (await allPublished()).filter((p) => REPLACE || !p.featured_media);
   const targets = onlyIds.length ? posts.filter((p) => onlyIds.includes(p.id)) : posts;
 
   if (onlyIds.length) {
     const missing = onlyIds.filter((id) => !targets.some((p) => p.id === id));
-    if (missing.length) log(`skipping ${missing.join(", ")} — already has an image, or not a published post here`);
+    if (missing.length) log(`skipping ${missing.join(", ")} — ${REPLACE ? "not a published post here" : "already has an image, or not a published post here"}`);
   }
   if (!targets.length) {
     log("Nothing to do: every published article already has a header image.");
     await prisma.$disconnect();
     return;
   }
-  log(`${targets.length} article(s) without a header image`);
+  log(`${targets.length} article(s) ${REPLACE ? "to re-shoot" : "without a header image"}`);
 
   // Dedupe against everything this title has already run. Scoped per title, as
   // the schema comment on imageSource explains.

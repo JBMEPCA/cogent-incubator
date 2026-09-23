@@ -332,6 +332,7 @@ REJECT (verdict "no") if ANY of these are true:
 - The image does not relate to the article's subject or theme at all.
 - The article names specific brands or products and the image shows a DIFFERENT brand, or a logo that is not the one named. Wrong logos are the most serious failure possible.
 - The image contains text, watermarks or logos that would confuse or mislead a reader.
+- The image carries the branding of a MEDIA BRAND: another magazine, trade title, news site, publisher or the conference they run (on a lanyard, badge, banner, backdrop, press wall or stand). This is narrower than the brand rule below and it is not covered by it: a rival publisher's logo on our own page advertises the competitor and reads as though we took the photograph from them. Dental Business News ran an ADG conference story under a photograph of FMC-branded lanyards in September 2026, which is the case this line exists to stop.
 - It looks like a meme, clipart, a random webpage screenshot, a map, an unreadable chart, or an obviously staged 2000s stock photo.
 - The subject is a recognisable named individual (we do not have permission).
 - Quality is poor: blurry, distorted, badly cropped, over-processed, or too dark to read at a glance.
