@@ -1,0 +1,92 @@
+[
+  {
+    "personName": "Kat Andrews",
+    "personRole": "",
+    "company": "Inspired Villages",
+    "companyDomain": "inspiredvillages.co.uk",
+    "genericEmail": "communications@inspiredvillages.co.uk",
+    "hookUrl": "",
+    "newsHook": "Inspired Villages is one of the most active integrated retirement community developers in the UK, building and operating at a point when almost every other operator is telling us capital and planning are the constraint, so operators and investors elsewhere in the sector want to know how the pipeline actually gets delivered.",
+    "questions": [
+      "What is the single biggest thing slowing a retirement community scheme down today, planning or capital, and has that changed in the last two years?",
+      "Operators keep hitting the C2 versus C3 use class question. How do you approach it, and what would you change about how councils handle it?",
+      "What do you look for in a site before you will take it forward, and what makes you walk away?",
+      "The deferred management fee is the part of the model the public understands least. How do you explain it to a buyer, and what would make it less contentious?",
+      "What have you changed about how you staff and run a village since opening your first one?",
+      "US operators are often held up as the benchmark. What do they do that UK operators have not caught up with yet?",
+      "Where does Inspired Villages go from here?"
+    ]
+  },
+  {
+    "personName": "Beckie Johnson",
+    "personRole": "",
+    "company": "McCarthy Stone",
+    "companyDomain": "mccarthyandstone.co.uk",
+    "genericEmail": "none",
+    "hookUrl": "",
+    "newsHook": "McCarthy Stone is the largest developer of retirement housing in the UK and the one whose numbers the rest of the sector reads as the market signal, so operators and investors want to know what the company is seeing in sales, pricing and planning before it shows up in anyone else's results.",
+    "questions": [
+      "What are you seeing in sales rates and pricing right now, and how much of it is the housing market rather than the sector?",
+      "How much of a scheme's viability is decided by planning, and where is the system costing the sector most?",
+      "Retirement housing and integrated retirement communities get conflated constantly. Where do you draw the line, and does the distinction matter commercially?",
+      "What does the resale and buyback side of the model look like in practice, and what would you change about how it is regulated?",
+      "Which parts of the operating model have you moved in house, and which are better bought in?",
+      "What should a smaller operator learn from the way a company at your scale runs its pipeline?",
+      "Where does McCarthy Stone go from here?"
+    ]
+  },
+  {
+    "personName": "Cara Wood",
+    "personRole": "",
+    "company": "Richmond Villages",
+    "companyDomain": "richmond-villages.com",
+    "genericEmail": "none",
+    "hookUrl": "",
+    "newsHook": "Richmond Villages runs integrated retirement communities alongside care on the same campuses, which is the model most operators are arguing about right now, so the sector wants to know how the two sides actually work together on one site.",
+    "questions": [
+      "Running a village and care on one campus is the model everyone debates. What works about it commercially and what is harder than it looks?",
+      "How do you decide the amenity mix on a new village, and which amenities earn their space?",
+      "What does occupancy actually depend on in your experience, location, price, or the community itself?",
+      "How do you recruit and keep village managers, which almost every operator tells us is the binding constraint?",
+      "What do residents ask for now that they were not asking for five years ago?",
+      "What would you tell an operator opening their first village?",
+      "Where do Richmond Villages go from here?"
+    ]
+  },
+  {
+    "personName": "Max Armstrong",
+    "personRole": "",
+    "company": "LifeCare Residences",
+    "companyDomain": "lifecareresidences.co.nz",
+    "genericEmail": "none",
+    "hookUrl": "",
+    "newsHook": "New Zealand has run the occupation right agreement model for far longer than the UK has run the deferred management fee, and LifeCare Residences operates on both sides of that experience, so UK operators and investors want to know what a mature deferred-fee market teaches the one that is still forming.",
+    "questions": [
+      "The UK is only now settling its deferred fee model. What did New Zealand get right, and what would you warn the UK about?",
+      "How does the occupation right agreement work in practice for the operator's cash flow, and how does it compare to what UK operators are doing?",
+      "New Zealand's Retirement Villages Act is under review. What would a good outcome look like for operators, and what would a bad one look like?",
+      "What does resident demand look like in New Zealand compared with what you see in the UK?",
+      "Construction cost and labour have hit every market. How has that changed what you build?",
+      "What would you say to a UK operator looking at the New Zealand model and thinking about importing parts of it?",
+      "Where does LifeCare Residences go from here?"
+    ]
+  },
+  {
+    "personName": "Viv Rowe",
+    "personRole": "",
+    "company": "Retirement Villages Group",
+    "companyDomain": "rvg.co.uk",
+    "genericEmail": "pressoffice@rvg.co.uk",
+    "hookUrl": "",
+    "newsHook": "Retirement Villages Group has been building and running UK retirement communities for longer than almost anyone else in the market and is now developing again at scale, so operators want to know what a long view of this sector teaches about the schemes being approved today.",
+    "questions": [
+      "You have seen this sector through several cycles. What is genuinely different about the one we are in now?",
+      "What makes a retirement community scheme work financially, and what is the most common way they go wrong?",
+      "How do you get a scheme through planning in a system that still does not have a settled category for it?",
+      "Where is the capital coming from for the next wave of schemes, and what do those investors want that they did not want before?",
+      "What does a village need to offer now to fill, and what has stopped mattering?",
+      "What should the sector be lobbying for that it currently is not?",
+      "Where does Retirement Villages Group go from here?"
+    ]
+  }
+]
