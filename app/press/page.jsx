@@ -243,7 +243,14 @@ export default async function PressPage({ searchParams }) {
                         )}
                       </td>
                       <td style={{ padding: "10px", textAlign: "right" }}>
-                        {r.articleUrl ? (
+                        {r.pushing ? (
+                          // Someone has already pressed it and the desk is
+                          // writing. No button: a second click would pay to
+                          // write the same release twice.
+                          <span className="micro" style={{ color: "var(--neon-cyan)" }}>
+                            Writing it up… started {fmt(r.pushing)}
+                          </span>
+                        ) : r.articleUrl ? (
                           <a
                             href={r.articleUrl}
                             target="_blank"
@@ -262,9 +269,14 @@ export default async function PressPage({ searchParams }) {
                             id={r.id}
                             subject={r.subject}
                             stale={r.stale}
-                            rate={rate}
+                            // The unclear-embargo hold is the one a person, and
+                            // only a person, can answer. The row knows which
+                            // holds those are, so the second click is a
+                            // differently-worded button rather than client state.
+                            force={r.needsForce}
                             label={
-                              r.outcome === "pending" ? "Stuck — run it again"
+                              r.needsForce ? "Embargo checked — publish now"
+                              : r.outcome === "pending" ? "Stuck — run it again"
                               : r.outcome === "held" ? "Push it live"
                               : "Use it anyway"
                             }
