@@ -88,6 +88,20 @@ function ExitIcon() {
   );
 }
 
+/** A sheet with a headline rule and a block of type — a press release on the
+    desk, drawn to the same 24-unit spec as the rest of the row. */
+function PressIcon() {
+  return (
+    <svg {...ICON}>
+      <path d="M5.5 3.5h10a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2z" />
+      <path d="M17.5 8.5h1a2 2 0 0 1 2 2v7.5a2 2 0 0 1-2 2" />
+      <path d="M7 7.5h7" />
+      <path d="M7 11.5h7" />
+      <path d="M7 15.5h4" />
+    </svg>
+  );
+}
+
 /** A folder: the shared Drive of media packs and documents. */
 function FolderIcon() {
   return (
@@ -106,6 +120,7 @@ const LINKS = [
   { href: "/analytics", label: "Group analytics", Icon: ChartIcon },
   { href: "/interviews", label: "Interviews", Icon: PersonIcon },
   { href: "/costs", label: "Group costs", Icon: MoneyIcon },
+  { href: "/press", label: "Press Releases", Icon: PressIcon },
 ];
 
 export default function FleetNav() {
