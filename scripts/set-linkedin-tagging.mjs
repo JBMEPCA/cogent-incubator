@@ -25,11 +25,15 @@ const bridgeOf = async (site) => {
   const row = await p.engineSetting.findFirst({ where: { siteId: site.id, key: "social_bridge" } });
   try { return JSON.parse(row?.value || "{}"); } catch { return {}; }
 };
+// EngineSetting is keyed on (siteId, key) with no id column, so the row is
+// addressed by the composite key rather than fetched and updated by id.
 const setBridge = async (site, next) => {
-  const row = await p.engineSetting.findFirst({ where: { siteId: site.id, key: "social_bridge" } });
   const value = JSON.stringify(next);
-  if (row) await p.engineSetting.update({ where: { id: row.id }, data: { value } });
-  else await p.engineSetting.create({ data: { siteId: site.id, key: "social_bridge", value } });
+  await p.engineSetting.upsert({
+    where: { siteId_key: { siteId: site.id, key: "social_bridge" } },
+    update: { value },
+    create: { siteId: site.id, key: "social_bridge", value },
+  });
 };
 
 const url = arg("url");
