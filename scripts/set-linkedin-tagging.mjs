@@ -57,11 +57,24 @@ if (check) {
 for (const [flag, on] of [["enable", true], ["disable", false]]) {
   const slug = arg(flag);
   if (!slug) continue;
-  const site = await siteBy(slug);
-  if (!site) { console.error("no such title:", slug); process.exit(1); }
-  const next = { ...(await bridgeOf(site)), tagging: on };
-  await setBridge(site, next);
-  console.log(`${slug} social_bridge ->`, JSON.stringify(next));
+  // "all" means every title that already posts to LinkedIn through Make;
+  // a title with no bridge has nothing to tag.
+  const targets = [];
+  if (slug === "all") {
+    for (const site of await p.site.findMany({ orderBy: { slug: "asc" } })) {
+      if ((await bridgeOf(site)).linkedin) targets.push(site);
+    }
+  } else {
+    const site = await siteBy(slug);
+    if (!site) { console.error("no such title:", slug); process.exit(1); }
+    targets.push(site);
+  }
+
+  for (const site of targets) {
+    const next = { ...(await bridgeOf(site)), tagging: on };
+    await setBridge(site, next);
+    console.log(`${site.slug.padEnd(26)} ->`, JSON.stringify(next));
+  }
 }
 
 if (!url && !check && !arg("enable") && !arg("disable")) {
