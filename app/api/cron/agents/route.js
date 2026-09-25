@@ -234,6 +234,21 @@ async function tickOne(ctx, { forced, stage }) {
   const target = Math.max(1, Math.round(Number(site.articlesPerDayTarget) || 3));
   const thin = readyToPublish < target;
 
+  // A title with nothing queued has to post today, thin shelf or not.
+  //
+  // Housekeeping only pre-empts content when the shelf is healthy, and every
+  // shelf has been thin since the 22 September restore, so the LinkedIn writer
+  // last had a turn on the 22nd and the queues ran dry. On 24 September the
+  // whole fleet posted NOTHING to any page, three days after the bridge went
+  // live. The writer costs 3p and one tick, and its drafts expire five days
+  // after their slot, so waiting for a full shelf is how a title goes quiet for
+  // a week. It gets its turn when it has nothing queued and has not run for its
+  // whole interval, which is once a day per title at most.
+  const socialQueue = linkedInReady
+    ? await db.linkedInPost.count({ where: { status: { in: ["draft", "approved"] }, postedAt: null } })
+    : 0;
+  const socialDry = linkedInReady && socialQueue === 0 && overdueBy("linkedin", 12) > 1;
+
   let worker = null;
   // Housekeeping never pre-empts content on a title that cannot fill tomorrow.
   //
@@ -244,6 +259,7 @@ async function tickOne(ctx, { forced, stage }) {
   // went to link sweeps and cost reports. An SEO sweep can wait an hour. A
   // title with an empty shelf cannot.
   if (starved.length && !thin) worker = starved[0];
+  else if (socialDry) worker = ["linkedin", runLinkedIn, "daily_queue"];
   else if (needsImage) worker = ["designer", runDesigner, "draft_ready"];
   else if (drafting) worker = ["editor", runEditor, "topic_commissioned"];
   // TOPIC SUPPLY MUST MATCH THE TARGET, or the day is capped before it starts.
