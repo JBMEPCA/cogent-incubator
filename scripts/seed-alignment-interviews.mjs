@@ -100,7 +100,21 @@ for (const p of PEOPLE) {
 
 
   if (noAddress) {
-    console.log(`left pending (no published inbox, needs a human): ${p.personName}`);
+    // "exhausted", not "pending", and this is the whole point of the guard.
+    // The daily drip (scripts/drip-interview-outreach.mjs) queues every row at
+    // "pending" and hunts an address for it, so parking someone as pending
+    // hands them straight to the hunter the next morning: exactly what this
+    // was meant to prevent. Vikki Goodall was left pending on 23 Sep 2026 and
+    // the drip wrote to ukcustomerservicesweb@henryschein.co.uk on 25 Sep.
+    // The drip ignores "exhausted", and the dashboard reads it as "No address
+    // found", which is what a human needs to see.
+    if (row.status === "pending") {
+      await prisma.interviewTarget.update({
+        where: { id: row.id },
+        data: { status: "exhausted", error: "No published inbox on the sheet. Needs a human to route." },
+      });
+    }
+    console.log(`held for a human (no published inbox): ${p.personName}`);
     continue;
   }
 
