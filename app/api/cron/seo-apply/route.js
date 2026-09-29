@@ -1,6 +1,6 @@
 import { cronGuard, forEachSite } from "@/lib/cron";
 import { forSite } from "@/lib/prisma";
-import { applySuggestion } from "@/lib/seo-agent";
+import { applySuggestion, outcomeFor } from "@/lib/seo-agent";
 import { isWordPressConfigured } from "@/lib/wordpress";
 
 export const dynamic = "force-dynamic";
@@ -64,12 +64,13 @@ export async function GET(request) {
 
       let applied = 0;
       let refused = 0;
+      let alreadyDone = 0;
       let deferred = 0;
       let blocked = null;
 
       for (const suggestion of pending) {
         if (Date.now() - started > DEADLINE_MS) {
-          deferred = pending.length - applied - refused;
+          deferred = pending.length - applied - refused - alreadyDone;
           break;
         }
         try {
@@ -95,23 +96,25 @@ export async function GET(request) {
               data: { error: e.message?.slice(0, 300) },
             });
             blocked = e.message?.slice(0, 160) || "host unavailable";
-            deferred = pending.length - applied - refused;
+            deferred = pending.length - applied - refused - alreadyDone;
             break;
           }
 
           // A refusal is the guard doing its job, not a fault: the copy moved,
           // or the anchor is already a link. Recorded so it is visible, and
           // left out of the pending count so it cannot be retried for ever.
-          await db.seoSuggestion.update({
-            where: { id: suggestion.id },
-            data: { status: "failed", error: e.message?.slice(0, 300) },
-          });
-          refused++;
+          //
+          // Already on the site is not a refusal either: an earlier sweep wrote
+          // the same link, so this one is closed as done rather than failed.
+          const outcome = outcomeFor(e);
+          await db.seoSuggestion.update({ where: { id: suggestion.id }, data: outcome });
+          if (outcome.status === "dismissed") alreadyDone++;
+          else refused++;
         }
         await sleep(WRITE_GAP_MS);
       }
 
-      return { applied, refused, deferred, adviceExpired: stale.count, ...(blocked ? { blocked } : {}) };
+      return { applied, refused, alreadyDone, deferred, adviceExpired: stale.count, ...(blocked ? { blocked } : {}) };
     })
   );
 }
