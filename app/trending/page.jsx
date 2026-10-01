@@ -34,7 +34,9 @@ const STATUS_LABEL = {
 };
 
 export default async function TrendingPage({ searchParams }) {
-  const showAll = (await searchParams)?.all === "1";
+  const params = (await searchParams) || {};
+  const showAll = params.all === "1";
+  const only = typeof params.site === "string" ? params.site : null;
   const since = new Date(Date.now() - WINDOW_HOURS * 36e5);
 
   const sites = await prisma.site.findMany({
@@ -45,7 +47,7 @@ export default async function TrendingPage({ searchParams }) {
   const [topics, commissioned, latest, hidden] = await Promise.all([
     prisma.trendingTopic.findMany({
       where: { lastSeenAt: { gte: since }, status: { in: showAll ? ["new", "irrelevant"] : ["new"] } },
-      include: { site: { select: { slug: true, name: true } } },
+      include: { site: { select: { slug: true, name: true, status: true, markAccent: true, accentHex: true, markUrl: true } } },
       orderBy: [{ lastSeenAt: "desc" }],
       take: 200,
     }),
@@ -70,9 +72,10 @@ export default async function TrendingPage({ searchParams }) {
   const articleById = new Map(articles.map((a) => [a.id, a]));
 
   const liveCutoff = Date.now() - LIVE_MINUTES * 60000;
-  // Matched and live first, then by how well it fits, then by size. A trend
-  // that has dropped out of Google's feed is still worth seeing for a day, but
-  // it is no longer the thing to do first.
+  // Matched first, then still live, then biggest. Volume leads within that
+  // because it is the reason to act: fit has already been floored at match
+  // time, so every matched card is a genuine fit. A trend that has dropped out
+  // of Google's feed is still worth seeing for a day, but not first.
   const cards = topics
     .map((t) => ({
       id: t.id,
@@ -89,7 +92,7 @@ export default async function TrendingPage({ searchParams }) {
       why: t.why,
       news: parseNews(t),
       siteSlug: t.site?.slug || null,
-      siteName: t.site?.name || null,
+      site: t.site || null,
       live: new Date(t.lastSeenAt).getTime() >= liveCutoff,
       seen: `first seen ${ago(t.firstSeenAt)}`,
     }))
@@ -97,15 +100,27 @@ export default async function TrendingPage({ searchParams }) {
       (a, b) =>
         Number(Boolean(b.siteSlug)) - Number(Boolean(a.siteSlug)) ||
         Number(b.live) - Number(a.live) ||
-        b.relevance - a.relevance ||
-        b.trafficNum - a.trafficNum
+        b.trafficNum - a.trafficNum ||
+        b.relevance - a.relevance
     );
 
   const siteOptions = sites.map((s) => ({ slug: s.slug, name: s.name }));
-  const byTitle = sites
-    .map((s) => ({ site: s, items: cards.filter((c) => c.siteSlug === s.slug) }))
-    .filter((g) => g.items.length);
+  // One list across every title, filtered by a pill row rather than split into
+  // a section per title: per-title sections put one card in each and left most
+  // of the page empty.
+  const matched = cards.filter((c) => c.siteSlug);
+  const counts = new Map();
+  for (const c of matched) counts.set(c.siteSlug, (counts.get(c.siteSlug) || 0) + 1);
+  const filterSites = sites.filter((s) => counts.has(s.slug));
+  const shown = only ? matched.filter((c) => c.siteSlug === only) : matched;
   const unmatched = cards.filter((c) => !c.siteSlug);
+  const hrefFor = (slug) => {
+    const q = new URLSearchParams();
+    if (slug) q.set("site", slug);
+    if (showAll) q.set("all", "1");
+    const qs = q.toString();
+    return qs ? `/trending?${qs}` : "/trending";
+  };
 
   return (
     <main className="fleet-wrap">
@@ -143,7 +158,7 @@ export default async function TrendingPage({ searchParams }) {
           </div>
         </section>
 
-        {!cards.length && (
+        {!matched.length && (
           <section className="panel" style={{ marginBottom: 24 }}>
             <p style={{ margin: 0, color: "var(--muted)", fontSize: 14 }}>
               Nothing in the last {WINDOW_HOURS} hours fits a title yet. Most of what trends is sport and
@@ -152,25 +167,32 @@ export default async function TrendingPage({ searchParams }) {
           </section>
         )}
 
-        {byTitle.map(({ site, items }) => (
-          <section key={site.id} style={{ marginBottom: 28 }}>
-            <div style={{ display: "flex", gap: 10, alignItems: "center", margin: "0 0 12px" }}>
-              <SiteMark site={site} size={28} showStatus={false} />
-              <h2 style={{ margin: 0, fontSize: 16 }}>{site.name}</h2>
-              <span className="micro">{items.length}</span>
-            </div>
-            <div className="trend-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 340px), 1fr))", gap: 14 }}>
-              {items.map((t) => (
-                <TrendCard key={t.id} topic={t} sites={siteOptions} />
-              ))}
-            </div>
-          </section>
-        ))}
+        {matched.length > 0 && (
+          <nav className="trend-filters" aria-label="Filter by title">
+            <Link href={hrefFor(null)} className={`fleet-nav-btn${!only ? " is-active" : ""}`}>
+              All titles · {matched.length}
+            </Link>
+            {filterSites.map((s) => (
+              <Link key={s.slug} href={hrefFor(s.slug)} className={`fleet-nav-btn${only === s.slug ? " is-active" : ""}`}>
+                <SiteMark site={s} size={18} showStatus={false} />
+                {s.name} · {counts.get(s.slug)}
+              </Link>
+            ))}
+          </nav>
+        )}
+
+        {shown.length > 0 && (
+          <div className="trend-list">
+            {shown.map((t) => (
+              <TrendCard key={t.id} topic={t} sites={siteOptions} />
+            ))}
+          </div>
+        )}
 
         {showAll && unmatched.length > 0 && (
           <section style={{ marginBottom: 28 }}>
             <h2 style={{ margin: "0 0 12px", fontSize: 16 }}>Trending, but no title&rsquo;s readers would care</h2>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 340px), 1fr))", gap: 14 }}>
+            <div className="trend-list">
               {unmatched.map((t) => (
                 <TrendCard key={t.id} topic={t} sites={siteOptions} />
               ))}

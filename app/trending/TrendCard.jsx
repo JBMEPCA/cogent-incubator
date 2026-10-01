@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import SiteMark from "@/app/components/SiteMark";
 import { commissionTrendAction, dismissTrend } from "@/lib/trending-actions";
 
 // One trend, and the button that turns it into an article.
@@ -19,12 +20,22 @@ async function wake(agent, slug) {
   return res.json();
 }
 
+/** 2000 -> "2K", 20000 -> "20K", 1500000 -> "1.5M". Google's bands are floors, hence the "+". */
+function compact(n) {
+  if (!n) return "—";
+  const fmt = (v, unit) => `${Number(v.toFixed(v < 10 ? 1 : 0))}${unit}`;
+  if (n >= 1e6) return fmt(n / 1e6, "M");
+  if (n >= 1e3) return fmt(n / 1e3, "K");
+  return String(n);
+}
+
 export default function TrendCard({ topic, sites }) {
   const router = useRouter();
   const [slug, setSlug] = useState(topic.siteSlug || "");
   const [state, setState] = useState(null);
   const [pending, startTransition] = useTransition();
   const busy = pending || (state && state.step && !state.done);
+  const gsc = topic.source === "search_console";
 
   const commission = () =>
     startTransition(async () => {
@@ -59,78 +70,92 @@ export default function TrendCard({ topic, sites }) {
     });
 
   return (
-    <article className="panel trend-card" style={{ padding: 16, display: "flex", flexDirection: "column", gap: 10 }}>
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-        <span className={`chip ${topic.source === "search_console" ? "chip-audience" : "chip-content"}`}>
-          {topic.source === "search_console" ? "Rising on our site" : `Google Trends · ${topic.market}`}
-        </span>
-        {topic.live && <span className="chip chip-monetise">Trending now</span>}
-        {topic.relevance > 0 && <span className="micro">fit {topic.relevance}</span>}
-        <span className="micro" style={{ marginLeft: "auto" }}>{topic.seen}</span>
-      </div>
-
-      <div>
-        <h3 style={{ margin: 0, fontSize: 16, lineHeight: 1.3 }}>{topic.term}</h3>
-        <p className="micro" style={{ margin: "4px 0 0" }}>
-          {topic.traffic ? `${topic.traffic}${topic.source === "google_trends" ? " searches" : ""}` : ""}
-          {topic.spike ? ` · ${topic.spike}x normal` : ""}
-          {topic.position ? ` · we rank ${topic.position}` : ""}
-        </p>
-      </div>
-
-      {topic.angle && (
-        <p style={{ margin: 0, fontSize: 14 }}>
-          <span className="micro" style={{ display: "block", marginBottom: 2 }}>Suggested headline</span>
-          {topic.angle}
-        </p>
-      )}
-      {topic.why && <p style={{ margin: 0, fontSize: 13, color: "var(--muted)" }}>{topic.why}</p>}
-
-      {topic.keywords && (
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-          {topic.keywords.split(",").map((k) => k.trim()).filter(Boolean).map((k) => (
-            <span key={k} className="chip chip-general" style={{ fontSize: 11 }}>{k}</span>
-          ))}
+    <article className={`trend-card${topic.live ? " is-live" : ""}`}>
+      <div className={`trend-volume${gsc ? " is-gsc" : ""}`}>
+        <div className="trend-volume-num">
+          {compact(topic.trafficNum)}
+          {!gsc && topic.trafficNum ? "+" : ""}
         </div>
-      )}
-
-      {topic.news.length > 0 && (
-        <ul style={{ margin: 0, paddingLeft: 16, fontSize: 12, color: "var(--muted)" }}>
-          {topic.news.slice(0, 3).map((n) => (
-            <li key={n.url} style={{ marginBottom: 2 }}>
-              <a href={n.url} target="_blank" rel="noreferrer noopener" style={{ color: "inherit" }}>
-                {n.title}
-              </a>{" "}
-              <span className="micro">{n.source}</span>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", marginTop: "auto", paddingTop: 4 }}>
-        <select value={slug} onChange={(e) => setSlug(e.target.value)} disabled={busy || state?.done} aria-label="Title to commission for" style={{ flex: "1 1 160px", minWidth: 0 }}>
-          <option value="">Choose a title…</option>
-          {sites.map((s) => (
-            <option key={s.slug} value={s.slug}>{s.name}</option>
-          ))}
-        </select>
-        <button type="button" className="btn" onClick={commission} disabled={!slug || busy || state?.done || !topic.news.length}>
-          Commission article
-        </button>
-        {!state?.done && (
-          <button type="button" className="btn-ghost" onClick={dismiss} disabled={busy}>
-            Dismiss
-          </button>
+        <div className="trend-volume-label">{gsc ? "impressions · 3 days" : `searches · ${topic.market}`}</div>
+        {gsc && topic.spike ? <span className="trend-spike">▲ {topic.spike}× normal</span> : null}
+        {gsc && topic.position ? <span className="trend-volume-label">we rank {topic.position}</span> : null}
+        {topic.relevance > 0 && (
+          <div className="trend-fit">
+            <div className="trend-fit-bar">
+              <span style={{ width: `${Math.min(100, topic.relevance)}%` }} />
+            </div>
+            <div className="trend-fit-label">
+              <span>fit</span>
+              <span>{topic.relevance}</span>
+            </div>
+          </div>
         )}
       </div>
-      {!topic.news.length && <p className="micro" style={{ margin: 0 }}>No reporting listed yet, so nothing to write from.</p>}
-      {state?.step && (
-        <p style={{ margin: 0, fontSize: 13, color: state.done ? "var(--neon-green, #6ee7b7)" : "var(--muted)" }}>
-          {state.step}
-          {state.note ? ` · ${state.note}` : ""}
-        </p>
-      )}
-      {state?.error && <p style={{ margin: 0, fontSize: 13, color: "var(--neon-amber, #fcd34d)" }}>{state.error}</p>}
+
+      <div className="trend-body">
+        <div className="trend-meta">
+          {topic.site && (
+            <span className="trend-title-pill">
+              <SiteMark site={topic.site} size={20} showStatus={false} />
+              {topic.site.name}
+            </span>
+          )}
+          {topic.live && <span className="trend-live">Trending now</span>}
+          <span className="micro">{gsc ? "Rising on our site" : "Google Trends"} · {topic.seen}</span>
+          {!state?.done && (
+            <button type="button" className="trend-dismiss" onClick={dismiss} disabled={busy} aria-label={`Dismiss ${topic.term}`} title="Dismiss">
+              ×
+            </button>
+          )}
+        </div>
+        <h3 className="trend-term">{topic.term}</h3>
+        {topic.angle && <p className="trend-angle">{topic.angle}</p>}
+        {topic.why && <p className="trend-why">{topic.why}</p>}
+        {topic.keywords && (
+          <div className="trend-keywords">
+            {topic.keywords.split(",").map((k) => k.trim()).filter(Boolean).map((k) => (
+              <span key={k}>{k}</span>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="trend-side">
+        {topic.news.length > 0 ? (
+          <ul className="trend-sources">
+            {topic.news.slice(0, 3).map((n) => (
+              <li key={n.url}>
+                <a href={n.url} target="_blank" rel="noreferrer noopener" title={n.title}>
+                  {n.title}
+                </a>
+                <small>{n.source}</small>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="trend-status">No reporting listed yet, so nothing to write from.</p>
+        )}
+
+        <div className="trend-actions">
+          <select value={slug} onChange={(e) => setSlug(e.target.value)} disabled={busy || state?.done} aria-label="Title to commission for">
+            <option value="">Choose a title…</option>
+            {sites.map((s) => (
+              <option key={s.slug} value={s.slug}>{s.name}</option>
+            ))}
+          </select>
+          <button type="button" className="btn" onClick={commission} disabled={!slug || busy || state?.done || !topic.news.length}>
+            {state?.done ? "Commissioned" : busy ? "Working…" : "Commission article"}
+          </button>
+          {state?.step && (
+            <p className={`trend-status${state.done ? " is-done" : ""}`}>
+              {state.step}
+              {state.note ? ` · ${state.note}` : ""}
+            </p>
+          )}
+          {state?.error && <p className="trend-status is-error">{state.error}</p>}
+        </div>
+      </div>
+
     </article>
   );
 }

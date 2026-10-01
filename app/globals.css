@@ -2643,3 +2643,104 @@ th {
   grid-template-columns: 1fr;
   padding: 14px 0 16px;
 }
+
+/* ---------------------------------------------------------- trending topics */
+/* Wide, low cards: the number that matters (search volume) on the left, the
+   story in the middle, the sources and the button on the right. One list across
+   every title rather than a column per title, which left most of the page empty
+   and stacked a single card per section. */
+.trend-filters { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 18px; }
+.trend-filters .fleet-nav-btn { padding: 6px 12px; font-size: 12px; }
+.trend-filters .fleet-nav-btn.is-active { color: var(--text); border-color: var(--neon-cyan); box-shadow: var(--glow-cyan); }
+
+.trend-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 28px; }
+
+.trend-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 168px minmax(0, 1fr) minmax(260px, 320px);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(17, 26, 54, 0.92), rgba(11, 16, 34, 0.92));
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+.trend-card:hover { border-color: var(--line-bright); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35); transform: translateY(-1px); }
+.trend-card.is-live { border-color: rgba(251, 191, 36, 0.28); }
+
+.trend-volume {
+  display: flex; flex-direction: column; justify-content: center; gap: 6px;
+  padding: 20px 18px;
+  background:
+    radial-gradient(120% 90% at 0% 0%, rgba(34, 211, 238, 0.18), transparent 60%),
+    radial-gradient(120% 90% at 100% 100%, rgba(46, 62, 238, 0.22), transparent 60%);
+  border-right: 1px solid var(--line);
+}
+.trend-volume.is-gsc {
+  background:
+    radial-gradient(120% 90% at 0% 0%, rgba(52, 245, 197, 0.16), transparent 60%),
+    radial-gradient(120% 90% at 100% 100%, rgba(5, 150, 105, 0.2), transparent 60%);
+}
+.trend-volume-num {
+  font-family: var(--font-grotesk), system-ui, sans-serif;
+  font-size: 40px; font-weight: 700; line-height: 1; letter-spacing: -0.02em;
+  color: var(--text); text-shadow: 0 0 24px rgba(34, 211, 238, 0.35);
+}
+.trend-volume.is-gsc .trend-volume-num { text-shadow: 0 0 24px rgba(52, 245, 197, 0.35); }
+.trend-volume-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.trend-spike { align-self: flex-start; font-size: 12px; font-weight: 700; color: var(--neon-green); }
+.trend-fit { margin-top: 8px; }
+.trend-fit-bar { height: 4px; border-radius: 999px; background: rgba(139, 151, 198, 0.18); overflow: hidden; }
+.trend-fit-bar > span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--neon-cyan), var(--brand-2)); }
+.trend-fit-label { display: flex; justify-content: space-between; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 5px; }
+
+.trend-body { padding: 18px 22px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.trend-meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.trend-title-pill {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 3px 10px 3px 4px; border-radius: 999px;
+  background: rgba(101, 125, 255, 0.1); border: 1px solid var(--line);
+  font-size: 12px; font-weight: 600; color: var(--text);
+}
+.trend-live { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--neon-amber); }
+.trend-live::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--neon-amber); box-shadow: 0 0 10px var(--neon-amber); animation: trend-pulse 1.6s ease-in-out infinite; }
+@keyframes trend-pulse { 50% { opacity: 0.35; } }
+.trend-term { margin: 2px 0 0; font-size: 20px; line-height: 1.25; font-weight: 700; letter-spacing: -0.01em; }
+.trend-angle { margin: 0; font-size: 14px; line-height: 1.45; color: var(--neon-cyan); }
+.trend-angle::before { content: "→ "; opacity: 0.7; }
+.trend-why { margin: 0; font-size: 13px; line-height: 1.5; color: var(--muted); }
+.trend-keywords { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+.trend-keywords span { font-size: 11px; padding: 3px 9px; border-radius: 999px; background: rgba(100, 116, 139, 0.14); border: 1px solid rgba(100, 116, 139, 0.3); color: #b0bdd8; }
+
+.trend-side { padding: 18px 20px; border-left: 1px solid var(--line); display: flex; flex-direction: column; gap: 12px; background: rgba(5, 7, 15, 0.25); }
+.trend-sources { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.trend-sources a { display: block; font-size: 12px; line-height: 1.4; color: var(--text); text-decoration: none; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.trend-sources a:hover { color: var(--neon-cyan); }
+.trend-sources small { display: block; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 1px; }
+.trend-actions { margin-top: auto; display: flex; flex-direction: column; gap: 8px; }
+.trend-actions select { width: 100%; }
+.trend-actions .btn { width: 100%; justify-content: center; }
+.trend-status { margin: 0; font-size: 12px; line-height: 1.45; color: var(--muted); }
+.trend-status.is-done { color: var(--neon-green); }
+.trend-status.is-error { color: var(--neon-amber); }
+.trend-dismiss {
+  margin-left: auto; flex: none; width: 26px; height: 26px;
+  display: grid; place-items: center; border-radius: 50%;
+  border: 1px solid transparent; background: transparent; color: var(--muted);
+  font-size: 16px; line-height: 1; cursor: pointer;
+}
+.trend-dismiss:hover { border-color: var(--line-bright); color: var(--text); }
+
+@media (max-width: 1080px) {
+  .trend-card { grid-template-columns: 150px minmax(0, 1fr); }
+  .trend-side { grid-column: 1 / -1; border-left: 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 16px; }
+  .trend-actions { margin-top: 0; }
+}
+@media (max-width: 640px) {
+  .trend-card { grid-template-columns: 1fr; }
+  .trend-volume { flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; border-right: 0; border-bottom: 1px solid var(--line); padding: 14px 16px; }
+  .trend-volume-num { font-size: 30px; }
+  .trend-fit { flex-basis: 100%; margin-top: 4px; }
+  .trend-body { padding: 14px 16px; }
+  .trend-side { grid-template-columns: 1fr; padding: 14px 16px; }
+}
