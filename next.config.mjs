@@ -30,6 +30,12 @@ const nextConfig = {
         "./node_modules/onnxruntime-web/dist/ort.node.min.mjs",
         "./node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.mjs",
         "./node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.wasm",
+        // sharp's native addon finds libvips by a relative path, not a
+        // require, so tracing missed it here and the first live overlay died
+        // with "libvips-cpp.so.8.18.3: cannot open shared object file", the
+        // same failure as 20 Aug 2026. Only present on the Linux build.
+        "./node_modules/@img/sharp-linux-x64/**/*",
+        "./node_modules/@img/sharp-libvips-linux-x64/**/*",
       ],
     ])
   ),
