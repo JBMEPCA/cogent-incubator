@@ -12,7 +12,27 @@ const nextConfig = {
   //
   // Externalising it makes Vercel's file tracing carry the whole package tree,
   // native libraries included.
-  serverExternalPackages: ["sharp"],
+  //
+  // onnxruntime-web (the face detector behind the interview overlays) finds
+  // its WebAssembly file beside its own script, which only works unbundled;
+  // fontkit is externalised for the same peace of mind.
+  serverExternalPackages: ["sharp", "onnxruntime-web", "fontkit"],
+
+  // The interview overlays read their model, fonts and logos from disk at
+  // runtime, and onnxruntime-web loads its wasm by path, so file tracing
+  // cannot see any of it. Listed here for every route that draws one.
+  outputFileTracingIncludes: Object.fromEntries(
+    // Keys are globs, so "[slug]" would read as a character class: hence "**".
+    ["/api/overlay/**", "/api/cron/post-linkedin", "/api/cron/post-instagram"].map((route) => [
+      route,
+      [
+        "./lib/social-overlay/assets/**/*",
+        "./node_modules/onnxruntime-web/dist/ort.node.min.mjs",
+        "./node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.mjs",
+        "./node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.wasm",
+      ],
+    ])
+  ),
 };
 
 export default nextConfig;

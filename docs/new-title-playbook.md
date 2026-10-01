@@ -566,6 +566,13 @@ Run these before touching a console.
 □  Content plan written (scripts/batch-plan-<slug>.json)
 □  Sections chosen; they must match the plan's `category` values exactly
 □  articlesPerDayTarget set (1-7; it clamps silently above 7)
+□  Interview social overlays know the title: copy wordmark.svg and
+   wordmark-reversed.svg from the brand kit's dist/<slug>/ into
+   lib/social-overlay/assets/logos/<slug>/, and add the brand colour to BRAND
+   in lib/social-overlay/index.js
+      → without the logo every interview post goes out with the plain photo
+        (the overlay throws "no logo" and falls back), which looks like the
+        feature is simply off for that title
 ```
 
 And after launch:

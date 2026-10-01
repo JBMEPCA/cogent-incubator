@@ -18,8 +18,9 @@ export const config = {
   // it useless for the one job it has. A route left in the matcher answers 307
   // to /login no matter what its own guard says — which reads exactly like the
   // route not being deployed, and cost an hour of chasing a Vercel build that
-  // had been fine all along.
+  // had been fine all along. api/overlay is the interview social picture Make
+  // downloads when it posts; it answers only addresses the posting job signed.
   matcher: [
-    "/((?!api/auth|api/cron|api/version|api/unsubscribe|api/brand|api/card|login|_next/static|_next/image|favicon.ico).*)",
+    "/((?!api/auth|api/cron|api/version|api/unsubscribe|api/brand|api/card|api/overlay|login|_next/static|_next/image|favicon.ico).*)",
   ],
 };

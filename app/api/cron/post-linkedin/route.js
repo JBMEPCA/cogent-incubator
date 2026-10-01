@@ -12,7 +12,8 @@ import {
   mentionsForPost,
   renderCommentary,
 } from "@/lib/linkedin";
-import { bridgeFor, bridgeReady, sendToBridge, socialImage } from "@/lib/social-bridge";
+import { bridgeFor, bridgeReady, sendToBridge } from "@/lib/social-bridge";
+import { socialPictureFor } from "@/lib/social-overlay";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -34,7 +35,7 @@ export async function GET(request) {
   }
 
   return Response.json(
-    await forEachSite(async ({ site, db }) => {
+    await forEachSite(async ({ site, db, creds }) => {
       // News that sat unposted for days is not news. Expired, with the reason.
       // BEFORE the connected check: no title is connected yet, so below it the
       // drafts this exists to clear were exactly the ones it could never reach.
@@ -82,7 +83,7 @@ export async function GET(request) {
       });
 
       try {
-        const result = direct ? await publishPost(site, post) : await publishViaBridge(site, post);
+        const result = direct ? await publishDirect(site, post, creds) : await publishViaBridge(site, post, creds);
         // No URN, no post. LinkedIn returns an identifier for anything it
         // actually published, so a result without one means the call went
         // through the motions and put nothing on the page. Four posts were
@@ -136,19 +137,39 @@ async function bridgeCommentary(site, post) {
   return mentions.length ? renderCommentary(text, mentions) : text;
 }
 
+// A direct post uploads its picture itself, so an interview's overlay goes up
+// as drawn rather than through a public address.
+async function publishDirect(site, post, creds) {
+  const { url } = await imageForPost(site, post);
+  const picture = await socialPictureFor(site, {
+    wp: creds?.wordpress,
+    wpPostId: post.wpPostId,
+    imageUrl: url,
+    format: "linkedin",
+  });
+  return publishPost(site, post, { imageBuffer: picture.buffer || null });
+}
+
 // A post through Make carries the same text and picture as a direct one. The
-// picture goes as a public JPEG at LinkedIn's 1.91:1.
-async function publishViaBridge(site, post) {
+// picture goes as a public JPEG at LinkedIn's 1.91:1, or, for an interview,
+// as the branded overlay in the photo's own shape (lib/social-overlay).
+async function publishViaBridge(site, post, creds) {
   const { url, alt } = await imageForPost(site, post);
   // Never hand Make a post with no picture. Its image download fails on an
   // empty address, and one failed run makes Make switch the whole scenario off
   // for every title (22 Sep 2026). The post waits here instead, recorded as a
   // failure, until it has a picture or expires.
   if (!url) throw new Error("no picture for this post; not sent to Make");
+  const picture = await socialPictureFor(site, {
+    wp: creds?.wordpress,
+    wpPostId: post.wpPostId,
+    imageUrl: url,
+    format: "linkedin",
+  });
   const { id } = await sendToBridge(site, {
     destination: "linkedin",
     text: await bridgeCommentary(site, post),
-    imageUrl: socialImage(url, { width: 1200, height: 628 }),
+    imageUrl: picture.url,
     imageAlt: (alt || site.name || "").slice(0, 300),
     link: post.sourceUrl || null,
   });
