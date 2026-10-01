@@ -65,6 +65,10 @@ const STEPS = [
   // the story when they reply (lib/headshots.js). Hourly, like interviews, and
   // for the same reason: it is waiting on a human's inbox.
   "/api/cron/headshots",
+  // Trending Topics: Google's "Trending now" feed per market and Search
+  // Console spikes, matched to the title that should cover them. Also on the
+  // half-past trigger, because a spike is worth catching within the hour.
+  "/api/cron/trending",
   "/api/cron/scan-feeds",
   "/api/cron/scan-feeds",
 ];
@@ -178,6 +182,7 @@ const HALF_PAST = [
   "/api/cron/post-linkedin",
   "/api/cron/agents?stage=director",
   "/api/cron/agents?stage=worker",
+  "/api/cron/trending",
 ];
 
 // The press desk, on its own trigger every fifteen minutes, day and night.

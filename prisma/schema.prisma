@@ -162,6 +162,7 @@ model Site {
   audienceSnapshots AudienceSnapshot[]
   targetAchievements TargetAchievement[]
   interviewTargets  InterviewTarget[]
+  trendingTopics    TrendingTopic[]
 }
 
 /// A site that has sent us traffic, which is the only evidence of a link we can
@@ -1037,6 +1038,58 @@ model KeywordTarget {
 
   @@unique([siteId, term])
   @@index([term])
+  @@index([siteId, status])
+}
+
+/// A search spike worth being early on: the Trending Topics tab.
+///
+/// Fleet-wide, not tenanted, because a Google Trends item arrives belonging to
+/// no title at all. It is matched to the title whose readers would care (or to
+/// none, which is most of them: football and celebrities), and siteId is that
+/// match. A Search Console spike is the opposite case, born on one title.
+///
+/// Every trend is kept, matched or not, so the classifier never pays twice for
+/// the same term and "everything trending" can still be shown on request.
+model TrendingTopic {
+  id      String  @id @default(cuid())
+  site    Site?   @relation(fields: [siteId], references: [id], onDelete: SetNull)
+  siteId  String?
+
+  /// google_trends | search_console
+  source  String
+  market  String  @default("GB")
+  /// The search term itself, as people typed it.
+  term    String
+  /// Google's own band ("20K+") as shown, and the floor of it as a number to sort on.
+  traffic    String?
+  trafficNum Int?
+  /// Search Console only: recent daily impressions over the 28-day baseline.
+  spike      Float?
+  position   Float?
+
+  /// JSON array of {title, url, source}: the publishers Google lists beside the
+  /// trend, or for a Search Console spike our own ranking page. These are what
+  /// the article is written from, so a trend with none cannot be commissioned.
+  news       String?
+  pictureUrl String?
+
+  /// The classifier's verdict for the matched title.
+  relevance  Int?
+  angle      String?
+  keywords   String?
+  section    String?
+  why        String?
+
+  /// new | commissioned | dismissed | irrelevant
+  status     String   @default("new")
+  articleId  String?
+  commissionedAt DateTime?
+
+  firstSeenAt DateTime @default(now())
+  lastSeenAt  DateTime @default(now())
+
+  @@index([source, market, term])
+  @@index([status, lastSeenAt])
   @@index([siteId, status])
 }
 

@@ -111,6 +111,16 @@ function FolderIcon() {
   );
 }
 
+/** A line that climbs and breaks upward — a search spike. */
+function TrendIcon() {
+  return (
+    <svg {...ICON}>
+      <path d="M3.5 17.5l5.5-5.5 4 4 7.5-7.5" />
+      <path d="M15 8.5h5.5V14" />
+    </svg>
+  );
+}
+
 // Media packs and other team documents live in a shared Google Drive folder,
 // not in the app. Opens in a new tab because it leaves the dashboard.
 const FILES_URL = "https://drive.google.com/drive/folders/1mgveqN4PRsWVqYDcU6dd1H63GZSST6vM";
@@ -118,6 +128,7 @@ const FILES_URL = "https://drive.google.com/drive/folders/1mgveqN4PRsWVqYDcU6dd1
 const LINKS = [
   { href: "/", label: "All titles", Icon: GridIcon },
   { href: "/analytics", label: "Group analytics", Icon: ChartIcon },
+  { href: "/trending", label: "Trending Topics", Icon: TrendIcon },
   { href: "/interviews", label: "Interviews", Icon: PersonIcon },
   { href: "/costs", label: "Group costs", Icon: MoneyIcon },
   { href: "/press", label: "Press Releases", Icon: PressIcon },
