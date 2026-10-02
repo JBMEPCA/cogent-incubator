@@ -9,6 +9,9 @@ import { isWordPressConfigured } from "@/lib/wordpress";
 import { isDraftingConfigured } from "@/lib/drafting";
 
 export const dynamic = "force-dynamic";
+// Fix and publish runs a repair pass and then publishes, as a server action
+// on this page, and shares its time budget.
+export const maxDuration = 300;
 
 /**
  * The QA report as something a person reads, not the JSON it is stored as.
@@ -192,7 +195,7 @@ export default async function ArticlePage({ params, searchParams }) {
                 {!article.qaPassed && article.status !== "published" && (
                   <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 6 }}>
                     <span style={{ fontSize: 12, color: "var(--muted)" }}>
-                      This publishes the article exactly as it is now, without QA’s fixes. Fix anything that matters in the body below and save first, or use Push live now on Trending Topics to have it repaired automatically.
+                      This makes QA’s fixes for you, then publishes. Nothing to edit by hand.
                     </span>
                     <ApprovePublishButton articleId={article.id} action={approveAndPublish.bind(null, siteRef)} hasImage={Boolean(article.imageUrl)} />
                   </div>
