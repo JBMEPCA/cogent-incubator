@@ -20,7 +20,7 @@ import { execFileSync } from "node:child_process";
 
 const { prisma, forSite } = await import("../lib/prisma.js");
 const { siteCredentials } = await import("../lib/site.js");
-const { classifySubject, personImage, nameCard, subjectFields, isAboutPerson } = await import("../lib/person-image.js");
+const { classifySubject, personImage, subjectFields, isAboutPerson } = await import("../lib/person-image.js");
 
 const arg = (k, d = null) => (process.argv.find((a) => a.startsWith(`--${k}=`)) || "").split("=")[1] || d;
 const APPLY = process.argv.includes("--apply");
@@ -120,9 +120,16 @@ echo $hits ? "replaced" : ($line ? "appended" : "none");`;
       ? async (data, contentType, filename) => importMedia(data, contentType.includes("png") ? "png" : "jpg", filename, null, subject.name, null)
       : null;
     const photo = await personImage(site, { title: a.title, body: a.body, sourceUrl: a.sourceUrl || a.sourceItem?.link, subject, upload }).catch(() => null);
-    const pick = photo || nameCard(site, subject);
-    photo ? photos++ : cards++;
-    console.log(`${photo ? "PHOTO" : "CARD "} wp${a.wpPostId} ${subject.name} | ${a.title.slice(0, 70)}${photo ? ` | ${pick.url.slice(0, 90)}` : ""}`);
+    // No card. JB, 2 Oct 2026: never the placeholder. A person we cannot
+    // photograph is listed for a human to picture by hand, and left alone.
+    if (!photo) {
+      cards++;
+      console.log(`NEEDS A PICTURE BY HAND  wp${a.wpPostId} ${subject.name} | ${a.title.slice(0, 70)}`);
+      continue;
+    }
+    const pick = photo;
+    photos++;
+    console.log(`PHOTO wp${a.wpPostId} ${subject.name} | ${a.title.slice(0, 70)} | ${pick.url.slice(0, 90)}`);
     if (!APPLY || !ssh) continue;
 
     try {
