@@ -125,11 +125,22 @@ function TrendIcon() {
 // not in the app. Opens in a new tab because it leaves the dashboard.
 const FILES_URL = "https://drive.google.com/drive/folders/1mgveqN4PRsWVqYDcU6dd1H63GZSST6vM";
 
+function ImageIcon(props) {
+  return (
+    <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.4" {...props}>
+      <rect x="1.8" y="2.8" width="12.4" height="10.4" rx="1.6" />
+      <path d="M2.4 11.2 6 7.9l2.5 2.3L10.8 8l2.8 2.6" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="6.1" cy="5.9" r="1.05" />
+    </svg>
+  );
+}
+
 const LINKS = [
   { href: "/", label: "All titles", Icon: GridIcon },
   { href: "/analytics", label: "Group analytics", Icon: ChartIcon },
   { href: "/trending", label: "Trending Topics", Icon: TrendIcon },
   { href: "/interviews", label: "Interviews", Icon: PersonIcon },
+  { href: "/needs-image", label: "Needs an image", Icon: ImageIcon },
   { href: "/costs", label: "Group costs", Icon: MoneyIcon },
   { href: "/press", label: "Press Releases", Icon: PressIcon },
 ];
