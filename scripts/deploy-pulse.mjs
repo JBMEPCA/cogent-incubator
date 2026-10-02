@@ -21,6 +21,8 @@ import { execFileSync } from "node:child_process";
 const DRY = process.argv.includes("--dry-run");
 const ONLY = (process.argv.find((a) => a.startsWith("--site=")) || "").split("=")[1] || null;
 const SRC = path.resolve("../cogent-base-theme/mu-plugins/cogent-pulse.php");
+const TOKEN = (process.env.PULSE_TOKEN || "").trim();
+if (!TOKEN) console.warn("No PULSE_TOKEN in the environment: the report route will stay closed.");
 
 if (!fs.existsSync(SRC)) {
   console.error(`No plugin at ${SRC}`);
@@ -69,6 +71,12 @@ for (const site of sites) {
     // Touching the file is not enough: the table is created on the first init
     // after install, so prod it once and read the version back.
     ssh(`cd ${docroot} && wp eval 'do_action("init");' --skip-themes >/dev/null 2>&1 || true`);
+    // The same token on every title, matching PULSE_TOKEN in the app, so the
+    // dashboard can read all ten with one secret. Without it the report route
+    // answers 404 rather than serving the numbers to anybody who asks.
+    if (TOKEN) {
+      ssh(`cd ${docroot} && wp option update cogent_pulse_token ${TOKEN} --skip-themes >/dev/null`);
+    }
     const dbv = ssh(`cd ${docroot} && wp option get cogent_pulse_db_version --skip-themes 2>/dev/null || echo "-"`);
     // The prefix is randomised per SiteGround install (njm_, not wp_), so ask
     // for it rather than assuming, or this reports a healthy table as missing.
