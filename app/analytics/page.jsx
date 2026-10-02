@@ -67,6 +67,17 @@ const cell = {
 const headCell = { ...cell, padding: "0 0 8px 14px", fontWeight: 400, color: "var(--muted)" };
 
 export default async function GroupAnalyticsPage() {
+  // Pulse is context beside the numbers, never the numbers, so it gets its own
+  // try: ten WordPress installs being unreachable must not take this page down.
+  // It is also declared before the early returns below, because those render
+  // the page without it.
+  let pulse = null;
+  try {
+    pulse = await fleetPulse();
+  } catch {
+    pulse = null;
+  }
+
   let data;
   try {
     data = await fleetAnalytics();
