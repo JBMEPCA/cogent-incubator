@@ -3,6 +3,7 @@ import FleetNav from "../components/FleetNav";
 import TrendChart from "../components/TrendChart";
 import { SharePie, Sparkline, colourMap } from "../components/FleetCharts";
 import { fleetAnalytics } from "@/lib/fleet-analytics";
+import { fleetPulse } from "@/lib/pulse";
 import Scroller from "@/app/components/Scroller";
 
 export const dynamic = "force-dynamic";
@@ -230,6 +231,7 @@ export default async function GroupAnalyticsPage() {
                   <th className="micro" style={headCell}>Awaiting</th>
                   <th className="micro" style={headCell}>Spend, mo</th>
                   <th className="micro" style={headCell}>Users</th>
+                  <th className="micro" style={headCell} title="Readers the site counted for itself. No cookie, so the consent banner cannot hide them.">Pulse</th>
                   <th className="micro" style={headCell}>Sessions</th>
                   <th className="micro" style={headCell}>Clicks</th>
                   <th className="micro" style={headCell}>Impr.</th>
@@ -266,6 +268,13 @@ export default async function GroupAnalyticsPage() {
                       </td>
                       <td className="num" style={{ ...cell, color: "var(--muted)" }}>{money(r.spendMonth)}</td>
                       <td className="num" style={cell}>{r.ga4 ? int(r.ga4.users) : "—"}</td>
+                      {/* Pulse against GA4 on the same row is the comparison
+                          worth having: GA4 was seeing 37% of arrivals when this
+                          was measured. A title with no row has not been read
+                          yet rather than having no readers, so it shows a dash. */}
+                      <td className="num" style={{ ...cell, color: "var(--neon-cyan)" }}>
+                        {pulse?.bySite?.[r.id] ? int(pulse.bySite[r.id].humans) : "—"}
+                      </td>
                       <td className="num" style={{ ...cell, color: "var(--muted)" }}>{r.ga4 ? int(r.ga4.sessions) : "—"}</td>
                       <td className="num" style={cell}>{r.gsc ? int(r.gsc.clicks) : "—"}</td>
                       <td className="num" style={{ ...cell, color: "var(--muted)" }}>{r.gsc ? int(r.gsc.impressions) : "—"}</td>
@@ -284,6 +293,9 @@ export default async function GroupAnalyticsPage() {
                   </td>
                   <td className="num" style={{ ...cell, borderBottom: "none" }}>{money(totals.spendMonth)}</td>
                   <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.users)}</td>
+                  <td className="num" style={{ ...cell, borderBottom: "none", color: "var(--neon-cyan)" }}>
+                    {pulse?.counting ? int(pulse.totals.humans) : "—"}
+                  </td>
                   <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.sessions)}</td>
                   <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.clicks)}</td>
                   <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.impressions)}</td>
