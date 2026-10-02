@@ -91,8 +91,10 @@ export default async function NeedsImagePage() {
                   }}
                 />
                 <span className="micro">{a.site.name}</span>
-                <span className="micro" style={{ color: "var(--muted)" }}>
-                  · {a.status} · held {when(a.updatedAt)}
+                <span className="micro" style={{ color: a.status === "published" ? "var(--neon-amber)" : "var(--muted)" }}>
+                  {a.status === "published"
+                    ? `· live with a name card since ${when(a.publishedAt || a.updatedAt)}`
+                    : `· ${a.status} · held ${when(a.updatedAt)}`}
                 </span>
               </div>
 
@@ -112,6 +114,11 @@ export default async function NeedsImagePage() {
                   <span style={{ display: "block", color: "var(--neon-amber)", marginBottom: 4 }}>
                     A photo was supplied by {a.imageSource.replace(/^press:/, "")} and later dropped by the
                     image re-check. Worth looking for that one first.
+                  </span>
+                )}
+                {a.status === "published" && (
+                  <span style={{ display: "block", marginBottom: 4 }}>
+                    Published before the no-name-card rule. A photo dropped in here replaces the card on the live post.
                   </span>
                 )}
                 Needs a photograph of{" "}
