@@ -2,7 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Header from "@/app/components/Header";
 import { getSiteContext } from "@/lib/site";
-import { saveArticle, advanceArticle, publishArticle, deleteArticle } from "@/lib/actions";
+import { saveArticle, advanceArticle, publishArticle, deleteArticle, uploadArticleImage, approveAndPublish } from "@/lib/actions";
+import PhotoUploader from "./PhotoUploader";
+import ApprovePublishButton from "./ApprovePublishButton";
 import { isWordPressConfigured } from "@/lib/wordpress";
 import { isDraftingConfigured } from "@/lib/drafting";
 
@@ -32,6 +34,12 @@ function QaReport({ raw }) {
           {r.score != null && verdict ? " · " : ""}
           {verdict}
         </div>
+      )}
+      {r.override && (
+        <p className="micro" style={{ margin: "0 0 6px", color: "var(--neon-cyan)" }}>
+          Approved over QA by {r.override.by},{" "}
+          {new Date(r.override.at).toLocaleString("en-GB", { timeZone: "Europe/London", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+        </p>
       )}
       {r.summary && <p style={{ margin: "0 0 6px", color: "var(--text)" }}>{r.summary}</p>}
       {issues.length > 0 && (
@@ -151,9 +159,12 @@ export default async function ArticlePage({ params, searchParams }) {
               />
               <div className="micro" style={{ marginTop: 6 }}>
                 Featured image · alt: “{article.imageAlt}”
-                {article.imageCredit ? ` · ${article.imageCredit}` : " · CC0, no credit required"}
+                {article.imageCredit ? ` · ${article.imageCredit}` : article.imageSource === "manual" ? " · uploaded by hand" : " · CC0, no credit required"}
               </div>
             </div>
+          )}
+          {article.status !== "published" && (
+            <PhotoUploader articleId={article.id} action={uploadArticleImage.bind(null, siteRef)} currentAlt={article.imageAlt} />
           )}
 
           {article.body && (
@@ -178,6 +189,14 @@ export default async function ArticlePage({ params, searchParams }) {
                   {article.qaPassed ? "Passed editorial and image QA" : "Held by QA, will not publish"}
                 </div>
                 {article.qaReport && <QaReport raw={article.qaReport} />}
+                {!article.qaPassed && article.status !== "published" && (
+                  <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 6 }}>
+                    <span style={{ fontSize: 12, color: "var(--muted)" }}>
+                      Fix it in the body below and save, or if it is fine as it is, publish it yourself:
+                    </span>
+                    <ApprovePublishButton articleId={article.id} action={approveAndPublish.bind(null, siteRef)} hasImage={Boolean(article.imageUrl)} />
+                  </div>
+                )}
               </div>
               {article.scheduledFor && (
                 <span className="micro num" style={{ color: "var(--neon-cyan)" }}>

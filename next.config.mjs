@@ -18,6 +18,12 @@ const nextConfig = {
   // fontkit is externalised for the same peace of mind.
   serverExternalPackages: ["sharp", "onnxruntime-web", "fontkit"],
 
+  // A header photo uploaded by hand on the article page goes through a server
+  // action, whose default limit is 1 MB. The page shrinks a photo to about
+  // 2400px before sending, which lands well under this; Vercel itself caps a
+  // request at 4.5 MB.
+  experimental: { serverActions: { bodySizeLimit: "4mb" } },
+
   // The interview overlays read their model, fonts and logos from disk at
   // runtime, and onnxruntime-web loads its wasm by path, so file tracing
   // cannot see any of it. Listed here for every route that draws one.
