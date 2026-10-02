@@ -263,14 +263,14 @@ export default async function GroupAnalyticsPage({ searchParams }) {
 
   const mostRead = (limit, withAction) => (
     <Card
-      title={focus ? "Most read" : "Most read across the fleet"}
-      note={focus ? `page views over ${windowDays} days` : "every title's pages ranked together"}
+      title={focus ? "Most read articles" : "Most read articles across the fleet"}
+      note={focus ? `page views over ${windowDays} days · articles only` : "every title's articles ranked together · home and site pages left out"}
       action={withAction && ranked.topPages.length > limit ? <Link className="an-link" href={href({ view: "content" })}>See all →</Link> : null}
     >
       {ranked.topPages.length ? (
         <RankedList items={pageItems(ranked.topPages.slice(0, limit))} />
       ) : (
-        <Empty>No page views recorded yet.</Empty>
+        <Empty>No article views recorded yet.</Empty>
       )}
     </Card>
   );
