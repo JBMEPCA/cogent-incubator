@@ -12,9 +12,6 @@ import SiteMark from "@/app/components/SiteMark";
 const W = 224;
 const H = 52;
 const GAP = 2;
-// The position line sits under the bars on the same x scale, so the two read
-// as one small multiple: impressions above, where we ranked below.
-const LH = 34;
 
 function fmtDay(iso, opts = { day: "numeric", month: "short" }) {
   return new Date(`${iso}T12:00:00Z`).toLocaleDateString("en-GB", { ...opts, timeZone: "Europe/London" });
@@ -55,89 +52,70 @@ export function Bars({ daily, dates, title }) {
   );
 }
 
-/** Consecutive runs of days that have a position, as arrays of indices. */
-function runsOf(values) {
-  const out = [];
-  let run = [];
-  values.forEach((v, i) => {
-    if (v == null) {
-      if (run.length) out.push(run);
-      run = [];
-    } else run.push(i);
-  });
-  if (run.length) out.push(run);
-  return out;
+/**
+ * One stat tile. Label in sentence case above, figure below, delta under it.
+ *
+ * The old version shouted four uppercase mono captions across four columns and
+ * wrapped "clicks, all time / 0 in the last 7 days" onto three lines, which is
+ * what made the row look cluttered. Three tiles, quiet labels, one loud number
+ * each. The rise belongs to impressions, so it rides in that tile rather than
+ * taking a column of its own.
+ */
+function Stat({ label, value, delta, deltaTone = "flat", sub }) {
+  return (
+    <div className="rstat">
+      <div className="rstat-label">{label}</div>
+      <div className="rstat-value">{value}</div>
+      {delta && <div className={`rstat-delta ${deltaTone}`}>{delta}</div>}
+      {sub && <div className="rstat-sub">{sub}</div>}
+    </div>
+  );
 }
 
-/**
- * Average position per day, drawn UPSIDE DOWN on purpose.
- *
- * Position 1 is the best rank, so plotted normally an article climbing the
- * results draws a line going down, which is the opposite of what anybody
- * reading this expects. The y axis is inverted: better rank is higher up, and
- * a line rising left to right means the article is climbing. The header says
- * so, because an unlabelled inverted axis is a lie waiting to happen.
- *
- * Days with no impressions have no position and break the line rather than
- * being drawn as zero, which would read as rank 0 and look like a triumph.
- */
-export function PositionLine({ posDaily = [], dates, title }) {
-  const values = posDaily.filter((v) => v != null);
-  if (values.length < 2) return null;
+/** Compact: 1,284 stays, 12,900 becomes 12.9K. */
+function compact(n) {
+  if (n == null) return "—";
+  return n >= 10000 ? `${Math.round(n / 100) / 10}K` : n.toLocaleString("en-GB");
+}
 
-  const best = Math.min(...values);
-  const worst = Math.max(...values);
-  // A perfectly flat series would divide by zero, so give it a band to sit in.
-  const span = worst - best || 2;
-  const pad = span * 0.15;
-  const top = best - pad;
-  const bottom = worst + pad;
-
-  const n = posDaily.length;
-  const bw = (W - GAP * (n - 1)) / n;
-  const x = (i) => i * (bw + GAP) + bw / 2;
-  const y = (v) => ((v - top) / (bottom - top)) * LH;
-  const pts = (idx) => idx.map((i) => `${x(i).toFixed(1)},${y(posDaily[i]).toFixed(1)}`).join(" ");
-
-  const lastIdx = posDaily.reduce((acc, v, i) => (v == null ? acc : i), -1);
+export function Figures({ row }) {
+  // A fall in the position number is a climb up the results, so the arrow and
+  // the colour follow the meaning rather than the arithmetic.
+  const moved =
+    row.positionPrev != null && row.position != null
+      ? Math.round((row.positionPrev - row.position) * 10) / 10
+      : null;
 
   return (
-    <svg
-      width={W}
-      height={LH + 1}
-      viewBox={`0 0 ${W} ${LH + 1}`}
-      role="img"
-      aria-label={`${title}: average Google position per day, last ${n} days. Higher on the chart is a better position.`}
-      style={{ display: "block", maxWidth: "100%" }}
-    >
-      {runsOf(posDaily).map((run, k) => {
-        const early = run.filter((i) => i < n - 7);
-        const recent = run.filter((i) => i >= n - 7);
-        // One shared point so the two styles join instead of leaving a gap.
-        if (early.length && recent.length) early.push(recent[0]);
-        return (
-          <g key={k}>
-            {early.length > 1 && (
-              <polyline points={pts(early)} fill="none" stroke="var(--neon-violet)" strokeWidth={1.5} opacity={0.4} strokeLinecap="round" strokeLinejoin="round" />
-            )}
-            {recent.length > 1 && (
-              <polyline points={pts(recent)} fill="none" stroke="var(--neon-violet)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-            )}
-          </g>
-        );
-      })}
-      {lastIdx >= 0 && <circle cx={x(lastIdx)} cy={y(posDaily[lastIdx])} r={2.4} fill="var(--neon-violet)" />}
-      {posDaily.map((v, i) => (
-        <rect key={i} x={i * (bw + GAP)} y={0} width={bw} height={LH} fill="transparent">
-          <title>
-            {`${fmtDay(dates[i], { weekday: "short", day: "numeric", month: "short" })}: ${
-              v == null ? "no impressions" : `position ${v.toFixed(1)}`
-            }`}
-          </title>
-        </rect>
-      ))}
-      <line x1={0} x2={W} y1={LH + 0.5} y2={LH + 0.5} stroke="var(--line)" />
-    </svg>
+    <div className="rising-figures">
+      <Stat
+        label="Impressions, 7 days"
+        value={compact(row.recent)}
+        delta={`▲ ${compact(row.change)}${row.pct != null ? ` · +${row.pct}%` : ""}`}
+        deltaTone="up"
+        sub={`from ${compact(row.previous)} the week before`}
+      />
+      <Stat
+        label="Average position"
+        value={row.position ?? "—"}
+        delta={moved ? `${moved > 0 ? "▲" : "▼"} ${Math.abs(moved)}` : moved === 0 ? "no change" : null}
+        deltaTone={moved > 0 ? "up" : moved < 0 ? "down" : "flat"}
+        sub={row.positionPrev != null ? `from ${row.positionPrev}` : "first week ranking"}
+      />
+      <Stat
+        label="Clicks, all time"
+        value={compact(row.clicksAll ?? row.clicks)}
+        // A row with no clicks at all says so once, in the figure. Repeating
+        // "0 in the last 7 days" underneath is the same nothing twice.
+        sub={
+          !(row.clicksAll ?? row.clicks)
+            ? null
+            : row.clicks
+              ? `${row.clicks.toLocaleString("en-GB")} in the last 7 days`
+              : "none in the last 7 days"
+        }
+      />
+    </div>
   );
 }
 
@@ -160,8 +138,8 @@ export default function RisingArticles({ data, sites }) {
         to{" "}
         <strong style={{ color: "var(--text)" }}>{recentFrom && `${fmtDay(recentFrom)}–${fmtDay(last)}`}</strong>.
       </p>
-      <p className="micro" style={{ margin: "0 0 14px" }}>
-        bars: impressions per day, last 28 days to {last ? fmtDay(last) : "yesterday"} · line: average position, drawn so <strong style={{ color: "var(--neon-violet)" }}>higher is a better rank</strong> and a rising line means climbing · last 7 days highlighted on both · each chart on its own scale · from Search Console, refreshed hourly
+      <p className="rising-note">
+        28 days to {last ? fmtDay(last) : "yesterday"}, last 7 highlighted · each chart on its own scale · a lower position number is better · Search Console, hourly
       </p>
 
       {rows.length ? (
@@ -179,60 +157,8 @@ export default function RisingArticles({ data, sites }) {
                     {r.title} ↗
                   </a>
                 </div>
-                <div className="rising-charts">
-                  <Bars daily={r.daily} dates={dates} title={r.title} />
-                  <PositionLine posDaily={r.posDaily} dates={dates} title={r.title} />
-                </div>
-                <div className="rising-figures">
-                  <div>
-                    <div className="stat-value" style={{ fontSize: 20 }}>{r.recent.toLocaleString("en-GB")}</div>
-                    <div className="micro">impressions, last 7 days</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 15, fontWeight: 700, color: "var(--neon-green)" }}>
-                      ▲ {r.change.toLocaleString("en-GB")}
-                      {r.pct != null ? ` (+${r.pct}%)` : ""}
-                    </div>
-                    <div className="micro">vs {r.previous.toLocaleString("en-GB")} the week before</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 15, fontWeight: 600 }}>{r.position ?? "—"}</div>
-                    {/* A fall in the number is a climb up the results, so the
-                        arrow follows the meaning rather than the arithmetic. */}
-                    <div className="micro">
-                      avg position
-                      {r.positionPrev != null && r.position != null && (
-                        <>
-                          {" · "}
-                          <span
-                            style={{
-                              color:
-                                r.position < r.positionPrev
-                                  ? "var(--neon-green)"
-                                  : r.position > r.positionPrev
-                                    ? "var(--muted)"
-                                    : "var(--muted)",
-                            }}
-                          >
-                            {r.position < r.positionPrev ? "▲" : r.position > r.positionPrev ? "▼" : "–"}{" "}
-                            {Math.abs(Math.round((r.positionPrev - r.position) * 10) / 10)}
-                          </span>{" "}
-                          vs {r.positionPrev}
-                        </>
-                      )}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="stat-value" style={{ fontSize: 20 }}>
-                      {(r.clicksAll ?? r.clicks).toLocaleString("en-GB")}
-                    </div>
-                    <div className="micro">
-                      clicks, all time
-                      <br />
-                      {r.clicks.toLocaleString("en-GB")} in the last 7 days
-                    </div>
-                  </div>
-                </div>
+                <Bars daily={r.daily} dates={dates} title={r.title} />
+                <Figures row={r} />
               </div>
             );
           })}

@@ -2756,18 +2756,51 @@ th {
   border-bottom: 1px solid var(--line);
 }
 .rising-row > * { min-width: 0; }
+/* The panel's own note. .micro is uppercase and letterspaced, which is right
+   for a three word caption and shouts when the line runs long: this one was
+   wrapping to three lines of capitals above the data. */
+.rising-note {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--muted);
+  margin: 0 0 14px;
+}
+.rising-row { transition: background-color 120ms ease; }
+.rising-row:hover { background: rgba(101, 125, 255, 0.045); }
 .rising-row svg { width: 100%; max-width: 224px; height: auto; }
-/* Impressions above, position below, sharing one x axis so a day lines up
-   between the two. The gap is small on purpose: they are one chart in two
-   parts, not two charts. */
-.rising-charts { display: flex; flex-direction: column; gap: 4px; }
-.rising-figures .micro { white-space: normal; overflow-wrap: anywhere; }
-.rising-figures { display: grid; grid-template-columns: 0.9fr 1.4fr 1fr 0.8fr; gap: 16px; align-items: start; }
+/* Three stat tiles, not four columns of captions.
+   Label quiet and sentence case, one loud figure, delta under it. The old row
+   shouted four uppercase mono captions and wrapped most of them onto three
+   lines, which is what made it look cluttered. */
+.rising-figures { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: start; }
+.rstat { min-width: 0; }
+.rstat-label {
+  font-size: 11px;
+  line-height: 1.3;
+  color: var(--muted);
+  margin: 0 0 3px;
+}
+.rstat-value {
+  font-size: 23px;
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  /* Proportional, not tabular: these are standalone figures, and tabular
+     widths make a number like 171 look gappy at this size. */
+  font-variant-numeric: proportional-nums;
+}
+.rstat-delta { font-size: 12px; font-weight: 600; line-height: 1.3; margin-top: 4px; }
+.rstat-delta.up { color: var(--neon-green); }
+.rstat-delta.down { color: var(--neon-red); }
+.rstat-delta.flat { color: var(--muted); }
+.rstat-sub { font-size: 11px; line-height: 1.35; color: var(--muted); margin-top: 2px; }
 @media (max-width: 1080px) {
   .rising-row { grid-template-columns: minmax(0, 1fr) 224px; }
   .rising-figures { grid-column: 1 / -1; }
 }
 @media (max-width: 640px) {
   .rising-row { grid-template-columns: 1fr; gap: 10px; }
-  .rising-figures { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rising-figures { gap: 14px; }
+  .rstat-value { font-size: 20px; }
 }
