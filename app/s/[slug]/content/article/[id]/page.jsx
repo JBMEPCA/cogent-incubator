@@ -8,8 +8,48 @@ import { isDraftingConfigured } from "@/lib/drafting";
 
 export const dynamic = "force-dynamic";
 
-export default async function ArticlePage({ params }) {
+/**
+ * The QA report as something a person reads, not the JSON it is stored as.
+ * Falls back to the raw text for the older free-text reports.
+ */
+function QaReport({ raw }) {
+  let r = null;
+  try {
+    r = JSON.parse(raw);
+  } catch {
+    // Older reports are plain text.
+  }
+  if (!r || typeof r !== "object") {
+    return <p style={{ margin: "6px 0 0", fontSize: 13, color: "var(--muted)", whiteSpace: "pre-wrap" }}>{raw}</p>;
+  }
+  const issues = [...(r.mechanical || []), ...(r.editorial || [])];
+  const verdict = { fix: "Fixable, sent back for repair", kill: "Not publishable", pass: "Passed" }[r.verdict] || r.verdict;
+  return (
+    <div style={{ marginTop: 6, fontSize: 13, lineHeight: 1.55 }}>
+      {(r.score != null || verdict) && (
+        <div className="micro" style={{ marginBottom: 4 }}>
+          {r.score != null ? `Quality score ${r.score}/100` : ""}
+          {r.score != null && verdict ? " · " : ""}
+          {verdict}
+        </div>
+      )}
+      {r.summary && <p style={{ margin: "0 0 6px", color: "var(--text)" }}>{r.summary}</p>}
+      {issues.length > 0 && (
+        <ul style={{ margin: 0, paddingLeft: 18, color: "var(--muted)" }}>
+          {issues.map((i, n) => (
+            <li key={n}>{String(i)}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+export default async function ArticlePage({ params, searchParams }) {
   const { slug, id } = await params;
+  // Opened from the Trending Topics tab, so "back" goes there, not to the
+  // title's Content Engine it was never reached from.
+  const fromTrending = (await searchParams)?.from === "trending";
   const ctx = await getSiteContext(slug);
   if (!ctx) notFound();
   const { site, db, creds } = ctx;
@@ -28,8 +68,8 @@ export default async function ArticlePage({ params }) {
     <>
       <Header />
       <main style={{ maxWidth: 860, margin: "0 auto", padding: "28px clamp(14px, 4vw, 24px)" }}>
-        <Link href="/content" style={{ color: "var(--muted)", fontSize: 13 }}>
-          ← Back to Content Engine
+        <Link href={fromTrending ? "/trending" : "/content"} style={{ color: "var(--muted)", fontSize: 13 }}>
+          {fromTrending ? "← Back to Trending Topics" : "← Back to Content Engine"}
         </Link>
 
         <section className="panel" style={{ marginTop: 12 }}>
@@ -47,6 +87,17 @@ export default async function ArticlePage({ params }) {
                 style={{ color: "var(--neon-cyan)" }}
               >
                 Source: {article.sourceItem.brand.name} ↗
+              </a>
+            )}
+            {!article.sourceItem && article.sourceUrl && (
+              <a href={article.sourceUrl} target="_blank" rel="noreferrer" className="micro" style={{ color: "var(--neon-cyan)" }}>
+                Source: {(() => {
+                  try {
+                    return new URL(article.sourceUrl).hostname.replace(/^www./, "");
+                  } catch {
+                    return "link";
+                  }
+                })()} ↗
               </a>
             )}
             {article.wpPostId && (
@@ -126,20 +177,7 @@ export default async function ArticlePage({ params }) {
                 >
                   {article.qaPassed ? "Passed editorial and image QA" : "Held by QA, will not publish"}
                 </div>
-                {article.qaReport && (
-                  <pre
-                    style={{
-                      margin: "6px 0 0",
-                      fontSize: 11,
-                      lineHeight: 1.5,
-                      color: "var(--muted)",
-                      whiteSpace: "pre-wrap",
-                      fontFamily: "var(--font-mono), monospace",
-                    }}
-                  >
-                    {article.qaReport}
-                  </pre>
-                )}
+                {article.qaReport && <QaReport raw={article.qaReport} />}
               </div>
               {article.scheduledFor && (
                 <span className="micro num" style={{ color: "var(--neon-cyan)" }}>

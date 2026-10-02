@@ -6,6 +6,7 @@ import { WINDOW_HOURS, parseNews } from "@/lib/trending";
 import TrendCard from "./TrendCard";
 import RefreshButton from "./RefreshButton";
 import PushLiveButton from "./PushLiveButton";
+import WithdrawButton from "./WithdrawButton";
 
 export const dynamic = "force-dynamic";
 // Refresh now runs as a server action on this page and shares its budget.
@@ -241,8 +242,9 @@ export default async function TrendingPage({ searchParams }) {
                         needsPicture={!a.imageUrl}
                       />
                     )}
+                    {a && a.status !== "published" && <WithdrawButton topicId={t.id} />}
                     {t.site && a && (
-                      <Link href={`/s/${t.site.slug}/content/article/${a.id}`} className="micro" title="See the article, its picture and the QA report before it goes live">Preview</Link>
+                      <Link href={`/s/${t.site.slug}/content/article/${a.id}?from=trending`} className="micro" title="See the article, its picture and the QA report before it goes live">Preview</Link>
                     )}
                   </div>
                 );
