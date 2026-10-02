@@ -4,21 +4,11 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import SiteMark from "@/app/components/SiteMark";
 import { commissionTrendAction, dismissTrend } from "@/lib/trending-actions";
+import { runTrendPipeline } from "./pipeline";
 
-// One trend, and the button that turns it into an article.
-//
-// Commissioning puts the article at the front of the title's queue, but the
-// engine only ticks every half hour, so the button also wakes the Editor and
-// then the Designer straight away rather than leaving the first thirty minutes
-// of a spike on the table. Each wake is its own request with the full 300s
-// budget; if the tab is closed mid-draft the server still finishes, and the
-// queue rules pick up anything left on the next tick.
-
-async function wake(agent, slug) {
-  const res = await fetch(`/api/agents/wake?agent=${agent}&site=${encodeURIComponent(slug)}`, { method: "POST" });
-  if (!res.ok) throw new Error((await res.text()).slice(0, 160) || `${agent} returned ${res.status}`);
-  return res.json();
-}
+// One trend, and the button that takes it all the way to live: commission,
+// write, picture, publish, in about three minutes, without waiting on the
+// engine's half-hourly tick for any step (see pipeline.js).
 
 /** 2000 -> "2K", 20000 -> "20K", 1500000 -> "1.5M". Google's bands are floors, hence the "+". */
 function compact(n) {
@@ -46,14 +36,11 @@ export default function TrendCard({ topic, sites }) {
         return;
       }
       try {
-        setState({ step: `Drafting for ${res.siteName}…` });
-        const drafted = await wake("editor", res.siteSlug);
-        setState({ step: "Finding a picture…", note: drafted?.summary });
-        const pictured = await wake("designer", res.siteSlug);
+        const out = await runTrendPipeline({ topicId: topic.id, siteSlug: res.siteSlug, siteName: res.siteName }, (step) => setState({ step }));
         setState({
           done: true,
-          step: "Done",
-          note: `${drafted?.summary || "Drafted"}. ${pictured?.summary || ""}`.trim(),
+          step: out.published ? "Live" : "Written",
+          note: out.published ? out.note : `${out.note} ${out.notes.join(". ")}`.trim(),
         });
       } catch (e) {
         // The article exists and is first in the queue, so a failed wake only

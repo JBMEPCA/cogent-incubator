@@ -5,6 +5,7 @@ import { prisma, fleetRead } from "@/lib/prisma";
 import { WINDOW_HOURS, parseNews } from "@/lib/trending";
 import TrendCard from "./TrendCard";
 import RefreshButton from "./RefreshButton";
+import PushLiveButton from "./PushLiveButton";
 
 export const dynamic = "force-dynamic";
 // Refresh now runs as a server action on this page and shares its budget.
@@ -231,6 +232,15 @@ export default async function TrendingPage({ searchParams }) {
                     </div>
                     <span className={`chip ${chip}`}>{label}</span>
                     {waitingOn && <span className="micro">{waitingOn}</span>}
+                    {t.site && a && a.status !== "published" && (
+                      <PushLiveButton
+                        topicId={t.id}
+                        siteSlug={t.site.slug}
+                        siteName={t.site.name}
+                        needsDraft={a.status === "drafting" || a.status === "idea" || !a.qaPassed}
+                        needsPicture={!a.imageUrl}
+                      />
+                    )}
                     {t.site && a && (
                       <Link href={`/s/${t.site.slug}/content/article/${a.id}`} className="micro">open</Link>
                     )}
