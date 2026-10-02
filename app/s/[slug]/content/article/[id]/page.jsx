@@ -192,7 +192,7 @@ export default async function ArticlePage({ params, searchParams }) {
                 {!article.qaPassed && article.status !== "published" && (
                   <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 6 }}>
                     <span style={{ fontSize: 12, color: "var(--muted)" }}>
-                      Fix it in the body below and save, or if it is fine as it is, publish it yourself:
+                      This publishes the article exactly as it is now, without QA’s fixes. Fix anything that matters in the body below and save first, or use Push live now on Trending Topics to have it repaired automatically.
                     </span>
                     <ApprovePublishButton articleId={article.id} action={approveAndPublish.bind(null, siteRef)} hasImage={Boolean(article.imageUrl)} />
                   </div>
