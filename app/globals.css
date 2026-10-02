@@ -2757,13 +2757,17 @@ th {
 }
 .rising-row > * { min-width: 0; }
 .rising-row svg { width: 100%; max-width: 224px; height: auto; }
+/* Impressions above, position below, sharing one x axis so a day lines up
+   between the two. The gap is small on purpose: they are one chart in two
+   parts, not two charts. */
+.rising-charts { display: flex; flex-direction: column; gap: 4px; }
 .rising-figures .micro { white-space: normal; overflow-wrap: anywhere; }
-.rising-figures { display: grid; grid-template-columns: 120px 190px 140px; gap: 16px; align-items: start; }
+.rising-figures { display: grid; grid-template-columns: 0.9fr 1.4fr 1fr 0.8fr; gap: 16px; align-items: start; }
 @media (max-width: 1080px) {
   .rising-row { grid-template-columns: minmax(0, 1fr) 224px; }
   .rising-figures { grid-column: 1 / -1; }
 }
 @media (max-width: 640px) {
   .rising-row { grid-template-columns: 1fr; gap: 10px; }
-  .rising-figures { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .rising-figures { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
