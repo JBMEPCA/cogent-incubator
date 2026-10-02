@@ -7,6 +7,7 @@ import TrendCard from "./TrendCard";
 import RefreshButton from "./RefreshButton";
 import PushLiveButton from "./PushLiveButton";
 import WithdrawButton from "./WithdrawButton";
+import { livePerformance } from "@/lib/trending-performance";
 
 export const dynamic = "force-dynamic";
 // Refresh now runs as a server action on this page and shares its budget.
@@ -59,7 +60,7 @@ export default async function TrendingPage({ searchParams }) {
       where: { status: "commissioned" },
       include: { site: true },
       orderBy: { commissionedAt: "desc" },
-      take: 20,
+      take: 60,
     }),
     prisma.trendingTopic.findFirst({ orderBy: { lastSeenAt: "desc" }, select: { lastSeenAt: true } }),
     prisma.trendingTopic.count({ where: { lastSeenAt: { gte: since }, status: "irrelevant" } }),
@@ -70,10 +71,27 @@ export default async function TrendingPage({ searchParams }) {
   const articles = articleIds.length
     ? await fleetRead().article.findMany({
         where: { id: { in: articleIds } },
-        select: { id: true, title: true, status: true, scheduledFor: true, publishedAt: true, qaPassed: true, imageUrl: true },
+        select: { id: true, title: true, status: true, scheduledFor: true, publishedAt: true, qaPassed: true, imageUrl: true, wpPostId: true },
       })
     : [];
   const articleById = new Map(articles.map((a) => [a.id, a]));
+
+  // Once live, a piece leaves the commissioning list for the Live articles
+  // table, which is about how it is doing rather than where it has got to.
+  const isLive = (t) => articleById.get(t.articleId)?.status === "published";
+  const inProgress = commissioned.filter((t) => !isLive(t)).slice(0, 20);
+  const live = commissioned
+    .filter(isLive)
+    .sort((x, y) => new Date(articleById.get(y.articleId).publishedAt) - new Date(articleById.get(x.articleId).publishedAt))
+    .slice(0, 20);
+  const perf = live.length
+    ? await livePerformance(
+        live.map((t) => {
+          const a = articleById.get(t.articleId);
+          return { siteId: t.siteId, articleId: a.id, wpPostId: a.wpPostId, publishedAt: a.publishedAt };
+        })
+      )
+    : new Map();
 
   const liveCutoff = Date.now() - LIVE_MINUTES * 60000;
   // Matched first, then still live, then biggest. Volume leads within that
@@ -112,7 +130,18 @@ export default async function TrendingPage({ searchParams }) {
   // One list across every title, filtered by a pill row rather than split into
   // a section per title: per-title sections put one card in each and left most
   // of the page empty.
-  const matched = cards.filter((c) => c.siteSlug);
+  // One card per title per term. A global title follows several markets, and
+  // "pga tour" trending in both GB and the US is one story for Golf Resort,
+  // not two; the bigger market's card is the one kept.
+  const seenCard = new Set();
+  const matched = cards
+    .filter((c) => c.siteSlug)
+    .filter((c) => {
+      const key = `${c.siteSlug}|${c.term.toLowerCase()}`;
+      if (seenCard.has(key)) return false;
+      seenCard.add(key);
+      return true;
+    });
   const counts = new Map();
   for (const c of matched) counts.set(c.siteSlug, (counts.get(c.siteSlug) || 0) + 1);
   const filterSites = sites.filter((s) => counts.has(s.slug));
@@ -206,10 +235,10 @@ export default async function TrendingPage({ searchParams }) {
 
         <section className="panel" style={{ padding: 18, marginBottom: 24 }}>
           <h3 style={{ margin: "0 0 4px", fontSize: 14 }}>Commissioned from trends</h3>
-          <p className="micro" style={{ margin: "0 0 14px" }}>the last twenty, and where each one has got to</p>
-          {commissioned.length ? (
+          <p className="micro" style={{ margin: "0 0 14px" }}>being written, checked and published · moves to Live articles once it is up</p>
+          {inProgress.length ? (
             <div style={{ display: "flex", flexDirection: "column" }}>
-              {commissioned.map((t) => {
+              {inProgress.map((t) => {
                 const a = articleById.get(t.articleId);
                 const [label, chip] = STATUS_LABEL[a?.status] || ["Gone", "chip-general"];
                 const waitingOn =
@@ -251,7 +280,65 @@ export default async function TrendingPage({ searchParams }) {
               })}
             </div>
           ) : (
-            <p style={{ color: "var(--muted)", fontSize: 13, margin: 0 }}>Nothing commissioned from a trend yet.</p>
+            <p style={{ color: "var(--muted)", fontSize: 13, margin: 0 }}>Nothing in progress.</p>
+          )}
+        </section>
+
+        <section className="panel" style={{ padding: 18, marginBottom: 24 }}>
+          <h3 style={{ margin: "0 0 4px", fontSize: 14 }}>Live articles</h3>
+          <p className="micro" style={{ margin: "0 0 14px" }}>
+            since each went live · views from GA4 (a few hours behind) · search figures from Search Console (a day or more behind, so new pieces show dashes)
+          </p>
+          {live.length ? (
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 680 }}>
+                <thead>
+                  <tr>
+                    {["Article", "Article views", "Organic clicks", "Impressions", "Position", ""].map((h, n) => (
+                      <th key={n} className="micro" style={{ textAlign: n === 0 ? "left" : "right", padding: "0 0 8px 14px", paddingLeft: n === 0 ? 0 : 14, fontWeight: 400, color: "var(--muted)", borderBottom: "1px solid var(--line)" }}>
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {live.map((t) => {
+                    const a = articleById.get(t.articleId);
+                    const m = perf.get(a.id) || {};
+                    const num = (v) => (v == null ? "—" : Number(v).toLocaleString("en-GB"));
+                    const cell = { padding: "11px 0 11px 14px", borderBottom: "1px solid var(--line)", textAlign: "right", whiteSpace: "nowrap" };
+                    return (
+                      <tr key={t.id}>
+                        <td style={{ ...cell, textAlign: "left", paddingLeft: 0, whiteSpace: "normal" }}>
+                          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                            {t.site && <SiteMark site={t.site} size={22} showStatus={false} />}
+                            <div style={{ minWidth: 0 }}>
+                              <div>{a.title}</div>
+                              <div className="micro">“{t.term}” · live {ukTime(a.publishedAt)}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="num" style={{ ...cell, fontWeight: 700 }}>{num(m.views)}</td>
+                        <td className="num" style={cell}>{num(m.clicks)}</td>
+                        <td className="num" style={{ ...cell, color: "var(--muted)" }}>{num(m.impressions)}</td>
+                        <td className="num" style={{ ...cell, color: "var(--muted)" }}>{m.position == null ? "—" : m.position.toFixed(1)}</td>
+                        <td style={cell}>
+                          {m.link ? (
+                            <a href={m.link} target="_blank" rel="noreferrer noopener" className="btn" style={{ padding: "5px 12px", fontSize: 12, textDecoration: "none" }}>
+                              View article ↗
+                            </a>
+                          ) : (
+                            <span className="micro">link unavailable</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p style={{ color: "var(--muted)", fontSize: 13, margin: 0 }}>Nothing live from a trend yet.</p>
           )}
         </section>
       </div>
