@@ -223,8 +223,14 @@ export default function RisingArticles({ data, sites }) {
                     </div>
                   </div>
                   <div>
-                    <div className="stat-value" style={{ fontSize: 20 }}>{r.clicks.toLocaleString("en-GB")}</div>
-                    <div className="micro">clicks, last 7 days</div>
+                    <div className="stat-value" style={{ fontSize: 20 }}>
+                      {(r.clicksAll ?? r.clicks).toLocaleString("en-GB")}
+                    </div>
+                    <div className="micro">
+                      clicks, all time
+                      <br />
+                      {r.clicks.toLocaleString("en-GB")} in the last 7 days
+                    </div>
                   </div>
                 </div>
               </div>
