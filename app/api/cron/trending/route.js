@@ -2,7 +2,8 @@ import { cronGuard } from "@/lib/cron";
 import { refreshTrending } from "@/lib/trending";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 60;
+// The first run in a market classifies ~190 terms; later runs only the new ones.
+export const maxDuration = 300;
 
 // Twice an hour from the Cloudflare worker. Google's "Trending now" feed turns
 // over within the hour, and the whole value of the Trending Topics tab is being

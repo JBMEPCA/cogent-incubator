@@ -133,7 +133,7 @@ export default function TrendCard({ topic, sites }) {
             ))}
           </ul>
         ) : (
-          <p className="trend-status">No reporting listed yet, so nothing to write from.</p>
+          <p className="trend-status">No reporting listed yet. Commissioning searches the news for it first.</p>
         )}
 
         <div className="trend-actions">
@@ -143,7 +143,7 @@ export default function TrendCard({ topic, sites }) {
               <option key={s.slug} value={s.slug}>{s.name}</option>
             ))}
           </select>
-          <button type="button" className="btn" onClick={commission} disabled={!slug || busy || state?.done || !topic.news.length}>
+          <button type="button" className="btn" onClick={commission} disabled={!slug || busy || state?.done}>
             {state?.done ? "Commissioned" : busy ? "Working…" : "Commission article"}
           </button>
           {state?.step && (

@@ -7,6 +7,8 @@ import TrendCard from "./TrendCard";
 import RefreshButton from "./RefreshButton";
 
 export const dynamic = "force-dynamic";
+// Refresh now runs as a server action on this page and shares its budget.
+export const maxDuration = 300;
 
 // A trend still in Google's feed has lastSeenAt bumped on every refresh, which
 // runs twice an hour; anything seen inside the last 75 minutes is still live.
