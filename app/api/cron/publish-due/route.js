@@ -238,8 +238,17 @@ export async function GET(request) {
       if (article.imageCredit) {
         body += `\n<p><em style="font-size:0.85em">${article.imageCredit}</em></p>`;
       }
+      // A trending piece's URL is the search term itself, so the address
+      // matches what people typed: /emirates-flight-ek31-frankfurt-diversion/
+      // rather than a slug cut from whatever the headline became.
+      const { trendFor } = await import("@/lib/trending");
+      const trend = await trendFor(article.id);
+      const trendSlug = trend
+        ? trend.term.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 80) || undefined
+        : undefined;
       const post = await publishToWordPress(wp, {
         title: stripEmDashes(article.title),
+        ...(trendSlug ? { slug: trendSlug } : {}),
         body,
         status: "publish",
         featuredMediaId,
