@@ -1,7 +1,8 @@
 import Link from "next/link";
 import FleetNav from "../components/FleetNav";
 import TrendChart from "../components/TrendChart";
-import { SharePie, Sparkline, RankedList, colourMap } from "../components/FleetCharts";
+import { SharePie, Sparkline, RankedList, PositionPill, colourMap } from "../components/FleetCharts";
+import SiteMark from "../components/SiteMark";
 import { fleetAnalytics, summarise } from "@/lib/fleet-analytics";
 import { fleetPulse } from "@/lib/pulse";
 import PulsePanel from "./PulsePanel";
@@ -113,14 +114,110 @@ function Empty({ children }) {
   return <p style={{ color: "var(--muted)", fontSize: 13, margin: 0 }}>{children}</p>;
 }
 
-const cell = {
-  padding: "10px 0 10px 14px",
-  borderBottom: "1px solid var(--line)",
-  textAlign: "right",
-  whiteSpace: "nowrap",
-};
+// A figure with a bar behind it, scaled to the biggest title in the column, so
+// the table reads as a chart at a glance and as exact numbers up close.
+function BarFigure({ value, max, colour, children }) {
+  return (
+    <div className="tt-barfig">
+      <span className="num">{children}</span>
+      <span className="tt-bar">
+        <span style={{ width: `${max ? Math.max(3, (value / max) * 100) : 0}%`, background: colour }} />
+      </span>
+    </div>
+  );
+}
 
-const headCell = { ...cell, padding: "0 0 9px 14px", fontWeight: 400, color: "var(--muted)" };
+function TitleTable({ rows, totals, colours, href, windowDays }) {
+  const maxUsers = Math.max(0, ...rows.map((r) => r.ga4?.users || 0));
+  const maxClicks = Math.max(0, ...rows.map((r) => r.gsc?.clicks || 0));
+  return (
+    <div className="panel tt-panel">
+      <Scroller>
+        <table className="tt">
+          <thead>
+            <tr>
+              <th className="tt-rank">#</th>
+              <th className="tt-left">Title</th>
+              <th>Users</th>
+              <th className="tt-spark-col">Last {windowDays} days</th>
+              <th>Sessions</th>
+              <th>Search clicks</th>
+              <th>Impr.</th>
+              <th>Position</th>
+              <th>Published</th>
+              <th>Spend, mo</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r, i) => {
+              const dark = !r.ga4 && !r.gsc;
+              return (
+                <tr key={r.id} className={dark ? "is-dark" : undefined}>
+                  <td className="tt-rank num">{String(i + 1).padStart(2, "0")}</td>
+                  <td className="tt-left">
+                    <Link href={href({ title: r.slug })} className="tt-title">
+                      <SiteMark site={r} size={30} showStatus={false} />
+                      <span className="tt-name">
+                        <span>{r.name}</span>
+                        {dark && <span className="tt-note">google not connected</span>}
+                      </span>
+                    </Link>
+                  </td>
+                  <td>
+                    {r.ga4 ? (
+                      <BarFigure value={r.ga4.users} max={maxUsers} colour={colours[r.slug]}>
+                        <strong>{int(r.ga4.users)}</strong>
+                      </BarFigure>
+                    ) : "—"}
+                  </td>
+                  <td className="tt-spark-col">
+                    {r.ga4 ? (
+                      <Sparkline points={r.ga4.trend.map((d) => ({ date: d.date, value: d.users }))}
+                        colour={colours[r.slug]} label={`${r.name} users per day`} />
+                    ) : null}
+                  </td>
+                  <td className="num tt-muted">{r.ga4 ? int(r.ga4.sessions) : "—"}</td>
+                  <td>
+                    {r.gsc ? (
+                      <BarFigure value={r.gsc.clicks} max={maxClicks} colour="var(--neon-amber)">
+                        {int(r.gsc.clicks)}
+                      </BarFigure>
+                    ) : "—"}
+                  </td>
+                  <td className="num tt-muted">{r.gsc ? int(r.gsc.impressions) : "—"}</td>
+                  <td>{r.gsc?.position ? <PositionPill position={r.gsc.position} /> : "—"}</td>
+                  <td className="num">{int(r.publishedWindow)}</td>
+                  <td className="num tt-muted">{money(r.spendMonth)}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td className="tt-rank" />
+              <td className="tt-left">Fleet</td>
+              <td className="num">{int(totals.users)}</td>
+              <td className="tt-spark-col" />
+              <td className="num">{int(totals.sessions)}</td>
+              <td className="num">{int(totals.clicks)}</td>
+              <td className="num">{int(totals.impressions)}</td>
+              <td className="num">{pos(totals.position)}</td>
+              <td className="num">{int(totals.publishedWindow)}</td>
+              <td className="num">{money(totals.spendMonth)}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </Scroller>
+      <p className="micro" style={{ margin: "12px 0 0" }}>
+        users, sessions and published over {windowDays} days · position is google&apos;s average · spend is this
+        calendar month, in USD —{" "}
+        <Link href="/costs" className="nav-link" style={{ padding: 0, fontSize: 11 }}>
+          the sterling breakdown is on group costs
+        </Link>
+      </p>
+    </div>
+  );
+}
 
 function Shell({ children }) {
   return (
@@ -422,78 +519,7 @@ export default async function GroupAnalyticsPage({ searchParams }) {
           {!focus && (
             <section>
               <SectionHead title="Every title" note="biggest audience first · click a title to filter" />
-              <div className="panel" style={{ padding: "16px 18px" }}>
-                <Scroller>
-                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 880 }}>
-                    <thead>
-                      <tr>
-                        <th className="micro" style={{ ...headCell, textAlign: "left", paddingLeft: 0 }}>Title</th>
-                        <th className="micro" style={headCell}>Published</th>
-                        <th className="micro" style={headCell}>Pipeline</th>
-                        <th className="micro" style={headCell}>Awaiting</th>
-                        <th className="micro" style={headCell}>Spend, mo</th>
-                        <th className="micro" style={headCell}>Users</th>
-                        <th className="micro" style={headCell}>Sessions</th>
-                        <th className="micro" style={headCell}>Clicks</th>
-                        <th className="micro" style={headCell}>Impr.</th>
-                        <th className="micro" style={headCell}>Pos.</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {rows.map((r) => {
-                        const dark = !r.ga4 && !r.gsc;
-                        return (
-                          <tr key={r.id} className="an-row">
-                            <td style={{ ...cell, textAlign: "left", paddingLeft: 0, maxWidth: 260 }}>
-                              <Link
-                                href={href({ title: r.slug })}
-                                style={{ color: "var(--text)", textDecoration: "none", display: "flex", alignItems: "center", gap: 9 }}
-                              >
-                                <span className="an-dot" style={{ background: colours[r.slug] }} />
-                                <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{r.name}</span>
-                              </Link>
-                              {dark && <span className="micro" style={{ paddingLeft: 17 }}>google not connected</span>}
-                            </td>
-                            <td className="num" style={cell}>{int(r.publishedWindow)}</td>
-                            <td className="num" style={{ ...cell, color: "var(--muted)" }}>{int(r.pipeline)}</td>
-                            <td className="num" style={{ ...cell, color: r.awaiting ? "var(--neon-amber)" : "var(--muted)" }}>
-                              {int(r.awaiting)}
-                            </td>
-                            <td className="num" style={{ ...cell, color: "var(--muted)" }}>{money(r.spendMonth)}</td>
-                            <td className="num" style={cell}>{r.ga4 ? int(r.ga4.users) : "—"}</td>
-                            <td className="num" style={{ ...cell, color: "var(--muted)" }}>{r.ga4 ? int(r.ga4.sessions) : "—"}</td>
-                            <td className="num" style={cell}>{r.gsc ? int(r.gsc.clicks) : "—"}</td>
-                            <td className="num" style={{ ...cell, color: "var(--muted)" }}>{r.gsc ? int(r.gsc.impressions) : "—"}</td>
-                            <td className="num" style={{ ...cell, color: "var(--muted)" }}>{r.gsc ? pos(r.gsc.position) : "—"}</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                    <tfoot>
-                      <tr style={{ fontWeight: 700 }}>
-                        <td style={{ ...cell, textAlign: "left", paddingLeft: 0, borderBottom: "none" }}>Fleet</td>
-                        <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.publishedWindow)}</td>
-                        <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.pipeline)}</td>
-                        <td className="num" style={{ ...cell, borderBottom: "none", color: totals.awaiting ? "var(--neon-amber)" : undefined }}>
-                          {int(totals.awaiting)}
-                        </td>
-                        <td className="num" style={{ ...cell, borderBottom: "none" }}>{money(totals.spendMonth)}</td>
-                        <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.users)}</td>
-                        <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.sessions)}</td>
-                        <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.clicks)}</td>
-                        <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.impressions)}</td>
-                        <td className="num" style={{ ...cell, borderBottom: "none" }}>{pos(totals.position)}</td>
-                      </tr>
-                    </tfoot>
-                  </table>
-                </Scroller>
-                <p className="micro" style={{ margin: "12px 0 0" }}>
-                  published and pipeline over {windowDays} days · spend is this calendar month, in USD —{" "}
-                  <Link href="/costs" className="nav-link" style={{ padding: 0, fontSize: 11 }}>
-                    the sterling breakdown is on group costs
-                  </Link>
-                </p>
-              </div>
+              <TitleTable rows={rows} totals={totals} colours={colours} href={href} windowDays={windowDays} />
             </section>
           )}
 
