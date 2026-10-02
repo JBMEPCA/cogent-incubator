@@ -252,7 +252,9 @@ export default async function TrendingPage({ searchParams }) {
                           : "next tick"
                     : a?.status === "published"
                       ? `live ${ukTime(a.publishedAt)}`
-                      : null;
+                      : a?.status === "idea"
+                        ? "stopped before writing: no readable reporting at the time. Push live tries again"
+                        : null;
                 return (
                   <div key={t.id} style={{ display: "flex", gap: 12, alignItems: "center", padding: "9px 0", borderBottom: "1px solid var(--line)", flexWrap: "wrap" }}>
                     {t.site && <SiteMark site={t.site} size={22} showStatus={false} />}
