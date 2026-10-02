@@ -242,7 +242,7 @@ export default async function TrendingPage({ searchParams }) {
                       />
                     )}
                     {t.site && a && (
-                      <Link href={`/s/${t.site.slug}/content/article/${a.id}`} className="micro">open</Link>
+                      <Link href={`/s/${t.site.slug}/content/article/${a.id}`} className="micro" title="See the article, its picture and the QA report before it goes live">Preview</Link>
                     )}
                   </div>
                 );
