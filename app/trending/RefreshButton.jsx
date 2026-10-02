@@ -16,7 +16,7 @@ export default function RefreshButton() {
       setMsg(null);
       try {
         const r = await refreshTrendsNow();
-        setMsg(`${r.fresh} new from Google, ${r.matched} matched to a title, ${r.spikes} Search Console spikes${r.errors?.length ? ` · ${r.errors.length} error(s): ${r.errors[0]}` : ""}`);
+        setMsg(`${r.fresh} new from Google, ${r.matched} matched to a title${r.errors?.length ? ` · ${r.errors.length} error(s): ${r.errors[0]}` : ""}`);
       } catch (e) {
         setMsg(e.message);
       }

@@ -8,6 +8,8 @@ import RefreshButton from "./RefreshButton";
 import PushLiveButton from "./PushLiveButton";
 import WithdrawButton from "./WithdrawButton";
 import { livePerformance } from "@/lib/trending-performance";
+import { risingArticles } from "@/lib/rising-articles";
+import RisingArticles from "./RisingArticles";
 
 export const dynamic = "force-dynamic";
 // Refresh now runs as a server action on this page and shares its budget.
@@ -49,9 +51,10 @@ export default async function TrendingPage({ searchParams }) {
     orderBy: { name: "asc" },
   });
 
-  const [topics, commissioned, latest, hidden] = await Promise.all([
+  const [topics, commissioned, latest, hidden, rising] = await Promise.all([
     prisma.trendingTopic.findMany({
-      where: { lastSeenAt: { gte: since }, status: { in: showAll ? ["new", "irrelevant"] : ["new"] } },
+      // Google Trends only: Search Console movers have their own section now.
+      where: { source: "google_trends", lastSeenAt: { gte: since }, status: { in: showAll ? ["new", "irrelevant"] : ["new"] } },
       include: { site: { select: { slug: true, name: true, status: true, markAccent: true, accentHex: true, markUrl: true } } },
       orderBy: [{ lastSeenAt: "desc" }],
       take: 200,
@@ -64,6 +67,7 @@ export default async function TrendingPage({ searchParams }) {
     }),
     prisma.trendingTopic.findFirst({ orderBy: { lastSeenAt: "desc" }, select: { lastSeenAt: true } }),
     prisma.trendingTopic.count({ where: { lastSeenAt: { gte: since }, status: "irrelevant" } }),
+    risingArticles().catch((e) => ({ dates: [], rows: [], errors: [e.message] })),
   ]);
 
   // Articles are tenanted; this is the fleet view, so read them across titles.
@@ -232,6 +236,8 @@ export default async function TrendingPage({ searchParams }) {
             </div>
           </section>
         )}
+
+        <RisingArticles data={rising} sites={sites} />
 
         <section className="panel" style={{ padding: 18, marginBottom: 24 }}>
           <h3 style={{ margin: "0 0 4px", fontSize: 14 }}>Commissioned from trends</h3>

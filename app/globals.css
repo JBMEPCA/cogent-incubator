@@ -2744,3 +2744,26 @@ th {
   .trend-body { padding: 14px 16px; }
   .trend-side { grid-template-columns: 1fr; padding: 14px 16px; }
 }
+
+/* Rising Articles: title, 28-day chart, figures, in one row that wraps on
+   narrow screens rather than squeezing the chart. */
+.rising-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 224px 482px;
+  gap: 20px;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+.rising-row > * { min-width: 0; }
+.rising-row svg { width: 100%; max-width: 224px; height: auto; }
+.rising-figures .micro { white-space: normal; overflow-wrap: anywhere; }
+.rising-figures { display: grid; grid-template-columns: 120px 190px 140px; gap: 16px; align-items: start; }
+@media (max-width: 1080px) {
+  .rising-row { grid-template-columns: minmax(0, 1fr) 224px; }
+  .rising-figures { grid-column: 1 / -1; }
+}
+@media (max-width: 640px) {
+  .rising-row { grid-template-columns: 1fr; gap: 10px; }
+  .rising-figures { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
