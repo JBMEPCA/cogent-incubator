@@ -2,7 +2,7 @@ import Link from "next/link";
 import FleetNav from "../components/FleetNav";
 import PhotoUploader from "../s/[slug]/content/article/[id]/PhotoUploader";
 import { needsImage } from "@/lib/needs-image";
-import { uploadImageForHeldArticle } from "@/lib/actions";
+import { uploadImageForHeldArticle, dismissNeedsImage } from "@/lib/actions";
 
 export const dynamic = "force-dynamic";
 
@@ -105,11 +105,44 @@ export default async function NeedsImagePage() {
 
               {/* The one fact that makes this workable: who to go and find. */}
               <p style={{ margin: "6px 0 0", fontSize: 13, color: "var(--muted)" }}>
+                {/* The press credit surviving with no image means the picture
+                    was supplied and then stripped by the second vision check at
+                    publish time, so the original may just need putting back. */}
+                {a.imageSource?.startsWith("press:") && (
+                  <span style={{ display: "block", color: "var(--neon-amber)", marginBottom: 4 }}>
+                    A photo was supplied by {a.imageSource.replace(/^press:/, "")} and later dropped by the
+                    image re-check. Worth looking for that one first.
+                  </span>
+                )}
                 Needs a photograph of{" "}
                 <strong style={{ color: "var(--text)" }}>{a.subjectName || "the person named"}</strong>
                 {a.subjectRole ? `, ${a.subjectRole}` : ""}
                 {a.subjectOrg ? `, ${a.subjectOrg}` : ""}.
               </p>
+
+              {/* Remove: takes it off this list and nothing else. The body,
+                  the name, the role and the company all stay, and the article
+                  keeps its status. A plain form, so it works as a server action
+                  without turning this page into a client component. */}
+              <form action={dismissNeedsImage} style={{ display: "inline" }}>
+                <input type="hidden" name="id" value={a.id} />
+                <button
+                  type="submit"
+                  className="micro"
+                  title="Take this off the list. Nothing is deleted and the article keeps its status."
+                  style={{
+                    background: "none",
+                    border: "none",
+                    padding: "6px 0 0",
+                    margin: 0,
+                    color: "var(--muted)",
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                  }}
+                >
+                  remove from this list
+                </button>
+              </form>
 
               {a.sourceUrl && (
                 <p style={{ margin: "4px 0 0" }}>

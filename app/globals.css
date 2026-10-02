@@ -3393,3 +3393,22 @@ th {
   font-weight: 700;
   padding-top: 14px;
 }
+
+/* The count on the "Needs an image" nav button. Only ever rendered when there
+   is something waiting, so it reads as a job to do rather than a zero to
+   ignore. */
+.nav-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  margin-left: 2px;
+  border-radius: 9px;
+  background: var(--neon-amber);
+  color: #15213f;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}

@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -147,6 +149,21 @@ const LINKS = [
 
 export default function FleetNav() {
   const pathname = usePathname() || "/";
+  // How many articles are waiting on a photograph a person has to find.
+  //
+  // Fetched rather than passed in, because this nav sits in every page's
+  // header and threading one integer through all of them to show a badge is
+  // not worth it. A badge must never be the reason a nav fails to render, so
+  // every failure path just leaves it off.
+  const [needsImage, setNeedsImage] = useState(null);
+  useEffect(() => {
+    let live = true;
+    fetch("/api/needs-image/count")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (live && typeof d?.count === "number") setNeedsImage(d.count); })
+      .catch(() => {});
+    return () => { live = false; };
+  }, [pathname]);
 
   return (
     <nav className="fleet-nav" aria-label="Fleet views">
@@ -163,6 +180,9 @@ export default function FleetNav() {
           >
             <Icon />
             {label}
+            {href === "/needs-image" && needsImage > 0 && (
+              <span className="nav-badge" aria-label={`${needsImage} waiting`}>{needsImage}</span>
+            )}
           </Link>
         );
       })}
