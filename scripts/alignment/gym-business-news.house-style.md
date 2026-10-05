@@ -7,7 +7,7 @@ strategy deck. The reader runs classes or sessions all day and reads between
 them, often on a phone.
 
 - Plain, direct, second person: "you", "your gym", "your studio". Contractions
-  are fine. Short sentences.
+  are fine. Mix short and longer sentences so the prose flows; never stack clipped one-line statements.
 - Lead with the money, the decision or the change. Never with scene-setting,
   and never with a statistic about how healthy the nation is.
 - Say the point, then say why it matters, all the way to the money: more
@@ -30,5 +30,5 @@ them, often on a phone.
   "you'll feel stronger" is wrong.
 - Specify imagery of real gyms, studios, kit and front desks, never stock
   photos of people mid-workout with a results feel to them.
-- Every piece leaves the reader with something they can do this week.
+- Every piece leaves the reader with something practical they can do next. Head that closing section calmly, for example "Next steps" or "What you can do", never "What to do this week".
 - British spelling. No em dashes.

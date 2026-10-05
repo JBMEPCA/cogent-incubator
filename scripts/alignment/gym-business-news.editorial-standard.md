@@ -36,6 +36,19 @@ Trends are in scope through the till. "HYROX classes are filling, so here is
 what it costs to add a sled track and what to charge" is ours. "The best HYROX
 training plan" is not.
 
+## The owner-who-trains rule
+
+Added 5 Oct 2026 from team feedback. Most owners and managers came up through
+PT or coaching and still train, so the training floor is what draws them in.
+Cover it through the till, inside the scope rule above: which class formats
+and training trends are filling, what they cost to add (space, kit, staff,
+qualifications) and what operators charge for them.
+
+At least one piece in five should be a profit builder: a "make more from"
+piece on an extra revenue line, such as PT packages, small-group training,
+classes, recovery and spa, nutrition coaching sold by qualified staff, or
+retail, with real attributed numbers. These are the pieces this reader clicks.
+
 ## The claims rule
 
 Every health, results, savings or performance claim is attributed to the party

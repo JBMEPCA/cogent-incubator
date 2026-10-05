@@ -87,7 +87,7 @@ Every policy change, rate announcement or regulatory update is followed to
 the owner's numbers. "The 3 and 4-year-old rate rises 4.95%" is half a story;
 the other half is what that does to the margin on a funded place once the
 same year's National Living Wage rise is paid, when staff are most of the cost. If a piece
-cannot say what the reader should do or check this week, it is not finished.
+cannot say what the reader should do or check next, it is not finished.
 
 ## Deals and people
 
