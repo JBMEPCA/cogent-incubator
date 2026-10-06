@@ -27,11 +27,11 @@ export default function PushLiveButton({ topicId, siteSlug, siteName, needsDraft
     });
 
   return (
-    <span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}>
-      <button type="button" className="btn" onClick={run} disabled={pending} style={{ padding: "5px 12px", fontSize: 12 }}>
-        {pending ? "Working…" : "Push live now"}
+    <span style={{ display: "inline-flex", flexDirection: "column", gap: 4, alignItems: "flex-end" }}>
+      <button type="button" className="btn" onClick={run} disabled={pending} style={{ padding: "6px 14px", fontSize: 12, whiteSpace: "nowrap" }}>
+        {pending ? "Working…" : "Push live"}
       </button>
-      {msg && <span className="micro">{msg}</span>}
+      {msg && <span className="commission-note" style={{ textAlign: "right", maxWidth: 220 }}>{msg}</span>}
     </span>
   );
 }

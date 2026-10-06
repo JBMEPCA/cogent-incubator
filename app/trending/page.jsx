@@ -2,7 +2,7 @@ import Link from "next/link";
 import FleetNav from "@/app/components/FleetNav";
 import SiteMark from "@/app/components/SiteMark";
 import { prisma, fleetRead } from "@/lib/prisma";
-import { WINDOW_HOURS, parseNews, TREND_COST_CAP_USD } from "@/lib/trending";
+import { WINDOW_HOURS, parseNews, TREND_COST_CAP_USD, TREND_PASS_ESTIMATE_USD } from "@/lib/trending";
 import TrendCard from "./TrendCard";
 import RefreshButton from "./RefreshButton";
 import PushLiveButton from "./PushLiveButton";
@@ -37,14 +37,17 @@ function ukTime(d) {
 // piece QA had passed and one it had held, with the difference in small grey
 // text beside it, so a held piece read as done and nobody knew why it never
 // went live.
-function stage(a) {
+function stage(a, spentUsd = 0) {
   if (!a) return { label: "Gone", chip: "chip-general", note: null };
   if (a.status === "published") return { label: "Live", chip: "chip-audience", note: null };
-  if (a.status === "idea") return { label: "Parked", chip: "chip-monetise", note: "stopped: no readable reporting, or the cost ceiling. Push live tries again" };
+  // Parked for one of two reasons, and they need different things from a
+  // person, so say which.
+  const atCeiling = spentUsd + TREND_PASS_ESTIMATE_USD > TREND_COST_CAP_USD;
+  if (a.status === "idea") return { label: "Parked", chip: "chip-monetise", note: atCeiling ? "Hit the 40p ceiling" : "No readable sources yet" };
   if (a.status === "drafting") return { label: a.body ? "Repairing" : "Writing", chip: "chip-content", note: null };
-  if (!a.qaPassed) return { label: "Held by QA", chip: "chip-monetise", note: "will not publish until fixed. Preview shows why" };
+  if (!a.qaPassed) return { label: "Held by QA", chip: "chip-monetise", note: atCeiling ? "At the ceiling · Preview to fix" : "Preview shows why" };
   if (!a.imageUrl) return { label: "Needs a picture", chip: "chip-monetise", note: null };
-  return { label: "Ready", chip: "chip-audience", note: a.scheduledFor ? `publishing ${ukTime(a.scheduledFor)}` : "publishing on the next tick" };
+  return { label: "Ready", chip: "chip-audience", note: a.scheduledFor ? `Publishing ${ukTime(a.scheduledFor)}` : "Publishing next tick" };
 }
 
 // Spend shown in pence against the ceiling, from the agents' own run costs.
@@ -56,7 +59,8 @@ function Cost({ usd }) {
   const over = pence >= cap;
   return (
     <span className="micro num" title={`${usd.toFixed(2)} of AI spend on this article`} style={{ color: over ? "var(--neon-amber)" : "var(--muted)", whiteSpace: "nowrap" }}>
-      {pence < 100 ? `${pence}p` : `£${(pence / 100).toFixed(2)}`} of {cap}p
+      {pence < 100 ? `${pence}p` : `£${(pence / 100).toFixed(2)}`}
+      <span style={{ opacity: 0.6 }}> / {cap}p</span>
     </span>
   );
 }
@@ -273,30 +277,39 @@ export default async function TrendingPage({ searchParams }) {
             <ShowMore>
               {inProgress.map((t) => {
                 const a = articleById.get(t.articleId);
-                const { label, chip, note: waitingOn } = stage(a);
+                const spentUsd = a ? costById.get(a.id) || 0 : 0;
+                const { label, chip, note } = stage(a, spentUsd);
                 return (
-                  <div key={t.id} style={{ display: "flex", gap: 12, alignItems: "center", padding: "9px 0", borderBottom: "1px solid var(--line)", flexWrap: "wrap" }}>
-                    {t.site && <SiteMark site={t.site} size={22} showStatus={false} />}
-                    <div style={{ flex: "1 1 260px", minWidth: 0 }}>
-                      <div style={{ fontSize: 13 }}>{a?.title || t.angle || t.term}</div>
-                      <div className="micro">“{t.term}” · commissioned {ukTime(t.commissionedAt)}</div>
+                  <div key={t.id} className="commission-row">
+                    <div className="commission-title">
+                      {t.site && <SiteMark site={t.site} size={24} showStatus={false} />}
+                      <div style={{ minWidth: 0 }}>
+                        <div className="commission-headline">{a?.title || t.angle || t.term}</div>
+                        <div className="micro">“{t.term}” · {ukTime(t.commissionedAt)}</div>
+                      </div>
                     </div>
-                    <span className={`chip ${chip}`}>{label}</span>
-                    {waitingOn && <span className="micro">{waitingOn}</span>}
-                    {a && <Cost usd={costById.get(a.id) || 0} />}
-                    {t.site && a && a.status !== "published" && (
-                      <PushLiveButton
-                        topicId={t.id}
-                        siteSlug={t.site.slug}
-                        siteName={t.site.name}
-                        needsDraft={a.status === "drafting" || a.status === "idea" || !a.qaPassed}
-                        needsPicture={!a.imageUrl}
-                      />
-                    )}
-                    {a && a.status !== "published" && <WithdrawButton topicId={t.id} />}
-                    {t.site && a && (
-                      <Link href={`/s/${t.site.slug}/content/article/${a.id}?from=trending`} className="micro" title="See the article, its picture and the QA report before it goes live">Preview</Link>
-                    )}
+                    <div className="commission-stage">
+                      <span className={`chip ${chip}`}>{label}</span>
+                      {note && <span className="commission-note">{note}</span>}
+                    </div>
+                    <div className="commission-cost">{a && <Cost usd={spentUsd} />}</div>
+                    <div className="commission-actions">
+                      {t.site && a && a.status !== "published" && (
+                        <PushLiveButton
+                          topicId={t.id}
+                          siteSlug={t.site.slug}
+                          siteName={t.site.name}
+                          needsDraft={a.status === "drafting" || a.status === "idea" || !a.qaPassed}
+                          needsPicture={!a.imageUrl}
+                        />
+                      )}
+                      {t.site && a && (
+                        <Link href={`/s/${t.site.slug}/content/article/${a.id}?from=trending`} className="commission-link" title="See the article, its picture and the QA report">
+                          Preview
+                        </Link>
+                      )}
+                      {a && a.status !== "published" && <WithdrawButton topicId={t.id} />}
+                    </div>
                   </div>
                 );
               })}

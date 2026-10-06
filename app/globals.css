@@ -3412,3 +3412,31 @@ th {
   font-weight: 700;
   line-height: 1;
 }
+
+/* Commissioned from trends: one aligned grid row per piece, title | stage |
+   cost | actions, instead of a flex row that wrapped at a different point for
+   every title length. */
+.commission-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 210px 80px 250px;
+  gap: 16px;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.commission-title { display: flex; gap: 12px; align-items: center; min-width: 0; }
+.commission-headline { font-size: 14px; font-weight: 600; line-height: 1.35; margin-bottom: 2px; }
+.commission-stage { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.commission-note { font-size: 12px; color: var(--muted); line-height: 1.35; }
+.commission-cost { text-align: right; }
+.commission-actions { display: flex; gap: 14px; align-items: center; justify-content: flex-end; }
+.commission-link {
+  background: none; border: 0; padding: 0; cursor: pointer;
+  font-size: 12px; color: var(--muted); text-decoration: none; white-space: nowrap;
+}
+.commission-link:hover { color: var(--text); }
+@media (max-width: 1100px) {
+  .commission-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .commission-title { grid-column: 1 / -1; }
+  .commission-actions { justify-content: flex-start; grid-column: 1 / -1; }
+}

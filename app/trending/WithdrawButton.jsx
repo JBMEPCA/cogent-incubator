@@ -22,7 +22,7 @@ export default function WithdrawButton({ topicId }) {
 
   return (
     <span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}>
-      <button type="button" className="btn-ghost" onClick={run} disabled={pending} style={{ padding: "5px 10px", fontSize: 12 }}>
+      <button type="button" className="commission-link" onClick={run} disabled={pending} title="Stop this piece. The draft is kept as a parked idea.">
         {pending ? "Withdrawing…" : "Withdraw"}
       </button>
       {msg && <span className="micro">{msg}</span>}
