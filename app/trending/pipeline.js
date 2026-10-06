@@ -11,8 +11,9 @@ import { publishTrendNow, resumeTrend } from "@/lib/trending-actions";
 // `skip` lets the Push live button resume a piece part way through: waking the
 // Editor when the article is already written would draft a different one.
 
-async function wake(agent, slug) {
-  const res = await fetch(`/api/agents/wake?agent=${agent}&site=${encodeURIComponent(slug)}`, { method: "POST" });
+async function wake(agent, slug, articleId) {
+  const article = articleId ? `&article=${encodeURIComponent(articleId)}` : "";
+  const res = await fetch(`/api/agents/wake?agent=${agent}&site=${encodeURIComponent(slug)}${article}`, { method: "POST" });
   if (!res.ok) throw new Error((await res.text()).slice(0, 160) || `${agent} returned ${res.status}`);
   return res.json();
 }
@@ -20,9 +21,9 @@ async function wake(agent, slug) {
 export async function runTrendPipeline({ topicId, siteSlug, siteName, skipDraft = false, skipPicture = false }, onStep) {
   const notes = [];
   if (!skipDraft) {
-    await resumeTrend(topicId);
+    const articleId = await resumeTrend(topicId);
     onStep(`Writing for ${siteName || "the title"}…`);
-    const drafted = await wake("editor", siteSlug);
+    const drafted = await wake("editor", siteSlug, articleId);
     if (drafted?.summary) notes.push(drafted.summary);
   }
   if (!skipPicture) {

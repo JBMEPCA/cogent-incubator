@@ -68,6 +68,9 @@ export async function POST(request) {
   // The third argument is the full site context, which only the newsletter
   // wrapper needs (it wants this title's Mailchimp credential). The eight agents
   // above take a site row and fetch what they need themselves, so they ignore it.
-  const result = await AGENTS[key](ctx.site, "manual", ctx);
+  // An optional article to work on: the trending pipeline names the piece it
+  // is pushing, so the Editor does not pick a different one (see runEditor).
+  const articleId = params.get("article") || null;
+  const result = await AGENTS[key](ctx.site, "manual", { ...ctx, articleId });
   return Response.json(result);
 }
