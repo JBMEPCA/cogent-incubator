@@ -282,6 +282,13 @@ export default async function FleetCostsPage() {
     <main className="fleet-wrap">
       {head}
 
+      <div className="gc-actions">
+        <a href="/costs/report?print=1" target="_blank" rel="noopener" className="gc-btn gc-btn-lg">
+          Director report (PDF)
+        </a>
+        <span className="gc-panel-note">covers {month.prevLabel}, with {month.label}&apos;s projection</span>
+      </div>
+
       {/* ---- The three numbers. */}
       <section className="gc-heroes">
         <Hero
@@ -308,7 +315,7 @@ export default async function FleetCostsPage() {
       <section className="gc-minis">
         <div className="gc-mini">
           <div className="gc-mini-value num">{pence(totals.perArticleUsd, rate)}</div>
-          <div className="gc-mini-label">per article, all-in</div>
+          <div className="gc-mini-label">per article, AI only</div>
           <div className="gc-mini-sub">
             {totals.producedThis} produced this month
             {totals.perArticlePrevUsd != null && <> · {pence(totals.perArticlePrevUsd, rate)} in {month.prevLabel}</>}
