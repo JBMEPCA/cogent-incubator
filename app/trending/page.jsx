@@ -2,9 +2,10 @@ import Link from "next/link";
 import FleetNav from "@/app/components/FleetNav";
 import SiteMark from "@/app/components/SiteMark";
 import { prisma, fleetRead } from "@/lib/prisma";
-import { WINDOW_HOURS, parseNews, TREND_COST_CAP_USD, TREND_PASS_ESTIMATE_USD } from "@/lib/trending";
+import { WINDOW_HOURS, parseNews, TREND_COST_CAP_USD, TREND_PASS_ESTIMATE_USD, autoCommissionOn } from "@/lib/trending";
 import TrendCard from "./TrendCard";
 import RefreshButton from "./RefreshButton";
+import AutoToggle from "./AutoToggle";
 import PushLiveButton from "./PushLiveButton";
 import WithdrawButton from "./WithdrawButton";
 import { livePerformance } from "@/lib/trending-performance";
@@ -215,7 +216,10 @@ export default async function TrendingPage({ searchParams }) {
               </p>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-end" }}>
-              <RefreshButton />
+              <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
+                <AutoToggle on={await autoCommissionOn()} />
+                <RefreshButton />
+              </div>
               <span className="micro">
                 last checked {latest ? `${ago(latest.lastSeenAt)} (${ukTime(latest.lastSeenAt)})` : "never"} · refreshes every 30 min
               </span>

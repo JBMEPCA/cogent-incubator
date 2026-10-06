@@ -52,6 +52,16 @@ function QaReport({ raw }) {
           ))}
         </ul>
       )}
+      {Array.isArray(r.minor) && r.minor.length > 0 && (
+        <div style={{ marginTop: 8 }}>
+          <div className="micro">Minor notes, did not hold it</div>
+          <ul style={{ margin: "4px 0 0", paddingLeft: 18, color: "var(--muted)", fontSize: 12 }}>
+            {r.minor.map((i, n) => (
+              <li key={n}>{String(i)}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
