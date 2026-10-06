@@ -2,7 +2,7 @@ import Link from "next/link";
 import FleetNav from "@/app/components/FleetNav";
 import SiteMark from "@/app/components/SiteMark";
 import { prisma, fleetRead } from "@/lib/prisma";
-import { WINDOW_HOURS, parseNews } from "@/lib/trending";
+import { WINDOW_HOURS, parseNews, TREND_COST_CAP_USD } from "@/lib/trending";
 import TrendCard from "./TrendCard";
 import RefreshButton from "./RefreshButton";
 import PushLiveButton from "./PushLiveButton";
@@ -32,13 +32,33 @@ function ukTime(d) {
   return new Date(d).toLocaleString("en-GB", { timeZone: "Europe/London", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 }
 
-const STATUS_LABEL = {
-  idea: ["Parked", "chip-monetise"],
-  drafting: ["Drafting", "chip-content"],
-  review: ["Written", "chip-brand"],
-  approved: ["Written", "chip-brand"],
-  published: ["Live", "chip-audience"],
-};
+// What a commissioned piece is actually doing. "Written" used to cover both a
+// piece QA had passed and one it had held, with the difference in small grey
+// text beside it, so a held piece read as done and nobody knew why it never
+// went live.
+function stage(a) {
+  if (!a) return { label: "Gone", chip: "chip-general", note: null };
+  if (a.status === "published") return { label: "Live", chip: "chip-audience", note: null };
+  if (a.status === "idea") return { label: "Parked", chip: "chip-monetise", note: "stopped: no readable reporting, or the cost ceiling. Push live tries again" };
+  if (a.status === "drafting") return { label: a.body ? "Repairing" : "Writing", chip: "chip-content", note: null };
+  if (!a.qaPassed) return { label: "Held by QA", chip: "chip-monetise", note: "will not publish until fixed. Preview shows why" };
+  if (!a.imageUrl) return { label: "Needs a picture", chip: "chip-monetise", note: null };
+  return { label: "Ready", chip: "chip-audience", note: a.scheduledFor ? `publishing ${ukTime(a.scheduledFor)}` : "publishing on the next tick" };
+}
+
+// Spend shown in pence against the ceiling, from the agents' own run costs.
+const USD_PER_GBP = 1.33;
+function Cost({ usd }) {
+  if (usd == null) return null;
+  const pence = Math.round((usd / USD_PER_GBP) * 100);
+  const cap = Math.round((TREND_COST_CAP_USD / USD_PER_GBP) * 100);
+  const over = pence >= cap;
+  return (
+    <span className="micro num" title={`${usd.toFixed(2)} of AI spend on this article`} style={{ color: over ? "var(--neon-amber)" : "var(--muted)", whiteSpace: "nowrap" }}>
+      {pence < 100 ? `${pence}p` : `£${(pence / 100).toFixed(2)}`} of {cap}p
+    </span>
+  );
+}
 
 export default async function TrendingPage({ searchParams }) {
   const params = (await searchParams) || {};
@@ -75,10 +95,16 @@ export default async function TrendingPage({ searchParams }) {
   const articles = articleIds.length
     ? await fleetRead().article.findMany({
         where: { id: { in: articleIds } },
-        select: { id: true, title: true, status: true, scheduledFor: true, publishedAt: true, qaPassed: true, imageUrl: true, wpPostId: true },
+        select: { id: true, title: true, status: true, scheduledFor: true, publishedAt: true, qaPassed: true, imageUrl: true, wpPostId: true, body: true },
       })
     : [];
   const articleById = new Map(articles.map((a) => [a.id, a]));
+
+  // What each commissioned article has cost so far, from the agents' runs.
+  const spend = articleIds.length
+    ? await fleetRead().agentRun.groupBy({ by: ["articleId"], where: { articleId: { in: articleIds } }, _sum: { costUsd: true } })
+    : [];
+  const costById = new Map(spend.map((r) => [r.articleId, r._sum.costUsd || 0]));
 
   // Once live, a piece leaves the commissioning list for the Live articles
   // table, which is about how it is doing rather than where it has got to.
@@ -246,21 +272,7 @@ export default async function TrendingPage({ searchParams }) {
             <div style={{ display: "flex", flexDirection: "column" }}>
               {inProgress.map((t) => {
                 const a = articleById.get(t.articleId);
-                const [label, chip] = STATUS_LABEL[a?.status] || ["Gone", "chip-general"];
-                const waitingOn =
-                  a && (a.status === "review" || a.status === "approved")
-                    ? !a.qaPassed
-                      ? "held by QA"
-                      : !a.imageUrl
-                        ? "needs a picture"
-                        : a.scheduledFor
-                          ? `publishing ${ukTime(a.scheduledFor)}`
-                          : "next tick"
-                    : a?.status === "published"
-                      ? `live ${ukTime(a.publishedAt)}`
-                      : a?.status === "idea"
-                        ? "stopped before writing: no readable reporting at the time. Push live tries again"
-                        : null;
+                const { label, chip, note: waitingOn } = stage(a);
                 return (
                   <div key={t.id} style={{ display: "flex", gap: 12, alignItems: "center", padding: "9px 0", borderBottom: "1px solid var(--line)", flexWrap: "wrap" }}>
                     {t.site && <SiteMark site={t.site} size={22} showStatus={false} />}
@@ -270,6 +282,7 @@ export default async function TrendingPage({ searchParams }) {
                     </div>
                     <span className={`chip ${chip}`}>{label}</span>
                     {waitingOn && <span className="micro">{waitingOn}</span>}
+                    {a && <Cost usd={costById.get(a.id) || 0} />}
                     {t.site && a && a.status !== "published" && (
                       <PushLiveButton
                         topicId={t.id}
@@ -302,7 +315,7 @@ export default async function TrendingPage({ searchParams }) {
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 680 }}>
                 <thead>
                   <tr>
-                    {["Article", "Article views", "Organic clicks", "Impressions", "Position", ""].map((h, n) => (
+                    {["Article", "Article views", "Organic clicks", "Impressions", "Position", "Cost", ""].map((h, n) => (
                       <th key={n} className="micro" style={{ textAlign: n === 0 ? "left" : "right", padding: "0 0 8px 14px", paddingLeft: n === 0 ? 0 : 14, fontWeight: 400, color: "var(--muted)", borderBottom: "1px solid var(--line)" }}>
                         {h}
                       </th>
@@ -330,6 +343,7 @@ export default async function TrendingPage({ searchParams }) {
                         <td className="num" style={cell}>{num(m.clicks)}</td>
                         <td className="num" style={{ ...cell, color: "var(--muted)" }}>{num(m.impressions)}</td>
                         <td className="num" style={{ ...cell, color: "var(--muted)" }}>{m.position == null ? "—" : m.position.toFixed(1)}</td>
+                        <td style={cell}><Cost usd={costById.get(a.id) || 0} /></td>
                         <td style={cell}>
                           {m.link ? (
                             <a href={m.link} target="_blank" rel="noreferrer noopener" className="btn" style={{ padding: "5px 12px", fontSize: 12, textDecoration: "none" }}>
