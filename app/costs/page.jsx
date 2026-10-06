@@ -2,6 +2,8 @@ import Link from "next/link";
 import FleetNav from "../components/FleetNav";
 import { fleetCosts } from "@/lib/fleet-costs";
 import { SERIES } from "@/app/components/CostCharts";
+import { canEdit } from "@/lib/permissions";
+import { updateFleetSubscription, addFleetSubscription, removeFleetSubscription } from "@/lib/actions";
 
 export const dynamic = "force-dynamic";
 
@@ -233,6 +235,7 @@ function MonthBars({ months, rate }) {
 /* ------------------------------------------------------------- page */
 
 export default async function FleetCostsPage() {
+  const editable = await canEdit();
   let data = null;
   let error = null;
   try {
@@ -260,7 +263,7 @@ export default async function FleetCostsPage() {
     );
   }
 
-  const { titles, subscriptions, subscriptionsEntered, byAgent, totals, month, running, months, rate } = data;
+  const { titles, subscriptions, unconfirmed, byAgent, totals, month, running, months, rate } = data;
   const dayNo = Math.ceil(month.daysElapsed);
   const titleMax = Math.max(...titles.map((t) => t.projectedUsd), 1);
   const agentTotal = byAgent.reduce((n, a) => n + a.thisUsd, 0);
@@ -274,7 +277,6 @@ export default async function FleetCostsPage() {
       colour: i < SERIES.length ? SERIES[i] : "#64748b",
       pct: agentTotal ? Math.round((a.thisUsd / agentTotal) * 100) : 0,
     }));
-  const confirmCount = subscriptions.filter((s) => s.confirm).length;
 
   return (
     <main className="fleet-wrap">
@@ -329,12 +331,11 @@ export default async function FleetCostsPage() {
         </div>
       </section>
 
-      {!subscriptionsEntered && (
-        <div className="gc-warn">
-          <strong>Software bills are not in these totals yet.</strong> Vercel, Neon, Mailchimp and the other
-          shared subscriptions are still at the £0 placeholder ({confirmCount} marked to confirm). Everything
-          else here is measured; the real monthly total is higher by whatever those bills come to.
-        </div>
+      {unconfirmed.length > 0 && (
+        <a href="#subscriptions" className="gc-warn">
+          <strong>{unconfirmed.length} bill{unconfirmed.length === 1 ? " is" : "s are"} not in these totals yet:</strong>{" "}
+          {unconfirmed.join(", ")}. They count as £0 until a figure is saved below. Everything else here is measured.
+        </a>
       )}
 
       {/* ---- Pace. */}
@@ -429,24 +430,68 @@ export default async function FleetCostsPage() {
         </div>
       </section>
 
-      {/* ---- The declared bills, kept but quiet. */}
-      <details className="gc-panel gc-subs">
-        <summary><h2>Software and subscriptions</h2><span className="gc-panel-note">shared across every title · {gbp(totals.subscriptionsUsd, rate, { exact: true })} a month</span></summary>
-        <table>
-          <tbody>
-            {subscriptions.map((s) => (
-              <tr key={s.key}>
-                <td>
-                  {s.label}
-                  {s.confirm && <span className="gc-confirm">confirm</span>}
+      {/* ---- The declared bills, editable in place. */}
+      <section className="gc-panel gc-subs" id="subscriptions">
+        <div className="gc-panel-head">
+          <h2>Software and subscriptions</h2>
+          <span className="gc-panel-note">
+            shared across every title · <strong className="num">{gbp(totals.subscriptionsUsd, rate, { exact: true })}</strong> a month
+          </span>
+        </div>
+        <div className="gc-sub-list">
+          {subscriptions.map((s) => {
+            const currency = s.currency || "GBP";
+            const amount = s.amount ?? Math.round((Number(s.monthlyUsd) || 0) * rate * 100) / 100;
+            return (
+              <div key={s.key} className={`gc-sub${s.confirm ? " is-confirm" : ""}`}>
+                <div className="gc-sub-name">
+                  <span>{s.label}</span>
+                  {s.confirm && <span className="gc-confirm">to confirm</span>}
                   {s.note && <div className="gc-note">{s.note}</div>}
-                </td>
-                <td className="num">{Number(s.monthlyUsd) ? gbp(Number(s.monthlyUsd), rate, { exact: true }) : <span style={{ opacity: 0.4 }}>£0</span>}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </details>
+                </div>
+                {editable ? (
+                  <>
+                    <form action={updateFleetSubscription} className="gc-sub-form">
+                      <input type="hidden" name="key" value={s.key} />
+                      <select name="currency" defaultValue={currency} aria-label={`${s.label} currency`}>
+                        <option value="GBP">£</option>
+                        <option value="USD">$</option>
+                      </select>
+                      <input name="amount" type="number" step="0.01" min="0" defaultValue={amount}
+                        aria-label={`${s.label} monthly cost`} />
+                      <button type="submit" className="gc-btn">Save</button>
+                    </form>
+                    <form action={removeFleetSubscription}>
+                      <input type="hidden" name="key" value={s.key} />
+                      <button type="submit" className="gc-btn-x" title={`Remove ${s.label}`} aria-label={`Remove ${s.label}`}>×</button>
+                    </form>
+                  </>
+                ) : (
+                  <span className="gc-sub-value num">{currency === "USD" ? `$${amount.toFixed(2)}` : `£${amount.toFixed(2)}`}</span>
+                )}
+                {currency === "USD" && Number(s.monthlyUsd) > 0 && (
+                  <span className="gc-sub-conv num">≈ {gbp(Number(s.monthlyUsd), rate, { exact: true })}</span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        {editable && (
+          <form action={addFleetSubscription} className="gc-sub-add">
+            <input name="label" placeholder="Add a subscription, e.g. Canva" required maxLength={80} aria-label="New subscription name" />
+            <select name="currency" defaultValue="GBP" aria-label="New subscription currency">
+              <option value="GBP">£</option>
+              <option value="USD">$</option>
+            </select>
+            <input name="amount" type="number" step="0.01" min="0" placeholder="per month" required aria-label="New subscription monthly cost" />
+            <button type="submit" className="gc-btn">Add</button>
+          </form>
+        )}
+        <p className="gc-note" style={{ marginTop: 10 }}>
+          Monthly cost of each bill, in the currency the invoice is in. Annual plans: divide by twelve.
+          Dollar bills convert at {rate}.
+        </p>
+      </section>
 
       <p className="gc-foot">
         AI spend is measured from real token usage on every agent run and every batch-written article.
