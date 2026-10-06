@@ -10,6 +10,7 @@ import WithdrawButton from "./WithdrawButton";
 import { livePerformance } from "@/lib/trending-performance";
 import { risingArticles } from "@/lib/rising-articles";
 import RisingArticles from "./RisingArticles";
+import { ShowMore, ShowMoreRows } from "./ShowMore";
 
 export const dynamic = "force-dynamic";
 // Refresh now runs as a server action on this page and shares its budget.
@@ -109,11 +110,11 @@ export default async function TrendingPage({ searchParams }) {
   // Once live, a piece leaves the commissioning list for the Live articles
   // table, which is about how it is doing rather than where it has got to.
   const isLive = (t) => articleById.get(t.articleId)?.status === "published";
-  const inProgress = commissioned.filter((t) => !isLive(t)).slice(0, 20);
+  const inProgress = commissioned.filter((t) => !isLive(t));
   const live = commissioned
     .filter(isLive)
     .sort((x, y) => new Date(articleById.get(y.articleId).publishedAt) - new Date(articleById.get(x.articleId).publishedAt))
-    .slice(0, 20);
+    .slice(0, 40);
   const perf = live.length
     ? await livePerformance(
         live.map((t) => {
@@ -245,21 +246,21 @@ export default async function TrendingPage({ searchParams }) {
         )}
 
         {shown.length > 0 && (
-          <div className="trend-list">
+          <ShowMore className="trend-list">
             {shown.map((t) => (
               <TrendCard key={t.id} topic={t} sites={siteOptions} />
             ))}
-          </div>
+          </ShowMore>
         )}
 
         {showAll && unmatched.length > 0 && (
           <section style={{ marginBottom: 28 }}>
             <h2 style={{ margin: "0 0 12px", fontSize: 16 }}>Trending, but no title&rsquo;s readers would care</h2>
-            <div className="trend-list">
+            <ShowMore className="trend-list">
               {unmatched.map((t) => (
                 <TrendCard key={t.id} topic={t} sites={siteOptions} />
               ))}
-            </div>
+            </ShowMore>
           </section>
         )}
 
@@ -269,7 +270,7 @@ export default async function TrendingPage({ searchParams }) {
           <h3 style={{ margin: "0 0 4px", fontSize: 14 }}>Commissioned from trends</h3>
           <p className="micro" style={{ margin: "0 0 14px" }}>being written, checked and published · moves to Live articles once it is up</p>
           {inProgress.length ? (
-            <div style={{ display: "flex", flexDirection: "column" }}>
+            <ShowMore>
               {inProgress.map((t) => {
                 const a = articleById.get(t.articleId);
                 const { label, chip, note: waitingOn } = stage(a);
@@ -299,7 +300,7 @@ export default async function TrendingPage({ searchParams }) {
                   </div>
                 );
               })}
-            </div>
+            </ShowMore>
           ) : (
             <p style={{ color: "var(--muted)", fontSize: 13, margin: 0 }}>Nothing in progress.</p>
           )}
@@ -323,6 +324,7 @@ export default async function TrendingPage({ searchParams }) {
                   </tr>
                 </thead>
                 <tbody>
+                  <ShowMoreRows colSpan={7}>
                   {live.map((t) => {
                     const a = articleById.get(t.articleId);
                     const m = perf.get(a.id) || {};
@@ -356,6 +358,7 @@ export default async function TrendingPage({ searchParams }) {
                       </tr>
                     );
                   })}
+                  </ShowMoreRows>
                 </tbody>
               </table>
             </div>

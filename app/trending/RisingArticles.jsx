@@ -1,4 +1,5 @@
 import SiteMark from "@/app/components/SiteMark";
+import { ShowMore } from "./ShowMore";
 
 // Rising Articles: our pages whose Google impressions jumped this week.
 //
@@ -143,7 +144,7 @@ export default function RisingArticles({ data, sites }) {
       </p>
 
       {rows.length ? (
-        <div style={{ display: "flex", flexDirection: "column" }}>
+        <ShowMore>
           {rows.map((r) => {
             const site = siteById.get(r.siteId);
             return (
@@ -162,7 +163,7 @@ export default function RisingArticles({ data, sites }) {
               </div>
             );
           })}
-        </div>
+        </ShowMore>
       ) : (
         <p style={{ color: "var(--muted)", fontSize: 13, margin: 0 }}>
           {errors.length ? `Search Console could not be read: ${errors[0]}` : "No article has risen meaningfully this week."}
