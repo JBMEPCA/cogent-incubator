@@ -1,0 +1,16 @@
+import os from "node:os"; import { execFileSync } from "node:child_process";
+const { prisma } = await import("../lib/prisma.js"); const { siteCredentials } = await import("../lib/site.js");
+const site = await prisma.site.findUnique({ where: { slug: "smart-sme" } }); const { creds } = await siteCredentials(site.id); await prisma.$disconnect();
+const s = creds.sftp; const key = s.privateKeyPath.replace(/^~/, os.homedir()); const docroot = s.themePath.replace(/\/wp-content\/themes\/.*$/, "");
+const ssh = (c) => { try { return execFileSync("ssh", ["-i", key, "-o", "BatchMode=yes", "-p", String(s.port || 18765), `${s.username}@${s.host}`, c], { encoding: "utf8", timeout: 120000, maxBuffer: 32e6 }).trim(); } catch (e) { return `ERR: ${(e.stderr || e.message).trim().slice(0, 200)}`; } };
+const wp = (a) => ssh(`cd '${docroot}' && wp ${a}`);
+console.log("get:", wp("post get 1319 --fields=ID,post_status,post_name,post_date_gmt,post_modified_gmt --format=json"));
+console.log("url via post url:", wp("post url 1319"));
+console.log("url via list:", wp("post list --post__in=1319 --post_status=any --field=url"));
+console.log("tags:", wp("post term list 1319 post_tag --field=slug"), "| cat:", wp("post term list 1319 category --field=name"));
+console.log("thumb:", wp("post meta get 1319 _thumbnail_id"));
+const url = wp("post url 1319");
+const page = ssh(`curl -s -o /dev/null -w '%{http_code} %{size_download}' -A 'Mozilla/5.0 (CogentCheck)' '${url}'`);
+console.log("article curl:", page);
+const home = ssh(`curl -s -A 'Mozilla/5.0 (CogentCheck)' 'https://smartsme.co.uk/'`);
+console.log(`homepage: ${home.length} bytes, captcha=${/SG-Captcha|Robot Challenge/i.test(home)}, slug hits=${(home.match(/brexit-what-it-cost/g) || []).length}`);

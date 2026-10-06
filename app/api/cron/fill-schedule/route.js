@@ -138,9 +138,24 @@ export async function GET(request) {
   // picture desk in lib/agents/team.js orders its queue by scheduledFor so it
   // can tell an article due tomorrow from one due on Friday, and clearing the
   // times would flatten that back to newest-first.
+  // TRENDING WORK DOES NOT WAIT FOR A SLOT. It was commissioned off a search
+  // spike from the Trending Topics tab, and a spike is over in a day or two:
+  // the next open slot can be tomorrow morning, by which time Top Stories
+  // belongs to someone else. Once it can publish (QA passed, picture in) it is
+  // timed for now, publish-due takes it on the next tick, and it holds no slot,
+  // so the calendar runs exactly as it would have without it.
+  const { trendingArticleIds } = await import("@/lib/trending");
+  const trendIds = new Set(await trendingArticleIds(site.id));
+  let rushed = 0;
+  for (const a of waiting.filter((x) => trendIds.has(x.id) && x.imageUrl)) {
+    await db.article.update({ where: { id: a.id }, data: { scheduledFor: new Date() } });
+    rushed++;
+  }
+  const pool = waiting.filter((x) => !(trendIds.has(x.id) && x.imageUrl));
+
   const ready = {};
   const pending = {};
-  for (const a of waiting) ((a.imageUrl ? ready : pending)[a.type] ||= []).push(a);
+  for (const a of pool) ((a.imageUrl ? ready : pending)[a.type] ||= []).push(a);
   for (const group of [ready, pending]) {
     for (const type of Object.keys(group)) group[type].sort(byScore);
   }
@@ -212,6 +227,7 @@ export async function GET(request) {
         moved,
         released,
         substituted,
+        rushed,
         inFlight,
         commissioning: "director agent",
       };

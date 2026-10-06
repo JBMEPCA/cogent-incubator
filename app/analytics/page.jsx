@@ -1,8 +1,8 @@
 import Link from "next/link";
 import FleetNav from "../components/FleetNav";
 import TrendChart from "../components/TrendChart";
-import { SharePie, Sparkline, colourMap } from "../components/FleetCharts";
-import { fleetAnalytics } from "@/lib/fleet-analytics";
+import { SharePie, Sparkline, RankedList, colourMap } from "../components/FleetCharts";
+import { fleetAnalytics, summarise } from "@/lib/fleet-analytics";
 import Scroller from "@/app/components/Scroller";
 
 export const dynamic = "force-dynamic";
@@ -10,9 +10,13 @@ export const dynamic = "force-dynamic";
 // Every title's numbers on one screen.
 //
 // The per-title Analytics tab is the place to work out why one magazine is
-// doing what it is doing. This is the place to work out which magazine to open
-// — so it leads with the comparison table, and everything above it is context
-// for reading that table rather than a dashboard in its own right.
+// doing what it is doing. This is the place to work out which magazine to open.
+//
+// Split into views rather than one long scroll: the overview carries the key
+// numbers and the comparison table, and the detail for audience, search and
+// content sits one click away. The title filter narrows every figure on the
+// page to one magazine — it is arithmetic over rows already fetched, so it
+// costs no extra Google calls.
 
 const int = (n) => Math.round(n || 0).toLocaleString();
 const pct = (n) => `${(n || 0).toFixed(1)}%`;
@@ -24,109 +28,174 @@ const mmss = (s) => {
 };
 const shortPath = (p) => (p === "/" ? "/ (home)" : String(p).replace(/\/$/, ""));
 
-// Change against the previous window of the same length. Position is the one
-// metric where down is good.
+// GA4 page titles carry the magazine's name as a suffix ("… | Smart SME"),
+// which is noise in a list that already shows the magazine beside every row.
+// Only stripped when the suffix actually names the magazine, so a headline
+// with a dash in it keeps its second half.
+function cleanTitle(title, siteName) {
+  if (!title) return title;
+  const m = title.match(/^(.*\S)\s+[|–—-]\s+([^|–—-]+)$/);
+  if (!m) return title;
+  const word = String(siteName || "").toLowerCase().split(/\s+/).find((w) => w.length > 2 && w !== "the");
+  return word && m[2].toLowerCase().includes(word) ? m[1] : title;
+}
+
+const VIEWS = [
+  { key: "overview", label: "Overview" },
+  { key: "audience", label: "Audience" },
+  { key: "search", label: "Search" },
+  { key: "content", label: "Content" },
+];
+
+// Change against the previous window of the same length, as a compact chip.
+// Position is the one metric where down is good.
 function Delta({ now, before, lowerIsBetter = false }) {
-  if (!before) return <span className="micro" style={{ color: "var(--muted)" }}>no prior data</span>;
+  if (!before) return <span className="an-chip">no prior data</span>;
   const change = ((now - before) / before) * 100;
-  if (!isFinite(change) || Math.abs(change) < 0.5) {
-    return <span className="micro" style={{ color: "var(--muted)" }}>flat</span>;
-  }
+  if (!isFinite(change) || Math.abs(change) < 0.5) return <span className="an-chip">flat</span>;
   const good = lowerIsBetter ? change < 0 : change > 0;
   return (
-    <span className="micro num" style={{ color: good ? "var(--neon-green)" : "var(--neon-red)", letterSpacing: "0.06em" }}>
-      {change > 0 ? "▲" : "▼"} {Math.abs(change).toFixed(0)}% vs prev 28d
+    <span className={`an-chip num ${good ? "is-good" : "is-bad"}`} title="vs the previous 28 days">
+      {change > 0 ? "▲" : "▼"} {Math.abs(change).toFixed(0)}%
     </span>
   );
 }
 
-function Tile({ label, value, tone, children }) {
+function Kpi({ label, value, colour, delta, foot, spark }) {
   return (
-    <div className="panel" style={{ padding: 16, minWidth: 0 }}>
-      <div className="stat-label">{label}</div>
-      <div className="stat-value num" style={{ fontSize: 27, margin: "4px 0 6px", color: tone }}>{value}</div>
+    <div className="panel an-kpi">
+      <div className="an-kpi-label">
+        <span className="an-dot" style={{ background: colour }} />
+        {label}
+      </div>
+      <div className="an-kpi-value num">{value}</div>
+      <div className="an-kpi-meta">
+        {delta}
+        {foot && <span className="an-kpi-foot">{foot}</span>}
+      </div>
+      <div className="an-kpi-spark">
+        {spark && spark.length > 1 ? (
+          <Sparkline points={spark} colour={colour} label={`${label} per day`} />
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function SectionHead({ title, note, action }) {
+  return (
+    <div className="an-section-head">
+      <h2>{title}</h2>
+      {note && <span className="micro">{note}</span>}
+      {action && <span className="an-section-action">{action}</span>}
+    </div>
+  );
+}
+
+function Card({ title, note, children, action }) {
+  return (
+    <div className="panel an-card">
+      <div className="an-card-head">
+        <div>
+          <h3>{title}</h3>
+          {note && <p className="micro">{note}</p>}
+        </div>
+        {action}
+      </div>
       {children}
     </div>
   );
 }
 
-const tileGrid = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 165px), 1fr))",
-  gap: 14,
-};
+function Empty({ children }) {
+  return <p style={{ color: "var(--muted)", fontSize: 13, margin: 0 }}>{children}</p>;
+}
 
 const cell = {
-  padding: "9px 0 9px 14px",
+  padding: "10px 0 10px 14px",
   borderBottom: "1px solid var(--line)",
   textAlign: "right",
   whiteSpace: "nowrap",
 };
 
-const headCell = { ...cell, padding: "0 0 8px 14px", fontWeight: 400, color: "var(--muted)" };
+const headCell = { ...cell, padding: "0 0 9px 14px", fontWeight: 400, color: "var(--muted)" };
 
-export default async function GroupAnalyticsPage() {
+function Shell({ children }) {
+  return (
+    <main className="fleet-wrap">
+      <header className="fleet-head">
+        <div>
+          <span className="micro">Cogent Incubator</span>
+          <h1>Group analytics</h1>
+        </div>
+        <FleetNav />
+      </header>
+      {children}
+    </main>
+  );
+}
+
+export default async function GroupAnalyticsPage({ searchParams }) {
+  const sp = (await searchParams) || {};
+
   let data;
   try {
     data = await fleetAnalytics();
   } catch (err) {
     return (
-      <main className="fleet-wrap">
-        <header className="fleet-head">
-          <div>
-            <span className="micro">Cogent Incubator</span>
-            <h1>Group analytics</h1>
-          </div>
-          <FleetNav />
-        </header>
+      <Shell>
         <section className="panel fleet-empty">
           <span className="micro">Not connected</span>
           <h1>Could not read the numbers</h1>
           <p className="fleet-err">{String(err.message).split("\n")[0]}</p>
         </section>
-      </main>
+      </Shell>
     );
   }
 
-  const { rows, titleOrder, totals, trend, channels, topPages, topQueries, connected, windowDays } = data;
+  const { rows: allRows, titleOrder, windowDays } = data;
 
-  if (!rows.length) {
+  if (!allRows.length) {
     return (
-      <main className="fleet-wrap">
-        <header className="fleet-head">
-          <div>
-            <span className="micro">Cogent Incubator</span>
-            <h1>Group analytics</h1>
-          </div>
-          <FleetNav />
-        </header>
+      <Shell>
         <section className="panel fleet-empty">
           <span className="micro">No titles yet</span>
           <h1>Nothing to measure</h1>
           <p>There are no titles in the fleet, so there is nothing to compare.</p>
           <Link href="/new-title" className="btn">Add a title</Link>
         </section>
-      </main>
+      </Shell>
     );
   }
 
+  const view = VIEWS.some((v) => v.key === sp.view) ? sp.view : "overview";
+  const focus = allRows.find((r) => r.slug === sp.title) || null;
+  const rows = focus ? [focus] : allRows;
+  const { totals, trend, channels, topPages, topQueries, connected } = focus ? summarise(rows) : data;
+  // The fleet payload caps its lists at twelve; the full ranking is recomputed
+  // here so the Content view can show more than the overview does.
+  const ranked = focus ? { topPages, topQueries } : summarise(allRows);
+
+  const href = (next) => {
+    const q = new URLSearchParams();
+    const v = next.view ?? view;
+    const t = next.title === undefined ? focus?.slug : next.title;
+    if (v !== "overview") q.set("view", v);
+    if (t) q.set("title", t);
+    const s = q.toString();
+    return s ? `/analytics?${s}` : "/analytics";
+  };
+
   // Named rather than left as a number to interpret: a title missing from the
-  // audience columns is a missing integration, not a magazine nobody reads,
-  // and those two need very different responses.
+  // audience columns is a missing integration, not a magazine nobody reads.
   const unconnected = rows.filter((r) => !r.ga4 && !r.gsc);
-  // What Google actually said, deduped — the same fleet-wide fault (an
-  // unreadable service-account key, a revoked grant) otherwise repeats once
-  // per title and buries the one line that identifies it.
-  //
-  // Reported rather than diagnosed on the page's behalf. An earlier version
-  // asserted "no property set", which was wrong the first time a real failure
-  // turned up: the properties were set and the key file could not be read, and
-  // the confident wrong explanation would have sent someone to the wrong screen.
+  // What Google actually said, deduped — reported rather than diagnosed on
+  // the page's behalf, since a confident wrong explanation sends someone to
+  // the wrong screen.
   const googleErrors = [...new Set(rows.flatMap((r) => r.errors || []))];
 
-  // Colour by title, from the fixed launch order the data layer supplies, so
-  // the same magazine is the same colour in all four donuts and in the strip
-  // of per-title trends further down.
+  // Colour by title from the fixed launch order, so the same magazine is the
+  // same colour in every donut, sparkline and ranked list on the page.
   const colours = colourMap(titleOrder);
   const byTitle = (pick, display) =>
     rows.map((r) => ({
@@ -136,181 +205,174 @@ export default async function GroupAnalyticsPage() {
       colour: colours[r.slug],
       display: display ? display(pick(r) || 0) : undefined,
     }));
-
-  // Channels are entities too, so their colour comes from a fixed alphabetical
-  // order rather than from how they happen to rank this month.
   const channelColours = colourMap(channels.map((c) => c.channel).sort());
+
+  // ── Ranked lists ──────────────────────────────────────────────────────
+  const pageItems = (list) => {
+    const max = Math.max(1, ...list.map((p) => p.views));
+    return list.map((p, i) => ({
+      key: `${p.siteSlug}-${p.path}-${i}`,
+      primary: cleanTitle(p.title, p.siteName) || shortPath(p.path),
+      meta: focus ? shortPath(p.path) : `${p.siteName} · ${shortPath(p.path)}`,
+      colour: colours[p.siteSlug],
+      value: int(p.views),
+      unit: "views",
+      sub: `${int(p.users)} users`,
+      share: p.views / max,
+    }));
+  };
+
+  // Converters first, then near misses — the same split lib/analytics.js
+  // selects them by. Near misses are bar-scaled on impressions, since they
+  // have no clicks to scale on, and drawn faded so the two never read as one
+  // measure.
+  const queryItems = (list) => {
+    const maxClicks = Math.max(1, ...list.map((q) => q.clicks));
+    const maxImpr = Math.max(1, ...list.map((q) => q.impressions));
+    return list.map((q, i) => {
+      const clicked = q.clicks > 0;
+      return {
+        key: `${q.siteSlug}-${q.query}-${i}`,
+        primary: q.query,
+        meta: focus ? null : q.siteName,
+        colour: colours[q.siteSlug],
+        value: clicked ? int(q.clicks) : int(q.impressions),
+        unit: clicked ? "clicks" : "impr.",
+        sub: clicked ? `${int(q.impressions)} impr.` : "no clicks yet",
+        position: q.position,
+        share: clicked ? q.clicks / maxClicks : q.impressions / maxImpr,
+        faded: !clicked,
+        group: clicked ? "Earning clicks" : "Seen, not clicked yet — worth writing for",
+      };
+    });
+  };
+
+  const converters = ranked.topQueries.filter((q) => q.clicks > 0);
+  const nearMisses = ranked.topQueries.filter((q) => q.clicks === 0).sort((a, b) => b.impressions - a.impressions);
+
+  const mostRead = (limit, withAction) => (
+    <Card
+      title={focus ? "Most read" : "Most read across the fleet"}
+      note={focus ? `page views over ${windowDays} days` : "every title's pages ranked together"}
+      action={withAction && ranked.topPages.length > limit ? <Link className="an-link" href={href({ view: "content" })}>See all →</Link> : null}
+    >
+      {ranked.topPages.length ? (
+        <RankedList items={pageItems(ranked.topPages.slice(0, limit))} />
+      ) : (
+        <Empty>No page views recorded yet.</Empty>
+      )}
+    </Card>
+  );
+
+  const searched = (limit, withAction) => (
+    <Card
+      title="What people searched"
+      note={focus ? "google queries · clicks, then near misses" : "every title's queries · clicks, then near misses"}
+      action={withAction && ranked.topQueries.length > limit ? <Link className="an-link" href={href({ view: "search" })}>See all →</Link> : null}
+    >
+      {ranked.topQueries.length ? (
+        <RankedList items={queryItems(ranked.topQueries.slice(0, limit))} grouped />
+      ) : (
+        <Empty>No queries have surfaced {focus ? "this title" : "any title"} yet.</Empty>
+      )}
+    </Card>
+  );
+
+  const audienceSpark = (k) => trend.audience.map((d) => ({ date: d.date, value: d[k] }));
+  const searchSpark = (k) => trend.search.map((d) => ({ date: d.date, value: d[k] }));
+
+  const trendCard = (title, points, colour, label, empty) => (
+    <Card title={title}>
+      {points.length ? <TrendChart points={points} color={colour} label={label} /> : <Empty>{empty}</Empty>}
+    </Card>
+  );
+
+  const grid = (min) => ({
+    display: "grid",
+    gridTemplateColumns: `repeat(auto-fit, minmax(min(100%, ${min}px), 1fr))`,
+    gap: 16,
+  });
 
   return (
     <main className="fleet-wrap">
       <header className="fleet-head">
         <div>
           <span className="micro">Cogent Incubator</span>
-          <h1>Group analytics</h1>
+          <h1>{focus ? focus.name : "Group analytics"}</h1>
           <p style={{ color: "var(--muted)", fontSize: 13.5, margin: "8px 0 0", maxWidth: 560 }}>
-            Every title, rolling {windowDays} days. Editorial figures are exact; audience figures
-            cover the {connected.ga4} of {connected.total} titles connected to Google Analytics and{" "}
-            {connected.gsc} connected to Search Console.
+            {focus ? (
+              <>
+                Rolling {windowDays} days.{" "}
+                <Link href={`/s/${focus.slug}/analytics`} className="an-link">
+                  Open {focus.name}&apos;s own analytics →
+                </Link>
+              </>
+            ) : (
+              <>
+                Every title, rolling {windowDays} days. Audience figures cover the {connected.ga4} of{" "}
+                {connected.total} titles on Google Analytics, search the {connected.gsc} on Search Console.
+              </>
+            )}
           </p>
         </div>
         <div className="fleet-head-right">
           <FleetNav />
           {totals.liveUsers > 0 && (
-            <div style={{ textAlign: "right" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end" }}>
-                <span className="agent-dot online" />
-                <span className="stat-value num" style={{ fontSize: 26 }}>{totals.liveUsers}</span>
-              </div>
-              <div className="stat-label">reading right now, fleet-wide</div>
+            <div className="an-live">
+              <span className="agent-dot online" />
+              <span className="num">{totals.liveUsers}</span>
+              <span>reading right now</span>
             </div>
           )}
         </div>
       </header>
 
-      {/* ── Audience, fleet-wide ───────────────────────────────────────── */}
-      <section>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 14 }}>
-          <h2 style={{ margin: 0, fontSize: 17 }}>Audience</h2>
-          <span className="micro">last {windowDays} days · summed across {connected.ga4} titles</span>
-        </div>
-        <div className="stagger" style={tileGrid}>
-          <Tile label="Users" value={int(totals.users)}>
-            <Delta now={totals.users} before={totals.prevUsers} />
-          </Tile>
-          <Tile label="Sessions" value={int(totals.sessions)}>
-            <Delta now={totals.sessions} before={totals.prevSessions} />
-          </Tile>
-          <Tile label="Page views" value={int(totals.pageViews)}>
-            <Delta now={totals.pageViews} before={totals.prevPageViews} />
-          </Tile>
-          <Tile label="Avg session" value={mmss(totals.avgDuration)}>
-            <span className="micro">session-weighted across titles</span>
-          </Tile>
-        </div>
-      </section>
-
-      {/* ── Search, fleet-wide ─────────────────────────────────────────── */}
-      <section>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 14 }}>
-          <h2 style={{ margin: 0, fontSize: 17 }}>Search visibility</h2>
-          <span className="micro">last {windowDays} days · summed across {connected.gsc} titles</span>
-        </div>
-        <div className="stagger" style={tileGrid}>
-          <Tile label="Clicks" value={int(totals.clicks)}>
-            <Delta now={totals.clicks} before={totals.prevClicks} />
-          </Tile>
-          <Tile label="Impressions" value={int(totals.impressions)}>
-            <Delta now={totals.impressions} before={totals.prevImpressions} />
-          </Tile>
-          <Tile label="Click-through rate" value={pct(totals.ctr)}>
-            <Delta now={totals.ctr} before={totals.prevCtr} />
-          </Tile>
-          <Tile label="Average position" value={pos(totals.position)}>
-            <Delta now={totals.position} before={totals.prevPosition} lowerIsBetter />
-          </Tile>
-        </div>
-      </section>
-
-      {/* ── The comparison. What this page exists for. ─────────────────── */}
-      <section>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 14 }}>
-          <h2 style={{ margin: 0, fontSize: 17 }}>Every title</h2>
-          <span className="micro">
-            output and spend from our own records · audience from google · biggest audience first
-          </span>
-        </div>
-        <div className="panel" style={{ padding: "16px 18px" }}>
-          <Scroller>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 880 }}>
-              <thead>
-                <tr>
-                  <th className="micro" style={{ ...headCell, textAlign: "left", paddingLeft: 0 }}>Title</th>
-                  <th className="micro" style={headCell}>Published</th>
-                  <th className="micro" style={headCell}>Pipeline</th>
-                  <th className="micro" style={headCell}>Awaiting</th>
-                  <th className="micro" style={headCell}>Spend, mo</th>
-                  <th className="micro" style={headCell}>Users</th>
-                  <th className="micro" style={headCell}>Sessions</th>
-                  <th className="micro" style={headCell}>Clicks</th>
-                  <th className="micro" style={headCell}>Impr.</th>
-                  <th className="micro" style={headCell}>Pos.</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((r) => {
-                  const dark = !r.ga4 && !r.gsc;
-                  return (
-                    <tr key={r.id}>
-                      <td style={{ ...cell, textAlign: "left", paddingLeft: 0, maxWidth: 260 }}>
-                        <Link
-                          href={`/s/${r.slug}/analytics`}
-                          style={{ color: "var(--text)", textDecoration: "none", display: "flex", alignItems: "center", gap: 9 }}
-                        >
-                          <span
-                            style={{
-                              width: 8,
-                              height: 8,
-                              borderRadius: "50%",
-                              background: r.accentHex || "var(--brand-2)",
-                              flex: "none",
-                            }}
-                          />
-                          <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{r.name}</span>
-                        </Link>
-                        {dark && <span className="micro" style={{ paddingLeft: 17 }}>google not connected</span>}
-                      </td>
-                      <td className="num" style={cell}>{int(r.publishedWindow)}</td>
-                      <td className="num" style={{ ...cell, color: "var(--muted)" }}>{int(r.pipeline)}</td>
-                      <td className="num" style={{ ...cell, color: r.awaiting ? "var(--neon-amber)" : "var(--muted)" }}>
-                        {int(r.awaiting)}
-                      </td>
-                      <td className="num" style={{ ...cell, color: "var(--muted)" }}>{money(r.spendMonth)}</td>
-                      <td className="num" style={cell}>{r.ga4 ? int(r.ga4.users) : "—"}</td>
-                      <td className="num" style={{ ...cell, color: "var(--muted)" }}>{r.ga4 ? int(r.ga4.sessions) : "—"}</td>
-                      <td className="num" style={cell}>{r.gsc ? int(r.gsc.clicks) : "—"}</td>
-                      <td className="num" style={{ ...cell, color: "var(--muted)" }}>{r.gsc ? int(r.gsc.impressions) : "—"}</td>
-                      <td className="num" style={{ ...cell, color: "var(--muted)" }}>{r.gsc ? pos(r.gsc.position) : "—"}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-              <tfoot>
-                <tr style={{ fontWeight: 700 }}>
-                  <td style={{ ...cell, textAlign: "left", paddingLeft: 0, borderBottom: "none" }}>Fleet</td>
-                  <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.publishedWindow)}</td>
-                  <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.pipeline)}</td>
-                  <td className="num" style={{ ...cell, borderBottom: "none", color: totals.awaiting ? "var(--neon-amber)" : undefined }}>
-                    {int(totals.awaiting)}
-                  </td>
-                  <td className="num" style={{ ...cell, borderBottom: "none" }}>{money(totals.spendMonth)}</td>
-                  <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.users)}</td>
-                  <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.sessions)}</td>
-                  <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.clicks)}</td>
-                  <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.impressions)}</td>
-                  <td className="num" style={{ ...cell, borderBottom: "none" }}>{pos(totals.position)}</td>
-                </tr>
-              </tfoot>
-            </table>
-          </Scroller>
-          <p className="micro" style={{ margin: "12px 0 0" }}>
-            published and pipeline over {windowDays} days · spend is this calendar month, in USD —{" "}
-            <Link href="/costs" className="nav-link" style={{ padding: 0, fontSize: 11 }}>
-              the sterling breakdown is on group costs
+      {/* ── Filters ────────────────────────────────────────────────────── */}
+      <div className="an-filters">
+        <nav className="an-tabs" aria-label="Analytics view">
+          {VIEWS.map((v) => (
+            <Link key={v.key} href={href({ view: v.key })} className={`an-tab${v.key === view ? " is-active" : ""}`}>
+              {v.label}
             </Link>
-          </p>
+          ))}
+        </nav>
+        <div className="an-titles" aria-label="Filter by title">
+          <Link href={href({ title: null })} className={`an-pill${!focus ? " is-active" : ""}`}>
+            All titles
+          </Link>
+          {titleOrder.map((slug) => {
+            const r = allRows.find((x) => x.slug === slug);
+            if (!r) return null;
+            return (
+              <Link
+                key={slug}
+                href={href({ title: slug })}
+                className={`an-pill${focus?.slug === slug ? " is-active" : ""}`}
+                title={!r.ga4 && !r.gsc ? "Google not connected" : undefined}
+              >
+                <span className="an-dot" style={{ background: colours[slug], opacity: !r.ga4 && !r.gsc ? 0.35 : 1 }} />
+                {r.name}
+              </Link>
+            );
+          })}
         </div>
-      </section>
+      </div>
 
-      {unconnected.length > 0 && (
-        <div className="panel" style={{ borderColor: "rgba(251,191,36,0.4)" }}>
-          <p style={{ margin: "0 0 8px", color: "var(--muted)", fontSize: 13 }}>
+      {unconnected.length > 0 && (view === "overview" || focus) && (
+        <div className="panel" style={{ borderColor: "rgba(251,191,36,0.4)", padding: "14px 18px" }}>
+          <p style={{ margin: "0 0 6px", color: "var(--muted)", fontSize: 13 }}>
             <strong style={{ color: "var(--neon-amber)" }}>
-              {unconnected.length === 1 ? "One title is" : `${unconnected.length} titles are`} missing from
-              the audience and search figures.
+              {focus
+                ? `${focus.name} is not returning anything from Google.`
+                : `${unconnected.length === 1 ? "One title is" : `${unconnected.length} titles are`} missing from the audience and search figures.`}
             </strong>{" "}
-            {unconnected.map((r) => r.name).join(", ")} returned nothing from Google, so every fleet
-            total above is counting the {rows.length - unconnected.length} that did.
-            {unconnected.length === rows.length && " That is all of them — the fault is fleet-wide, not per title."}
+            {!focus && (
+              <>
+                {unconnected.map((r) => r.name).join(", ")} returned nothing from Google, so every total
+                is counting the {rows.length - unconnected.length} that did.
+                {unconnected.length === rows.length && " That is all of them — the fault is fleet-wide, not per title."}
+              </>
+            )}
           </p>
           {googleErrors.length > 0 ? (
             <ul style={{ margin: 0, paddingLeft: 18, color: "var(--muted)", fontSize: 12.5 }}>
@@ -328,263 +390,281 @@ export default async function GroupAnalyticsPage() {
         </div>
       )}
 
-      {/* ── Share of the group ─────────────────────────────────────────── */}
-      <section>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 14 }}>
-          <h2 style={{ margin: 0, fontSize: 17 }}>Share of the group</h2>
-          <span className="micro">
-            part-to-whole at a glance · the table above is where close values get read precisely
-          </span>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 330px), 1fr))", gap: 18 }}>
-          <div className="panel" style={{ padding: 18 }}>
-            <h3 style={{ margin: "0 0 4px", fontSize: 14 }}>Readers, by title</h3>
-            <p className="micro" style={{ margin: "0 0 14px" }}>sessions over {windowDays} days</p>
-            <SharePie
-              slices={byTitle((r) => r.ga4?.sessions)}
-              centre={int(totals.sessions)}
-              centreLabel="sessions"
-              ariaLabel="Share of fleet sessions by title"
-              empty="No sessions recorded across the fleet yet."
-            />
-          </div>
+      {/* ── OVERVIEW ───────────────────────────────────────────────────── */}
+      {view === "overview" && (
+        <>
+          <section className="an-kpis stagger">
+            <Kpi label="Users" value={int(totals.users)} colour="var(--neon-green)"
+              delta={<Delta now={totals.users} before={totals.prevUsers} />} spark={audienceSpark("users")} />
+            <Kpi label="Page views" value={int(totals.pageViews)} colour="var(--neon-cyan)"
+              delta={<Delta now={totals.pageViews} before={totals.prevPageViews} />} spark={audienceSpark("pageViews")} />
+            <Kpi label="Search clicks" value={int(totals.clicks)} colour="var(--neon-amber)"
+              delta={<Delta now={totals.clicks} before={totals.prevClicks} />} spark={searchSpark("clicks")} />
+            <Kpi label="Impressions" value={int(totals.impressions)} colour="var(--neon-violet)"
+              delta={<Delta now={totals.impressions} before={totals.prevImpressions} />} spark={searchSpark("impressions")} />
+            <Kpi label="Published" value={int(totals.publishedWindow)} colour="var(--brand-2)"
+              foot={`${int(totals.pipeline)} in pipeline${totals.awaiting ? ` · ${int(totals.awaiting)} awaiting` : ""}`} />
+            <Kpi label="Spend, this month" value={money(totals.spendMonth)} colour="var(--neon-red)"
+              foot={<Link href="/costs" className="an-link">breakdown →</Link>} />
+          </section>
 
-          <div className="panel" style={{ padding: 18 }}>
-            <h3 style={{ margin: "0 0 4px", fontSize: 14 }}>Output, by title</h3>
-            <p className="micro" style={{ margin: "0 0 14px" }}>articles published over {windowDays} days</p>
-            <SharePie
-              slices={byTitle((r) => r.publishedWindow)}
-              centre={int(totals.publishedWindow)}
-              centreLabel="published"
-              ariaLabel="Share of articles published by title"
-              empty="Nothing published in this window."
-            />
-          </div>
-
-          <div className="panel" style={{ padding: 18 }}>
-            <h3 style={{ margin: "0 0 4px", fontSize: 14 }}>Search clicks, by title</h3>
-            <p className="micro" style={{ margin: "0 0 14px" }}>google clicks over {windowDays} days</p>
-            <SharePie
-              slices={byTitle((r) => r.gsc?.clicks)}
-              centre={int(totals.clicks)}
-              centreLabel="clicks"
-              ariaLabel="Share of search clicks by title"
-              empty="No search clicks recorded yet."
-            />
-          </div>
-
-          <div className="panel" style={{ padding: 18 }}>
-            <h3 style={{ margin: "0 0 4px", fontSize: 14 }}>Where readers come from</h3>
-            <p className="micro" style={{ margin: "0 0 14px" }}>sessions by channel, every title pooled</p>
-            <SharePie
-              slices={channels.map((c) => ({
-                key: c.channel,
-                label: c.channel,
-                value: c.sessions,
-                colour: channelColours[c.channel],
-              }))}
-              centre={int(totals.sessions)}
-              centreLabel="sessions"
-              ariaLabel="Share of fleet sessions by acquisition channel"
-              empty="No sessions to break down yet."
-            />
-          </div>
-
-          {/* Spend belongs to the same question — what each title is worth
-              running — and it is the one slice here that is a cost rather than
-              a return, so it sits last and links out to the full breakdown. */}
-          <div className="panel" style={{ padding: 18 }}>
-            <h3 style={{ margin: "0 0 4px", fontSize: 14 }}>Spend, by title</h3>
-            <p className="micro" style={{ margin: "0 0 14px" }}>
-              agent spend this calendar month ·{" "}
-              <Link href="/costs" className="nav-link" style={{ padding: 0, fontSize: 11 }}>
-                full breakdown
-              </Link>
-            </p>
-            <SharePie
-              slices={byTitle((r) => r.spendMonth, money)}
-              centre={money(totals.spendMonth)}
-              centreLabel="this month"
-              ariaLabel="Share of fleet agent spend by title"
-              empty="No agent spend recorded this month."
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* ── Fleet trends ───────────────────────────────────────────────── */}
-      <section>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 14 }}>
-          <h2 style={{ margin: 0, fontSize: 17 }}>Day by day, all titles</h2>
-          <span className="micro">
-            one measure per chart · search console reports three days behind analytics
-          </span>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))", gap: 18 }}>
-          <div className="panel" style={{ padding: 18 }}>
-            <h3 style={{ margin: "0 0 12px", fontSize: 14 }}>Users per day</h3>
-            {trend.audience.length ? (
-              <TrendChart
-                points={trend.audience.map((d) => ({ date: d.date, value: d.users }))}
-                color="var(--neon-green)"
-                label="users"
-              />
-            ) : (
-              <p style={{ color: "var(--muted)", fontSize: 13, margin: 0 }}>No sessions recorded yet.</p>
-            )}
-          </div>
-          <div className="panel" style={{ padding: 18 }}>
-            <h3 style={{ margin: "0 0 12px", fontSize: 14 }}>Page views per day</h3>
-            {trend.audience.length ? (
-              <TrendChart
-                points={trend.audience.map((d) => ({ date: d.date, value: d.pageViews }))}
-                color="var(--neon-cyan)"
-                label="page views"
-              />
-            ) : (
-              <p style={{ color: "var(--muted)", fontSize: 13, margin: 0 }}>No page views recorded yet.</p>
-            )}
-          </div>
-          <div className="panel" style={{ padding: 18 }}>
-            <h3 style={{ margin: "0 0 12px", fontSize: 14 }}>Impressions per day</h3>
-            {trend.search.length ? (
-              <TrendChart
-                points={trend.search.map((d) => ({ date: d.date, value: d.impressions }))}
-                color="var(--neon-violet)"
-                label="impressions"
-              />
-            ) : (
-              <p style={{ color: "var(--muted)", fontSize: 13, margin: 0 }}>No impressions recorded yet.</p>
-            )}
-          </div>
-          <div className="panel" style={{ padding: 18 }}>
-            <h3 style={{ margin: "0 0 12px", fontSize: 14 }}>Search clicks per day</h3>
-            {trend.search.length ? (
-              <TrendChart
-                points={trend.search.map((d) => ({ date: d.date, value: d.clicks }))}
-                color="var(--neon-amber)"
-                label="clicks"
-              />
-            ) : (
-              <p style={{ color: "var(--muted)", fontSize: 13, margin: 0 }}>No search clicks recorded yet.</p>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Each title's own shape ─────────────────────────────────────── */}
-      <section className="panel" style={{ padding: 18 }}>
-        <h3 style={{ margin: "0 0 4px", fontSize: 14 }}>Each title, day by day</h3>
-        <p className="micro" style={{ margin: "0 0 16px" }}>
-          users per day · each panel is scaled to its own peak, so these compare shape, not size —
-          the figure beside each one carries the size
-        </p>
-        <div style={{ display: "grid", gap: 12 }}>
-          {rows.map((r) => (
-            <div
-              key={r.id}
-              className="fleet-title-row"
-            >
-              <Link
-                href={`/s/${r.slug}/analytics`}
-                style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--text)", textDecoration: "none", fontSize: 13, minWidth: 0 }}
-              >
-                <span style={{ width: 9, height: 9, borderRadius: 2, background: colours[r.slug], flex: "none" }} />
-                <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.name}</span>
-              </Link>
-              {r.ga4 ? (
-                <Sparkline
-                  points={r.ga4.trend.map((d) => ({ date: d.date, value: d.users }))}
-                  colour={colours[r.slug]}
-                  label={`${r.name} users per day`}
-                />
-              ) : (
-                <span className="micro" style={{ opacity: 0.6 }}>google not connected</span>
-              )}
-              <span className="num" style={{ textAlign: "right", fontSize: 13, color: "var(--muted)" }}>
-                {r.ga4 ? `${int(r.ga4.users)} users` : "—"}
-              </span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── What gets read ─────────────────────────────────────────────── */}
-      <section>
-        <div className="panel" style={{ padding: 18 }}>
-          <h3 style={{ margin: "0 0 4px", fontSize: 14 }}>Most read across the fleet</h3>
-          <p className="micro" style={{ margin: "0 0 14px" }}>
-            every title&apos;s pages ranked together, so the best page in the group is visible
-          </p>
-          {topPages.length ? (
-            <Scroller>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 460 }}>
-              <thead>
-                <tr>
-                  <th className="micro" style={{ ...headCell, textAlign: "left", paddingLeft: 0 }}>Page</th>
-                  <th className="micro" style={headCell}>Title</th>
-                  <th className="micro" style={headCell}>Views</th>
-                  <th className="micro" style={headCell}>Users</th>
-                </tr>
-              </thead>
-              <tbody>
-                {topPages.map((p, i) => (
-                  <tr key={`${p.siteSlug}-${p.path}-${i}`}>
-                    <td style={{ ...cell, textAlign: "left", paddingLeft: 0, maxWidth: 320, overflow: "hidden", textOverflow: "ellipsis" }}>
-                      {p.title || shortPath(p.path)}
-                    </td>
-                    <td style={{ ...cell, color: "var(--muted)" }}>{p.siteName}</td>
-                    <td className="num" style={cell}>{int(p.views)}</td>
-                    <td className="num" style={{ ...cell, color: "var(--muted)" }}>{int(p.users)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            </Scroller>
-          ) : (
-            <p style={{ color: "var(--muted)", fontSize: 13, margin: 0 }}>No page views recorded yet.</p>
+          {!focus && (
+            <section>
+              <SectionHead title="Every title" note="biggest audience first · click a title to filter" />
+              <div className="panel" style={{ padding: "16px 18px" }}>
+                <Scroller>
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 880 }}>
+                    <thead>
+                      <tr>
+                        <th className="micro" style={{ ...headCell, textAlign: "left", paddingLeft: 0 }}>Title</th>
+                        <th className="micro" style={headCell}>Published</th>
+                        <th className="micro" style={headCell}>Pipeline</th>
+                        <th className="micro" style={headCell}>Awaiting</th>
+                        <th className="micro" style={headCell}>Spend, mo</th>
+                        <th className="micro" style={headCell}>Users</th>
+                        <th className="micro" style={headCell}>Sessions</th>
+                        <th className="micro" style={headCell}>Clicks</th>
+                        <th className="micro" style={headCell}>Impr.</th>
+                        <th className="micro" style={headCell}>Pos.</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rows.map((r) => {
+                        const dark = !r.ga4 && !r.gsc;
+                        return (
+                          <tr key={r.id} className="an-row">
+                            <td style={{ ...cell, textAlign: "left", paddingLeft: 0, maxWidth: 260 }}>
+                              <Link
+                                href={href({ title: r.slug })}
+                                style={{ color: "var(--text)", textDecoration: "none", display: "flex", alignItems: "center", gap: 9 }}
+                              >
+                                <span className="an-dot" style={{ background: colours[r.slug] }} />
+                                <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{r.name}</span>
+                              </Link>
+                              {dark && <span className="micro" style={{ paddingLeft: 17 }}>google not connected</span>}
+                            </td>
+                            <td className="num" style={cell}>{int(r.publishedWindow)}</td>
+                            <td className="num" style={{ ...cell, color: "var(--muted)" }}>{int(r.pipeline)}</td>
+                            <td className="num" style={{ ...cell, color: r.awaiting ? "var(--neon-amber)" : "var(--muted)" }}>
+                              {int(r.awaiting)}
+                            </td>
+                            <td className="num" style={{ ...cell, color: "var(--muted)" }}>{money(r.spendMonth)}</td>
+                            <td className="num" style={cell}>{r.ga4 ? int(r.ga4.users) : "—"}</td>
+                            <td className="num" style={{ ...cell, color: "var(--muted)" }}>{r.ga4 ? int(r.ga4.sessions) : "—"}</td>
+                            <td className="num" style={cell}>{r.gsc ? int(r.gsc.clicks) : "—"}</td>
+                            <td className="num" style={{ ...cell, color: "var(--muted)" }}>{r.gsc ? int(r.gsc.impressions) : "—"}</td>
+                            <td className="num" style={{ ...cell, color: "var(--muted)" }}>{r.gsc ? pos(r.gsc.position) : "—"}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                    <tfoot>
+                      <tr style={{ fontWeight: 700 }}>
+                        <td style={{ ...cell, textAlign: "left", paddingLeft: 0, borderBottom: "none" }}>Fleet</td>
+                        <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.publishedWindow)}</td>
+                        <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.pipeline)}</td>
+                        <td className="num" style={{ ...cell, borderBottom: "none", color: totals.awaiting ? "var(--neon-amber)" : undefined }}>
+                          {int(totals.awaiting)}
+                        </td>
+                        <td className="num" style={{ ...cell, borderBottom: "none" }}>{money(totals.spendMonth)}</td>
+                        <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.users)}</td>
+                        <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.sessions)}</td>
+                        <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.clicks)}</td>
+                        <td className="num" style={{ ...cell, borderBottom: "none" }}>{int(totals.impressions)}</td>
+                        <td className="num" style={{ ...cell, borderBottom: "none" }}>{pos(totals.position)}</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </Scroller>
+                <p className="micro" style={{ margin: "12px 0 0" }}>
+                  published and pipeline over {windowDays} days · spend is this calendar month, in USD —{" "}
+                  <Link href="/costs" className="nav-link" style={{ padding: 0, fontSize: 11 }}>
+                    the sterling breakdown is on group costs
+                  </Link>
+                </p>
+              </div>
+            </section>
           )}
-        </div>
-      </section>
 
-      <section className="panel" style={{ padding: 18 }}>
-        <h3 style={{ margin: "0 0 4px", fontSize: 14 }}>What people searched, across every title</h3>
-        <p className="micro" style={{ margin: "0 0 14px" }}>
-          queries ranked by clicks, fleet-wide · the title each one landed on is beside it
-        </p>
-        {topQueries.length ? (
-          <Scroller>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-              <thead>
-                <tr>
-                  <th className="micro" style={{ ...headCell, textAlign: "left", paddingLeft: 0 }}>Query</th>
-                  <th className="micro" style={headCell}>Title</th>
-                  <th className="micro" style={headCell}>Clicks</th>
-                  <th className="micro" style={headCell}>Impr.</th>
-                  <th className="micro" style={headCell}>Pos.</th>
-                </tr>
-              </thead>
-              <tbody>
-                {topQueries.map((q, i) => (
-                  <tr key={`${q.siteSlug}-${q.query}-${i}`}>
-                    <td style={{ ...cell, textAlign: "left", paddingLeft: 0, maxWidth: 380, overflow: "hidden", textOverflow: "ellipsis" }}>
-                      {q.query}
-                    </td>
-                    <td style={{ ...cell, color: "var(--muted)" }}>{q.siteName}</td>
-                    <td className="num" style={cell}>{int(q.clicks)}</td>
-                    <td className="num" style={{ ...cell, color: "var(--muted)" }}>{int(q.impressions)}</td>
-                    <td className="num" style={{ ...cell, color: "var(--muted)" }}>{pos(q.position)}</td>
-                  </tr>
+          <section style={grid(340)}>
+            {trendCard("Users per day", audienceSpark("users"), "var(--neon-green)", "users", "No sessions recorded yet.")}
+            {trendCard("Search clicks per day", searchSpark("clicks"), "var(--neon-amber)", "clicks", "No search clicks recorded yet.")}
+          </section>
+
+          {!focus && (
+            <section style={grid(300)}>
+              <Card title="Readers, by title" note={`sessions over ${windowDays} days`}>
+                <SharePie slices={byTitle((r) => r.ga4?.sessions)} centre={int(totals.sessions)} centreLabel="sessions"
+                  ariaLabel="Share of fleet sessions by title" empty="No sessions recorded across the fleet yet." />
+              </Card>
+              <Card title="Output, by title" note={`articles published over ${windowDays} days`}>
+                <SharePie slices={byTitle((r) => r.publishedWindow)} centre={int(totals.publishedWindow)} centreLabel="published"
+                  ariaLabel="Share of articles published by title" empty="Nothing published in this window." />
+              </Card>
+              <Card title="Spend, by title" note="agent spend this calendar month">
+                <SharePie slices={byTitle((r) => r.spendMonth, money)} centre={money(totals.spendMonth)} centreLabel="this month"
+                  ariaLabel="Share of fleet agent spend by title" empty="No agent spend recorded this month." />
+              </Card>
+            </section>
+          )}
+
+          <section className="an-pair">
+            {mostRead(6, true)}
+            {searched(6, true)}
+          </section>
+        </>
+      )}
+
+      {/* ── AUDIENCE ───────────────────────────────────────────────────── */}
+      {view === "audience" && (
+        <>
+          <section className="an-kpis stagger">
+            <Kpi label="Users" value={int(totals.users)} colour="var(--neon-green)"
+              delta={<Delta now={totals.users} before={totals.prevUsers} />} spark={audienceSpark("users")} />
+            <Kpi label="Sessions" value={int(totals.sessions)} colour="var(--brand-2)"
+              delta={<Delta now={totals.sessions} before={totals.prevSessions} />} />
+            <Kpi label="Page views" value={int(totals.pageViews)} colour="var(--neon-cyan)"
+              delta={<Delta now={totals.pageViews} before={totals.prevPageViews} />} spark={audienceSpark("pageViews")} />
+            <Kpi label="Avg session" value={mmss(totals.avgDuration)} colour="var(--neon-violet)"
+              foot={focus ? null : "session-weighted"} />
+            <Kpi label="Pages per session" value={totals.sessions ? (totals.pageViews / totals.sessions).toFixed(1) : "—"}
+              colour="var(--neon-amber)" />
+          </section>
+
+          <section style={grid(340)}>
+            {trendCard("Users per day", audienceSpark("users"), "var(--neon-green)", "users", "No sessions recorded yet.")}
+            {trendCard("Page views per day", audienceSpark("pageViews"), "var(--neon-cyan)", "page views", "No page views recorded yet.")}
+          </section>
+
+          <section style={grid(340)}>
+            <Card title="Where readers come from" note={focus ? "sessions by channel" : "sessions by channel, every title pooled"}>
+              <SharePie
+                slices={channels.map((c) => ({ key: c.channel, label: c.channel, value: c.sessions, colour: channelColours[c.channel] }))}
+                centre={int(totals.sessions)} centreLabel="sessions"
+                ariaLabel="Share of sessions by acquisition channel" empty="No sessions to break down yet." />
+            </Card>
+            {!focus && (
+              <Card title="Readers, by title" note={`sessions over ${windowDays} days`}>
+                <SharePie slices={byTitle((r) => r.ga4?.sessions)} centre={int(totals.sessions)} centreLabel="sessions"
+                  ariaLabel="Share of fleet sessions by title" empty="No sessions recorded across the fleet yet." />
+              </Card>
+            )}
+          </section>
+
+          {!focus && (
+            <Card
+              title="Each title, day by day"
+              note="users per day · each line is scaled to its own peak, so compare shape, not size"
+            >
+              <div style={{ display: "grid", gap: 12 }}>
+                {rows.map((r) => (
+                  <div key={r.id} className="fleet-title-row">
+                    <Link
+                      href={href({ title: r.slug })}
+                      style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--text)", textDecoration: "none", fontSize: 13, minWidth: 0 }}
+                    >
+                      <span className="an-dot" style={{ background: colours[r.slug] }} />
+                      <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.name}</span>
+                    </Link>
+                    {r.ga4 ? (
+                      <Sparkline points={r.ga4.trend.map((d) => ({ date: d.date, value: d.users }))} colour={colours[r.slug]}
+                        label={`${r.name} users per day`} />
+                    ) : (
+                      <span className="micro" style={{ opacity: 0.6 }}>google not connected</span>
+                    )}
+                    <span className="num" style={{ textAlign: "right", fontSize: 13, color: "var(--muted)" }}>
+                      {r.ga4 ? `${int(r.ga4.users)} users` : "—"}
+                    </span>
+                  </div>
                 ))}
-              </tbody>
-            </table>
-          </Scroller>
-        ) : (
-          <p style={{ color: "var(--muted)", fontSize: 13, margin: 0 }}>
-            No queries have surfaced any title yet.
-          </p>
-        )}
-      </section>
+              </div>
+            </Card>
+          )}
+        </>
+      )}
+
+      {/* ── SEARCH ─────────────────────────────────────────────────────── */}
+      {view === "search" && (
+        <>
+          <section className="an-kpis stagger">
+            <Kpi label="Clicks" value={int(totals.clicks)} colour="var(--neon-amber)"
+              delta={<Delta now={totals.clicks} before={totals.prevClicks} />} spark={searchSpark("clicks")} />
+            <Kpi label="Impressions" value={int(totals.impressions)} colour="var(--neon-violet)"
+              delta={<Delta now={totals.impressions} before={totals.prevImpressions} />} spark={searchSpark("impressions")} />
+            <Kpi label="Click-through rate" value={pct(totals.ctr)} colour="var(--neon-cyan)"
+              delta={<Delta now={totals.ctr} before={totals.prevCtr} />} />
+            <Kpi label="Average position" value={pos(totals.position)} colour="var(--neon-green)"
+              delta={<Delta now={totals.position} before={totals.prevPosition} lowerIsBetter />} foot="lower is better" />
+          </section>
+
+          <section style={grid(340)}>
+            {trendCard("Impressions per day", searchSpark("impressions"), "var(--neon-violet)", "impressions", "No impressions recorded yet.")}
+            {trendCard("Clicks per day", searchSpark("clicks"), "var(--neon-amber)", "clicks", "No search clicks recorded yet.")}
+          </section>
+
+          <section className="an-pair">
+            <Card title="Earning clicks" note="queries that brought a reader in, by clicks">
+              {converters.length ? (
+                <RankedList items={queryItems(converters.slice(0, 20))} />
+              ) : (
+                <Empty>No query has earned a click yet.</Empty>
+              )}
+            </Card>
+            <Card title="Near misses" note="seen in google but not clicked yet · by impressions · worth writing for">
+              {nearMisses.length ? (
+                <RankedList items={queryItems(nearMisses.slice(0, 20))} />
+              ) : (
+                <Empty>Every query that surfaced has earned a click.</Empty>
+              )}
+            </Card>
+          </section>
+
+          {!focus && (
+            <section style={grid(340)}>
+              <Card title="Search clicks, by title" note={`google clicks over ${windowDays} days`}>
+                <SharePie slices={byTitle((r) => r.gsc?.clicks)} centre={int(totals.clicks)} centreLabel="clicks"
+                  ariaLabel="Share of search clicks by title" empty="No search clicks recorded yet." />
+              </Card>
+              <Card title="Impressions, by title" note={`times a title appeared in google over ${windowDays} days`}>
+                <SharePie slices={byTitle((r) => r.gsc?.impressions)} centre={int(totals.impressions)} centreLabel="impressions"
+                  ariaLabel="Share of search impressions by title" empty="No impressions recorded yet." />
+              </Card>
+            </section>
+          )}
+        </>
+      )}
+
+      {/* ── CONTENT ────────────────────────────────────────────────────── */}
+      {view === "content" && (
+        <>
+          <section className="an-kpis stagger">
+            <Kpi label="Published" value={int(totals.publishedWindow)} colour="var(--brand-2)" foot={`over ${windowDays} days`} />
+            <Kpi label="In pipeline" value={int(totals.pipeline)} colour="var(--neon-cyan)" />
+            <Kpi label="Awaiting review" value={int(totals.awaiting)} colour="var(--neon-amber)" />
+            <Kpi label="Views per article" colour="var(--neon-green)"
+              value={totals.publishedWindow ? int(totals.pageViews / totals.publishedWindow) : "—"}
+              foot="page views ÷ published" />
+          </section>
+
+          <section className="an-pair">
+            {mostRead(20, false)}
+            {searched(20, false)}
+          </section>
+
+          {!focus && (
+            <section style={grid(340)}>
+              <Card title="Output, by title" note={`articles published over ${windowDays} days`}>
+                <SharePie slices={byTitle((r) => r.publishedWindow)} centre={int(totals.publishedWindow)} centreLabel="published"
+                  ariaLabel="Share of articles published by title" empty="Nothing published in this window." />
+              </Card>
+              <Card title="Page views, by title" note={`over ${windowDays} days`}>
+                <SharePie slices={byTitle((r) => r.ga4?.pageViews)} centre={int(totals.pageViews)} centreLabel="page views"
+                  ariaLabel="Share of page views by title" empty="No page views recorded yet." />
+              </Card>
+            </section>
+          )}
+        </>
+      )}
     </main>
   );
 }

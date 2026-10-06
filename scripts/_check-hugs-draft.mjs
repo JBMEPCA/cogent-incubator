@@ -1,0 +1,14 @@
+import { PrismaClient } from "@prisma/client";
+import { decryptJson } from "../lib/crypto.js";
+import { fetchPost } from "../lib/wordpress.js";
+const prisma = new PrismaClient();
+const sites = await prisma.site.findMany({ select: { id: true, slug: true } });
+const site = sites.find((s) => /smart/i.test(s.slug));
+const rows = await prisma.siteCredential.findMany({ where: { siteId: site.id } });
+const wp = Object.fromEntries(rows.map((r) => [r.kind, decryptJson(r.payloadEnc)])).wordpress;
+await prisma.$disconnect();
+const post = await fetchPost(wp, 1026);
+const html = post.content?.rendered ?? "";
+const fig = html.match(/<figure[^>]*>[\s\S]*?<\/figure>/)?.[0] || "NO FIGURE";
+console.log(fig);
+console.log("\nexcerpt:", (post.excerpt?.rendered || "").replace(/<[^>]+>/g, "").trim());

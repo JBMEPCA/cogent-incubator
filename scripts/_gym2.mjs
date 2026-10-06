@@ -1,0 +1,10 @@
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
+const uk = (d) => d ? new Date(d).toLocaleString("en-GB", { timeZone: "Europe/London" }) : "-";
+const s = await prisma.site.findFirst({ where: { slug: "gym-business-news" } });
+const res = await prisma.agentRun.findMany({ where: { siteId: s.id, agentKey: { in: ["researcher", "designer", "editor"] } }, orderBy: { startedAt: "desc" }, take: 8, select: { agentKey: true, startedAt: true, ok: true, summary: true, error: true } });
+for (const r of res) console.log(`${uk(r.startedAt)} ${r.agentKey} ok=${r.ok} ${(r.error || r.summary || "").slice(0, 160).replace(/\s+/g, " ")}`);
+const arts = await prisma.article.findMany({ where: { siteId: s.id }, orderBy: { updatedAt: "desc" }, take: 12, select: { title: true, status: true, scheduledFor: true, publishedAt: true, imageUrl: true, updatedAt: true } });
+console.log("--- articles ---");
+for (const a of arts) console.log(`${a.status.padEnd(9)} sched=${uk(a.scheduledFor)} pub=${uk(a.publishedAt)} img=${a.imageUrl ? "y" : "n"} ${a.title.slice(0, 70)}`);
+await prisma.$disconnect();

@@ -36,13 +36,8 @@ const API = "https://gmail.googleapis.com/gmail/v1/users/me";
 // upload path.
 const MAX_RAW = 4 * 1024 * 1024;
 
-const TITLE_LABEL = {
-  "smart-sme": "Titles/SME",
-  "fleet-magazine": "Titles/Fleet",
-  "golf-resort-magazine": "Titles/Golf",
-  "barbering-business": "Titles/Barbering",
-  "airport-business-magazine": "Titles/Airports",
-};
+// One list, kept in lib/inbox-labels.js, so a new title is added in one place.
+import { TITLE_LABEL } from "../lib/inbox-labels.js";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 

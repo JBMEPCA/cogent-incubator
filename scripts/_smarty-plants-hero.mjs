@@ -1,0 +1,26 @@
+// One-off (1 Oct 2026): JB's Smarty Plants pitch still as the featured image on Smart SME post 1477.
+import "./_env.mjs";
+import os from "node:os";
+import { execFileSync } from "node:child_process";
+import { PrismaClient } from "@prisma/client";
+import { siteCredentials } from "../lib/site.js";
+const POST = 1477, FILE = process.env.IMG, NAME = "smarty-plants-dragons-den.webp";
+const ALT = "Smarty Plants founder pitching to the Dragons in the Den";
+const prisma = new PrismaClient();
+const site = await prisma.site.findUnique({ where: { slug: "smart-sme" } });
+const { creds } = await siteCredentials(site.id);
+const s = creds.sftp;
+const key = s.privateKeyPath.replace(/^~/, os.homedir());
+const target = `${s.username}@${s.host}`, port = String(s.port || 18765);
+const docroot = s.themePath.replace(/\/wp-content\/themes\/.*$/, "");
+const ssh = (cmd) => execFileSync("ssh", ["-i", key, "-o", "BatchMode=yes", "-p", port, target, `cd '${docroot}' && ${cmd}`], { encoding: "utf8" }).trim();
+execFileSync("scp", ["-i", key, "-o", "BatchMode=yes", "-P", port, FILE, `${target}:/tmp/${NAME}`]);
+const b64 = Buffer.from(ALT).toString("base64");
+const mediaId = ssh(`wp media import /tmp/${NAME} --post_id=${POST} --featured_image --porcelain --title="$(echo ${b64} | base64 -d)" --alt="$(echo ${b64} | base64 -d)"; rm -f /tmp/${NAME}`);
+const url = ssh(`wp post get ${mediaId} --field=guid`);
+console.log("thumb now", ssh(`wp post meta get ${POST} _thumbnail_id`), url);
+ssh(`wp cache flush; wp sg purge || true`);
+const art = await prisma.article.findMany({ where: { siteId: site.id, wpPostId: POST }, select: { id: true } });
+for (const a of art) await prisma.article.update({ where: { id: a.id }, data: { imageUrl: url, imageAlt: ALT } });
+console.log("db rows", art.length);
+await prisma.$disconnect();

@@ -9,8 +9,10 @@ import {
   postingHoursLabel,
   MAX_ATTEMPTS,
   imageForPost,
+  mentionsForPost,
+  renderCommentary,
 } from "@/lib/linkedin";
-import { bridgeReady, sendToBridge, socialImage } from "@/lib/social-bridge";
+import { bridgeFor, bridgeReady, sendToBridge, socialImage } from "@/lib/social-bridge";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -111,13 +113,37 @@ export async function GET(request) {
   );
 }
 
-// A post through Make carries the same text and picture as a direct one, minus
-// company tags. The picture goes as a public JPEG at LinkedIn's 1.91:1.
+/**
+ * The commentary a bridge post goes out with.
+ *
+ * Tagging is off unless a title asks for it. Switching it on fleet-wide would
+ * change what all ten pages publish at once, and a Make change that reached
+ * every title at once is exactly what cost nine posts on 22 September. Add
+ * "tagging": true to a title's social_bridge EngineSetting to opt it in.
+ *
+ * The untagged path still sends the text exactly as it does today. That is
+ * deliberate: renderCommentary escapes the whole post to LinkedIn's little
+ * text rules, and applying that to a title nobody has watched a post from
+ * would be changing two things at once.
+ *
+ * URNs resolve through Make (lib/social-bridge.js) because these titles hold
+ * no LinkedIn token of their own. What may be tagged is still decided by the
+ * website check in lib/linkedin-mentions.js.
+ */
+async function bridgeCommentary(site, post) {
+  const text = post.text.trim();
+  if (!(await bridgeFor(site)).tagging) return text;
+  const mentions = await mentionsForPost(site, post, { accessToken: null });
+  return mentions.length ? renderCommentary(text, mentions) : text;
+}
+
+// A post through Make carries the same text and picture as a direct one. The
+// picture goes as a public JPEG at LinkedIn's 1.91:1.
 async function publishViaBridge(site, post) {
   const { url, alt } = await imageForPost(site, post);
   const { id } = await sendToBridge(site, {
     destination: "linkedin",
-    text: post.text.trim(),
+    text: await bridgeCommentary(site, post),
     imageUrl: socialImage(url, { width: 1200, height: 628 }),
     imageAlt: (alt || site.name || "").slice(0, 300),
     link: post.sourceUrl || null,

@@ -79,3 +79,8 @@ scripts/roster/
 **/roster/*.csv
 *.leads.csv
 *.clean.csv
+
+# Local only: worktrees, scratch output, and interview subjects' email replies
+.claude/worktrees/
+scripts/tmp/
+scripts/replies/

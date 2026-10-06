@@ -1,0 +1,11 @@
+import os from "node:os";
+import { execFileSync } from "node:child_process";
+import { PrismaClient } from "@prisma/client";
+import { siteCredentials } from "../lib/site.js";
+const prisma = new PrismaClient();
+const site = await prisma.site.findUnique({ where: { slug: process.env.SLUG || "fleet-magazine" } });
+const { creds } = await siteCredentials(site.id);
+await prisma.$disconnect();
+const s = creds.sftp;
+const docroot = s.themePath.replace(/\/wp-content\/themes\/.*$/, "");
+process.stdout.write(execFileSync("ssh", ["-i", s.privateKeyPath.replace(/^~/, os.homedir()), "-o", "BatchMode=yes", "-p", String(s.port || 18765), `${s.username}@${s.host}`, `cd '${docroot}' && ${process.argv.slice(2).join(" ")}`], { encoding: "utf8", maxBuffer: 50e6 }));

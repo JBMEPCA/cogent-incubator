@@ -1,0 +1,12 @@
+import { PrismaClient } from "@prisma/client";
+const p = new PrismaClient();
+const A = new Date("2026-09-23T23:00:00Z"), B = new Date("2026-09-24T23:00:00Z");
+const sites = await p.site.findMany({ select: { id: true, slug: true } });
+const posts = await p.linkedInPost.findMany({ where: { postedAt: { gte: A, lt: B } }, select: { siteId: true, postedAt: true, text: true } });
+console.log("LinkedIn posted yesterday:", posts.length);
+for (const x of posts) console.log("  ", sites.find((s) => s.id === x.siteId)?.slug, x.text.slice(0, 60).replace(/\s+/g, " "));
+const pend = await p.linkedInPost.count({ where: { status: { in: ["draft", "approved"] }, postedAt: null } });
+const failed = await p.linkedInPost.findMany({ where: { publishError: { not: null }, postedAt: null }, select: { siteId: true, publishError: true }, take: 6 });
+console.log("waiting:", pend, "| recent errors:", failed.map((f) => `${sites.find((s) => s.id === f.siteId)?.slug}: ${f.publishError.slice(0, 60)}`).join(" | ") || "none");
+const press = await p.feedItem.count({ where: { id: { startsWith: "x" } } });
+await p.$disconnect();

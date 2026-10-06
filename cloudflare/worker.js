@@ -60,6 +60,10 @@ const STEPS = [
   // the delays are measured in hours, and a tick with nothing to do costs one
   // Gmail query.
   "/api/cron/interviews",
+  // Trending Topics: Google's "Trending now" feed per market and Search
+  // Console spikes, matched to the title that should cover them. Also on the
+  // half-past trigger, because a spike is worth catching within the hour.
+  "/api/cron/trending",
   "/api/cron/scan-feeds",
   "/api/cron/scan-feeds",
 ];
@@ -105,6 +109,24 @@ function scheduledExtras(now) {
   // (lib/instagram.js). The route skips every title that has not.
   if (hour === 12) extra.push("/api/cron/post-instagram");
 
+  // The import spread across the morning rather than crammed into one tick.
+  //
+  // One request per title was the right shape and still too much for a single
+  // run: each one 524s at about 100 seconds while the app carries on working,
+  // so ten titles is nearly twenty minutes of worker time and the tick dies
+  // long before the end of the list. On Tuesday 29 September it reached Smart
+  // SME, Fleet, Golf, Dental and Farming, and Barbering, Airport, Gym, Nursery
+  // and Senior Living got nothing at all. Nothing failed and nothing said so:
+  // the five that were skipped simply did not grow, which is invisible until
+  // somebody compares list sizes.
+  //
+  // Two titles a tick, on every tick from 09:00 to 15:00, is more slots than
+  // there are titles. A title that has had its weekly allowance stops being
+  // due, so the later ticks cost one cheap call and expand to nothing.
+  if ((weekday === "Tue" || weekday === "Fri") && hour >= 9 && hour <= 15) {
+    extra.push("/api/cron/subscriber-drip?mode=import");
+  }
+
   if (hour === 9) {
     // The daily verification pass is gone. MillionVerifier ran to minus eleven
     // credits, every run answered "only -11 verification credits left, need
@@ -119,7 +141,6 @@ function scheduledExtras(now) {
     // a thousand spends it on Tuesday and finds nothing left to do on Friday.
     // The second run also means a Tuesday that fails costs that title a few
     // days rather than a whole week.
-    if (weekday === "Tue" || weekday === "Fri") extra.push("/api/cron/subscriber-drip?mode=import");
 
     // The weekly issue. Last in the list so the import and any publishing have
     // already happened by the time it picks its ten stories.
@@ -156,6 +177,7 @@ const HALF_PAST = [
   "/api/cron/post-linkedin",
   "/api/cron/agents?stage=director",
   "/api/cron/agents?stage=worker",
+  "/api/cron/trending",
 ];
 
 /**
@@ -172,6 +194,8 @@ const HALF_PAST = [
  * this never hardcodes a slug and a new title joins by existing. If that call
  * fails the fleet-wide path is used unchanged: a slow sweep beats no sweep.
  */
+const MAX_DRIP_PER_TICK = 2;
+
 async function expandDrip(env, path) {
   try {
     const res = await fetch(`${baseUrl(env)}/api/cron/subscriber-drip?mode=due`, {
@@ -182,7 +206,7 @@ async function expandDrip(env, path) {
     if (!Array.isArray(due)) return [path];
     // Nothing due is a real answer, not a failure: every title has already had
     // its week's worth. Returning no steps is how that stays silent.
-    return due.map((slug) => `${path}&site=${encodeURIComponent(slug)}`);
+    return due.slice(0, MAX_DRIP_PER_TICK).map((slug) => `${path}&site=${encodeURIComponent(slug)}`);
   } catch {
     return [path];
   }

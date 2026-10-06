@@ -77,9 +77,20 @@ function PersonIcon() {
   );
 }
 
+/** A line that climbs and breaks upward — a search spike. */
+function TrendIcon() {
+  return (
+    <svg {...ICON}>
+      <path d="M3.5 17.5l5.5-5.5 4 4 7.5-7.5" />
+      <path d="M15 8.5h5.5V14" />
+    </svg>
+  );
+}
+
 const LINKS = [
   { href: "/", label: "All titles", Icon: GridIcon },
   { href: "/analytics", label: "Group analytics", Icon: ChartIcon },
+  { href: "/trending", label: "Trending Topics", Icon: TrendIcon },
   { href: "/interviews", label: "Interviews", Icon: PersonIcon },
   { href: "/costs", label: "Group costs", Icon: MoneyIcon },
 ];

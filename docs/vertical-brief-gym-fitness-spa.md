@@ -8,8 +8,11 @@ case: market, competitors, demand, advertisers, risk, verdict.
 **Yes to fitness. No to spa. Do not run them as one title.**
 
 The gym/studio/PT end of the market is a better commercial fit than fleet was, and
-the *only* publication positioned where we would sit has been dormant since October
-2025. But the sector's top incumbent is roughly eight times stronger than the fleet
+~~the *only* publication positioned where we would sit has been dormant since October
+2025.~~ **[Corrected 18 Sep 2026: Gym Owner Monthly was never dormant. It moved to
+gymownermonthly.com and has published ~10 items a month all year. It is still
+unranked and press-release led, so the seam is contested but weakly held. See
+"Refresh, 18 Sep 2026" below.]** But the sector's top incumbent is roughly eight times stronger than the fleet
 incumbents we chose to attack, so this is a bottom-of-market entry, not a
 head-on one — and the editorial risk profile is materially worse than fleet's.
 
@@ -303,3 +306,239 @@ exactly the content we cannot win.
 - CIMSPA workforce data (via TRAINFITNESS) — https://train.fitness/personal-trainer-blogs/inside-the-uk-fitness-workforce
 - Tranco ranks, 16 Aug 2026 — https://tranco-list.eu/
 - Nominet RDAP, 17 Aug 2026 — https://rdap.nominet.uk/
+
+---
+
+## Refresh, 18 Sep 2026
+
+Pre-launch refresh. The original sections above stand except where corrected
+here. Spa stays excluded. Method follows the barbering and airports briefs:
+measured news supply, observed advertiser lists, a global angle check, and live
+RDAP. No trademark searches were run.
+
+### R0. Verdict after the refresh
+
+**Still yes: a gym, studio and PT business title, spa excluded.** The advertiser
+case got stronger (Elevate's exhibitor list is bigger than we recorded, and the
+global shows are large and sponsor-heavy). The seam got narrower: the 17 Aug
+claim that Gym Owner Monthly was dormant was wrong, and WellNation is a live,
+advertiser-backed UK B2B news site. Neither ranks in search, so the search seam
+is intact, but "unattended and recently abandoned" in the section 8 table no
+longer holds; read it as **contested by two weak digital titles, unattended in
+search**.
+
+Recommended call: **UK-first, global-capable**, with the global layer carried by
+franchise, operator-deal and software news (where the US wire is rich), and the
+UK layer carried by the small-operator money and compliance beat (section 4,
+clusters 1 to 3), which nobody writes for search.
+
+### R1. What changed since 17 Aug
+
+| Item | 17 Aug | 18 Sep | Effect |
+|---|---|---|---|
+| Gym Owner Monthly | "dormant since Oct 2025" | **Active.** The .co.uk now 301s to gymownermonthly.com. Its WP REST API shows 7 posts in Mar, 15 Apr, 4 May, 13 Jun, 11 Jul, 6 Aug and 4 so far in Sep (latest 17 Sep). Mostly rewritten press releases (Urban Gym Group Dubai JV, Enhance $18.2M raise, GymNation). Still shows EZFacility as an advertising partner. gymownermonthly.com has **no Tranco rank**. | The 17 Aug check read the stale .co.uk. The seam is contested, not empty. It is still weakly held: no search presence, ~2-3 items a week, visible editing errors (a duplicated headline on the 17 Sep post). |
+| WellNation (wellnation.uk) | "new, NationMedia", unranked | **Active B2B news site**, ~2 items/day this week, sections Wellness / Physical Activity / Policy / People. Visible advertisers and partners: EGYM, CoverMe, ISS, Places Leisure, Fitter Stock, ukactive, Taylor Made Designs. No Tranco rank returned today *(unverified, the API was rate-limiting)*. | A second live UK entrant, positioned at physical-activity policy and operators, closer to HCM than to the small-operator seam. Watch it. |
+| Leisure Industry Week (LIW) | not assessed | Rebranded to "BP: Fitness Trade Show" under BodyPower in 2017 (Leisure Opportunities, Jun 2017). No sign of a 2026 edition *(unverified)*. | Elevate is the UK fitness trade show. Do not cite LIW as advertiser proof. |
+| Business SERPs | vendors own them | Unchanged. "how much does it cost to open a gym UK" returns Sage, REP Fitness, ClubWise, Ripe Insurance, Resamania, Grove HR, Swoop, a supplement retailer and CYC Fitness. **No publisher, including GOM, WellNation or HCM.** | Seam intact in search. Every ranking domain is an advertiser prospect. |
+| fitnessbusiness.co.uk | expires 16 Sep | Expired, not dropped, parked for sale. See R6. | The route is now an Aftermarket offer, not a drop-catch. |
+
+### R2. Incumbents, UK and global
+
+Tranco ranks pulled 17-18 Sep 2026 unless marked. Lower is stronger.
+
+| Title | Market | Tranco | Cadence (18 Sep) | Read |
+|---|---|---|---|---|
+| Health Club Management | UK/global | 339,604 (16 Aug; not returned today) | daily, plus paid press-release channel | the incumbent; aimed at operators and chains |
+| Leisure Opportunities | UK | **361,294** | several/day | Leisure Media portfolio, syndicated |
+| sportsmanagement.co.uk | UK | 1,046,850 | several/day | same portfolio |
+| WellNation | UK | none returned *(unverified)* | ~2/day | new live competitor, policy-led |
+| Gym Owner Monthly | UK | **unranked** (.com) | ~2-3/week | our exact seam, weakly held |
+| Athletech News | US/global | **247,838** (225,903 on 16 Aug) | **5-8/day** (15-17 Sep feed) | the strongest global business-of-fitness wire; ranks in UK SERPs |
+| Fitt Insider | US | **301,932** | newsletter plus paid research; reprints press releases (it carried the ukactive Awards finalists release) | investor and startup angle, subscription-led |
+| Club Industry | US | **480,188** | homepage returned 403 to us; Tracxn lists 5 employees (Apr 2026) *(unverified)* | diminished but still ranked |
+| Club Solutions Magazine | US | 1,584,968 | ~1-3/day | vendor content in its wire (a WellnessLiving advertorial this week) |
+| Australasian Leisure Management | AU | not checked | several/week, prominent in both Google News locales | a reference point, not a competitor |
+
+**Global angle assessment.** The US business-of-fitness press is stronger than
+the UK's at wire level: Athletech (~248k) and Fitt Insider (~302k) both out-rank
+every UK title except HCM and Leisure Opportunities, and Athletech alone
+out-publishes every UK title on deals and franchising. A global-first
+positioning would put us head-on with them. The global seam is the same as the
+UK one: **nobody writes small-operator money, compliance and start-up guides
+for search.** Global capability should mean a US and international news layer
+now and locale-aware evergreen later, not a global masthead on day one.
+
+### R3. News supply, measured
+
+Google News RSS pulled 18 Sep 2026, 17 feeds (12 en-GB, 5 en-US). Counts are
+items dated within the last 7 days; usability is judged from headlines.
+
+| Query | Locale | Last 7 days | Usable business items (judged) | Notes |
+|---|---|---|---|---|
+| `health club` | GB | 23 | ~10 | mixed with crime and local news; Daxko/Alaris, EU revenue ranking, openings |
+| `fitness industry` | GB | 23 | ~12 | strong; heavy Athletech and ALM share |
+| `gym opens` | GB | 18 | ~7 UK | the openings beat; child sensory and school gyms are noise |
+| `boutique fitness` | GB | 11 | ~8 | mostly US franchise deals |
+| `gym chain` | GB | 10 | ~6 | Third Space record revenue, David Lloyd net zero, True Fitness collapse |
+| `gym franchise` | GB | 7 | ~6 | US franchise wire |
+| `ukactive` | GB | 6 | ~4 | policy and National Fitness Day |
+| `gym operator` | GB | 5 | ~3 | |
+| `David Lloyd OR "Third Space" OR "Anytime Fitness"` | GB | 4 | ~1 | |
+| `PureGym OR "The Gym Group"` | GB | 3 | ~2 | listed-company filings |
+| `gym closes OR "gym closure"` | GB | 2 | ~1 | the closures beat is thin via this query |
+| `personal trainer business` | GB | 2 | ~1 | the PT beat has no wire; it is evergreen |
+| `leisure centre operator` | GB | 2 | ~1 | council leisure contracts |
+| `fitness franchise` | US | 16 | ~12 | the richest single business query |
+| `fitness industry` | US | 26 | ~8 | 11 of the 26 are one syndicated "$94bn" TV story |
+| `Planet Fitness OR "Life Time" OR Equinox` | US | 21 | ~4 | mostly insider-share filings and class-action notices |
+| `health club` | US | 15 | ~5 | |
+
+**128 unique stories across all feeds in 7 days** (deduped by headline). Judged
+usable after dedupe: **~50, so ~7/day global, of which ~2-3/day are UK.** Two
+cautions. This week contained **National Fitness Day (16-17 Sep)**, which
+inflated the GB count, so a normal week is more like **~5-6/day global and ~2/day
+UK** *(estimate)*. And much of the global volume is US franchise deal-flow that
+matters to a UK operator only as trend signal.
+
+**Supply verdict:** reaches the 7/day target only with the US layer on and only
+in a good week; UK-only supply is golf's level (~2-3/day). Same shape as
+barbering: the wire is seasoning, the evergreen money and compliance guides are
+the meal. Two strong recurring beats: **openings and closures** (the fleet's
+best format signal) and **operator results and M&A** (Third Space sale process,
+Gym Group buybacks, David Lloyd, Basic-Fit, Xponential). `lib/news-searches.js`
+still has **no FITNESS_NEWS_SEARCHES block**; it must be added before launch,
+seeded from the high-yield rows above, with consumer terms excluded.
+
+### R4. Advertiser depth, observed
+
+| Show | Scale (source) | Observed sponsors or exhibitors |
+|---|---|---|
+| **Elevate**, ExCeL London, 17-18 Jun 2026 | "nearly 200 exhibitors", 115 seminars, 200+ speakers (Fitgearsource); the live exhibitor page lists ~280 entries *(approximate, parsed count)* | Software and billing: Xplor Fitness and Leisure, ClubWise, ClubRight, Legend, Ashbourne, EZFacility, Mariana Tek, Momence, Gantner, FitnessKPI, Accolade Pro, Evolve. Payments: GoCardless. Equipment: Technogym, Matrix, Concept2, Keiser, Wattbike, Gym80 (sponsored the Accelerate stream), Dyaco, Echelon, REP Fitness, Indigo Fitness, Balanced Body, Merrithew. Measurement: InBody, Tanita, Seca, Myzone. Aggregators: Hussle, Wellhub. Education: Active IQ, CIMSPA, APPI. Developers: Alliance Leisure. Shua Fitness a named supporter. |
+| **The HFA Show** (formerly IHRSA), San Diego 2026 | 10,000+ registered, **380 exhibitors, 52 sponsors** (HFA) | Daxko, Hapana, ABC Fitness, **Zenoti** (keynote sponsor), Sweatworks, The Bay Club Company, Escape Fitness, Echelon |
+| **FIBO**, Cologne, 16-19 Apr 2026 | **~1,000-1,200 exhibitors** (sources disagree: ~980 vs 1,200+) | Precor and Peloton ran a joint commercial unit at both HFA and FIBO (HCM press release) |
+| **ukactive Awards**, ICC Birmingham, 8 Oct 2026 | record entries | headline sponsor **Swimming Teachers' Association**, fourth year |
+| Leisure Industry Week | not a fitness show since the 2017 rebrand *(2026 status unverified)* | none |
+
+Directly observed spend on trade media: EZFacility (on GOM), EGYM and CoverMe
+(on WellNation), HCM's paid press-release channel (Wellhub and Precor used it
+this year), Club Solutions running a WellnessLiving advertorial, and the vendor
+content programmes that own the SERPs (ClubWise, Resamania, Ripe Insurance,
+Sage, REP Fitness). Wellhub's UK operator report (90% growing membership, 72%
+improved margins, 82% rising acquisition costs, 3% with dedicated marketing
+expertise; sample size not given) is both a news hook and proof that the
+aggregators spend to reach operators.
+
+**Advertiser depth remains the strongest dimension**, now with named exhibitors
+rather than a headline count.
+
+### R5. Crossover with our own titles
+
+- **Barbering Business:** booking and business-software vendors sell to both
+  sectors. Mindbody (and its Booker salon product), Vagaro (sponsored the Modern
+  Barber Awards), Fresha, Zenoti (HFA keynote sponsor) and Booksy all serve
+  studios and salons. **Ripe Insurance** ranks in the gym start-up SERP and is on
+  the barbering watch list. One sales conversation can sell two titles; this is
+  the strongest internal crossover *(which of these we already talk to is
+  unverified)*.
+- **Hotel Magazine (CIM legacy):** hotel gyms buy Technogym, Matrix and Life
+  Fitness kit; a modest equipment crossover.
+- **Golf Resort Magazine:** resort leisure clubs and fitness suites; minor
+  overlap, no editorial collision.
+- **Smart SME:** the compliance and money muscle (cluster 2) is directly
+  reusable, but check the keyword registry first, since Smart SME's
+  small-business guides could cannibalise "start a gym" style queries.
+- **Sister titles assessed today:** no collision expected. None of the live
+  titles (Fleet, Golf, Barbering, Airport, MEPCA) competes for fitness queries.
+
+### R6. Domains, RDAP 18 Sep 2026
+
+Nominet (`rdap.nominet.uk`) and Verisign (`rdap.verisign.com`). 404 means no
+registration found, so likely free.
+
+| Name | .co.uk | .com | .uk | Read |
+|---|---|---|---|---|
+| **gymbusinessmagazine** | free | **free** | not checked | the only clean pair from the 17 Aug list |
+| **gymbusiness** | free | taken | **free** | strongest short name; .com gone, so .co.uk plus .uk |
+| **fitnessbusinessmagazine** | free | **free** | not checked | clean pair; "fitness" reads wider than "gym" (studios, PTs) |
+| **thegymbusiness** | free | **free** | not checked | clean pair |
+| thefitnessbusiness | free | taken | not checked | .com gone |
+| thegymmagazine | free | not checked | not checked | reads consumer, as warned in section 7 |
+| gymownerbusiness | free | free | not checked | too close to Gym Owner Monthly |
+| **fitnessbusiness** | **expired, not dropped** | taken | **free** | see below |
+
+**fitnessbusiness.co.uk:** RDAP still shows `active`, expiration
+16 Sep 2026 05:29 UTC (06:29 UK time), no renewal recorded (last changed
+11 Dec 2025). Registrant Mark Adams t/a 3DWeb, who is also the registrar tag, so
+he can renew at any time for next to nothing. The domain now **redirects to an
+Aftermarket.com "for sale, make an offer" parking page (GBP)**, no price shown.
+Under Nominet's standard lifecycle an unrenewed domain is suspended about 30
+days after expiry and cancelled about 90 days after, so a drop would come around
+mid-December 2026 at the earliest *(lifecycle timing unverified for this
+registrar)*. A for-sale listing suggests he means to sell rather than let it
+drop. **fitnessbusiness.uk is unregistered today**; if the "Fitness Business"
+name is in contention, register it now, since it protects the name whichever way
+the .co.uk goes.
+
+The masthead must still say *business*. Clean .co.uk and .com pairs exist for
+**Gym Business Magazine**, **Fitness Business Magazine** and **The Gym
+Business**. Buy .co.uk, .com and .uk together on the day the name is decided.
+
+### R7. Scores (fleet rubric, /100)
+
+| Dimension | Score | Evidence |
+|---|---|---|
+| Advertiser depth and proof | **16/20** | Elevate ~200 to ~280 exhibitors with named software, payments, equipment and education firms; HFA 380 exhibitors and 52 sponsors; FIBO ~1,000+; observed spend on GOM, WellNation and HCM's press-release channel. Held back because top-10-operator equipment budgets go to HCM. |
+| Incumbent weakness and open seam | **9/15** | HCM strong (~340k) but aimed at chains; GOM active but unranked and press-release led; WellNation live and policy-led; Athletech (~248k) strong from the US. Open in search, contested in name. |
+| Winnable business-intent search demand | **11/15** | The start-up cost SERP has no publishers, only vendors; no volume data yet (the Ahrefs month is still unbought); heavy consumer twin terms cap the addressable share. |
+| Money in the sector | **8/10** | UK £6.5bn, record 5,842 clubs and 12.2m members; Third Space record revenue ahead of a sale; Wellhub says 72% of operators improved margins. |
+| Reader universe | **8/10** | 5,842 clubs plus 25,000+ Level 3 PTs (~60% self-employed), studios and franchisees; global widens it. |
+| News supply | **6/10** | ~5-7 usable/day global in a normal-to-good week, ~2-3 UK, against a 7/day target. |
+| CIM internal asset or crossover | **6/10** | Barbering booking-software and insurer crossover (Vagaro, Fresha, Mindbody, Zenoti, Ripe); Hotel Magazine equipment overlap; Smart SME compliance muscle. No dedicated CIM fitness book. |
+| Risk (lower risk scores higher) | **5/10** | "gym near me" class contamination; YMYL health and GLP-1 drift; possible Smart SME cannibalisation on start-up queries; two live UK rivals. |
+| **Total** | **69/100** | |
+
+### R8. Top risks
+
+1. **Consumer and health drift.** The engine will pull toward workouts,
+   nutrition and GLP-1 advice. The scope rule and claims rule (section 5) must be
+   in the editorial standard and the Researcher's query filter before the first
+   article, and the news searches must exclude consumer terms.
+2. **A thinner seam than we thought.** Gym Owner Monthly and WellNation are live,
+   and HCM sells a paid press-release product we would undercut. Win on search
+   and small-operator money guides, not on news speed.
+3. **Wire shortfall and US skew.** UK supply is ~2-3/day; reaching 7/day means
+   leaning on US franchise and deal news a UK studio owner may not value. Keep UK
+   money and compliance evergreen as the backbone, and check the Smart SME
+   keyword registry before commissioning start-up guides.
+
+### R9. Before launch (updated)
+
+1. Add `FITNESS_NEWS_SEARCHES` to `lib/news-searches.js` (still missing), seeded
+   from the high-yield R3 rows with consumer exclusions.
+2. Decide the name, then buy .co.uk + .com + .uk the same day. If "Fitness
+   Business" is wanted, register fitnessbusiness.uk now and make an Aftermarket
+   offer on the .co.uk.
+3. Pull the full Elevate 2026 exhibitor list into the sales sheet, starting with
+   software, payments, insurance and education (the small-operator spenders).
+4. Confirm which of Vagaro, Fresha, Mindbody, Zenoti and Ripe the Barbering
+   Business sales side already talks to.
+5. Re-run Tranco for HCM and WellNation (no rank returned today).
+
+### Refresh sources
+
+- Google News RSS, 18 Sep 2026: `https://news.google.com/rss/search?q=<query>&hl=en-GB&gl=GB&ceid=GB:en` and the en-US equivalent
+- Gym Owner Monthly WP REST API: https://gymownermonthly.com/wp-json/wp/v2/posts
+- WellNation: https://wellnation.uk/
+- Elevate 2026 exhibitors: https://www.elevatearena.com/london/exhibitors
+- Elevate 2026 recap (Fitgearsource): https://www.fitgearsource.com/elevate-2026/
+- The HFA Show 2026: https://www.healthandfitness.org/the-hfa-show-2026-brings-the-global-fitness-industry-together-in-san-diego/
+- FIBO: https://www.fibo.com/germany/en-gb.html
+- ukactive Awards 2026 finalists: https://ukactive.com/news/ukactive-awards-2026-finalists-unveiled/
+- LIW rebrand (Leisure Opportunities, 2017): https://www.leisureopportunities.co.uk/news/LIW-BodyPower-Elevate-Professional-Beauty/332458
+- Wellhub UK Fitness Business Growth Report 2026 (HCM press release): https://www.healthclubmanagement.co.uk/health-club-management-press-releases/Wellhub-uk-fitness-2026-strong-growth-bigger-opportunity-ahead/363635
+- Athletech News feed: https://athletechnews.com/feed/
+- Club Solutions feed: https://clubsolutionsmagazine.com/feed/
+- Club Industry profile (Tracxn): https://tracxn.com/d/companies/club-industry/__bf5e3SXkc2nar9DzeuQnVmDehg0CBGcHeSDhhxTexOA
+- Tranco API, 17-18 Sep 2026: https://tranco-list.eu/
+- Nominet RDAP and Verisign RDAP, 18 Sep 2026
+- Aftermarket.com parking page served at fitnessbusiness.co.uk, 18 Sep 2026

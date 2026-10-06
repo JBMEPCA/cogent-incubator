@@ -169,3 +169,64 @@ export function Sparkline({ points, colour, label }) {
     </svg>
   );
 }
+
+// Search position as a pill whose colour says which page of Google it is on:
+// the top three, the rest of page one, page two, and beyond.
+function PositionPill({ position }) {
+  if (!position) return null;
+  const tone = position <= 3 ? "top" : position <= 10 ? "p1" : position <= 20 ? "p2" : "far";
+  return (
+    <span className={`rank-pos rank-pos-${tone}`} title="Average position in Google">
+      #{position.toFixed(1)}
+    </span>
+  );
+}
+
+/**
+ * A ranked list: rank, label with its magazine underneath, the figure on the
+ * right and a bar under the row scaled to the top of the list.
+ *
+ * Bars carry the magazine colour so a title's rows can be picked out at a
+ * glance, but the magazine is always named in text too. `grouped` drops a
+ * heading in wherever an item's `group` changes, so converters and near misses
+ * read as two sets rather than one ranking that silently changes measure.
+ */
+export function RankedList({ items, grouped = false }) {
+  return (
+    <ol className="rank-list">
+      {items.map((it, i) => {
+        const heading = grouped && it.group && (i === 0 || items[i - 1].group !== it.group);
+        return (
+          <li key={it.key} className={`rank-row${it.faded ? " is-faded" : ""}`}>
+            {heading && <div className="rank-group">{it.group}</div>}
+            <span className={`rank-n num${i < 3 ? " is-top" : ""}`}>{String(i + 1).padStart(2, "0")}</span>
+            <div className="rank-main">
+              <div className="rank-primary" title={it.primary}>{it.primary}</div>
+              {(it.meta || it.position) && (
+                <div className="rank-meta">
+                  {it.meta && (
+                    <>
+                      <span className="rank-swatch" style={{ background: it.colour }} />
+                      <span className="rank-meta-text">{it.meta}</span>
+                    </>
+                  )}
+                  <PositionPill position={it.position} />
+                </div>
+              )}
+            </div>
+            <div className="rank-fig">
+              <div className="rank-value num">
+                {it.value}
+                {it.unit && <span className="rank-unit"> {it.unit}</span>}
+              </div>
+              {it.sub && <div className="rank-sub num">{it.sub}</div>}
+            </div>
+            <div className="rank-track">
+              <div className="rank-fill" style={{ width: `${Math.max(2, (it.share || 0) * 100)}%`, background: it.colour }} />
+            </div>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}

@@ -1,0 +1,12 @@
+import { PrismaClient } from "@prisma/client";
+const p = new PrismaClient();
+const A = new Date(Date.now() - 30 * 3600e3);
+const sites = await p.site.findMany({ select: { id: true, slug: true } });
+const uk = (d) => new Date(d).toLocaleString("en-GB", { timeZone: "Europe/London", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+const runs = await p.agentRun.findMany({ where: { startedAt: { gte: A }, OR: [{ summary: { contains: "Press" } }, { summary: { contains: "press" } }] }, select: { siteId: true, startedAt: true, summary: true, ok: true }, orderBy: { startedAt: "desc" } });
+console.log("press-ish runs last 30h:", runs.length);
+for (const r of runs) console.log(`${uk(r.startedAt)} ${sites.find((s) => s.id === r.siteId)?.slug.padEnd(26)} ${(r.summary || "").replace(/\s+/g, " ").slice(0, 120)}`);
+const held = await p.article.findMany({ where: { status: { in: ["review", "drafting"] }, createdAt: { gte: new Date(Date.now() - 8 * 864e5) }, qaPassed: false }, select: { siteId: true, title: true, createdAt: true, status: true }, take: 12 });
+console.log("\nheld/unfinished articles (8d):", held.length);
+for (const h of held) console.log(`  ${sites.find((s) => s.id === h.siteId)?.slug.padEnd(24)} ${h.status} ${uk(h.createdAt)} ${h.title.slice(0, 60)}`);
+await p.$disconnect();

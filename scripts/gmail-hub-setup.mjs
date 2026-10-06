@@ -1,4 +1,8 @@
-// One-time Gmail configuration for the five-title hub inbox.
+// One-time Gmail configuration for the hub inbox.
+//
+// To ADD A TITLE, use scripts/hub-add-titles.mjs instead: it is additive and
+// copes with forwarding that Google leaves pending. This script prunes, and is
+// kept for rebuilding the rules from scratch.
 //
 // JB reads one inbox, not five. Every title keeps its own Workspace account —
 // the outreach and interview engines impersonate each one to send as that title
@@ -21,6 +25,9 @@
 import { PrismaClient } from "@prisma/client";
 import { decryptJson } from "../lib/crypto.js";
 import { getGoogleAccessToken } from "../lib/google.js";
+// Which title label each mailbox earns, keyed by slug. One list, in
+// lib/inbox-labels.js, so a new title is added in one place.
+import { TITLE_LABEL } from "../lib/inbox-labels.js";
 
 const HUB = process.env.GMAIL_HUB || "jb@smartsme.co.uk";
 const APPLY = process.argv.includes("--apply");
@@ -30,7 +37,7 @@ const APPLY = process.argv.includes("--apply");
 // of sight and recoverable for 30 days, and the guards below are what make the
 // condition true. `archive` keeps it, out of the inbox and marked read;
 // `inbox` leaves it where it lands.
-const NOISE = (process.argv.find((a) => a.startsWith("--noise="))?.split("=")[1] || "trash").toLowerCase();
+const NOISE = (process.argv.find((a) => a.startsWith("--noise="))?.split("=")[1] || "archive").toLowerCase();
 if (!["trash", "archive", "inbox"].includes(NOISE)) {
   console.error(`--noise must be trash, archive or inbox (got ${NOISE}).`);
   process.exit(1);
@@ -55,16 +62,6 @@ const TITLE_COLOURS = {
   "Titles/Golf": { backgroundColor: "#fad165", textColor: "#000000" },
   "Titles/Barbering": { backgroundColor: "#a479e2", textColor: "#ffffff" },
   "Titles/Airports": { backgroundColor: "#fb4c2f", textColor: "#ffffff" },
-};
-
-// Which title label each mailbox earns. Keyed by slug, so a renamed site name
-// cannot silently re-label a year of mail.
-const TITLE_LABEL = {
-  "smart-sme": "Titles/SME",
-  "fleet-magazine": "Titles/Fleet",
-  "golf-resort-magazine": "Titles/Golf",
-  "barbering-business": "Titles/Barbering",
-  "airport-business-magazine": "Titles/Airports",
 };
 
 const TOPIC_LABELS = [
@@ -142,11 +139,21 @@ async function ensureFilters(token, wanted, who, ours = []) {
     if (APPLY) await api(token, `/settings/filters/${l.id}`, { method: "DELETE" });
   }
   for (const f of wanted) {
-    const match = live.find((l) => l.criteria?.query === f.criteria.query);
-    if (match && norm(match.action) === norm(f.action)) {
+    // Match on query AND action. Two wanted filters can share a query (the
+    // interview label and the interview never-spam rule do), and matching on
+    // query alone made one of them look "changed", so the rebuild deleted the
+    // other's filter.
+    if (live.some((l) => l.criteria?.query === f.criteria.query && norm(l.action) === norm(f.action))) {
       say(`${who}: filter unchanged: ${f.what}`);
       continue;
     }
+    // A same-query filter is only this one's old version if no wanted filter
+    // claims it exactly.
+    const match = live.find(
+      (l) =>
+        l.criteria?.query === f.criteria.query &&
+        !wanted.some((w) => w.criteria.query === l.criteria?.query && norm(w.action) === norm(l.action))
+    );
     if (match) {
       say(`${who}: rebuild filter: ${f.what}`);
       if (APPLY) await api(token, `/settings/filters/${match.id}`, { method: "DELETE" });
@@ -249,14 +256,19 @@ const hubFilters = [];
 // `To: jb@golfresortmagazine.com` and `Delivered-To: jb@smartsme.co.uk`, so a
 // hub rule that matches deliveredto: claims every message in the building.
 // Titles/SME is therefore addressed-to only.
+// Each title now answers on two addresses: jb@ is the person and press@ is
+// the PR intake alias, and a release has to earn the same title label as a
+// reply does. One filter per title covers both, because Gmail allows only one
+// user label per filter and two filters would mean two rules to keep in step.
 for (const t of titles) {
   const isHub = t.fromEmail === HUB;
+  const addrs = `${t.fromEmail} OR press@${t.fromEmail.split("@")[1]}`;
   hubFilters.push({
-    what: `${TITLE_LABEL[t.slug]} for ${t.fromEmail}${isHub ? " (addressed-to only)" : ""}`,
+    what: `${TITLE_LABEL[t.slug]} for ${t.fromEmail} and its press alias${isHub ? " (addressed-to only)" : ""}`,
     criteria: {
       query: isHub
-        ? `to:${t.fromEmail} OR cc:${t.fromEmail}`
-        : `to:${t.fromEmail} OR cc:${t.fromEmail} OR deliveredto:${t.fromEmail}`,
+        ? `to:(${addrs}) OR cc:(${addrs})`
+        : `to:(${addrs}) OR cc:(${addrs}) OR deliveredto:(${addrs})`,
     },
     action: { addLabelIds: [labelId(TITLE_LABEL[t.slug])] },
   });

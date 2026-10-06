@@ -1,0 +1,11 @@
+import { PrismaClient } from "@prisma/client";
+import { decryptJson } from "../lib/crypto.js";
+import { fetchCandidates } from "../lib/newsletter.js";
+const prisma = new PrismaClient();
+const slug = process.argv[2];
+const site = await prisma.site.findUnique({ where: { slug } });
+const rows = await prisma.siteCredential.findMany({ where: { siteId: site.id } });
+const creds = Object.fromEntries(rows.map((r) => [r.kind, decryptJson(r.payloadEnc)]));
+const cands = await fetchCandidates(creds.wordpress, 40, site);
+for (const c of cands) console.log(String(c.id).padStart(5), (c.category || "").slice(0, 18).padEnd(18), c.title.slice(0, 72));
+await prisma.$disconnect();

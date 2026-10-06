@@ -1,0 +1,12 @@
+import os from "node:os";
+import { execFileSync } from "node:child_process";
+import { PrismaClient } from "@prisma/client";
+import { decryptJson } from "../lib/crypto.js";
+const prisma = new PrismaClient();
+const site = await prisma.site.findUnique({ where: { slug: process.env.SITE || "fleet-magazine" }, select: { id: true } });
+const rows = await prisma.siteCredential.findMany({ where: { siteId: site.id } });
+const cfg = Object.fromEntries(rows.map((r) => [r.kind, decryptJson(r.payloadEnc)])).sftp;
+await prisma.$disconnect();
+const wpRoot = cfg.themePath.split("/wp-content")[0];
+const ssh = (cmd) => execFileSync("ssh", ["-i", cfg.privateKeyPath.replace(/^~/, os.homedir()), "-o", "BatchMode=yes", "-p", String(cfg.port || 18765), `${cfg.username}@${cfg.host}`, `cd "${wpRoot}" && ${cmd}`], { encoding: "utf8", timeout: 60000 }).trim();
+console.log(ssh(process.argv[2]));

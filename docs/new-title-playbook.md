@@ -1190,6 +1190,26 @@ Two smaller traps found the same day:
 - **Do not put backslash escapes in a bash heredoc here.** Even quoted, they
   are eaten: a regex became invalid and a string literal split across two
   lines. Build such lines with the file tools or plain string concatenation.
+### The theme styled the editor's markup; the engine writes its own
+
+The parent's table styling targeted `.wp-block-table` — the figure wrapper the
+BLOCK EDITOR adds. The engine emits bare `<table>` HTML, and writes the header
+row as `<tr><th>` with no `<thead>`. Result: every engine-written table on
+every title rendered as core's centred, borderless default from the day the
+parent existed until 16 Sep 2026, when JB saw one on Airport's Gatwick tender
+piece. Nobody caught it earlier because the person checking a site never
+happened to be looking at an engine table, and `check-pages.mjs` checks that
+pages render, not what they look like.
+
+Fixed in the parent (v1.21.4): every table rule carries a
+`.wp-block-post-content` companion selector, and a `tr:first-child th` rule
+gives the header treatment to headerless tables — kept comma-joined in the
+same blocks so the two paths cannot drift. The general form: **whenever the
+parent styles a block-editor structure, ask what the ENGINE's markup for the
+same thing looks like — they are two different authors and only one of them
+is human.** Anything styled via `.wp-block-<x>` classes deserves the same
+audit: the engine writes none of those wrappers.
+
 ### A shared parent must not point at a semantic palette slug
 The masthead chip and the favicon in `cogent-base` both used the `amber` slug,
 because The Fleet Magazine wanted an amber mark. Amber is a slot **every** title

@@ -1,0 +1,10 @@
+import { PrismaClient } from "@prisma/client";
+import { decryptJson } from "../lib/crypto.js";
+import { categoryCounts } from "../lib/wordpress.js";
+const prisma = new PrismaClient();
+const sites = await prisma.site.findMany({ select: { id: true, slug: true } });
+const site = sites.find((s) => /smart/i.test(s.slug));
+const rows = await prisma.siteCredential.findMany({ where: { siteId: site.id } });
+const wp = Object.fromEntries(rows.map((r) => [r.kind, decryptJson(r.payloadEnc)])).wordpress;
+await prisma.$disconnect();
+console.log(JSON.stringify(await categoryCounts(wp), null, 1));

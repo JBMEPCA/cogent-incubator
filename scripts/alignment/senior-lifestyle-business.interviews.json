@@ -88,5 +88,77 @@
       "What should the sector be lobbying for that it currently is not?",
       "Where does Retirement Villages Group go from here?"
     ]
+  },
+  {
+    "personName": "Martin Hyde",
+    "personRole": "Professor of Management, University of Leicester; President, British Society of Gerontology",
+    "company": "University of Leicester",
+    "companyDomain": "leicester.ac.uk",
+    "genericEmail": "mh723@leicester.ac.uk",
+    "hookUrl": "https://le.ac.uk/people/martin-hyde",
+    "newsHook": "You are president of the British Society of Gerontology and you have spent your career inside the datasets that actually measure later life, ELSA, SHARE and SLOSH, which puts you in an unusual position: the people who build and run retirement communities are making very large capital bets on what older people want, and you are one of the few people who can say what the evidence supports and what it does not.",
+    "questions": [
+      "ELSA and SHARE have tracked quality of life in later life for decades. What actually moves it, and how much of that can a retirement community realistically supply?",
+      "You chair the BSG's Work and Retirement Group. People now retire later and in stages. What does that do to the age at which someone buys into a retirement community, and what should operators be building for?",
+      "Your work on health inequalities in later life is stark, and retirement communities are overwhelmingly bought by the better off. Is the sector reaching the people who would benefit most, and what would change that?",
+      "Ageing and Globalisation compares how different countries handle later life. Which country's model should UK operators be studying hardest, and what specifically?",
+      "Operators sell independence, community and security. Which of those three does the evidence support as improving outcomes, and which is marketing?",
+      "What does the research say about the right point to move, and how does that sit with an industry that needs people to move earlier?",
+      "What is the question about later life that this industry is not asking itself?"
+    ]
+  },
+  {
+    "personName": "Emily Abbott",
+    "personRole": "Co-Founder, Intergenerational England; Programme Director, Intergenerational Music Making",
+    "company": "Intergenerational England",
+    "companyDomain": "intergenerationalengland.org",
+    "genericEmail": "sam@bigbangpr.co.uk",
+    "hookUrl": "https://www.intergenerationalengland.org/contact-us",
+    "newsHook": "Intergenerational England was set up as the first national body working against age segregation, and a retirement community is by definition an age-segregated place, so the people developing and running them have a direct interest in what you have found works when generations are deliberately mixed and what turns out to be tokenism.",
+    "questions": [
+      "Intergenerational England exists to tackle age segregation, and a retirement community is by definition age-segregated. Is the model part of the problem?",
+      "What does a genuinely intergenerational scheme look like in practice, as opposed to a nursery visit once a term?",
+      "You have run intergenerational music programmes at scale. What separated the ones that worked from the ones that did not?",
+      "If an operator wanted to design intergenerational use into a new village from the planning stage, what would you tell them to build in, and what to avoid?",
+      "What does it cost, who pays for it, and how would an operator show a board it was worth the money?",
+      "Where are the planning and regulatory obstacles to mixing ages on one site in England?",
+      "Which scheme or operator in England is doing this best right now, and what are they doing that the others are not?"
+    ]
+  },
+  {
+    "personName": "Deborah Morgan",
+    "personRole": "ENRICH Cymru Research Manager, School of Health and Social Care, Swansea University",
+    "company": "Swansea University",
+    "companyDomain": "swansea.ac.uk",
+    "genericEmail": "d.j.morgan@swansea.ac.uk",
+    "hookUrl": "https://www.swansea.ac.uk/staff/d.j.morgan/",
+    "newsHook": "Loneliness in later life is the thing retirement communities implicitly sell against, and you have spent your career measuring it, including the work classifying distinct patterns of loneliness and isolation and the finding that loneliness can act as a biographical disruption, so operators want to know whether moving into a community actually does what they say it does.",
+    "questions": [
+      "Your work identified distinct patterns of loneliness and isolation in later life rather than one condition. What are they, and does moving into a retirement community help all of them equally?",
+      "You have described loneliness as a biographical disruption. Is moving into a village itself a disruption of that kind, and what should an operator do in the first six months?",
+      "Retirement communities sell community. What does the evidence say about whether living among other older people actually reduces loneliness?",
+      "You have looked at communication technology and isolation. What should an operator actually install or run, and what is wasted money?",
+      "You sit on the Welsh Government loneliness strategy board. What is policy now asking of housing providers, and is retirement housing inside that conversation or outside it?",
+      "If you were an operator who genuinely wanted to know whether your community was working, what would you measure?",
+      "What does the research say about the resident who stays lonely inside a busy community, and what can be done for them?"
+    ]
+  },
+  {
+    "personName": "Matthew Flynn",
+    "personRole": "Professor of Work and Employment, University of Leicester; Director, Centre for Research into the Older Workforce",
+    "company": "University of Leicester",
+    "companyDomain": "leicester.ac.uk",
+    "genericEmail": "matthew.flynn@leicester.ac.uk",
+    "hookUrl": "https://le.ac.uk/people/matt-flynn",
+    "newsHook": "Two things this sector is struggling with sit inside your work: people are retiring later and in stages, which moves the age at which anyone buys into a retirement community, and operators consistently name recruiting and keeping village managers as their binding constraint while you have spent years on what makes work attractive to older people.",
+    "questions": [
+      "Phased retirement is replacing the cliff edge. What does that do to when people move into a retirement community, and what do they need from one if they are still working?",
+      "You have written good practice guides for employers on making work attractive to older workers. Retirement village operators say recruiting and keeping village managers is their hardest problem. What should they be doing differently?",
+      "Second Mission follows people who change career after fifty. Are retirement housing and care a realistic destination for them, and how would the sector attract them?",
+      "Is there a case for operators recruiting staff from the same age group as their residents, and what does the evidence say about how that works in customer-facing roles?",
+      "If people are working into their seventies, does the core proposition of a retirement community have to change?",
+      "Which employers are genuinely good at intergenerational teams, and what do they do that a village operator could copy?",
+      "What single change to policy or practice would most help an ageing workforce, and does it reach this sector at all?"
+    ]
   }
 ]
