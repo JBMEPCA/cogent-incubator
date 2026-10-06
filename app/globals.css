@@ -3693,3 +3693,79 @@ th {
   .commission-row { gap: 8px 12px; }
   .commission-actions { gap: 16px; }
 }
+
+/* Group costs — chart polish */
+.gc-panel {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 80% at 0% 0%, rgba(57, 135, 229, 0.10), transparent 55%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 40%),
+    var(--surface-2);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 18px 40px rgba(0, 0, 0, 0.25);
+}
+.gc-panel h2 { font-size: 19px; letter-spacing: -0.01em; }
+
+.gc-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line);
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.gc-key b { color: var(--text); font-weight: 800; font-size: 14px; }
+.gc-legend .gc-key i { margin-right: 0; width: 14px; }
+
+.gc-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: gc-pulse 2.2s ease-out infinite;
+}
+@keyframes gc-pulse {
+  0%   { transform: scale(1);   opacity: 0.7; }
+  100% { transform: scale(3.2); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .gc-pulse { animation: none; opacity: 0; } }
+
+.gc-months { height: 270px; gap: 18px; padding-top: 4px; border-bottom: 1px solid var(--line); padding-bottom: 0; }
+.gc-month { gap: 7px; }
+.gc-month-value { font-size: 22px; letter-spacing: -0.01em; }
+.gc-month-chip { min-height: 22px; }
+.gc-month-chip .gc-delta { font-size: 11.5px; padding: 2px 8px; }
+.gc-month-track { max-width: 92px; }
+.gc-month-bar {
+  background: linear-gradient(180deg, #7385b3, #48577d);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+}
+.gc-month.is-current .gc-month-bar {
+  background: linear-gradient(180deg, #22d3ee, #3987e5);
+  box-shadow: 0 0 22px rgba(34, 211, 238, 0.35);
+}
+.gc-month-proj {
+  background: repeating-linear-gradient(-45deg, rgba(57, 135, 229, 0.22) 0 6px, rgba(57, 135, 229, 0.06) 6px 12px);
+  border-color: #5ab0ff;
+}
+.gc-month-label { font-size: 13px; font-weight: 700; padding: 6px 0 10px; }
+.gc-month.is-current .gc-month-label { color: #8fc2ff; }
+
+.gc-stack {
+  display: flex;
+  gap: 3px;
+  height: 22px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+.gc-stack > div { min-width: 4px; }
+.gc-bars { gap: 14px; }
+.gc-bar-row { display: flex; align-items: center; gap: 14px; }
+.gc-bar-row .gc-bar-pct { width: 50px; flex-shrink: 0; font-size: 22px; font-weight: 800; text-align: right; letter-spacing: -0.02em; }
+.gc-bar-main { flex: 1; min-width: 0; }
+.gc-bar-top { font-size: 14.5px; font-weight: 600; }
+.gc-bar-top strong { font-size: 15px; }
+.gc-two > .gc-panel { display: flex; flex-direction: column; }
+.gc-two .gc-months { flex: 1; height: auto; min-height: 270px; }

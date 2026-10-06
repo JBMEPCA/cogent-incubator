@@ -1,6 +1,7 @@
 import Link from "next/link";
 import FleetNav from "../components/FleetNav";
 import { fleetCosts } from "@/lib/fleet-costs";
+import { SERIES } from "@/app/components/CostCharts";
 
 export const dynamic = "force-dynamic";
 
@@ -86,55 +87,104 @@ function Hero({ label, value, sub, delta, tone }) {
  * than last month" without anyone doing arithmetic.
  */
 function RunningTotal({ running, month, totals, rate }) {
-  const W = 760, H = 280, L = 56, R = 120, T = 16, B = 30;
+  const W = 860, H = 330, L = 52, R = 118, T = 30, B = 34;
   const days = Math.max(month.daysInMonth, month.prevDays);
   const yMax = Math.max(totals.projectedUsd, totals.prevUsd, 1) * 1.12;
   const x = (d) => L + (d / days) * (W - L - R);
   const y = (v) => T + (1 - v / yMax) * (H - T - B);
+  const floor = y(0);
 
   // Day 0 is the 1st at midnight, where the month's fixed bills already sit.
-  const line = (vals, lastX) =>
-    [`M ${x(0)} ${y(totals.fixedUsd)}`, ...vals.map((v, i) => `L ${x(lastX && i === vals.length - 1 ? lastX : i + 1)} ${y(v)}`)].join(" ");
+  const pts = (vals, lastX) => [
+    [x(0), y(totals.fixedUsd)],
+    ...vals.map((v, i) => [x(lastX && i === vals.length - 1 ? lastX : i + 1), y(v)]),
+  ];
+  const path = (p) => p.map(([px, py], i) => `${i ? "L" : "M"} ${px.toFixed(1)} ${py.toFixed(1)}`).join(" ");
+  const area = (p) => `${path(p)} L ${p.at(-1)[0].toFixed(1)} ${floor} L ${p[0][0].toFixed(1)} ${floor} Z`;
 
   const todayX = month.daysElapsed;
+  const thisPts = pts(running.this, todayX);
+  const prevPts = pts(running.prev);
+  const [tx, ty] = [x(todayX), y(totals.thisUsd)];
+  const [ex, ey] = [x(month.daysInMonth), y(totals.projectedUsd)];
   const ticks = niceTicks(yMax * rate).map((g) => g / rate);
+
 
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="gc-chart" role="img"
       aria-label={`Running total: ${gbp(totals.thisUsd, rate)} so far, projected ${gbp(totals.projectedUsd, rate)}, against ${gbp(totals.prevUsd, rate)} last month`}>
+      <defs>
+        <linearGradient id="gc-area-this" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={THIS} stopOpacity="0.55" />
+          <stop offset="100%" stopColor={THIS} stopOpacity="0" />
+        </linearGradient>
+        <linearGradient id="gc-area-prev" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={PREV} stopOpacity="0.16" />
+          <stop offset="100%" stopColor={PREV} stopOpacity="0" />
+        </linearGradient>
+        <linearGradient id="gc-area-proj" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={THIS} stopOpacity="0.16" />
+          <stop offset="100%" stopColor={THIS} stopOpacity="0" />
+        </linearGradient>
+        <linearGradient id="gc-line-this" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#5ab0ff" />
+          <stop offset="100%" stopColor="#22d3ee" />
+        </linearGradient>
+        <filter id="gc-glow" x="-20%" y="-50%" width="140%" height="200%">
+          <feGaussianBlur stdDeviation="5" result="b" />
+          <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+      </defs>
+
       {ticks.map((t) => (
         <g key={t}>
-          <line x1={L} x2={W - R} y1={y(t)} y2={y(t)} stroke={GRID} />
-          <text x={L - 8} y={y(t) + 4} textAnchor="end" fontSize="11" fill={INK_2}>£{Math.round(t * rate).toLocaleString("en-GB")}</text>
+          <line x1={L} x2={W - R} y1={y(t)} y2={y(t)} stroke={GRID} strokeDasharray={t ? "3 6" : undefined} />
+          <text x={L - 10} y={y(t) + 4} textAnchor="end" fontSize="12" fill={INK_2}>£{Math.round(t * rate).toLocaleString("en-GB")}</text>
         </g>
       ))}
       {[1, 8, 15, 22, days].map((d) => (
-        <text key={d} x={x(d - 0.5)} y={H - 8} textAnchor="middle" fontSize="11" fill={INK_2}>{d}</text>
+        <text key={d} x={x(d - 0.5)} y={H - 10} textAnchor="middle" fontSize="12" fill={INK_2}>{d}</text>
       ))}
 
-      {/* Last month, for comparison. */}
-      <path d={line(running.prev)} fill="none" stroke={PREV} strokeWidth="2" strokeDasharray="1 0" opacity="0.7" />
-      <text x={x(month.prevDays) + 8} y={y(totals.prevUsd) + 4} fontSize="12" fill={PREV}>
-        {month.prevLabel.slice(0, 3)} {gbp(totals.prevUsd, rate)}
-      </text>
+      {/* Last month, for comparison: quiet, behind everything. */}
+      <path d={area(prevPts)} fill="url(#gc-area-prev)" />
+      <path d={path(prevPts)} fill="none" stroke={PREV} strokeWidth="2" strokeOpacity="0.75" strokeLinejoin="round" />
+      <circle cx={prevPts.at(-1)[0]} cy={prevPts.at(-1)[1]} r="4" fill={PREV} />
+      <Pill cx={prevPts.at(-1)[0] + 10} cy={prevPts.at(-1)[1]} anchor="start" size={12}
+        text={`${month.prevLabel.slice(0, 3)} ${gbp(totals.prevUsd, rate)}`} fill="rgba(139,151,198,.18)" ink="#c7cff0" />
 
-      {/* Projection: from now to the month end at the last seven days' rate. */}
-      <path d={`M ${x(todayX)} ${y(totals.thisUsd)} L ${x(month.daysInMonth)} ${y(totals.projectedUsd)}`}
-        fill="none" stroke={THIS} strokeWidth="3" strokeDasharray="6 6" />
-      <circle cx={x(month.daysInMonth)} cy={y(totals.projectedUsd)} r="5" fill="none" stroke={THIS} strokeWidth="2.5" />
-      <text x={x(month.daysInMonth) + 10} y={y(totals.projectedUsd) - 2} fontSize="13" fontWeight="700" fill={INK}>
-        {gbp(totals.projectedUsd, rate)}
-      </text>
-      <text x={x(month.daysInMonth) + 10} y={y(totals.projectedUsd) + 13} fontSize="11" fill={INK_2}>projected</text>
+      {/* Projection: a soft wedge and a dashed line to the month end. */}
+      <path d={`M ${tx} ${ty} L ${ex} ${ey} L ${ex} ${floor} L ${tx} ${floor} Z`} fill="url(#gc-area-proj)" />
+      <path d={`M ${tx} ${ty} L ${ex} ${ey}`} fill="none" stroke={THIS} strokeWidth="3" strokeDasharray="2 9" strokeLinecap="round" />
+      <circle cx={ex} cy={ey} r="9" fill="none" stroke={THIS} strokeOpacity="0.35" strokeWidth="6" />
+      <circle cx={ex} cy={ey} r="5" fill="#0b1022" stroke="#5ab0ff" strokeWidth="3" />
+      <Pill cx={ex + 14} cy={ey} anchor="start" size={15} text={gbp(totals.projectedUsd, rate)} fill={THIS} ink="#ffffff" />
+      <text x={ex + 16} y={ey + 30} fontSize="11" fontWeight="700" letterSpacing="1.2" fill="#8fc2ff">PROJECTED</text>
 
-      {/* This month so far. */}
-      <path d={line(running.this, todayX)} fill="none" stroke={THIS} strokeWidth="3.5" strokeLinejoin="round" />
-      <line x1={x(todayX)} x2={x(todayX)} y1={T} y2={H - B} stroke={THIS} strokeOpacity="0.35" strokeDasharray="2 4" />
-      <circle cx={x(todayX)} cy={y(totals.thisUsd)} r="6" fill={THIS}>
+      {/* This month so far: the hero line, glowing. */}
+      <path d={area(thisPts)} fill="url(#gc-area-this)" />
+      <path d={path(thisPts)} fill="none" stroke="url(#gc-line-this)" strokeWidth="4" strokeLinejoin="round" strokeLinecap="round" filter="url(#gc-glow)" />
+      <line x1={tx} x2={tx} y1={T - 6} y2={floor} stroke="#5ab0ff" strokeOpacity="0.4" strokeDasharray="2 5" />
+      <circle className="gc-pulse" cx={tx} cy={ty} r="7" fill="#22d3ee" />
+      <circle cx={tx} cy={ty} r="7" fill="#22d3ee" stroke="#0b1022" strokeWidth="2.5">
         <title>{`Spent so far: ${gbp(totals.thisUsd, rate)}`}</title>
       </circle>
-      <text x={x(todayX)} y={T + 10} textAnchor="middle" fontSize="11" fill={INK_2}>today</text>
+      <Pill cx={tx} cy={ty - 26} size={13} text={gbp(totals.thisUsd, rate)} fill="#22d3ee" ink="#05070f" />
+      <text x={tx} y={T - 12} textAnchor="middle" fontSize="11" fontWeight="700" letterSpacing="1.2" fill="#8fc2ff">TODAY</text>
     </svg>
+  );
+}
+
+// A pill-shaped label: SVG has no auto-sizing box, so the width is
+// estimated from the character count, which is close enough at these sizes.
+function Pill({ cx, cy, text, fill, ink, size = 13, anchor = "middle" }) {
+  const w = text.length * size * 0.6 + 18;
+  const left = anchor === "start" ? cx : cx - w / 2;
+  return (
+    <g>
+      <rect x={left} y={cy - size} width={w} height={size * 2} rx={size} fill={fill} />
+      <text x={left + w / 2} y={cy + size * 0.36} textAnchor="middle" fontSize={size} fontWeight="800" fill={ink}>{text}</text>
+    </g>
   );
 }
 
@@ -154,13 +204,17 @@ function MonthBars({ months, rate }) {
   const max = Math.max(...months.map((m) => m.projectedUsd ?? m.usd), 1);
   return (
     <div className="gc-months">
-      {months.map((m) => {
+      {months.map((m, i) => {
         const actual = (m.usd / max) * 100;
         const projected = m.projectedUsd != null ? ((m.projectedUsd - m.usd) / max) * 100 : 0;
         const shown = m.projectedUsd ?? m.usd;
+        const before = months[i - 1];
         return (
           <div key={m.key} className={`gc-month${m.projectedUsd != null ? " is-current" : ""}`}>
             <div className="gc-month-value num">{gbp(shown, rate)}</div>
+            <div className="gc-month-chip">
+              {before ? <Delta now={shown} then={before.projectedUsd ?? before.usd} /> : <span className="gc-delta is-flat">first month</span>}
+            </div>
             <div className="gc-month-track">
               {projected > 0 && (
                 <div className="gc-month-proj" style={{ height: `${projected}%` }}
@@ -210,6 +264,16 @@ export default async function FleetCostsPage() {
   const dayNo = Math.ceil(month.daysElapsed);
   const titleMax = Math.max(...titles.map((t) => t.projectedUsd), 1);
   const agentTotal = byAgent.reduce((n, a) => n + a.thisUsd, 0);
+  // Largest first, each in its own hue from the validated set; the long tail
+  // shares one slate so a fifth colour never stands for "£0.24 of images".
+  const spend = byAgent
+    .filter((a) => a.thisUsd * rate >= 0.005)
+    .map((a, i) => ({
+      ...a,
+      label: AGENT_LABELS[a.agent] || a.agent,
+      colour: i < SERIES.length ? SERIES[i] : "#64748b",
+      pct: agentTotal ? Math.round((a.thisUsd / agentTotal) * 100) : 0,
+    }));
   const confirmCount = subscriptions.filter((s) => s.confirm).length;
 
   return (
@@ -278,9 +342,9 @@ export default async function FleetCostsPage() {
         <div className="gc-panel-head">
           <h2>Running total this month</h2>
           <div className="gc-legend">
-            <span><i style={{ background: THIS }} /> {month.label}</span>
-            <span><i className="is-dash" style={{ borderColor: THIS }} /> projected</span>
-            <span><i style={{ background: PREV, opacity: 0.7 }} /> {month.prevLabel}</span>
+            <span className="gc-key"><i style={{ background: "#22d3ee" }} />{month.label} so far <b className="num">{gbp(totals.thisUsd, rate)}</b></span>
+            <span className="gc-key"><i className="is-dash" style={{ borderColor: THIS }} />Projected <b className="num">{gbp(totals.projectedUsd, rate)}</b></span>
+            <span className="gc-key"><i style={{ background: PREV }} />{month.prevLabel} <b className="num">{gbp(totals.prevUsd, rate)}</b></span>
           </div>
         </div>
         <RunningTotal running={running} month={month} totals={totals} rate={rate} />
@@ -299,18 +363,26 @@ export default async function FleetCostsPage() {
             <h2>What it is spent on</h2>
             <span className="gc-panel-note">{month.label} so far</span>
           </div>
+          {agentTotal > 0 && (
+            <div className="gc-stack">
+              {spend.map((a) => (
+                <div key={a.agent} style={{ width: `${(a.thisUsd / agentTotal) * 100}%`, background: a.colour }}
+                  title={`${a.label}: ${gbp(a.thisUsd, rate)}`} />
+              ))}
+            </div>
+          )}
           <div className="gc-bars">
-            {byAgent.filter((a) => a.thisUsd * rate >= 0.005).map((a) => (
+            {spend.map((a) => (
               <div key={a.agent} className="gc-bar-row">
-                <div className="gc-bar-top">
-                  <span>{AGENT_LABELS[a.agent] || a.agent}</span>
-                  <span className="num">
-                    <strong>{gbp(a.thisUsd, rate)}</strong>
-                    <span className="gc-bar-pct"> {agentTotal ? Math.round((a.thisUsd / agentTotal) * 100) : 0}%</span>
-                  </span>
-                </div>
-                <div className="gc-track">
-                  <div className="gc-fill" style={{ width: `${Math.max(1.5, (a.thisUsd / agentTotal) * 100)}%` }} />
+                <span className="gc-bar-pct num" style={{ color: a.colour }}>{a.pct}%</span>
+                <div className="gc-bar-main">
+                  <div className="gc-bar-top">
+                    <span>{a.label}</span>
+                    <strong className="num">{gbp(a.thisUsd, rate)}</strong>
+                  </div>
+                  <div className="gc-track">
+                    <div className="gc-fill" style={{ width: `${Math.max(1.5, (a.thisUsd / agentTotal) * 100)}%`, background: `linear-gradient(90deg, ${a.colour}99, ${a.colour})`, boxShadow: `0 0 12px ${a.colour}66` }} />
+                  </div>
                 </div>
               </div>
             ))}
