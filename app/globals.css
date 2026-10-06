@@ -3656,3 +3656,40 @@ th {
 
 .gc-foot { font-size: 12px; color: var(--muted); margin: 0; line-height: 1.6; }
 .gc-title-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #3987e5; }
+
+
+/* ---------------------------------------------------- trending: phone fit */
+.trend-intro { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
+.trend-intro-side { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+.trend-intro-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.live-table { min-width: 680px; }
+
+@media (max-width: 640px) {
+  /* Once the side column wraps under the text, right-aligned controls float
+     oddly in the middle of a phone screen; line them up with the text. */
+  .trend-intro-side { align-items: flex-start; width: 100%; }
+  .trend-intro-actions { justify-content: flex-start; }
+
+  /* Ten title pills wrapped into four or five rows before any content. One
+     row that scrolls sideways keeps the filters a tap away and the page short. */
+  .trend-filters { min-width: 0; max-width: 100%; flex-wrap: nowrap; overflow-x: auto; margin-left: -4px; margin-right: -4px; padding: 0 4px 6px; scrollbar-width: none; }
+  .trend-filters::-webkit-scrollbar { display: none; }
+  .trend-filters .fleet-nav-btn { flex: none; }
+
+  /* Live articles: a card per article instead of a 680px table that scrolled
+     sideways inside its panel. Title on top, the five figures in a row of
+     labelled cells, then the button full width. */
+  .live-table { min-width: 0; }
+  .live-table thead { display: none; }
+  .live-table, .live-table tbody { display: block; }
+  .live-table tr { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px 8px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .live-table td { display: block; padding: 0 !important; border: 0 !important; text-align: left !important; white-space: normal !important; }
+  .live-table td.live-article { grid-column: 1 / -1; margin-bottom: 4px; }
+  .live-table td.live-metric::before { content: attr(data-label); display: block; font-family: var(--font-mono), monospace; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 400; margin-bottom: 2px; }
+  .live-table td.live-action { grid-column: 1 / -1; margin-top: 6px; }
+  .live-table td.live-action .btn { display: block; text-align: center; }
+
+  /* Commissioned rows: stage and cost share a line, actions underneath. */
+  .commission-row { gap: 8px 12px; }
+  .commission-actions { gap: 16px; }
+}

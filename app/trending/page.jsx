@@ -203,20 +203,19 @@ export default async function TrendingPage({ searchParams }) {
         </div>
       </header>
 
-      <div style={{ maxWidth: 1360, margin: "0 auto" }}>
+      <div style={{ maxWidth: 1360, margin: "0 auto", width: "100%", minWidth: 0 }}>
         <section className="panel panel-glow stagger" style={{ marginBottom: 24 }}>
-          <div style={{ display: "flex", gap: 24, alignItems: "flex-start", flexWrap: "wrap" }}>
-            <div style={{ flex: 1, minWidth: 280 }}>
+          <div className="trend-intro">
+            <div style={{ flex: 1, minWidth: 260 }}>
               <h2 style={{ margin: "0 0 6px", fontSize: 18 }}>What people are searching for right now</h2>
               <p style={{ color: "var(--muted)", fontSize: 14, margin: 0, maxWidth: 720 }}>
-                Google&rsquo;s live trending searches, matched to the title whose readers would care, plus
-                queries suddenly spiking on our own titles. Commission one and it goes to the front of that
-                title&rsquo;s queue: drafted now from the publishers&rsquo; reporting, and published on the next
-                tick once it has passed checks and has a picture, without waiting for a slot.
+                Google&rsquo;s live trending searches, matched to the title whose readers would care.
+                Commission one and it is written from the publishers&rsquo; reporting, checked, and published
+                as soon as it passes, without waiting for a slot.
               </p>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-end" }}>
-              <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
+            <div className="trend-intro-side">
+              <div className="trend-intro-actions">
                 <AutoToggle on={await autoCommissionOn()} />
                 <RefreshButton />
               </div>
@@ -330,7 +329,7 @@ export default async function TrendingPage({ searchParams }) {
           </p>
           {live.length ? (
             <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 680 }}>
+              <table className="live-table" style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                 <thead>
                   <tr>
                     {["Article", "Article views", "Organic clicks", "Impressions", "Position", "Cost", ""].map((h, n) => (
@@ -349,7 +348,7 @@ export default async function TrendingPage({ searchParams }) {
                     const cell = { padding: "11px 0 11px 14px", borderBottom: "1px solid var(--line)", textAlign: "right", whiteSpace: "nowrap" };
                     return (
                       <tr key={t.id}>
-                        <td style={{ ...cell, textAlign: "left", paddingLeft: 0, whiteSpace: "normal" }}>
+                        <td className="live-article" style={{ ...cell, textAlign: "left", paddingLeft: 0, whiteSpace: "normal" }}>
                           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
                             {t.site && <SiteMark site={t.site} size={22} showStatus={false} />}
                             <div style={{ minWidth: 0 }}>
@@ -358,12 +357,12 @@ export default async function TrendingPage({ searchParams }) {
                             </div>
                           </div>
                         </td>
-                        <td className="num" style={{ ...cell, fontWeight: 700 }}>{num(m.views)}</td>
-                        <td className="num" style={cell}>{num(m.clicks)}</td>
-                        <td className="num" style={{ ...cell, color: "var(--muted)" }}>{num(m.impressions)}</td>
-                        <td className="num" style={{ ...cell, color: "var(--muted)" }}>{m.position == null ? "—" : m.position.toFixed(1)}</td>
-                        <td style={cell}><Cost usd={costById.get(a.id) || 0} /></td>
-                        <td style={cell}>
+                        <td className="num live-metric" data-label="Views" style={{ ...cell, fontWeight: 700 }}>{num(m.views)}</td>
+                        <td className="num live-metric" data-label="Clicks" style={cell}>{num(m.clicks)}</td>
+                        <td className="num live-metric" data-label="Impr." style={{ ...cell, color: "var(--muted)" }}>{num(m.impressions)}</td>
+                        <td className="num live-metric" data-label="Pos." style={{ ...cell, color: "var(--muted)" }}>{m.position == null ? "—" : m.position.toFixed(1)}</td>
+                        <td className="live-metric" data-label="Cost" style={cell}><Cost usd={costById.get(a.id) || 0} /></td>
+                        <td className="live-action" style={cell}>
                           {m.link ? (
                             <a href={m.link} target="_blank" rel="noreferrer noopener" className="btn" style={{ padding: "5px 12px", fontSize: 12, textDecoration: "none" }}>
                               View article ↗
