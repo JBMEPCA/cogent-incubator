@@ -58,7 +58,7 @@ function Cost({ usd }) {
   const cap = Math.round((TREND_COST_CAP_USD / USD_PER_GBP) * 100);
   const over = pence >= cap;
   return (
-    <span className="micro num" title={`${usd.toFixed(2)} of AI spend on this article`} style={{ color: over ? "var(--neon-amber)" : "var(--muted)", whiteSpace: "nowrap" }}>
+    <span className="num" title={`$${usd.toFixed(2)} of AI spend on this article`} style={{ fontSize: 13, fontWeight: 600, color: over ? "var(--neon-amber)" : "var(--text)", whiteSpace: "nowrap" }}>
       {pence < 100 ? `${pence}p` : `£${(pence / 100).toFixed(2)}`}
       <span style={{ opacity: 0.6 }}> / {cap}p</span>
     </span>
