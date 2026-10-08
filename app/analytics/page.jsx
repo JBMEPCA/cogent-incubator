@@ -5,7 +5,8 @@ import { SharePie, Sparkline, RankedList, PositionPill, colourMap } from "../com
 import SiteMark from "../components/SiteMark";
 import { fleetAnalytics, summarise } from "@/lib/fleet-analytics";
 import PeriodFilter from "@/app/components/PeriodFilter";
-import { periodFrom, DEFAULT_PERIOD } from "@/lib/periods";
+import { after } from "next/server";
+import { periodFrom, DEFAULT_PERIOD, PERIODS } from "@/lib/periods";
 import { fleetPulse } from "@/lib/pulse";
 import PulsePanel from "./PulsePanel";
 import Scroller from "@/app/components/Scroller";
@@ -252,6 +253,11 @@ export default async function GroupAnalyticsPage({ searchParams }) {
   let data;
   try {
     data = await fleetAnalytics({ period: period.key });
+    // Once this page is sent, fetch the other periods so their Google results
+    // are in the cache (fifteen minutes) before anyone clicks across to them.
+    after(() =>
+      Promise.allSettled(PERIODS.filter((p) => p.key !== period.key).map((p) => fleetAnalytics({ period: p.key })))
+    );
   } catch (err) {
     return (
       <Shell>
@@ -442,24 +448,26 @@ export default async function GroupAnalyticsPage({ searchParams }) {
 
       {/* ── Filters ────────────────────────────────────────────────────── */}
       <div className="an-filters">
-        <PeriodFilter
-          current={period.key}
-          hrefFor={(k) => href({ period: k })}
-          note={
-            period.key === "today"
-              ? "Search Console runs about three days behind, so search figures show its latest day"
-              : period.key === "all"
-                ? "Search Console keeps 16 months, so search figures go back that far"
-                : null
-          }
-        />
-        <nav className="an-tabs" aria-label="Analytics view">
-          {VIEWS.map((v) => (
-            <Link key={v.key} href={href({ view: v.key })} className={`an-tab${v.key === view ? " is-active" : ""}`}>
-              {v.label}
-            </Link>
-          ))}
-        </nav>
+        <div className="an-tabs-row">
+          <nav className="an-tabs" aria-label="Analytics view">
+            {VIEWS.map((v) => (
+              <Link key={v.key} href={href({ view: v.key })} className={`an-tab${v.key === view ? " is-active" : ""}`}>
+                {v.label}
+              </Link>
+            ))}
+          </nav>
+          <PeriodFilter
+            current={period.key}
+            hrefs={Object.fromEntries(PERIODS.map((p) => [p.key, href({ period: p.key })]))}
+            note={
+              period.key === "today"
+                ? "Search Console runs about three days behind, so search figures show its latest day"
+                : period.key === "all"
+                  ? "Search Console keeps 16 months, so search figures go back that far"
+                  : "Today, 7 days, 30 days or all time"
+            }
+          />
+        </div>
         <div className="an-titles" aria-label="Filter by title">
           <Link href={href({ title: null })} className={`an-pill${!focus ? " is-active" : ""}`}>
             All titles
