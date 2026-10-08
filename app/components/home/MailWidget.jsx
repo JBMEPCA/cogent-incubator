@@ -17,12 +17,16 @@ export function MailIcon() {
   );
 }
 
-export function MailSearch({ q = "" }) {
+// The widget shows the mail icon beside its heading, as the Black Book does,
+// so the search there runs full width; the /mail page keeps it by the search.
+export function MailSearch({ q = "", icon = true }) {
   return (
     <form action="/mail" className="dw-mail-top" role="search">
-      <span className="dw-mail-ic">
-        <MailIcon />
-      </span>
+      {icon && (
+        <span className="dw-mail-ic">
+          <MailIcon />
+        </span>
+      )}
       <label className="dw-search">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
           <circle cx="11" cy="11" r="6.5" />
@@ -63,14 +67,21 @@ export default async function MailWidget({ sites, canEdit, max = 25 }) {
   return (
     <Widget
       span={6}
-      title="Mail worth reading"
+      title={
+        <>
+          <span className="dw-mail-ic dw-head-ic" aria-hidden="true">
+            <MailIcon />
+          </span>
+          Mail worth reading
+        </>
+      }
       sub="every title's inbox, minus the marketing and the machines"
       href="/mail"
       linkLabel="Open mailbox"
       className="dw-mail dw-light"
       actions={canEdit && <MarkAllRead unread={unread} />}
     >
-      <MailSearch />
+      <MailSearch icon={false} />
       <div className="dw-mail-tiles">
         <Link href="/mail?show=unread" className="dw-mtile">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3b9cff" strokeWidth="1.6" strokeLinejoin="round" aria-hidden="true">

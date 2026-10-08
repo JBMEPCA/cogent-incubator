@@ -718,6 +718,17 @@ model OutreachEmail {
   // are checked nulls-first then oldest-look-first, so every brand comes round
   // instead of the sweep re-reading the same oldest few on every run.
   linkCheckedAt DateTime?
+  // What their reply said about the link, read by lib/link-replies.js:
+  // live | promised | redirected | declined. Only a link we have found on
+  // their page ourselves sets linkedAt; "live" without that stays promised.
+  linkVerdict   String?
+  linkVerdictAt DateTime?
+  // A short human note: the gist of the reply, or the address they sent us to.
+  linkNote      String?
+  // Cursor for the reply read, so each run only looks at mail it has not seen.
+  replyCheckedAt DateTime?
+  // Set when a link we had confirmed is no longer on the page.
+  linkLostAt    DateTime?
   createdAt    DateTime @default(now())
 
   @@index([siteId, status])
@@ -795,6 +806,17 @@ model InterviewTarget {
   publishedAt   DateTime?
   /// When we told the subject it was live. This is the share, and the link.
   notifiedAt    DateTime?
+
+  /// Whether they linked back, read from their replies and checked on their
+  /// site (lib/link-replies.js). Same fields and meanings as on OutreachEmail.
+  linkedAt       DateTime?
+  linkUrl        String?
+  linkCheckedAt  DateTime?
+  linkVerdict    String?
+  linkVerdictAt  DateTime?
+  linkNote       String?
+  replyCheckedAt DateTime?
+  linkLostAt     DateTime?
 
   error         String?
   attempts      Int      @default(0)

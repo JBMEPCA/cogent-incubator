@@ -1,3 +1,4 @@
+import LinkVerdict from "@/app/components/LinkVerdict";
 import Header from "@/app/components/Header";
 import SubTabs, { CONTENT_TABS } from "@/app/components/SubTabs";
 import { notFound } from "next/navigation";
@@ -234,6 +235,14 @@ function PeopleTable({ rows, showPublished }) {
                   {t.status === "published" && !t.notifiedAt && (
                     <div className="micro" style={{ color: "var(--neon-amber)" }}>subject not told yet</div>
                   )}
+                  {t.linkedAt && t.linkUrl && (
+                    <div className="micro">
+                      <a href={t.linkUrl} target="_blank" rel="noreferrer" style={{ color: "var(--neon-green)" }}>
+                        they linked back ↗
+                      </a>
+                    </div>
+                  )}
+                  <LinkVerdict row={t} />
                 </td>
               )}
             </tr>

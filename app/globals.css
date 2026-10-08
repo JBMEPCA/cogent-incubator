@@ -4813,3 +4813,6 @@ button.hub-ag { cursor: pointer; }
   cursor: pointer;
 }
 .dw-notes-clear:hover { text-decoration: underline; }
+
+/* The round icon beside a light widget's heading (mail, Black Book): one size. */
+.dw-mail-ic.dw-head-ic { width: 34px; height: 34px; box-shadow: 0 4px 14px rgba(26, 140, 255, 0.35); }

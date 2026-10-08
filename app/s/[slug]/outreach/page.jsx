@@ -1,3 +1,4 @@
+import LinkVerdict from "@/app/components/LinkVerdict";
 import Header from "@/app/components/Header";
 import SubTabs, { ANALYTICS_TABS } from "@/app/components/SubTabs";
 import { notFound } from "next/navigation";
@@ -377,6 +378,7 @@ export default async function OutreachPage({ params }) {
                     <p className="micro" style={{ margin: "4px 0 0", color: "var(--muted)" }}>
                       {row.articleTitle}
                     </p>
+                    <LinkVerdict row={row} />
                     {row.status === "linked" && row.linkUrl && (
                       <a href={row.linkUrl} target="_blank" rel="noreferrer" className="micro" style={{ color: "var(--neon-green)" }}>
                         link live ↗
