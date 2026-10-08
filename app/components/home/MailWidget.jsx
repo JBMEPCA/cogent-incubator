@@ -67,16 +67,28 @@ export default async function MailWidget({ sites, canEdit, max = 25 }) {
       sub="every title's inbox, minus the marketing and the machines"
       href="/mail"
       linkLabel="Open mailbox"
-      className="dw-mail"
+      className="dw-mail dw-light"
       actions={canEdit && <MarkAllRead unread={unread} />}
     >
       <MailSearch />
       <div className="dw-mail-tiles">
         <Link href="/mail?show=unread" className="dw-mtile">
-          <b className="num">{unread}</b> unread worth reading
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3b9cff" strokeWidth="1.6" strokeLinejoin="round" aria-hidden="true">
+            <rect x="3" y="5.5" width="18" height="13" rx="2" />
+            <path d="M3.5 6.5l8.5 6.5 8.5-6.5" />
+          </svg>
+          <span>
+            <b className="num">{unread}</b> unread worth reading
+          </span>
         </Link>
         <Link href="/mail?show=backlink" className="dw-mtile">
-          <b className="num">{backlinks}</b> backlink {backlinks === 1 ? "reply" : "replies"}
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#12a150" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
+            <path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1" />
+            <path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" />
+          </svg>
+          <span>
+            <b className="num">{backlinks}</b> backlink {backlinks === 1 ? "reply" : "replies"}
+          </span>
         </Link>
       </div>
       {items.length ? (

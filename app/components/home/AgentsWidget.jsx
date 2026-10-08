@@ -21,7 +21,7 @@ export default async function AgentsWidget({ awaiting }) {
 
   if (!counts) {
     return (
-      <Widget title="Agents" href="/engine-hub" linkLabel="Open engine hub">
+      <Widget span={3} title="Agents" href="/engine-hub" linkLabel="Open engine hub">
         <WidgetNote>Agent states couldn&apos;t be read just now.</WidgetNote>
       </Widget>
     );
@@ -57,7 +57,7 @@ export default async function AgentsWidget({ awaiting }) {
   });
 
   return (
-    <Widget title="Agents" sub="what the engine is doing right now" href="/engine-hub" linkLabel="Open engine hub">
+    <Widget span={3} title="Agents" sub="what the engine is doing right now" href="/engine-hub" linkLabel="Open engine hub">
       <div className="dw-spend">
         <svg viewBox="0 0 120 120" width="120" role="img" aria-label={`${total} agents`}>
           <circle cx={c} cy={c} r={r} fill="none" stroke="var(--surface-2)" strokeWidth="12" />

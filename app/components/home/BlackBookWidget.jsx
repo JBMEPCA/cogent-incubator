@@ -33,7 +33,19 @@ export default async function BlackBookWidget({ sites, max = 4 }) {
   return (
     <Widget
       span={6}
-      title="Black Book"
+      className="dw-light dw-bb"
+      title={
+        <>
+          <span className="dw-bb-badge" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 3.5h11.5v17H6a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2z" />
+              <path d="M8 3.5v17" />
+              <path d="M11 8.5h4" />
+            </svg>
+          </span>
+          Black Book
+        </>
+      }
       sub="agencies and advertisers worth coming back to"
       href="/black-book"
       linkLabel={contacts?.length ? `Open all ${contacts.length}` : "Open page"}

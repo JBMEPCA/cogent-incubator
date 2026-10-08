@@ -36,7 +36,8 @@ export function WidgetNote({ children }) {
  * the arc stops at full, the label does not.
  */
 export function Gauge({ pct, label, sub, color, size = 132 }) {
-  const r = size / 2 - 12;
+  const stroke = Math.max(10, Math.round(size / 13));
+  const r = size / 2 - stroke;
   const c = size / 2;
   const a0 = Math.PI * 0.8;
   const sweep = Math.PI * 1.4;
@@ -49,9 +50,9 @@ export function Gauge({ pct, label, sub, color, size = 132 }) {
   };
   return (
     <svg viewBox={`0 0 ${size} ${size * 0.86}`} width={size} role="img" aria-label={`${label} ${sub}`}>
-      <path d={arc(1)} fill="none" stroke="var(--surface-2)" strokeWidth="10" strokeLinecap="round" />
+      <path d={arc(1)} fill="none" stroke="var(--surface-2)" strokeWidth={stroke} strokeLinecap="round" />
       {pct > 0 && (
-        <path d={arc(pct)} fill="none" stroke={color} strokeWidth="10" strokeLinecap="round" className="dw-gauge-arc" />
+        <path d={arc(pct)} fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round" className="dw-gauge-arc" />
       )}
       <text x={c} y={c + 2} fill={color} fontSize={size / 5.4} fontWeight="600" textAnchor="middle" className="dw-gauge-v">
         {label}

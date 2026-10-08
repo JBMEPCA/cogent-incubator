@@ -10,7 +10,7 @@ const AGENT_COLORS = ["var(--brand-2)", "var(--neon-cyan)", "var(--neon-violet)"
 export function SpendWidget({ costs, targets }) {
   if (!costs) {
     return (
-      <Widget title="Spend this month" href="/costs" linkLabel="Open costs">
+      <Widget span={3} title="Spend this month" href="/costs" linkLabel="Open costs">
         <WidgetNote>Costs couldn&apos;t be read just now.</WidgetNote>
       </Widget>
     );
@@ -36,7 +36,7 @@ export function SpendWidget({ costs, targets }) {
   const change = samePoint ? (costs.totals.thisUsd - samePoint) / samePoint : null;
 
   return (
-    <Widget title="Spend this month" sub={cap ? "fleet total against the cap in targets" : "fleet total, no cap set yet"} href="/costs" linkLabel="Open costs">
+    <Widget span={3} title="Spend this month" sub={cap ? "fleet total against the cap in targets" : "fleet total, no cap set yet"} href="/costs" linkLabel="Open costs">
       <div className="dw-spend">
         <Gauge
           pct={pct}
@@ -72,7 +72,7 @@ export function SpendWidget({ costs, targets }) {
 export function SpendByTitleWidget({ costs }) {
   if (!costs) {
     return (
-      <Widget title="Spend by title" href="/costs" linkLabel="Open costs">
+      <Widget span={3} title="Spend by title" href="/costs" linkLabel="Open costs">
         <WidgetNote>Costs couldn&apos;t be read just now.</WidgetNote>
       </Widget>
     );
@@ -81,7 +81,7 @@ export function SpendByTitleWidget({ costs }) {
   const rows = [...costs.titles].sort((a, b) => b.thisUsd - a.thisUsd);
   const max = Math.max(1, ...rows.map((t) => t.thisUsd));
   return (
-    <Widget title="Spend by title" sub={`${costs.month.label}, so far`} href="/costs" linkLabel="Open costs">
+    <Widget span={3} title="Spend by title" sub={`${costs.month.label}, so far`} href="/costs" linkLabel="Open costs">
       <div className="dw-hbars">
         {rows.map((t) => (
           <div key={t.id} className="dw-hbar">

@@ -57,7 +57,7 @@ export default async function MailPage({ searchParams }) {
         </div>
       </header>
 
-      <section className="dw dw-mail dw-page">
+      <section className="dw dw-mail dw-light dw-page">
         <MailSearch q={q} />
         <nav className="dw-filters" aria-label="Filter mail">
           {FILTERS.map((f) => (

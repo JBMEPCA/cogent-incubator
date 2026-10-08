@@ -3993,12 +3993,13 @@ button.hub-ag { cursor: pointer; }
   border-radius: 16px;
   padding: 18px;
 }
+.dw-span-3 { grid-column: span 3; }
 .dw-span-6 { grid-column: span 6; }
 .dw-span-8 { grid-column: span 8; }
 .dw-span-12 { grid-column: span 12; }
 
 @media (max-width: 1100px) {
-  .dw, .dw-span-4 { grid-column: span 6; }
+  .dw, .dw-span-3, .dw-span-4 { grid-column: span 6; }
   .dw-span-6, .dw-span-8, .dw-span-12 { grid-column: span 12; }
 }
 @media (max-width: 720px) {
@@ -4452,3 +4453,214 @@ button.hub-ag { cursor: pointer; }
 }
 .dw-cal-n.is-sched { color: var(--neon-violet); }
 .dw-cal-d.is-today .dw-cal-n { color: var(--bg); }
+
+/* Targets lead the page: bigger rings, a brighter edge. */
+.dw-targets {
+  border-color: rgba(34, 211, 238, 0.35);
+  box-shadow: 0 0 40px rgba(34, 211, 238, 0.1);
+  padding: 22px 22px 26px;
+}
+.dw-targets .dw-head h2 { font-size: 20px; }
+.dw-targets .dw-rings {
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 18px;
+}
+.dw-targets .dw-ring svg { max-width: 100%; height: auto; }
+.dw-targets .dw-ring-l { font-size: 14px; }
+.dw-gauge-arc { filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.12)); }
+.dw-spend > svg { max-width: 100%; height: auto; }
+
+/* To Do's: a notepad, after Apple Notes. Deliberately light on a dark page,
+   so it reads as a sheet of paper rather than another panel. */
+.dw-notes {
+  --note-yellow: #ffd60a;
+  --note-yellow-2: #f5b800;
+  --note-paper: #fbfaf6;
+  --note-rule: #e8e4d8;
+  --note-ink: #1c1c1e;
+  --note-muted: #8e8e93;
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
+  border: 0;
+  background: var(--note-paper);
+  color: var(--note-ink);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+.dw-notes-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 14px 18px 12px;
+  background: linear-gradient(180deg, var(--note-yellow), var(--note-yellow-2));
+  border-bottom: 2px dotted rgba(0, 0, 0, 0.18);
+}
+.dw-notes-top h2 { margin: 0; font-size: 17px; font-weight: 800; color: #3a2a00; }
+.dw-notes-top span { font-size: 12px; font-weight: 700; color: rgba(58, 42, 0, 0.7); }
+.dw-notes-paper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 18px 16px;
+  /* ruled lines every 36px, like the app's paper */
+  background: repeating-linear-gradient(180deg, transparent 0, transparent 35px, var(--note-rule) 35px, var(--note-rule) 36px);
+}
+.dw-notes-add { display: flex; flex-direction: column; gap: 8px; }
+.dw-notes input {
+  background: #fff;
+  color: var(--note-ink);
+  border: 1px solid var(--note-rule);
+  border-radius: 8px;
+  color-scheme: light;
+}
+.dw-notes input::placeholder { color: var(--note-muted); }
+.dw-notes input:focus { border-color: var(--note-yellow-2); box-shadow: 0 0 0 2px rgba(245, 184, 0, 0.35); }
+.dw-notes-add > input { width: 100%; font-size: 15px; padding: 10px 12px; }
+.dw-notes-add-row { display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.dw-notes-add-row label { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: var(--note-muted); }
+.dw-notes-add-row input { padding: 6px 8px; font-size: 13px; }
+.dw-notes-add-row button {
+  background: var(--note-yellow-2);
+  color: #3a2a00;
+  border: 0;
+  border-radius: 8px;
+  padding: 7px 16px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.dw-notes-add-row button:hover { background: var(--note-yellow); }
+.dw-notes-err { margin: 0; font-size: 12px; color: #c0392b; }
+.dw-notes-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.dw-notes-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 36px;
+  border-bottom: 1px solid var(--note-rule);
+}
+.dw-notes-list label { display: flex; align-items: center; gap: 10px; min-width: 0; cursor: pointer; font-size: 14px; }
+.dw-notes-list input[type="checkbox"] {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  flex: none;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid #c7c7cc;
+  background: #fff;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.dw-notes-list input[type="checkbox"]:checked { background: var(--note-yellow-2); border-color: var(--note-yellow-2); }
+.dw-notes-list input[type="checkbox"]:checked::after {
+  content: "";
+  width: 5px;
+  height: 9px;
+  border: solid #fff;
+  border-width: 0 2.5px 2.5px 0;
+  transform: translateY(-1px) rotate(45deg);
+}
+.dw-notes-text { overflow-wrap: anywhere; }
+.dw-notes-list li.is-done .dw-notes-text { color: var(--note-muted); text-decoration: line-through; }
+.dw-notes-due { font-size: 11.5px; font-weight: 700; color: var(--note-muted); white-space: nowrap; }
+.dw-notes-due.soon { color: #b07d00; }
+.dw-notes-due.late { color: #d63a2f; }
+.dw-notes-empty { margin: 0; font-size: 13px; color: var(--note-muted); }
+.dw-notes-clear {
+  align-self: flex-start;
+  background: none;
+  border: 0;
+  padding: 2px 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #b07d00;
+  cursor: pointer;
+}
+.dw-notes-clear:hover { text-decoration: underline; }
+
+/* White widgets: the mailbox (after Edison Mail) and the Black Book. Light
+   cards among dark ones, for variety on the page (JB, 8 Oct 2026). Their own
+   tokens, so nothing here leaks into the dark widgets. */
+.dw-light {
+  --lt-bg: #ffffff;
+  --lt-fill: #f2f3f7;
+  --lt-fill-2: #e9ebf1;
+  --lt-rule: #eceef3;
+  --lt-ink: #1c1c1e;
+  --lt-ink-2: #3c3c43;
+  --lt-muted: #8e8e93;
+  --lt-blue: #1a8cff;
+  background: var(--lt-bg);
+  color: var(--lt-ink);
+  border: 0;
+  border-radius: 22px;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.35);
+}
+.dw-light .dw-head h2 { color: var(--lt-ink); display: flex; align-items: center; gap: 10px; }
+.dw-light .dw-sub,
+.dw-light .dw-note,
+.dw-light .dw-muted { color: var(--lt-muted); }
+.dw-light .dw-open { color: var(--lt-blue); }
+.dw-light .dw-open:hover { background: var(--lt-fill); border-color: transparent; }
+.dw-light .dw-btn { color: var(--lt-ink); border-color: var(--lt-fill-2); background: var(--lt-fill); }
+.dw-light .dw-btn:hover { background: var(--lt-fill-2); }
+.dw-light .dw-btn-strong { background: var(--lt-blue); border-color: var(--lt-blue); color: #fff; }
+.dw-light .field-note { color: var(--lt-muted); }
+.dw-light .field-err { color: #d63a2f; }
+.dw-light input {
+  background: var(--lt-fill);
+  border: 1px solid transparent;
+  color: var(--lt-ink);
+  color-scheme: light;
+}
+.dw-light input::placeholder { color: var(--lt-muted); }
+.dw-light input:focus { border-color: var(--lt-blue); box-shadow: 0 0 0 3px rgba(26, 140, 255, 0.18); }
+
+/* mailbox */
+.dw-light .dw-search { background: var(--lt-fill); color: var(--lt-muted); }
+.dw-light .dw-search input { background: none; border: 0; }
+.dw-light .dw-search input:focus { box-shadow: none; }
+.dw-light .dw-search:focus-within { box-shadow: 0 0 0 3px rgba(26, 140, 255, 0.18); }
+.dw-light .dw-mtile { background: var(--lt-fill); color: var(--lt-muted); gap: 6px; }
+.dw-light .dw-mtile:hover { background: var(--lt-fill-2); }
+.dw-light .dw-mtile b { color: var(--lt-ink); font-size: 15px; }
+.dw-light .dw-mrow { border-top-color: transparent; }
+.dw-light .dw-mrow:hover { background: var(--lt-fill); }
+.dw-light .dw-unread { background: var(--lt-blue); }
+.dw-light .dw-from { color: var(--lt-ink); font-weight: 800; }
+.dw-light .dw-from.is-read { color: var(--lt-muted); font-weight: 500; }
+.dw-light .dw-subj { color: var(--lt-ink-2); }
+.dw-light .dw-mmeta { color: var(--lt-muted); }
+.dw-light .dw-tchip { color: #fff; }
+.dw-light .dw-link-tag { color: #12a150; border-color: rgba(18, 161, 80, 0.35); }
+.dw-light .dw-filter { border-color: var(--lt-fill-2); color: var(--lt-muted); background: var(--lt-fill); }
+.dw-light .dw-filter[aria-current="page"] { background: var(--lt-blue); border-color: var(--lt-blue); color: #fff; }
+.dw-light .dw-mlist-fill { scrollbar-color: #d1d1d6 transparent; }
+
+/* black book */
+.dw-bb-badge {
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(150deg, #3a3a3c, #000);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+.dw-light .bb-check { background: var(--lt-fill); border-color: transparent; color: var(--lt-ink-2); }
+.dw-light .bb-check:hover { border-color: var(--lt-fill-2); color: var(--lt-ink); }
+.dw-light .bb-check:has(input:checked) { background: #1c1c1e; border-color: #1c1c1e; color: #fff; box-shadow: none; }
+.dw-light .bb-titles legend { color: var(--lt-muted); }
+.dw-light .btn { background: #1c1c1e; box-shadow: none; }
+.dw-light .btn:hover { background: #000; filter: none; box-shadow: none; }
+.dw-light .dw-bb-row { border-top-color: var(--lt-rule); }
+.dw-light .dw-bb-row:hover { background: var(--lt-fill); }
+.dw-light .dw-bb-row b { color: var(--lt-ink); }
+.dw-light .dw-bb-who { color: var(--lt-muted); }
+.dw-light .dw-chip { background: var(--lt-fill); color: var(--lt-muted); }
+.dw-light .dw-due { color: #a15c00; background: #fff1d0; }
+.dw-light .dw-bb-due-line { color: #a15c00; }

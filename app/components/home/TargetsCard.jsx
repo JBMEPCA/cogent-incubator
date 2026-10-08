@@ -9,6 +9,9 @@ import { saveMonthlyTargets } from "@/lib/monthly-target-actions";
 // for the whole fleet. The rings are worked out on the server and arrive
 // ready to draw.
 
+// The rings lead the page, so they are drawn large (JB, 8 Oct 2026).
+const RING = 200;
+
 const show = (m, v) => (v == null ? "–" : m.money ? gbp(v) : fmtK(v));
 
 function ringColor(m, pct) {
@@ -23,7 +26,7 @@ function Ring({ ring }) {
   if (ring.actual == null) {
     return (
       <div className="dw-ring">
-        <Gauge pct={0} label="–" sub={m.ring} color="var(--muted)" />
+        <Gauge pct={0} label="–" sub={m.ring} color="var(--muted)" size={RING} />
         <span className="dw-ring-l">Not connected yet</span>
       </div>
     );
@@ -31,7 +34,7 @@ function Ring({ ring }) {
   if (!ring.target) {
     return (
       <div className="dw-ring">
-        <Gauge pct={0} label={show(m, ring.actual)} sub={m.ring} color="var(--muted)" />
+        <Gauge pct={0} label={show(m, ring.actual)} sub={m.ring} color="var(--muted)" size={RING} />
         <span className="dw-ring-l">No target set</span>
       </div>
     );
@@ -39,7 +42,7 @@ function Ring({ ring }) {
   const pct = ring.actual / ring.target;
   return (
     <div className="dw-ring">
-      <Gauge pct={pct} label={`${Math.round(pct * 100)}%`} sub={m.ring} color={ringColor(m, pct)} />
+      <Gauge pct={pct} label={`${Math.round(pct * 100)}%`} sub={m.ring} color={ringColor(m, pct)} size={RING} />
       <span className={`dw-ring-l${m.cap && pct > 1 ? " is-over" : ""}`}>
         <b className="num">{show(m, ring.actual)}</b> of {show(m, ring.target)}
         {m.cap ? " cap" : ""}
@@ -155,6 +158,7 @@ export default function TargetsCard({ monthLabel, ringsData, months, prev, actua
   return (
     <Widget
       span={12}
+      className="dw-targets"
       title={`${monthLabel} against targets`}
       sub="the whole fleet · resets on the 1st"
       href="/analytics"

@@ -9,6 +9,7 @@ import { SpendWidget, SpendByTitleWidget } from "./components/home/SpendWidgets"
 import AgentsWidget from "./components/home/AgentsWidget";
 import TrafficWidget from "./components/home/TrafficWidget";
 import CalendarWidget from "./components/home/CalendarWidget";
+import TodoWidget from "./components/home/TodoWidget";
 import { Widget } from "./components/home/Widget";
 import { SkelLine } from "./components/Skeleton";
 import { fleetSnapshot } from "@/lib/fleet";
@@ -21,8 +22,9 @@ export const dynamic = "force-dynamic";
 
 // The home page: a dashboard of widgets, each a summary of a page you can open
 // for the whole thing. Targets lead because they are the month's question
-// ("are we on track?"), then traffic, the inbox and the Black Book, costs, and
-// the titles last (JB's order, 8 Oct 2026). The ten big title cards this
+// ("are we on track?"), then traffic and the to-do list, the inbox and the
+// Black Book, costs, agents and the calendar, and the titles last (JB's order,
+// 8 Oct 2026). The ten big title cards this
 // replaced are one click away in the rail on the right.
 //
 // The mailbox and traffic widgets wait on outside services (ten inboxes, ten
@@ -125,7 +127,7 @@ export default async function Home() {
         <Suspense fallback={<Loading title="Fleet traffic" span={8} rows={4} />}>
           <TrafficWidget />
         </Suspense>
-        <CalendarWidget />
+        <TodoWidget canEdit={editable} />
 
         <Suspense fallback={<Loading title="Mail worth reading" rows={7} />}>
           <MailWidget sites={sites} canEdit={editable} />
@@ -135,6 +137,7 @@ export default async function Home() {
         <SpendWidget costs={costs} targets={targets} />
         <SpendByTitleWidget costs={costs} />
         <AgentsWidget awaiting={totals.awaiting} />
+        <CalendarWidget />
 
         <TitlesWidget sites={sites} actuals={actuals} />
       </div>

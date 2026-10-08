@@ -30,7 +30,7 @@ export default async function CalendarWidget() {
     ]);
   } catch {
     return (
-      <Widget title="Publishing calendar">
+      <Widget span={3} title="Publishing calendar">
         <WidgetNote>The calendar couldn&apos;t be read just now.</WidgetNote>
       </Widget>
     );
@@ -55,7 +55,7 @@ export default async function CalendarWidget() {
   const totalSch = Object.values(sch).reduce((n, v) => n + v, 0);
 
   return (
-    <Widget title={`${monthLabel} publishing`} sub="articles out each day, and what is scheduled">
+    <Widget span={3} title={`${monthLabel} publishing`} sub="articles out each day, and what is scheduled">
       <div className="dw-cal" role="grid" aria-label={`${monthLabel} publishing calendar`}>
         {["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map((d) => (
           <span key={d} className="dw-cal-h" role="columnheader">
