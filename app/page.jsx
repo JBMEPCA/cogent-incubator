@@ -17,6 +17,9 @@ import { fleetCosts } from "@/lib/fleet-costs";
 import { targetsInForce, monthActuals, monthKey } from "@/lib/monthly-targets";
 import { canEdit } from "@/lib/permissions";
 import { auth } from "@/lib/auth";
+import PeriodFilter from "./components/PeriodFilter";
+import { periodFrom, DEFAULT_PERIOD } from "@/lib/periods";
+import { periodSpend } from "@/lib/period-spend";
 
 export const dynamic = "force-dynamic";
 
@@ -50,7 +53,11 @@ function Loading({ title, span = 6, rows = 5 }) {
   );
 }
 
-export default async function Home() {
+export default async function Home({ searchParams }) {
+  // Today / 7D / 1M / All time. It moves traffic, spend and the title cards;
+  // targets, the calendar, agents, mail and the Black Book are not a stretch
+  // of time, so they stay as they are.
+  const period = periodFrom((await searchParams)?.period);
   let data;
   try {
     data = await fleetSnapshot();
@@ -84,6 +91,11 @@ export default async function Home() {
       </div>
       <div className="fleet-head-right">
         <FleetNav />
+        <PeriodFilter
+          current={period.key}
+          hrefFor={(k) => (k === DEFAULT_PERIOD ? "/" : `/?period=${k}`)}
+          note="Traffic, spend and the title cards follow this. Targets stay monthly."
+        />
       </div>
     </header>
   );
@@ -115,7 +127,10 @@ export default async function Home() {
   const spendGbpBySite = costs
     ? Object.fromEntries(costs.titles.map((t) => [t.id, t.thisUsd * costs.rate]))
     : {};
-  const actuals = await monthActuals(sites, { spendGbpBySite }).catch(() => ({}));
+  const [actuals, spend] = await Promise.all([
+    monthActuals(sites, { spendGbpBySite }).catch(() => ({})),
+    costs ? periodSpend(period, costs).catch(() => null) : null,
+  ]);
 
   return (
     <main className="fleet-wrap">
@@ -125,7 +140,7 @@ export default async function Home() {
         <TargetsWidget sites={sites} actuals={actuals} targets={targets} canEdit={editable} />
 
         <Suspense fallback={<Loading title="Fleet traffic" span={8} rows={4} />}>
-          <TrafficWidget />
+          <TrafficWidget period={period} />
         </Suspense>
         <TodoWidget canEdit={editable} />
 
@@ -134,12 +149,14 @@ export default async function Home() {
         </Suspense>
         <BlackBookWidget sites={sites} />
 
-        <SpendWidget costs={costs} targets={targets} />
-        <SpendByTitleWidget costs={costs} />
+        <SpendWidget costs={costs} spend={spend} period={period} targets={targets} />
+        <SpendByTitleWidget spend={spend} period={period} />
         <AgentsWidget awaiting={totals.awaiting} />
         <CalendarWidget />
 
-        <TitlesWidget sites={sites} actuals={actuals} />
+        <Suspense fallback={<Loading title="Titles at a glance" span={12} rows={4} />}>
+          <TitlesWidget sites={sites} period={period} />
+        </Suspense>
       </div>
     </main>
   );

@@ -4816,3 +4816,60 @@ button.hub-ag { cursor: pointer; }
 
 /* The round icon beside a light widget's heading (mail, Black Book): one size. */
 .dw-mail-ic.dw-head-ic { width: 34px; height: 34px; box-shadow: 0 4px 14px rgba(26, 140, 255, 0.35); }
+
+/* To Do's: one line per task with an ellipsis, the whole task on click; and
+   the add row kept inside the card's width. */
+.dw-notes-paper { overflow-x: hidden; }
+.dw-notes-fields { gap: 6px; }
+.dw-notes-fields label { gap: 4px; min-width: 0; }
+.dw-notes-fields input[type="date"] { width: 122px; min-width: 0; }
+.dw-notes-fields select { width: 76px; }
+.dw-notes-fields button { padding: 0 12px; flex: none; }
+.dw-notes-list li { align-items: flex-start; gap: 10px; }
+.dw-notes-list li > input[type="checkbox"] { margin-top: calc((var(--note-line) - 20px) / 2); }
+.dw-notes-list .dw-notes-text {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 14px;
+  line-height: var(--note-line);
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dw-notes-list li.is-open .dw-notes-text { white-space: normal; overflow-wrap: anywhere; }
+.dw-notes-list li.is-done .dw-notes-text { color: var(--note-muted); text-decoration: line-through; }
+
+/* Today / 7D / 1M / All time, on the home page and Group analytics. */
+.period-filter { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+.period-tabs {
+  display: inline-flex;
+  gap: 3px;
+  padding: 3px;
+  border-radius: 11px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.period-tab {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--muted);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.period-tab:hover { color: var(--text); background: var(--surface-2); }
+.period-tab.is-active {
+  color: #fff;
+  background: linear-gradient(120deg, var(--brand), #3d7bff);
+  box-shadow: 0 0 18px rgba(61, 123, 255, 0.45);
+}
+.period-note { font-size: 11.5px; color: var(--muted); max-width: 40ch; }
+.an-filters .period-filter { justify-content: flex-start; }

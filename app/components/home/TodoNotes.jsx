@@ -43,6 +43,16 @@ export default function TodoNotes({ todos, canEdit, today, tomorrow }) {
     list.map((t) => (t.id === id ? { ...t, done } : t))
   );
   const [filter, setFilter] = useState("");
+  // Tasks sit on one line, cut with an ellipsis; clicking the text opens the
+  // whole thing (and clicking again closes it). The tick is its own target.
+  const [open, setOpen] = useState(() => new Set());
+  const flip = (id) =>
+    setOpen((s) => {
+      const n = new Set(s);
+      if (n.has(id)) n.delete(id);
+      else n.add(id);
+      return n;
+    });
   const form = useRef(null);
 
   useEffect(() => {
@@ -132,11 +142,23 @@ export default function TodoNotes({ todos, canEdit, today, tomorrow }) {
           {visible.map((t) => {
             const due = !t.done && dueLabel(t.due, today, tomorrow);
             return (
-              <li key={t.id} className={t.done ? "is-done" : ""}>
-                <label>
-                  <input type="checkbox" checked={t.done} disabled={!canEdit} onChange={(e) => toggle(t.id, e.target.checked)} />
-                  <span className="dw-notes-text">{t.text}</span>
-                </label>
+              <li key={t.id} className={`${t.done ? "is-done" : ""}${open.has(t.id) ? " is-open" : ""}`}>
+                <input
+                  type="checkbox"
+                  checked={t.done}
+                  disabled={!canEdit}
+                  onChange={(e) => toggle(t.id, e.target.checked)}
+                  aria-label={`Done: ${t.text}`}
+                />
+                <button
+                  type="button"
+                  className="dw-notes-text"
+                  aria-expanded={open.has(t.id)}
+                  title={open.has(t.id) ? undefined : t.text}
+                  onClick={() => flip(t.id)}
+                >
+                  {t.text}
+                </button>
                 <span className="dw-notes-meta">
                   {due && <span className={`dw-notes-due ${due.tone}`}>{due.text}</span>}
                   <Person who={t.who} />

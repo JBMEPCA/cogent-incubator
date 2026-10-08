@@ -18,16 +18,16 @@ function niceMax(v) {
 const dayLabel = (iso) =>
   new Date(`${iso}T12:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
 
-export default async function TrafficWidget() {
+export default async function TrafficWidget({ period }) {
   let data = null;
   try {
-    data = await fleetAnalytics();
+    data = await fleetAnalytics({ period: period.key });
   } catch {
     data = null;
   }
   const series = data?.trend?.audience || [];
 
-  if (!data?.totals || series.length < 2) {
+  if (!data?.totals) {
     return (
       <Widget span={8} className="dw-traffic" title="Fleet traffic" href="/analytics" linkLabel="Open analytics">
         <WidgetNote>No GA4 figures yet. Connect Google Analytics on a title to see traffic here.</WidgetNote>
@@ -35,15 +35,16 @@ export default async function TrafficWidget() {
     );
   }
 
-  const { totals, windowDays, connected } = data;
-  const vals = series.map((p) => p.users);
+  const { totals, windowLabel, connected } = data;
+  const chart = series.length >= 2;
+  const vals = chart ? series.map((p) => p.users) : [0, 0];
   const max = niceMax(Math.max(...vals));
   const x = (i) => PAD.l + (i * (W - PAD.l - PAD.r)) / (vals.length - 1);
   const y = (v) => PAD.t + (1 - v / max) * (H - PAD.t - PAD.b);
   const line = vals.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join("");
   const area = `${line}L${x(vals.length - 1).toFixed(1)},${y(0)}L${x(0).toFixed(1)},${y(0)}Z`;
   const ticks = [0, max / 2, max];
-  const labelAt = [0, Math.floor((vals.length - 1) / 2), vals.length - 1];
+  const labelAt = chart ? [0, Math.floor((vals.length - 1) / 2), vals.length - 1] : [];
   const change = totals.prevUsers ? (totals.users - totals.prevUsers) / totals.prevUsers : null;
   const mins = Math.floor((totals.avgDuration || 0) / 60);
   const secs = Math.round((totals.avgDuration || 0) % 60);
@@ -53,7 +54,7 @@ export default async function TrafficWidget() {
       span={8}
       className="dw-traffic"
       title="Fleet traffic"
-      sub={`visitors per day, ${connected.ga4} of ${connected.total} titles, last ${windowDays} days`}
+      sub={`visitors ${chart ? "per day" : "so far"}, ${connected.ga4} of ${connected.total} titles, ${windowLabel}`}
       href="/analytics"
       linkLabel="Open analytics"
     >
@@ -63,14 +64,16 @@ export default async function TrafficWidget() {
         </span>
         {change != null && (
           <span className={`num ${change >= 0 ? "dw-up" : "dw-down"}`}>
-            {change >= 0 ? "▲" : "▼"} {Math.abs(change * 100).toFixed(1)}% on the {windowDays} days before
+            {change >= 0 ? "▲" : "▼"} {Math.abs(change * 100).toFixed(1)}% {period.key === "today" ? "on yesterday" : "on the period before"}
           </span>
         )}
         <span className="num dw-muted">
           {mins}m {secs}s average visit
         </span>
       </div>
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={`Fleet visitors per day, last ${windowDays} days`}>
+      {!chart && <WidgetNote>Pick 7D or longer to see the day-by-day chart.</WidgetNote>}
+      {chart && (
+      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={`Fleet visitors per day, ${windowLabel}`}>
         <defs>
           <linearGradient id="dw-traffic-fill" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stopColor="var(--neon-cyan)" stopOpacity="0.32" />
@@ -94,6 +97,7 @@ export default async function TrafficWidget() {
           </text>
         ))}
       </svg>
+      )}
     </Widget>
   );
 }

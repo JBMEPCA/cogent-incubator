@@ -1,50 +1,52 @@
 import { Widget, WidgetNote, Gauge, gbp } from "./Widget";
 import { AGENT_LABELS } from "@/lib/fleet-costs";
 
-// Two widgets from the same Group costs figures: the month's spend against the
-// cap set in targets, and the split by title. Both read fleetCosts(), so they
-// always match the Group costs page they link to.
+// Two widgets from the same spend figures for the chosen period (see
+// lib/period-spend.js): the total against the monthly cap spread over the
+// same number of days, and the split by title. The footer always gives this
+// calendar month from Group costs, so the bill-shaped number is one glance away.
 
 const AGENT_COLORS = ["var(--brand-2)", "var(--neon-cyan)", "var(--neon-violet)", "var(--neon-green)"];
+const MONTH_DAYS = 365.25 / 12;
 
-export function SpendWidget({ costs, targets }) {
-  if (!costs) {
-    return (
-      <Widget span={3} title="Spend this month" href="/costs" linkLabel="Open costs">
-        <WidgetNote>Costs couldn&apos;t be read just now.</WidgetNote>
-      </Widget>
-    );
-  }
-  const rate = costs.rate;
-  const spent = costs.totals.thisUsd * rate;
-  const projected = costs.totals.projectedUsd * rate;
-  const cap = Number(targets?.values?.spend) || 0;
+function Unavailable({ title }) {
+  return (
+    <Widget span={3} title={title} href="/costs" linkLabel="Open costs">
+      <WidgetNote>Costs couldn&apos;t be read just now.</WidgetNote>
+    </Widget>
+  );
+}
+
+export function SpendWidget({ costs, spend, period, targets }) {
+  if (!costs || !spend) return <Unavailable title="Spend" />;
+  const rate = spend.rate;
+  const spent = spend.totalUsd * rate;
+  const monthCap = Number(targets?.values?.spend) || 0;
+  // The monthly cap scaled to the period, so a week is judged against a
+  // week's worth of budget. All time has no cap to scale.
+  const cap = period.key === "all" ? 0 : (monthCap * spend.days) / MONTH_DAYS;
   const pct = cap ? spent / cap : 0;
   const color = !cap ? "var(--muted)" : pct > 1 ? "var(--neon-red)" : pct > 0.85 ? "var(--neon-amber)" : "var(--neon-green)";
 
   // The four biggest agents, then everything else, then the fixed bills.
-  const agents = costs.byAgent.filter((a) => a.thisUsd > 0);
-  const top = agents.slice(0, 4);
-  const rest = agents.slice(4).reduce((n, a) => n + a.thisUsd, 0);
+  const top = spend.byAgent.slice(0, 4);
+  const rest = spend.byAgent.slice(4).reduce((n, a) => n + a.usd, 0);
   const lines = [
-    ...top.map((a, i) => ({ label: AGENT_LABELS[a.agent] || a.agent, v: a.thisUsd * rate, color: AGENT_COLORS[i] })),
+    ...top.map((a, i) => ({ label: AGENT_LABELS[a.agent] || a.agent, v: a.usd * rate, color: AGENT_COLORS[i] })),
     ...(rest ? [{ label: "Other agents", v: rest * rate, color: "var(--cat-slate)" }] : []),
-    { label: "Fixed bills", v: costs.totals.fixedUsd * rate, color: "var(--neon-amber)" },
+    { label: "Fixed bills, spread by day", v: spend.fixedUsd * rate, color: "var(--neon-amber)" },
   ];
 
-  const samePoint = costs.totals.prevSamePointUsd;
-  const change = samePoint ? (costs.totals.thisUsd - samePoint) / samePoint : null;
-
   return (
-    <Widget span={3} title="Spend this month" sub={cap ? "fleet total against the cap in targets" : "fleet total, no cap set yet"} href="/costs" linkLabel="Open costs">
+    <Widget
+      span={3}
+      title="Spend"
+      sub={cap ? `${period.phrase}, against the cap for that many days` : period.phrase}
+      href="/costs"
+      linkLabel="Open costs"
+    >
       <div className="dw-spend">
-        <Gauge
-          pct={pct}
-          label={gbp(spent)}
-          sub={cap ? `of ${gbp(cap)}` : "spent"}
-          color={color}
-          size={136}
-        />
+        <Gauge pct={pct} label={gbp(spent)} sub={cap ? `of ${gbp(cap)}` : "spent"} color={color} size={136} />
         <div className="dw-legend">
           {lines.map((l) => (
             <div key={l.label}>
@@ -57,39 +59,28 @@ export function SpendWidget({ costs, targets }) {
       </div>
       <footer className="dw-foot">
         <span>
-          On pace for <b className="num">{gbp(projected)}</b> by month end
+          {costs.month.label.split(" ")[0]} so far <b className="num">{gbp(costs.totals.thisUsd * costs.rate)}</b>, on
+          pace for <b className="num">{gbp(costs.totals.projectedUsd * costs.rate)}</b>
         </span>
-        {change != null && (
-          <span className={`num ${change > 0 ? "dw-down" : "dw-up"}`}>
-            {change > 0 ? "▲" : "▼"} {Math.abs(Math.round(change * 100))}% vs {costs.month.prevLabel.split(" ")[0]}
-          </span>
-        )}
       </footer>
     </Widget>
   );
 }
 
-export function SpendByTitleWidget({ costs }) {
-  if (!costs) {
-    return (
-      <Widget span={3} title="Spend by title" href="/costs" linkLabel="Open costs">
-        <WidgetNote>Costs couldn&apos;t be read just now.</WidgetNote>
-      </Widget>
-    );
-  }
-  const rate = costs.rate;
-  const rows = [...costs.titles].sort((a, b) => b.thisUsd - a.thisUsd);
-  const max = Math.max(1, ...rows.map((t) => t.thisUsd));
+export function SpendByTitleWidget({ spend, period }) {
+  if (!spend) return <Unavailable title="Spend by title" />;
+  const rows = [...spend.titles].sort((a, b) => b.usd - a.usd);
+  const max = Math.max(1e-9, ...rows.map((t) => t.usd));
   return (
-    <Widget span={3} title="Spend by title" sub={`${costs.month.label}, so far`} href="/costs" linkLabel="Open costs">
+    <Widget span={3} title="Spend by title" sub={period.phrase} href="/costs" linkLabel="Open costs">
       <div className="dw-hbars">
         {rows.map((t) => (
           <div key={t.id} className="dw-hbar">
             <span className="dw-hbar-l">{t.name}</span>
             <span className="dw-hbar-track">
-              <i style={{ width: `${(t.thisUsd / max) * 100}%`, background: t.accentHex }} />
+              <i style={{ width: `${(t.usd / max) * 100}%`, background: t.accentHex }} />
             </span>
-            <span className="num">{gbp(t.thisUsd * rate)}</span>
+            <span className="num">{gbp(t.usd * spend.rate)}</span>
           </div>
         ))}
       </div>

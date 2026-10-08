@@ -4,6 +4,8 @@ import TrendChart from "../components/TrendChart";
 import { SharePie, Sparkline, RankedList, PositionPill, colourMap } from "../components/FleetCharts";
 import SiteMark from "../components/SiteMark";
 import { fleetAnalytics, summarise } from "@/lib/fleet-analytics";
+import PeriodFilter from "@/app/components/PeriodFilter";
+import { periodFrom, DEFAULT_PERIOD } from "@/lib/periods";
 import { fleetPulse } from "@/lib/pulse";
 import PulsePanel from "./PulsePanel";
 import Scroller from "@/app/components/Scroller";
@@ -58,7 +60,7 @@ function Delta({ now, before, lowerIsBetter = false }) {
   if (!isFinite(change) || Math.abs(change) < 0.5) return <span className="an-chip">flat</span>;
   const good = lowerIsBetter ? change < 0 : change > 0;
   return (
-    <span className={`an-chip num ${good ? "is-good" : "is-bad"}`} title="vs the previous 28 days">
+    <span className={`an-chip num ${good ? "is-good" : "is-bad"}`} title="vs the same length of time before">
       {change > 0 ? "▲" : "▼"} {Math.abs(change).toFixed(0)}%
     </span>
   );
@@ -127,7 +129,7 @@ function BarFigure({ value, max, colour, children }) {
   );
 }
 
-function TitleTable({ rows, totals, colours, href, windowDays }) {
+function TitleTable({ rows, totals, colours, href, windowLabel }) {
   const maxUsers = Math.max(0, ...rows.map((r) => r.ga4?.users || 0));
   const maxClicks = Math.max(0, ...rows.map((r) => r.gsc?.clicks || 0));
   return (
@@ -139,7 +141,7 @@ function TitleTable({ rows, totals, colours, href, windowDays }) {
               <th className="tt-rank">#</th>
               <th className="tt-left">Title</th>
               <th>Users</th>
-              <th className="tt-spark-col">Last {windowDays} days</th>
+              <th className="tt-spark-col">Users, {windowLabel}</th>
               <th>Sessions</th>
               <th>Search clicks</th>
               <th>Impr.</th>
@@ -209,7 +211,7 @@ function TitleTable({ rows, totals, colours, href, windowDays }) {
         </table>
       </Scroller>
       <p className="micro" style={{ margin: "12px 0 0" }}>
-        users, sessions and published over {windowDays} days · position is google&apos;s average · spend is this
+        users, sessions and published over {windowLabel} · position is google&apos;s average · spend is this
         calendar month, in USD —{" "}
         <Link href="/costs" className="nav-link" style={{ padding: 0, fontSize: 11 }}>
           the sterling breakdown is on group costs
@@ -236,6 +238,7 @@ function Shell({ children }) {
 
 export default async function GroupAnalyticsPage({ searchParams }) {
   const sp = (await searchParams) || {};
+  const period = periodFrom(sp.period);
 
   // Pulse is context beside the numbers, never the numbers, so it gets its own
   // try: ten WordPress installs being unreachable must not take this page down.
@@ -248,7 +251,7 @@ export default async function GroupAnalyticsPage({ searchParams }) {
 
   let data;
   try {
-    data = await fleetAnalytics();
+    data = await fleetAnalytics({ period: period.key });
   } catch (err) {
     return (
       <Shell>
@@ -261,7 +264,7 @@ export default async function GroupAnalyticsPage({ searchParams }) {
     );
   }
 
-  const { rows: allRows, titleOrder, windowDays } = data;
+  const { rows: allRows, titleOrder, windowLabel } = data;
 
   if (!allRows.length) {
     return (
@@ -290,6 +293,8 @@ export default async function GroupAnalyticsPage({ searchParams }) {
     const t = next.title === undefined ? focus?.slug : next.title;
     if (v !== "overview") q.set("view", v);
     if (t) q.set("title", t);
+    const pk = next.period ?? period.key;
+    if (pk !== DEFAULT_PERIOD) q.set("period", pk);
     const s = q.toString();
     return s ? `/analytics?${s}` : "/analytics";
   };
@@ -361,7 +366,7 @@ export default async function GroupAnalyticsPage({ searchParams }) {
   const mostRead = (limit, withAction) => (
     <Card
       title={focus ? "Most read articles" : "Most read articles across the fleet"}
-      note={focus ? `page views over ${windowDays} days · articles only` : "every title's articles ranked together · home and site pages left out"}
+      note={focus ? `page views over ${windowLabel} · articles only` : "every title's articles ranked together · home and site pages left out"}
       action={withAction && ranked.topPages.length > limit ? <Link className="an-link" href={href({ view: "content" })}>See all →</Link> : null}
     >
       {ranked.topPages.length ? (
@@ -410,14 +415,14 @@ export default async function GroupAnalyticsPage({ searchParams }) {
           <p style={{ color: "var(--muted)", fontSize: 13.5, margin: "8px 0 0", maxWidth: 560 }}>
             {focus ? (
               <>
-                Rolling {windowDays} days.{" "}
+                Showing {windowLabel}.{" "}
                 <Link href={`/s/${focus.slug}/analytics`} className="an-link">
                   Open {focus.name}&apos;s own analytics →
                 </Link>
               </>
             ) : (
               <>
-                Every title, rolling {windowDays} days. Audience figures cover the {connected.ga4} of{" "}
+                Every title, {windowLabel}. Audience figures cover the {connected.ga4} of{" "}
                 {connected.total} titles on Google Analytics, search the {connected.gsc} on Search Console.
               </>
             )}
@@ -437,6 +442,17 @@ export default async function GroupAnalyticsPage({ searchParams }) {
 
       {/* ── Filters ────────────────────────────────────────────────────── */}
       <div className="an-filters">
+        <PeriodFilter
+          current={period.key}
+          hrefFor={(k) => href({ period: k })}
+          note={
+            period.key === "today"
+              ? "Search Console runs about three days behind, so search figures show its latest day"
+              : period.key === "all"
+                ? "Search Console keeps 16 months, so search figures go back that far"
+                : null
+          }
+        />
         <nav className="an-tabs" aria-label="Analytics view">
           {VIEWS.map((v) => (
             <Link key={v.key} href={href({ view: v.key })} className={`an-tab${v.key === view ? " is-active" : ""}`}>
@@ -519,7 +535,7 @@ export default async function GroupAnalyticsPage({ searchParams }) {
           {!focus && (
             <section>
               <SectionHead title="Every title" note="biggest audience first · click a title to filter" />
-              <TitleTable rows={rows} totals={totals} colours={colours} href={href} windowDays={windowDays} />
+              <TitleTable rows={rows} totals={totals} colours={colours} href={href} windowLabel={windowLabel} />
             </section>
           )}
 
@@ -534,11 +550,11 @@ export default async function GroupAnalyticsPage({ searchParams }) {
 
           {!focus && (
             <section style={grid(300)}>
-              <Card title="Readers, by title" note={`sessions over ${windowDays} days`}>
+              <Card title="Readers, by title" note={`sessions over ${windowLabel}`}>
                 <SharePie slices={byTitle((r) => r.ga4?.sessions)} centre={int(totals.sessions)} centreLabel="sessions"
                   ariaLabel="Share of fleet sessions by title" empty="No sessions recorded across the fleet yet." />
               </Card>
-              <Card title="Output, by title" note={`articles published over ${windowDays} days`}>
+              <Card title="Output, by title" note={`articles published over ${windowLabel}`}>
                 <SharePie slices={byTitle((r) => r.publishedWindow)} centre={int(totals.publishedWindow)} centreLabel="published"
                   ariaLabel="Share of articles published by title" empty="Nothing published in this window." />
               </Card>
@@ -585,7 +601,7 @@ export default async function GroupAnalyticsPage({ searchParams }) {
                 ariaLabel="Share of sessions by acquisition channel" empty="No sessions to break down yet." />
             </Card>
             {!focus && (
-              <Card title="Readers, by title" note={`sessions over ${windowDays} days`}>
+              <Card title="Readers, by title" note={`sessions over ${windowLabel}`}>
                 <SharePie slices={byTitle((r) => r.ga4?.sessions)} centre={int(totals.sessions)} centreLabel="sessions"
                   ariaLabel="Share of fleet sessions by title" empty="No sessions recorded across the fleet yet." />
               </Card>
@@ -662,11 +678,11 @@ export default async function GroupAnalyticsPage({ searchParams }) {
 
           {!focus && (
             <section style={grid(340)}>
-              <Card title="Search clicks, by title" note={`google clicks over ${windowDays} days`}>
+              <Card title="Search clicks, by title" note={`google clicks over ${windowLabel}`}>
                 <SharePie slices={byTitle((r) => r.gsc?.clicks)} centre={int(totals.clicks)} centreLabel="clicks"
                   ariaLabel="Share of search clicks by title" empty="No search clicks recorded yet." />
               </Card>
-              <Card title="Impressions, by title" note={`times a title appeared in google over ${windowDays} days`}>
+              <Card title="Impressions, by title" note={`times a title appeared in google over ${windowLabel}`}>
                 <SharePie slices={byTitle((r) => r.gsc?.impressions)} centre={int(totals.impressions)} centreLabel="impressions"
                   ariaLabel="Share of search impressions by title" empty="No impressions recorded yet." />
               </Card>
@@ -679,7 +695,7 @@ export default async function GroupAnalyticsPage({ searchParams }) {
       {view === "content" && (
         <>
           <section className="an-kpis stagger">
-            <Kpi label="Published" value={int(totals.publishedWindow)} colour="var(--brand-2)" foot={`over ${windowDays} days`} />
+            <Kpi label="Published" value={int(totals.publishedWindow)} colour="var(--brand-2)" foot={`over ${windowLabel}`} />
             <Kpi label="In pipeline" value={int(totals.pipeline)} colour="var(--neon-cyan)" />
             <Kpi label="Awaiting review" value={int(totals.awaiting)} colour="var(--neon-amber)" />
             <Kpi label="Views per article" colour="var(--neon-green)"
@@ -694,11 +710,11 @@ export default async function GroupAnalyticsPage({ searchParams }) {
 
           {!focus && (
             <section style={grid(340)}>
-              <Card title="Output, by title" note={`articles published over ${windowDays} days`}>
+              <Card title="Output, by title" note={`articles published over ${windowLabel}`}>
                 <SharePie slices={byTitle((r) => r.publishedWindow)} centre={int(totals.publishedWindow)} centreLabel="published"
                   ariaLabel="Share of articles published by title" empty="Nothing published in this window." />
               </Card>
-              <Card title="Page views, by title" note={`over ${windowDays} days`}>
+              <Card title="Page views, by title" note={`over ${windowLabel}`}>
                 <SharePie slices={byTitle((r) => r.ga4?.pageViews)} centre={int(totals.pageViews)} centreLabel="page views"
                   ariaLabel="Share of page views by title" empty="No page views recorded yet." />
               </Card>
