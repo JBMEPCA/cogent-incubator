@@ -13,7 +13,7 @@ import { Widget } from "./components/home/Widget";
 import { SkelLine } from "./components/Skeleton";
 import { fleetSnapshot } from "@/lib/fleet";
 import { fleetCosts } from "@/lib/fleet-costs";
-import { targetsInForce, monthActuals } from "@/lib/monthly-targets";
+import { targetsInForce, monthActuals, monthKey } from "@/lib/monthly-targets";
 import { canEdit } from "@/lib/permissions";
 import { auth } from "@/lib/auth";
 
@@ -21,9 +21,9 @@ export const dynamic = "force-dynamic";
 
 // The home page: a dashboard of widgets, each a summary of a page you can open
 // for the whole thing. Targets lead because they are the month's question
-// ("are we on track?"); the titles sit under them because that is where the
-// answer is usually found. The ten big title cards this replaced are one click
-// away in the rail on the right.
+// ("are we on track?"), then traffic, the inbox and the Black Book, costs, and
+// the titles last (JB's order, 8 Oct 2026). The ten big title cards this
+// replaced are one click away in the rail on the right.
 //
 // The mailbox and traffic widgets wait on outside services (ten inboxes, ten
 // GA4 properties), so they stream in behind skeletons rather than holding up
@@ -107,8 +107,7 @@ export default async function Home() {
   // gauge all use these, and separate reads could disagree with each other.
   const [costs, targets, editable] = await Promise.all([
     fleetCosts().catch(() => null),
-    // Null means the table is not migrated yet; the widget says so.
-    targetsInForce().catch(() => null),
+    targetsInForce().catch(() => ({ month: monthKey(), values: {}, saved: false, carriedFrom: null })),
     canEdit().catch(() => false),
   ]);
   const spendGbpBySite = costs
@@ -122,10 +121,14 @@ export default async function Home() {
 
       <div className="dw-grid">
         <TargetsWidget sites={sites} actuals={actuals} targets={targets} canEdit={editable} />
-        <TitlesWidget sites={sites} actuals={actuals} targets={targets} />
+
+        <Suspense fallback={<Loading title="Fleet traffic" span={8} rows={4} />}>
+          <TrafficWidget />
+        </Suspense>
+        <CalendarWidget />
 
         <Suspense fallback={<Loading title="Mail worth reading" rows={7} />}>
-          <MailWidget sites={sites} />
+          <MailWidget sites={sites} canEdit={editable} />
         </Suspense>
         <BlackBookWidget sites={sites} />
 
@@ -133,10 +136,7 @@ export default async function Home() {
         <SpendByTitleWidget costs={costs} />
         <AgentsWidget awaiting={totals.awaiting} />
 
-        <Suspense fallback={<Loading title="Fleet traffic" span={8} rows={4} />}>
-          <TrafficWidget />
-        </Suspense>
-        <CalendarWidget />
+        <TitlesWidget sites={sites} actuals={actuals} />
       </div>
     </main>
   );

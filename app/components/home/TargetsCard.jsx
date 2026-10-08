@@ -5,11 +5,9 @@ import { Widget, Gauge, fmtK, gbp } from "./Widget";
 import { METRICS, monthName } from "@/lib/monthly-target-metrics";
 import { saveMonthlyTargets } from "@/lib/monthly-target-actions";
 
-// The targets rings, and the editor that sets them.
-//
-// The rings are worked out on the server and arrive ready to draw. The editor
-// holds one month's numbers in state so the fleet total under each column moves
-// as you type, and "copy last month" can fill every box at once.
+// The targets rings, and the editor that sets them: one number per measure
+// for the whole fleet. The rings are worked out on the server and arrive
+// ready to draw.
 
 const show = (m, v) => (v == null ? "–" : m.money ? gbp(v) : fmtK(v));
 
@@ -50,12 +48,10 @@ function Ring({ ring }) {
   );
 }
 
-function Editor({ titles, months, prev, actuals, rings, onClose }) {
+function Editor({ months, prev, actuals, rings, onClose }) {
   const [month, setMonth] = useState(months[0].month);
   const current = months.find((x) => x.month === month);
-  const [values, setValues] = useState(() =>
-    Object.fromEntries(months.map((x) => [x.month, x.values]))
-  );
+  const [values, setValues] = useState(() => Object.fromEntries(months.map((x) => [x.month, x.values || {}])));
   const [state, action, pending] = useActionState(saveMonthlyTargets, null);
   const [note, setNote] = useState("");
 
@@ -64,21 +60,16 @@ function Editor({ titles, months, prev, actuals, rings, onClose }) {
   }, [state, onClose]);
 
   const vals = values[month] || {};
-  const set = (siteId, metric, v) =>
-    setValues((all) => ({
-      ...all,
-      [month]: { ...all[month], [siteId]: { ...(all[month]?.[siteId] || {}), [metric]: v } },
-    }));
-  const total = (metric) =>
-    titles.reduce((n, t) => n + (Number(vals[t.id]?.[metric]) || 0), 0);
+  const set = (metric, v) => setValues((all) => ({ ...all, [month]: { ...all[month], [metric]: v } }));
 
-  // The month before the one being edited: last month's saved targets for the
-  // current month, or this month's (as edited so far) for next month.
+  // The month before the one being edited: last month's saved targets for
+  // this month, or this month's (as edited so far) for next month.
   const source = month === months[0].month ? prev : { month: months[0].month, values: values[months[0].month] };
   const copy = () => {
-    setValues((all) => ({ ...all, [month]: JSON.parse(JSON.stringify(source.values || {})) }));
+    setValues((all) => ({ ...all, [month]: { ...(source.values || {}) } }));
     setNote(`Filled in from ${monthName(source.month)}. Save to keep.`);
   };
+  const isThisMonth = month === months[0].month;
 
   return (
     <form action={action} className="dw-ted">
@@ -86,10 +77,7 @@ function Editor({ titles, months, prev, actuals, rings, onClose }) {
       <div className="dw-ted-top">
         <div>
           <h3>Monthly targets</h3>
-          <p>
-            Set a number for each title. The fleet target is the total, and the rings and title cards
-            read from it. Leave a box empty for no target. Tick a column to show it as a ring.
-          </p>
+          <p>One target for the whole fleet on each measure. Leave a box empty for no target. Tick a measure to show it as a ring.</p>
           {current.carriedFrom && Object.keys(current.values || {}).length > 0 && !note && (
             <p className="dw-ted-carry">
               Nothing saved for {monthName(month)} yet. These are carried over from {monthName(current.carriedFrom)}.
@@ -113,60 +101,31 @@ function Editor({ titles, months, prev, actuals, rings, onClose }) {
         </div>
       </div>
 
-      <div className="dw-ted-scroll">
-        <table className="dw-ted-table">
-          <thead>
-            <tr>
-              <th scope="col">Title</th>
-              {METRICS.map((m) => (
-                <th scope="col" key={m.key}>
-                  <span className="dw-sw" style={{ background: m.color }} />
-                  {m.label}
-                  <label className="dw-ted-ring">
-                    <input type="checkbox" name="ring" value={m.key} defaultChecked={rings.includes(m.key)} />
-                    ring on dashboard
-                  </label>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {titles.map((t) => (
-              <tr key={t.id}>
-                <th scope="row">
-                  <span className="dw-sw" style={{ background: t.accentHex }} />
-                  {t.name}
-                </th>
-                {METRICS.map((m) => (
-                  <td key={m.key}>
-                    <input
-                      type="number"
-                      min="0"
-                      step={m.step}
-                      inputMode="numeric"
-                      id={`t-${month}-${t.id}-${m.key}`}
-                      name={`t:${t.id}:${m.key}`}
-                      aria-label={`${t.name}, ${m.label}`}
-                      value={vals[t.id]?.[m.key] ?? ""}
-                      onChange={(e) => set(t.id, m.key, e.target.value)}
-                    />
-                    {month === months[0].month && (
-                      <span className="dw-ted-now">now {show(m, actuals[t.id]?.[m.key])}</span>
-                    )}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr>
-              <th scope="row">Fleet target</th>
-              {METRICS.map((m) => (
-                <td key={m.key} className="num">{show(m, total(m.key))}</td>
-              ))}
-            </tr>
-          </tfoot>
-        </table>
+      <div className="dw-ted-fields">
+        {METRICS.map((m) => (
+          <div key={m.key} className="dw-ted-field">
+            <label htmlFor={`t-${month}-${m.key}`} className="dw-ted-label">
+              <span className="dw-sw" style={{ background: m.color }} />
+              {m.label}
+            </label>
+            <input
+              type="number"
+              min="0"
+              step={m.step}
+              inputMode="numeric"
+              id={`t-${month}-${m.key}`}
+              name={`t:${m.key}`}
+              placeholder="No target"
+              value={vals[m.key] ?? ""}
+              onChange={(e) => set(m.key, e.target.value)}
+            />
+            <span className="dw-ted-now">{isThisMonth ? `so far ${show(m, actuals[m.key])}` : " "}</span>
+            <label className="dw-ted-ring">
+              <input type="checkbox" name="ring" value={m.key} defaultChecked={rings.includes(m.key)} />
+              ring on dashboard
+            </label>
+          </div>
+        ))}
       </div>
 
       <div className="dw-ted-foot">
@@ -189,7 +148,7 @@ function Editor({ titles, months, prev, actuals, rings, onClose }) {
   );
 }
 
-export default function TargetsCard({ monthLabel, ringsData, titles, months, prev, actuals, rings, canEdit }) {
+export default function TargetsCard({ monthLabel, ringsData, months, prev, actuals, rings, canEdit }) {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
 
@@ -197,7 +156,7 @@ export default function TargetsCard({ monthLabel, ringsData, titles, months, pre
     <Widget
       span={12}
       title={`${monthLabel} against targets`}
-      sub="fleet-wide, the total of every title's target · resets on the 1st"
+      sub="the whole fleet · resets on the 1st"
       href="/analytics"
       linkLabel="Open analytics"
       actions={
@@ -217,9 +176,7 @@ export default function TargetsCard({ monthLabel, ringsData, titles, months, pre
       ) : (
         <p className="dw-note">No measures are ticked to show as rings. Open Set targets to choose some.</p>
       )}
-      {open && (
-        <Editor titles={titles} months={months} prev={prev} actuals={actuals} rings={rings} onClose={close} />
-      )}
+      {open && <Editor months={months} prev={prev} actuals={actuals} rings={rings} onClose={close} />}
     </Widget>
   );
 }

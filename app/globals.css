@@ -4158,62 +4158,45 @@ button.hub-ag { cursor: pointer; }
   color: var(--text);
   box-shadow: inset 0 0 0 1px var(--line-bright);
 }
-.dw-ted-scroll {
-  overflow-x: auto;
-  border: 1px solid var(--line);
+.dw-ted-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px;
+}
+.dw-ted-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
   border-radius: 12px;
-}
-.dw-ted-table {
-  width: 100%;
-  min-width: 760px;
-  border-collapse: collapse;
-  font-size: 12.5px;
-}
-.dw-ted-table th,
-.dw-ted-table td {
-  padding: 7px 10px;
-  border-bottom: 1px solid var(--line);
-  text-align: right;
-  white-space: nowrap;
-}
-.dw-ted-table th:first-child { text-align: left; font-weight: 600; }
-.dw-ted-table thead th {
   background: var(--surface-2);
-  font-size: 11.5px;
-  vertical-align: bottom;
+}
+.dw-ted-label {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+.dw-ted-field input[type="number"] {
+  width: 100%;
+  font-family: var(--font-mono), monospace;
+  font-size: 18px;
+  padding: 8px 10px;
+}
+.dw-ted-now {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: var(--font-mono), monospace;
 }
 .dw-ted-ring {
   display: flex;
-  justify-content: flex-end;
   align-items: center;
-  gap: 5px;
-  margin-top: 4px;
-  font-size: 10.5px;
-  font-weight: 500;
+  gap: 6px;
+  font-size: 11px;
   color: var(--muted);
   cursor: pointer;
 }
 .dw-ted-ring input { padding: 0; }
-.dw-ted-table input[type="number"] {
-  width: 88px;
-  padding: 5px 7px;
-  text-align: right;
-  font-family: var(--font-mono), monospace;
-  font-size: 12.5px;
-}
-.dw-ted-now {
-  display: block;
-  margin-top: 2px;
-  font-size: 10.5px;
-  color: var(--muted);
-  font-family: var(--font-mono), monospace;
-}
-.dw-ted-table tfoot th,
-.dw-ted-table tfoot td {
-  background: var(--surface-2);
-  font-weight: 700;
-  border-bottom: 0;
-}
 .dw-ted-foot {
   display: flex;
   flex-wrap: wrap;
@@ -4313,6 +4296,26 @@ button.hub-ag { cursor: pointer; }
 .dw-mtile:hover { background: #16214a; }
 .dw-mtile b { color: var(--text); font-size: 20px; font-weight: 600; }
 .dw-mlist { display: flex; flex-direction: column; }
+/* The widget's list fills whatever height the row gives it (the Black Book
+   beside it sets that) and scrolls past it. contain: size stops the list's own
+   length from making the row taller. Alone on a narrow screen there is no
+   neighbour to size against, so it shows a fixed eight rows instead. */
+@media (min-width: 1101px) {
+  .dw-mlist-fill {
+    flex: 1 1 0;
+    min-height: 220px;
+    contain: size;
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+}
+@media (max-width: 1100px) {
+  .dw-mlist-fill .dw-mrow:nth-child(n + 9) { display: none; }
+}
+.dw-markread { display: flex; gap: 6px; }
+.dw-btn-strong { background: var(--brand); border-color: var(--brand); color: #fff; }
+.dw-btn-strong:hover { background: var(--brand-2); }
+.dw-filters .field-note, .dw-filters .field-err, .dw-actions .field-note, .dw-actions .field-err { font-size: 12px; }
 .dw-mrow {
   display: grid;
   grid-template-columns: 8px auto minmax(0, 1fr) auto;

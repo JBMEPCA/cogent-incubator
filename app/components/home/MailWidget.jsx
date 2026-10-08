@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Widget, WidgetNote } from "./Widget";
 import { fleetMail, mailTime } from "@/lib/fleet-mail";
 import { shortTitle } from "@/lib/black-book-labels";
+import MarkAllRead from "./MarkAllRead";
 
 // Mail worth reading, as a mailbox: search, two counts, and the newest
 // messages. Every title's inbox, minus the marketing and the machines. Reading
@@ -52,7 +53,9 @@ export function MailRow({ m }) {
   );
 }
 
-export default async function MailWidget({ sites, max = 6 }) {
+// Enough rows to fill the card beside the Black Book; the list scrolls past
+// that, and on a narrow screen, where the card stands alone, it is cut to 8.
+export default async function MailWidget({ sites, canEdit, max = 25 }) {
   const { items, unavailable } = await fleetMail(sites);
   const unread = items.filter((m) => m.unread).length;
   const backlinks = items.filter((m) => m.kind === "backlink").length;
@@ -65,6 +68,7 @@ export default async function MailWidget({ sites, max = 6 }) {
       href="/mail"
       linkLabel="Open mailbox"
       className="dw-mail"
+      actions={canEdit && <MarkAllRead unread={unread} />}
     >
       <MailSearch />
       <div className="dw-mail-tiles">
@@ -76,7 +80,7 @@ export default async function MailWidget({ sites, max = 6 }) {
         </Link>
       </div>
       {items.length ? (
-        <div className="dw-mlist">
+        <div className="dw-mlist dw-mlist-fill">
           {items.slice(0, max).map((m) => (
             <MailRow key={`${m.site.slug}-${m.id}`} m={m} />
           ))}

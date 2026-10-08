@@ -308,11 +308,10 @@ model TargetAchievement {
   @@index([siteId, achievedAt])
 }
 
-/// A number a title is aiming for in one calendar month, set by hand on the
-/// home page. Different from TargetAchievement, which records one-off
-/// milestones crossed once. The fleet target is the sum of the titles', so it
-/// is never stored. A month with nothing saved carries the last month that has
-/// targets forward, rather than every ring reading 0% on the 1st.
+/// UNUSED. Per-title monthly targets, replaced the day it shipped (8 Oct 2026)
+/// by one fleet-wide number per measure, which lives in GlobalSetting under
+/// monthly_targets:<month> (lib/monthly-targets.js). Never written to; safe to
+/// drop in a later migration.
 model MonthlyTarget {
   id     String @id @default(cuid())
   site   Site   @relation(fields: [siteId], references: [id], onDelete: Cascade)

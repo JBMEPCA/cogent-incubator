@@ -3,6 +3,8 @@ import FleetNav from "@/app/components/FleetNav";
 import { MailSearch, MailRow } from "@/app/components/home/MailWidget";
 import { listSites } from "@/lib/site";
 import { fleetMail } from "@/lib/fleet-mail";
+import { canEdit } from "@/lib/permissions";
+import MarkAllRead from "@/app/components/home/MarkAllRead";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +22,10 @@ const FILTERS = [
 export default async function MailPage({ searchParams }) {
   const { q = "", show = "" } = await searchParams;
   const sites = await listSites();
-  const { items, unavailable } = await fleetMail(sites, { perSite: 40 });
+  const [{ items, unavailable }, editable] = await Promise.all([
+    fleetMail(sites, { perSite: 40 }),
+    canEdit().catch(() => false),
+  ]);
 
   const needle = String(q).trim().toLowerCase();
   const shown = items.filter((m) => {
@@ -60,6 +65,7 @@ export default async function MailPage({ searchParams }) {
               {f.label}
             </Link>
           ))}
+          {editable && <MarkAllRead unread={items.filter((m) => m.unread).length} />}
           <span className="dw-muted">
             {shown.length} message{shown.length === 1 ? "" : "s"}
             {needle ? ` matching “${q}”` : ""}

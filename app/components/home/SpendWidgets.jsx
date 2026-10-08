@@ -1,5 +1,4 @@
 import { Widget, WidgetNote, Gauge, gbp } from "./Widget";
-import { fleetSum } from "@/lib/monthly-targets";
 import { AGENT_LABELS } from "@/lib/fleet-costs";
 
 // Two widgets from the same Group costs figures: the month's spend against the
@@ -19,7 +18,7 @@ export function SpendWidget({ costs, targets }) {
   const rate = costs.rate;
   const spent = costs.totals.thisUsd * rate;
   const projected = costs.totals.projectedUsd * rate;
-  const cap = targets ? fleetSum(targets.values, "spend") : 0;
+  const cap = Number(targets?.values?.spend) || 0;
   const pct = cap ? spent / cap : 0;
   const color = !cap ? "var(--muted)" : pct > 1 ? "var(--neon-red)" : pct > 0.85 ? "var(--neon-amber)" : "var(--neon-green)";
 
