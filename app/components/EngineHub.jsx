@@ -98,7 +98,7 @@ function TwoUp({ label, today, week }) {
       <div className="hub-two-l">{label}</div>
       <div className="hub-two-row">
         <span><b>{today}</b> today</span>
-        <span><b>{week}</b> 7 days</span>
+        <span><b>{week}</b> 7d</span>
       </div>
     </div>
   );
@@ -282,7 +282,14 @@ export default function EngineHub() {
   const working = all.filter((a) => stateOf(a) === "working").length;
   const blocked = all.filter((a) => a.state === "blocked");
   const runsToday = sites.reduce((n, s) => n + s.runsToday, 0);
-  const spendToday = sites.reduce((n, s) => n + s.spendToday, 0);
+  const total = (k) => sites.reduce((n, s) => n + (s.costs?.[k] || 0), 0);
+  const spendToday = total("todayUsd");
+  const spendWeek = total("weekUsd");
+  const publishedToday = total("publishedToday");
+  const publishedWeek = total("publishedWeek");
+  // Same rule as each room: spend over articles PRODUCED in the window.
+  const perArticleToday = total("producedToday") ? spendToday / total("producedToday") : null;
+  const perArticleWeek = total("producedWeek") ? spendWeek / total("producedWeek") : null;
   const siteById = Object.fromEntries(sites.map((s) => [s.id, s]));
   const colourOf = (s) => ROOM_COLOUR[s.slug] || s.accent2Hex || "#6c7bff";
   const sel = sites.find((s) => s.slug === selected);
@@ -308,8 +315,19 @@ export default function EngineHub() {
           <div className="fleet-fig-l">runs today</div>
         </div>
         <div className="fleet-fig">
-          <div className="fleet-fig-v">${spendToday.toFixed(2)}</div>
+          <div className="fleet-fig-v">{usd(spendToday)}</div>
           <div className="fleet-fig-l">spend today</div>
+          <div className="hub-fig-h">{usd(spendWeek)} in 7 days</div>
+        </div>
+        <div className="fleet-fig">
+          <div className="fleet-fig-v">{publishedToday}</div>
+          <div className="fleet-fig-l">articles published today</div>
+          <div className="hub-fig-h">{publishedWeek} in 7 days</div>
+        </div>
+        <div className="fleet-fig">
+          <div className="fleet-fig-v">{usd(perArticleToday)}</div>
+          <div className="fleet-fig-l">cost per article today</div>
+          <div className="hub-fig-h">{usd(perArticleWeek)} over 7 days</div>
         </div>
         <ul className="hub-legend">
           <li><i style={{ background: "var(--neon-green)" }} />Working</li>
@@ -407,22 +425,8 @@ export default function EngineHub() {
             </>
           ) : (
             <>
-              <h3 className="hub-card-h">Needs you</h3>
-              {blocked.length ? (
-                <div className="hub-roster">
-                  {blocked.map((a) => (
-                    <button key={`${a.siteId}-${a.key}`} type="button" className="hub-ag" onClick={() => { setSelected(siteById[a.siteId]?.slug); setAgentKey(a.key); }}>
-                      <span className="hub-dot is-blocked" />
-                      <div style={{ minWidth: 0 }}>
-                        <div className="hub-ag-name">{siteById[a.siteId]?.name} · {a.name}</div>
-                        <div className="hub-ag-task">{a.detail || a.currentTask || "Blocked"}</div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                <p className="hub-quiet">Nothing blocked. Click a room to see its team.</p>
-              )}
+              <h3 className="hub-card-h">Title detail</h3>
+              <p className="hub-quiet">Click a room to see its team, spend and cost per article. Click an agent for its own costs.</p>
             </>
           )}
         </section>
@@ -447,6 +451,36 @@ export default function EngineHub() {
           </ol>
         </section>
       </div>
+
+      <section className="panel hub-card hub-needs">
+        <h3 className="hub-card-h">
+          Needs you
+          {blocked.length > 0 && <span className="hub-needs-n">{blocked.length}</span>}
+        </h3>
+        {blocked.length ? (
+          <div className="hub-roster hub-roster-wide">
+            {blocked.map((a) => (
+              <button
+                key={`${a.siteId}-${a.key}`}
+                type="button"
+                className="hub-ag"
+                onClick={() => {
+                  setSelected(siteById[a.siteId]?.slug);
+                  setAgentKey(a.key);
+                }}
+              >
+                <span className="hub-dot is-blocked" />
+                <div style={{ minWidth: 0 }}>
+                  <div className="hub-ag-name">{siteById[a.siteId]?.name} · {a.name}</div>
+                  <div className="hub-ag-task">{a.detail || a.currentTask || "Blocked"}</div>
+                </div>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p className="hub-quiet">Nothing blocked across the fleet.</p>
+        )}
+      </section>
     </>
   );
 }

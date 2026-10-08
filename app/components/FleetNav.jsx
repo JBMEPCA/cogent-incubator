@@ -151,13 +151,13 @@ function RoomsIcon() {
 
 const LINKS = [
   { href: "/", label: "All titles", Icon: GridIcon },
-  { href: "/engine-hub", label: "Engine hub", Icon: RoomsIcon },
-  { href: "/analytics", label: "Group analytics", Icon: ChartIcon },
-  { href: "/trending", label: "Trending Topics", Icon: TrendIcon },
+  { href: "/engine-hub", label: "Engine", Icon: RoomsIcon },
+  { href: "/analytics", label: "Analytics", Icon: ChartIcon },
+  { href: "/trending", label: "Trending", Icon: TrendIcon },
   { href: "/interviews", label: "Interviews", Icon: PersonIcon },
   { href: "/needs-image", label: "Needs an image", Icon: ImageIcon },
-  { href: "/costs", label: "Group costs", Icon: MoneyIcon },
-  { href: "/press", label: "Press Releases", Icon: PressIcon },
+  { href: "/costs", label: "Costs", Icon: MoneyIcon },
+  { href: "/press", label: "PR", Icon: PressIcon },
 ];
 
 export default function FleetNav() {

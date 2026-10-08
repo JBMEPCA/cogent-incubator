@@ -3924,8 +3924,12 @@ button.hub-ag { cursor: pointer; }
 .hub-costs-agent { grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 10px 0 0; }
 .hub-two { padding: 9px 11px; border-radius: 8px; background: var(--surface-2); min-width: 0; }
 .hub-two-l { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-bottom: 4px; }
-.hub-two-row { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
-.hub-two-row b { font-size: 16px; color: var(--text); margin-right: 3px; }
+.hub-two-row { display: flex; flex-wrap: nowrap; align-items: baseline; gap: 12px; font-size: 11px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.hub-two-row b { font-size: 15px; color: var(--text); margin-right: 3px; }
+.hub-fig-h { margin-top: 3px; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.hub-needs { margin-top: 18px; }
+.hub-needs-n { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: #ff3b4e; color: #fff; font-size: 11px; }
+.hub-roster-wide { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
 .hub-agent { margin: 0 0 12px; padding: 12px 14px; border-radius: 10px; border: 1px solid color-mix(in srgb, var(--a, #22d3ee) 55%, transparent); background: color-mix(in srgb, var(--a, #22d3ee) 8%, var(--surface)); }
 .hub-agent-head { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; font-size: 14px; }
 .hub-agent-state { font-size: 11px; color: var(--muted); text-transform: capitalize; }
