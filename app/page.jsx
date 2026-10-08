@@ -1,120 +1,61 @@
 import Link from "next/link";
-import SiteMark, { statusTone } from "./components/SiteMark";
+import { Suspense } from "react";
 import FleetNav from "./components/FleetNav";
-import FleetMailWidget from "./components/FleetMailWidget";
-import BlackBook from "./components/BlackBook";
+import TargetsWidget from "./components/home/TargetsWidget";
+import TitlesWidget from "./components/home/TitlesWidget";
+import MailWidget from "./components/home/MailWidget";
+import BlackBookWidget from "./components/home/BlackBookWidget";
+import { SpendWidget, SpendByTitleWidget } from "./components/home/SpendWidgets";
+import AgentsWidget from "./components/home/AgentsWidget";
+import TrafficWidget from "./components/home/TrafficWidget";
+import CalendarWidget from "./components/home/CalendarWidget";
+import { Widget } from "./components/home/Widget";
+import { SkelLine } from "./components/Skeleton";
 import { fleetSnapshot } from "@/lib/fleet";
-import { fmtCount } from "@/lib/targets";
-import { visitUrl } from "@/lib/site-url";
+import { fleetCosts } from "@/lib/fleet-costs";
+import { targetsInForce, monthActuals } from "@/lib/monthly-targets";
+import { canEdit } from "@/lib/permissions";
+import { auth } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
-function timeAgo(d) {
-  if (!d) return "never";
-  const s = Math.floor((Date.now() - new Date(d).getTime()) / 1000);
-  if (s < 3600) return `${Math.max(1, Math.floor(s / 60))}m ago`;
-  if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
-  return `${Math.floor(s / 86400)}d ago`;
+// The home page: a dashboard of widgets, each a summary of a page you can open
+// for the whole thing. Targets lead because they are the month's question
+// ("are we on track?"); the titles sit under them because that is where the
+// answer is usually found. The ten big title cards this replaced are one click
+// away in the rail on the right.
+//
+// The mailbox and traffic widgets wait on outside services (ten inboxes, ten
+// GA4 properties), so they stream in behind skeletons rather than holding up
+// everything else.
+
+function greeting(name) {
+  const hour = Number(new Date().toLocaleString("en-GB", { timeZone: "Europe/London", hour: "2-digit", hour12: false }));
+  const part = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  const first = String(name || "").trim().split(/\s+/)[0];
+  return first ? `${part}, ${first}` : part;
 }
 
-const money = (usd) => (usd >= 100 ? `$${Math.round(usd)}` : `$${usd.toFixed(2)}`);
-
-function Figure({ value, label, tone }) {
+function Loading({ title, span = 6, rows = 5 }) {
   return (
-    <div className="fleet-fig">
-      <div className="fleet-fig-v" style={tone ? { color: tone } : undefined}>{value}</div>
-      <div className="fleet-fig-l">{label}</div>
-    </div>
+    <Widget span={span} title={title}>
+      <div style={{ display: "grid", gap: 12 }} aria-busy="true">
+        {Array.from({ length: rows }, (_, i) => (
+          <SkelLine key={i} w={i % 2 ? "78%" : "100%"} />
+        ))}
+      </div>
+    </Widget>
   );
 }
 
-function TitleCard({ site }) {
-  const tone = statusTone(site.status);
-  const s = site.stats;
-  const live = visitUrl(site);
-  return (
-    <div className="panel fleet-card">
-      {/* Covers the whole panel, so the card still opens the control room from
-          anywhere on it. Sits under the visit link rather than around it. */}
-      <Link href={`/s/${site.slug}`} className="fleet-card-open" aria-label={`Open ${site.name}`} />
-
-      <div className="fleet-card-head">
-        <SiteMark site={site} size={46} showStatus={false} />
-        <div className="fleet-card-id">
-          <h2>{site.name}</h2>
-          {live ? (
-            // The domain IS the affordance — it is already the line that names
-            // the website, so making it the link needs no extra furniture.
-            <a
-              className="micro site-visit"
-              href={live}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {site.domain}
-              <span aria-hidden="true"> ↗</span>
-              <span className="sr-only"> (opens the live site in a new tab)</span>
-            </a>
-          ) : (
-            // No domain, or a title still being provisioned. Plain text beats
-            // a link to a site that is not serving yet.
-            <span className="micro">{site.domain || site.slug}</span>
-          )}
-        </div>
-        <span className="fleet-status">
-          <span className="agent-dot" style={{ background: tone.dot, boxShadow: `0 0 10px ${tone.dot}` }} />
-          {tone.label}
-        </span>
-      </div>
-
-      <div className="fleet-figs">
-        <Figure value={s.publishedWeek} label="published, 7d" />
-        <Figure value={s.pipeline} label="in pipeline" />
-        <Figure value={money(s.spendMonth)} label="spend, month" />
-        <Figure value={s.awaiting} label="awaiting you" tone={s.awaiting ? "var(--neon-amber)" : undefined} />
-      </div>
-
-      {site.target && (
-        <div style={{ margin: "8px 2px 0" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", gap: 8, fontSize: 11, opacity: 0.6, marginBottom: 3 }}>
-            <span>Next target: {site.target.label}</span>
-            <span>
-              {fmtCount(Math.round(site.target.value))}/{fmtCount(site.target.target)}
-            </span>
-          </div>
-          <div style={{ height: 3, borderRadius: 2, background: "rgba(255,255,255,.08)", overflow: "hidden" }}>
-            <div
-              style={{
-                width: `${Math.round(Math.min(1, site.target.progress) * 100)}%`,
-                height: "100%",
-                background: "var(--neon-cyan)",
-              }}
-            />
-          </div>
-        </div>
-      )}
-
-      <div className="fleet-card-foot">
-        {site.attention ? (
-          <span className={`fleet-flag level-${site.attention.level}`}>{site.attention.text}</span>
-        ) : (
-          <span className="fleet-flag level-0">Running clean</span>
-        )}
-        <span className="micro">last published {timeAgo(s.lastPublishedAt)}</span>
-      </div>
-    </div>
-  );
-}
-
-export default async function FleetOverview() {
+export default async function Home() {
   let data;
   try {
     data = await fleetSnapshot();
   } catch (err) {
     // Before the first migration there is no schema to query. Say so plainly
-    // rather than showing an empty grid that looks like a working fleet of
-    // nothing — the two states need very different responses from whoever is
-    // reading the screen.
+    // rather than showing an empty dashboard that looks like a working fleet of
+    // nothing.
     return (
       <main className="fleet-wrap">
         <section className="panel fleet-empty">
@@ -131,38 +72,24 @@ export default async function FleetOverview() {
   }
 
   const { sites, totals } = data;
+  const session = await auth().catch(() => null);
 
-  return (
-    <main className="fleet-wrap">
-      <header className="fleet-head">
-        <div>
-          <span className="micro">Cogent Incubator</span>
-          <h1>All titles</h1>
-        </div>
-        {/* The fleet-level views sit above the figures they belong to: the
-            spend total here is a number, and Group costs is the breakdown
-            behind it. This was a text link under the heading, where it read as
-            a caption and got missed. */}
-        <div className="fleet-head-right">
-          <FleetNav />
-          <div className="fleet-totals">
-            <Figure value={totals.publishedWeek} label="published this week" />
-            <Figure value={money(totals.spendMonth)} label="fleet spend, month" />
-            <Figure
-              value={totals.awaiting}
-              label="awaiting approval"
-              tone={totals.awaiting ? "var(--neon-amber)" : undefined}
-            />
-            <Figure
-              value={totals.blocked}
-              label="agents blocked"
-              tone={totals.blocked ? "var(--neon-red)" : undefined}
-            />
-          </div>
-        </div>
-      </header>
+  const head = (
+    <header className="fleet-head">
+      <div>
+        <span className="micro">Cogent Incubator</span>
+        <h1>{greeting(session?.user?.name)}</h1>
+      </div>
+      <div className="fleet-head-right">
+        <FleetNav />
+      </div>
+    </header>
+  );
 
-      {sites.length === 0 ? (
+  if (sites.length === 0) {
+    return (
+      <main className="fleet-wrap">
+        {head}
         <section className="panel fleet-empty">
           <span className="micro">No titles yet</span>
           <h1>Nothing to run</h1>
@@ -172,22 +99,45 @@ export default async function FleetOverview() {
           </p>
           <Link href="/new-title" className="btn">Add a title</Link>
         </section>
-      ) : (
-        <section className="fleet-grid stagger">
-          {sites.map((site) => (
-            <TitleCard key={site.id} site={site} />
-          ))}
-          <Link href="/new-title" className="panel fleet-card fleet-card-new">
-            <span className="fleet-new-plus">+</span>
-            <span>Add a title</span>
-            <span className="micro">provision a new publication</span>
-          </Link>
-        </section>
-      )}
+      </main>
+    );
+  }
 
-      {sites.length > 0 && <FleetMailWidget sites={sites} />}
+  // Read once and shared: the targets rings, the title cards and the spend
+  // gauge all use these, and separate reads could disagree with each other.
+  const [costs, targets, editable] = await Promise.all([
+    fleetCosts().catch(() => null),
+    // Null means the table is not migrated yet; the widget says so.
+    targetsInForce().catch(() => null),
+    canEdit().catch(() => false),
+  ]);
+  const spendGbpBySite = costs
+    ? Object.fromEntries(costs.titles.map((t) => [t.id, t.thisUsd * costs.rate]))
+    : {};
+  const actuals = await monthActuals(sites, { spendGbpBySite }).catch(() => ({}));
 
-      {sites.length > 0 && <BlackBook sites={sites} />}
+  return (
+    <main className="fleet-wrap">
+      {head}
+
+      <div className="dw-grid">
+        <TargetsWidget sites={sites} actuals={actuals} targets={targets} canEdit={editable} />
+        <TitlesWidget sites={sites} actuals={actuals} targets={targets} />
+
+        <Suspense fallback={<Loading title="Mail worth reading" rows={7} />}>
+          <MailWidget sites={sites} />
+        </Suspense>
+        <BlackBookWidget sites={sites} />
+
+        <SpendWidget costs={costs} targets={targets} />
+        <SpendByTitleWidget costs={costs} />
+        <AgentsWidget awaiting={totals.awaiting} />
+
+        <Suspense fallback={<Loading title="Fleet traffic" span={8} rows={4} />}>
+          <TrafficWidget />
+        </Suspense>
+        <CalendarWidget />
+      </div>
     </main>
   );
 }

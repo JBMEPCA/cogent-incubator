@@ -161,6 +161,7 @@ model Site {
   referringDomains  ReferringDomain[]
   audienceSnapshots AudienceSnapshot[]
   targetAchievements TargetAchievement[]
+  monthlyTargets    MonthlyTarget[]
   interviewTargets  InterviewTarget[]
   trendingTopics    TrendingTopic[]
 }
@@ -305,6 +306,26 @@ model TargetAchievement {
 
   @@unique([siteId, key])
   @@index([siteId, achievedAt])
+}
+
+/// A number a title is aiming for in one calendar month, set by hand on the
+/// home page. Different from TargetAchievement, which records one-off
+/// milestones crossed once. The fleet target is the sum of the titles', so it
+/// is never stored. A month with nothing saved carries the last month that has
+/// targets forward, rather than every ring reading 0% on the 1st.
+model MonthlyTarget {
+  id     String @id @default(cuid())
+  site   Site   @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId String
+  month  String // "2026-10", UTC calendar month
+  metric String // articles | visitors | backlinks | subscribers | spend — see lib/monthly-targets.js
+  value  Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([siteId, month, metric])
+  @@index([month])
 }
 
 // Per-title secrets, encrypted at rest with AES-256-GCM under CREDENTIAL_KEY.

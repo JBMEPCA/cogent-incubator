@@ -1,6 +1,6 @@
 import Link from "next/link";
 import FleetNav from "../components/FleetNav";
-import { fleetCosts } from "@/lib/fleet-costs";
+import { fleetCosts, AGENT_LABELS } from "@/lib/fleet-costs";
 import { SERIES } from "@/app/components/CostCharts";
 import { canEdit } from "@/lib/permissions";
 import { updateFleetSubscription, addFleetSubscription, removeFleetSubscription } from "@/lib/actions";
@@ -25,18 +25,6 @@ const GRID = "rgba(255,255,255,.08)";
 const THIS = "#3987e5"; // SERIES[0] in CostCharts
 const PREV = "#8b97c6";
 
-const AGENT_LABELS = {
-  editor: "Writing articles",
-  researcher: "Research",
-  seo: "SEO",
-  designer: "Images",
-  director: "Planning (Director)",
-  finance: "Finance checks",
-  linkedin: "LinkedIn posts",
-  backlink: "Backlink outreach",
-  newsletter: "Newsletters",
-  scripted: "Batch-written articles",
-};
 
 /** Pounds, sized for reading: whole pounds once a figure is big enough that pence are noise. */
 function gbp(usd, rate, { exact = false } = {}) {

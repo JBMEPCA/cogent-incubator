@@ -103,7 +103,7 @@ export default function BlackBookRow({ contact: c, sites }) {
   }
 
   return (
-    <div className="bb-row">
+    <div className="bb-row" id={`c-${c.id}`}>
       <div className="bb-who">
         <strong>{c.company}</strong>
         <span className="micro">

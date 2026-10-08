@@ -150,7 +150,7 @@ function RoomsIcon() {
 }
 
 const LINKS = [
-  { href: "/", label: "All titles", Icon: GridIcon },
+  { href: "/", label: "Home", Icon: GridIcon },
   { href: "/engine-hub", label: "Engine", Icon: RoomsIcon },
   { href: "/analytics", label: "Analytics", Icon: ChartIcon },
   { href: "/trending", label: "Trending", Icon: TrendIcon },
