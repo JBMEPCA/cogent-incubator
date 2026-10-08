@@ -4883,3 +4883,11 @@ button.hub-ag { cursor: pointer; }
 @keyframes periodPulse { from { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0); } to { box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.35); } }
 @media (prefers-reduced-motion: reduce) { .period-tabs.is-pending { animation: none; opacity: 0.7; } }
 .period-tabs-sm .period-tab { padding: 4px 10px; font-size: 11.5px; }
+
+/* Fleet traffic: the daily chart and the rolling 28-day chart side by side. */
+.dw-tcharts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+@media (max-width: 720px) { .dw-tcharts { grid-template-columns: 1fr; } }
+.dw-tchart { margin: 0; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.dw-tchart figcaption { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; font-weight: 700; color: var(--muted); }
+.dw-tchart figcaption b { font-size: 14px; }
+.dw-launch b { color: var(--text); font-weight: 600; }
