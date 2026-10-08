@@ -92,7 +92,7 @@ export default async function MailWidget({ sites, canEdit, max = 25 }) {
         </Link>
       </div>
       {items.length ? (
-        <div className="dw-mlist dw-mlist-fill">
+        <div className="dw-mlist dw-list-fill">
           {items.slice(0, max).map((m) => (
             <MailRow key={`${m.site.slug}-${m.id}`} m={m} />
           ))}

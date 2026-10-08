@@ -12,7 +12,9 @@ const due = (c) => !!c.followUpDate && c.followUpDate.getTime() <= Date.now();
 const fmtDay = (d) =>
   d.toLocaleDateString("en-GB", { timeZone: "Europe/London", day: "numeric", month: "short" });
 
-export default async function BlackBookWidget({ sites, max = 4 }) {
+// Every contact, in a list that scrolls inside the card (same as the mailbox
+// beside it); due follow-ups first.
+export default async function BlackBookWidget({ sites }) {
   let contacts = null;
   try {
     contacts = await prisma.blackBookContact.findMany({ orderBy: { createdAt: "desc" } });
@@ -26,7 +28,7 @@ export default async function BlackBookWidget({ sites, max = 4 }) {
   // Follow-ups that are due come first: that is what someone opening the
   // dashboard can act on. Then the newest additions.
   const shown = contacts
-    ? [...contacts.filter(due), ...contacts.filter((c) => !due(c))].slice(0, max)
+    ? [...contacts.filter(due), ...contacts.filter((c) => !due(c))]
     : [];
   const dueCount = contacts ? contacts.filter(due).length : 0;
 
@@ -56,7 +58,7 @@ export default async function BlackBookWidget({ sites, max = 4 }) {
         <>
           <BlackBookQuickAdd sites={pillSites} />
           {shown.length > 0 && (
-            <div className="dw-bb-list">
+            <div className="dw-bb-list dw-list-fill">
               {dueCount > 0 && (
                 <p className="dw-bb-due-line">
                   {dueCount} follow-up{dueCount > 1 ? "s" : ""} due

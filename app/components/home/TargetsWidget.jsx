@@ -1,5 +1,5 @@
 import TargetsCard from "./TargetsCard";
-import { METRICS, monthKey, monthName, targetsInForce, ringMetrics, fleetSum } from "@/lib/monthly-targets";
+import { METRICS, monthKey, monthName, monthStart, targetsInForce, ringMetrics, fleetSum } from "@/lib/monthly-targets";
 
 /**
  * The rings at the top of the home page: the fleet's month so far against
@@ -25,8 +25,15 @@ export default async function TargetsWidget({ sites, actuals, targets, canEdit }
     target: Number(targets.values[m.key]) || 0,
   }));
 
+  // How far through the month we are, 0–1: where each ring should have got to
+  // by now if the month runs evenly.
+  const from = monthStart(thisMonth).getTime();
+  const to = monthStart(monthKey(new Date(from), 1)).getTime();
+  const pace = Math.min(1, Math.max(0, (new Date().getTime() - from) / (to - from)));
+
   return (
     <TargetsCard
+      pace={pace}
       monthLabel={monthName(thisMonth)}
       ringsData={ringsData}
       months={[

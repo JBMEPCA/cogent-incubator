@@ -29,7 +29,7 @@ export default async function TrafficWidget() {
 
   if (!data?.totals || series.length < 2) {
     return (
-      <Widget span={8} title="Fleet traffic" href="/analytics" linkLabel="Open analytics">
+      <Widget span={8} className="dw-traffic" title="Fleet traffic" href="/analytics" linkLabel="Open analytics">
         <WidgetNote>No GA4 figures yet. Connect Google Analytics on a title to see traffic here.</WidgetNote>
       </Widget>
     );
@@ -51,6 +51,7 @@ export default async function TrafficWidget() {
   return (
     <Widget
       span={8}
+      className="dw-traffic"
       title="Fleet traffic"
       sub={`visitors per day, ${connected.ga4} of ${connected.total} titles, last ${windowDays} days`}
       href="/analytics"

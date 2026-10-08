@@ -4302,7 +4302,8 @@ button.hub-ag { cursor: pointer; }
    length from making the row taller. Alone on a narrow screen there is no
    neighbour to size against, so it shows a fixed eight rows instead. */
 @media (min-width: 1101px) {
-  .dw-mlist-fill {
+  .dw-mail, .dw-bb { min-height: 640px; }
+  .dw-list-fill {
     flex: 1 1 0;
     min-height: 220px;
     contain: size;
@@ -4311,7 +4312,7 @@ button.hub-ag { cursor: pointer; }
   }
 }
 @media (max-width: 1100px) {
-  .dw-mlist-fill .dw-mrow:nth-child(n + 9) { display: none; }
+  .dw-list-fill > :nth-child(n + 9) { display: none; }
 }
 .dw-markread { display: flex; gap: 6px; }
 .dw-btn-strong { background: var(--brand); border-color: var(--brand); color: #fff; }
@@ -4470,117 +4471,6 @@ button.hub-ag { cursor: pointer; }
 .dw-gauge-arc { filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.12)); }
 .dw-spend > svg { max-width: 100%; height: auto; }
 
-/* To Do's: a notepad, after Apple Notes. Deliberately light on a dark page,
-   so it reads as a sheet of paper rather than another panel. */
-.dw-notes {
-  --note-yellow: #ffd60a;
-  --note-yellow-2: #f5b800;
-  --note-paper: #fbfaf6;
-  --note-rule: #e8e4d8;
-  --note-ink: #1c1c1e;
-  --note-muted: #8e8e93;
-  padding: 0;
-  gap: 0;
-  overflow: hidden;
-  border: 0;
-  background: var(--note-paper);
-  color: var(--note-ink);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-}
-.dw-notes-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  padding: 14px 18px 12px;
-  background: linear-gradient(180deg, var(--note-yellow), var(--note-yellow-2));
-  border-bottom: 2px dotted rgba(0, 0, 0, 0.18);
-}
-.dw-notes-top h2 { margin: 0; font-size: 17px; font-weight: 800; color: #3a2a00; }
-.dw-notes-top span { font-size: 12px; font-weight: 700; color: rgba(58, 42, 0, 0.7); }
-.dw-notes-paper {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 12px 18px 16px;
-  /* ruled lines every 36px, like the app's paper */
-  background: repeating-linear-gradient(180deg, transparent 0, transparent 35px, var(--note-rule) 35px, var(--note-rule) 36px);
-}
-.dw-notes-add { display: flex; flex-direction: column; gap: 8px; }
-.dw-notes input {
-  background: #fff;
-  color: var(--note-ink);
-  border: 1px solid var(--note-rule);
-  border-radius: 8px;
-  color-scheme: light;
-}
-.dw-notes input::placeholder { color: var(--note-muted); }
-.dw-notes input:focus { border-color: var(--note-yellow-2); box-shadow: 0 0 0 2px rgba(245, 184, 0, 0.35); }
-.dw-notes-add > input { width: 100%; font-size: 15px; padding: 10px 12px; }
-.dw-notes-add-row { display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
-.dw-notes-add-row label { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: var(--note-muted); }
-.dw-notes-add-row input { padding: 6px 8px; font-size: 13px; }
-.dw-notes-add-row button {
-  background: var(--note-yellow-2);
-  color: #3a2a00;
-  border: 0;
-  border-radius: 8px;
-  padding: 7px 16px;
-  font-weight: 800;
-  cursor: pointer;
-}
-.dw-notes-add-row button:hover { background: var(--note-yellow); }
-.dw-notes-err { margin: 0; font-size: 12px; color: #c0392b; }
-.dw-notes-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
-.dw-notes-list li {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  min-height: 36px;
-  border-bottom: 1px solid var(--note-rule);
-}
-.dw-notes-list label { display: flex; align-items: center; gap: 10px; min-width: 0; cursor: pointer; font-size: 14px; }
-.dw-notes-list input[type="checkbox"] {
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  flex: none;
-  padding: 0;
-  border-radius: 50%;
-  border: 2px solid #c7c7cc;
-  background: #fff;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-}
-.dw-notes-list input[type="checkbox"]:checked { background: var(--note-yellow-2); border-color: var(--note-yellow-2); }
-.dw-notes-list input[type="checkbox"]:checked::after {
-  content: "";
-  width: 5px;
-  height: 9px;
-  border: solid #fff;
-  border-width: 0 2.5px 2.5px 0;
-  transform: translateY(-1px) rotate(45deg);
-}
-.dw-notes-text { overflow-wrap: anywhere; }
-.dw-notes-list li.is-done .dw-notes-text { color: var(--note-muted); text-decoration: line-through; }
-.dw-notes-due { font-size: 11.5px; font-weight: 700; color: var(--note-muted); white-space: nowrap; }
-.dw-notes-due.soon { color: #b07d00; }
-.dw-notes-due.late { color: #d63a2f; }
-.dw-notes-empty { margin: 0; font-size: 13px; color: var(--note-muted); }
-.dw-notes-clear {
-  align-self: flex-start;
-  background: none;
-  border: 0;
-  padding: 2px 0;
-  font-size: 12px;
-  font-weight: 700;
-  color: #b07d00;
-  cursor: pointer;
-}
-.dw-notes-clear:hover { text-decoration: underline; }
-
 /* White widgets: the mailbox (after Edison Mail) and the Black Book. Light
    cards among dark ones, for variety on the page (JB, 8 Oct 2026). Their own
    tokens, so nothing here leaks into the dark widgets. */
@@ -4638,7 +4528,7 @@ button.hub-ag { cursor: pointer; }
 .dw-light .dw-link-tag { color: #12a150; border-color: rgba(18, 161, 80, 0.35); }
 .dw-light .dw-filter { border-color: var(--lt-fill-2); color: var(--lt-muted); background: var(--lt-fill); }
 .dw-light .dw-filter[aria-current="page"] { background: var(--lt-blue); border-color: var(--lt-blue); color: #fff; }
-.dw-light .dw-mlist-fill { scrollbar-color: #d1d1d6 transparent; }
+.dw-light .dw-list-fill { scrollbar-color: #d1d1d6 transparent; }
 
 /* black book */
 .dw-bb-badge {
@@ -4664,3 +4554,262 @@ button.hub-ag { cursor: pointer; }
 .dw-light .dw-chip { background: var(--lt-fill); color: var(--lt-muted); }
 .dw-light .dw-due { color: #a15c00; background: #fff1d0; }
 .dw-light .dw-bb-due-line { color: #a15c00; }
+
+/* A glow behind every widget, stronger on hover. Each card type tints its
+   own: brand blue for the dark ones, blue for the white ones, warm for the
+   notepad. */
+.dw-grid > .dw {
+  box-shadow:
+    0 0 0 1px rgba(101, 125, 255, 0.06),
+    0 22px 60px -28px rgba(46, 62, 238, 0.65),
+    0 0 46px -14px rgba(34, 211, 238, 0.16);
+  transition: box-shadow 0.25s, transform 0.25s;
+}
+.dw-grid > .dw:hover {
+  box-shadow:
+    0 0 0 1px rgba(101, 125, 255, 0.14),
+    0 26px 70px -26px rgba(46, 62, 238, 0.8),
+    0 0 60px -12px rgba(34, 211, 238, 0.26);
+}
+.dw-grid > .dw-light { box-shadow: 0 22px 60px -24px rgba(26, 140, 255, 0.55), 0 0 50px -16px rgba(255, 255, 255, 0.18); }
+.dw-grid > .dw-light:hover { box-shadow: 0 26px 70px -22px rgba(26, 140, 255, 0.7), 0 0 60px -14px rgba(255, 255, 255, 0.24); }
+.dw-grid > .dw-notes { box-shadow: 0 22px 60px -24px rgba(255, 196, 0, 0.5), 0 0 50px -16px rgba(255, 214, 10, 0.22); }
+.dw-grid > .dw-notes:hover { box-shadow: 0 26px 70px -22px rgba(255, 196, 0, 0.65), 0 0 60px -14px rgba(255, 214, 10, 0.3); }
+
+/* Targets: a lit panel with a faint grid, each ring on its own glass disc. */
+.dw-grid > .dw-targets {
+  border: 1px solid rgba(34, 211, 238, 0.3);
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px) 0 0 / 32px 32px,
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px) 0 0 / 32px 32px,
+    radial-gradient(70% 110% at 0% 0%, rgba(34, 211, 238, 0.26), transparent 60%),
+    radial-gradient(60% 110% at 100% 100%, rgba(167, 139, 250, 0.3), transparent 60%),
+    radial-gradient(50% 70% at 55% 35%, rgba(46, 62, 238, 0.28), transparent 70%),
+    #0a0f2b;
+  box-shadow:
+    0 0 0 1px rgba(34, 211, 238, 0.08),
+    0 30px 80px -30px rgba(46, 62, 238, 0.9),
+    0 0 80px -20px rgba(34, 211, 238, 0.3);
+}
+.dw-targets .dw-ring {
+  padding: 16px 12px 18px;
+  border-radius: 20px;
+  background: rgba(5, 7, 15, 0.38);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(6px);
+  gap: 8px;
+}
+.dw-pace {
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 3px 11px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.dw-pace.is-good { color: var(--neon-green); background: rgba(52, 245, 197, 0.12); }
+.dw-pace.is-warn { color: var(--neon-amber); background: rgba(251, 191, 36, 0.13); }
+.dw-pace.is-bad { color: var(--neon-red); background: rgba(251, 113, 133, 0.14); }
+
+/* Fleet traffic: a deep teal wash so the chart reads as the second headline. */
+.dw-grid > .dw-traffic {
+  border: 1px solid rgba(34, 211, 238, 0.22);
+  background:
+    radial-gradient(60% 120% at 100% 0%, rgba(34, 211, 238, 0.24), transparent 60%),
+    radial-gradient(60% 100% at 0% 100%, rgba(52, 245, 197, 0.14), transparent 60%),
+    linear-gradient(160deg, #0b1a33, #071021 70%);
+}
+
+/* To Do's: a ruled notepad, after Apple Notes. Light on a dark page so it
+   reads as a sheet of paper. Every row is a multiple of one 40px line (task
+   box, the "when by" line, each task, wrapped lines too), so the writing
+   sits on the rules. The paper scrolls inside the card, rules and all. */
+.dw-notes {
+  --note-line: 40px;
+  --note-yellow: #ffd60a;
+  --note-yellow-2: #f5b800;
+  --note-paper: #fbfaf6;
+  --note-rule: #e6e1d3;
+  --note-ink: #1c1c1e;
+  --note-muted: #8e8e93;
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 20px;
+  background: var(--note-paper);
+  color: var(--note-ink);
+}
+.dw-notes-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 14px 18px 12px;
+  background: linear-gradient(180deg, var(--note-yellow), var(--note-yellow-2));
+  border-bottom: 2px dotted rgba(0, 0, 0, 0.2);
+}
+.dw-notes-top h2 { margin: 0; font-size: 18px; font-weight: 800; color: #3a2a00; }
+.dw-notes-top span { font-size: 12px; font-weight: 700; color: rgba(58, 42, 0, 0.7); }
+.dw-notes-late { color: #b3261e; }
+.dw-notes-paper {
+  flex: 1 1 auto;
+  min-height: calc(var(--note-line) * 8);
+  padding: 0 18px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #d6cfb8 transparent;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0,
+    transparent calc(var(--note-line) - 1px),
+    var(--note-rule) calc(var(--note-line) - 1px),
+    var(--note-rule) var(--note-line)
+  );
+  background-attachment: local;
+}
+@media (min-width: 1101px) {
+  .dw-notes-paper { flex: 1 1 0; contain: size; min-height: calc(var(--note-line) * 7); }
+}
+.dw-notes-line {
+  min-height: var(--note-line);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dw-notes-add { display: block; }
+.dw-notes .dw-notes-task {
+  display: block;
+  width: 100%;
+  height: var(--note-line);
+  padding: 0 2px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--note-ink);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: var(--note-line);
+}
+.dw-notes .dw-notes-task::placeholder { color: #b9b4a6; font-weight: 500; }
+.dw-notes .dw-notes-task:focus { box-shadow: none; outline: none; }
+.dw-notes-fields { justify-content: space-between; flex-wrap: nowrap; }
+.dw-notes-fields label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--note-muted);
+  white-space: nowrap;
+}
+.dw-notes-fields input,
+.dw-notes-fields select {
+  height: 28px;
+  padding: 0 6px;
+  font-size: 12.5px;
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--note-ink);
+  border: 1px solid var(--note-rule);
+  border-radius: 7px;
+  color-scheme: light;
+}
+.dw-notes-fields input:focus,
+.dw-notes-fields select:focus { border-color: var(--note-yellow-2); box-shadow: 0 0 0 2px rgba(245, 184, 0, 0.3); }
+.dw-notes-fields button {
+  height: 28px;
+  margin-left: auto;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--note-yellow-2);
+  color: #3a2a00;
+  font-weight: 800;
+  cursor: pointer;
+}
+.dw-notes-fields button:hover { background: var(--note-yellow); }
+.dw-notes-err { margin: 0; font-size: 12px; color: #b3261e; }
+.dw-notes-filter { gap: 5px; }
+.dw-notes-filter button {
+  height: 24px;
+  padding: 0 9px;
+  border-radius: 999px;
+  border: 1px solid var(--note-rule);
+  background: transparent;
+  color: var(--note-muted);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.dw-notes-filter button[aria-pressed="true"] {
+  background: var(--who, var(--note-ink));
+  border-color: var(--who, var(--note-ink));
+  color: #fff;
+}
+.dw-notes-filter small { font-size: 10px; opacity: 0.8; }
+.dw-notes-list { list-style: none; margin: 0; padding: 0; }
+.dw-notes-list li {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: var(--note-line);
+  line-height: var(--note-line);
+}
+.dw-notes-list label { display: flex; align-items: flex-start; gap: 10px; min-width: 0; cursor: pointer; font-size: 14px; }
+.dw-notes-list input[type="checkbox"] {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: calc((var(--note-line) - 20px) / 2 - 1px);
+  flex: none;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid #c7c7cc;
+  background: #fff;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.dw-notes-list input[type="checkbox"]:checked { background: var(--note-yellow-2); border-color: var(--note-yellow-2); }
+.dw-notes-list input[type="checkbox"]:checked::after {
+  content: "";
+  width: 5px;
+  height: 9px;
+  border: solid #fff;
+  border-width: 0 2.5px 2.5px 0;
+  transform: translateY(-1px) rotate(45deg);
+}
+.dw-notes-text { overflow-wrap: anywhere; }
+.dw-notes-list li.is-done .dw-notes-text { color: var(--note-muted); text-decoration: line-through; }
+.dw-notes-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: var(--note-line);
+  flex: none;
+}
+.dw-notes-due { font-size: 11.5px; font-weight: 700; color: var(--note-muted); white-space: nowrap; }
+.dw-notes-due.soon { color: #a86f00; }
+.dw-notes-due.late { color: #b3261e; }
+.dw-notes-who {
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  color: #fff;
+  padding: 4px 6px;
+  border-radius: 6px;
+  letter-spacing: 0.03em;
+}
+.dw-notes-list li.dw-notes-empty { font-size: 13px; color: var(--note-muted); }
+.dw-notes-clear {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #a86f00;
+  cursor: pointer;
+}
+.dw-notes-clear:hover { text-decoration: underline; }

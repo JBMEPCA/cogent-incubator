@@ -33,9 +33,10 @@ export function WidgetNote({ children }) {
 
 /**
  * A 252° arc gauge. `pct` is 0–1 (or over, for a cap that has been passed);
- * the arc stops at full, the label does not.
+ * the arc stops at full, the label does not. `mark` (0–1) draws a tick for
+ * where the arc should be by now.
  */
-export function Gauge({ pct, label, sub, color, size = 132 }) {
+export function Gauge({ pct, label, sub, color, size = 132, mark }) {
   const stroke = Math.max(10, Math.round(size / 13));
   const r = size / 2 - stroke;
   const c = size / 2;
@@ -54,6 +55,14 @@ export function Gauge({ pct, label, sub, color, size = 132 }) {
       {pct > 0 && (
         <path d={arc(pct)} fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round" className="dw-gauge-arc" />
       )}
+      {mark != null && (() => {
+        // Where the arc should have reached by today: a short tick across it.
+        const a = a0 + sweep * Math.max(0, Math.min(1, mark));
+        const p = (rad) => [c + rad * Math.cos(a), c + rad * Math.sin(a)];
+        const [x0, y0] = p(r - stroke * 0.95);
+        const [x1, y1] = p(r + stroke * 0.95);
+        return <line x1={x0} y1={y0} x2={x1} y2={y1} stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round" opacity="0.9" />;
+      })()}
       <text x={c} y={c + 2} fill={color} fontSize={size / 5.4} fontWeight="600" textAnchor="middle" className="dw-gauge-v">
         {label}
       </text>

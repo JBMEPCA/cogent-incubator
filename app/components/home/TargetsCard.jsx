@@ -21,7 +21,7 @@ function ringColor(m, pct) {
   return "var(--neon-green)";
 }
 
-function Ring({ ring }) {
+function Ring({ ring, pace }) {
   const m = METRICS.find((x) => x.key === ring.metric);
   if (ring.actual == null) {
     return (
@@ -40,9 +40,24 @@ function Ring({ ring }) {
     );
   }
   const pct = ring.actual / ring.target;
+  // Against where the month says we should be. A goal a few points short is
+  // still "on pace"; a cap is judged the other way round.
+  const gap = pct - pace;
+  const status = m.cap
+    ? pct > 1
+      ? { text: "Over the cap", tone: "bad" }
+      : gap > 0.05
+        ? { text: "Spending ahead of pace", tone: "warn" }
+        : { text: "Within budget", tone: "good" }
+    : pct >= 1
+      ? { text: "Target hit", tone: "good" }
+      : gap >= -0.03
+        ? { text: "On pace", tone: "good" }
+        : { text: `Behind pace by ${Math.round(-gap * 100)} pts`, tone: "warn" };
   return (
     <div className="dw-ring">
-      <Gauge pct={pct} label={`${Math.round(pct * 100)}%`} sub={m.ring} color={ringColor(m, pct)} size={RING} />
+      <Gauge pct={pct} label={`${Math.round(pct * 100)}%`} sub={m.ring} color={ringColor(m, pct)} size={RING} mark={pace} />
+      <span className={`dw-pace is-${status.tone}`}>{status.text}</span>
       <span className={`dw-ring-l${m.cap && pct > 1 ? " is-over" : ""}`}>
         <b className="num">{show(m, ring.actual)}</b> of {show(m, ring.target)}
         {m.cap ? " cap" : ""}
@@ -151,7 +166,7 @@ function Editor({ months, prev, actuals, rings, onClose }) {
   );
 }
 
-export default function TargetsCard({ monthLabel, ringsData, months, prev, actuals, rings, canEdit }) {
+export default function TargetsCard({ pace, monthLabel, ringsData, months, prev, actuals, rings, canEdit }) {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
 
@@ -160,7 +175,7 @@ export default function TargetsCard({ monthLabel, ringsData, months, prev, actua
       span={12}
       className="dw-targets"
       title={`${monthLabel} against targets`}
-      sub="the whole fleet · resets on the 1st"
+      sub={`the whole fleet · ${Math.round(pace * 100)}% of the month gone · the white tick is where we should be by today`}
       href="/analytics"
       linkLabel="Open analytics"
       actions={
@@ -174,7 +189,7 @@ export default function TargetsCard({ monthLabel, ringsData, months, prev, actua
       {ringsData.length ? (
         <div className="dw-rings">
           {ringsData.map((r) => (
-            <Ring key={r.metric} ring={r} />
+            <Ring key={r.metric} ring={r} pace={pace} />
           ))}
         </div>
       ) : (
