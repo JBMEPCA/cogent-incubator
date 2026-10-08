@@ -1,7 +1,6 @@
 import Header from "@/app/components/Header";
 import { notFound } from "next/navigation";
 import { getSiteContext } from "@/lib/site";
-import SubTabs, { ENGINE_TABS } from "@/app/components/SubTabs";
 import { buildCostReport, getStoredReport } from "@/lib/agents/costs";
 import { updateFixedCost, updateCostTarget } from "@/lib/actions";
 import { BudgetMeter, SpendDonut, DailyTrend, SERIES } from "@/app/components/CostCharts";
@@ -56,7 +55,6 @@ export default async function CostsPage({ params }) {
     <>
       <Header />
       <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px clamp(14px, 4vw, 24px)" }}>
-        <SubTabs items={ENGINE_TABS} active="/engine-room/costs" />
 
         <div style={{ marginBottom: 18 }}>
           <h1 style={{ margin: "0 0 5px", fontSize: 25 }}>Costs</h1>

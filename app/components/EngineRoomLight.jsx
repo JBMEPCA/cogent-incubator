@@ -55,12 +55,12 @@ export default function EngineRoomLight() {
 
   return (
     <Link
-      href={`/s/${site.slug}/engine-room`}
+      href="/engine-hub"
       className="nav-link"
       title={title}
       style={{ display: "inline-flex", alignItems: "center", gap: 7 }}
     >
-      Engine Room
+      Engine hub
       <span
         aria-hidden="true"
         style={{

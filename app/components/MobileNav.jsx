@@ -135,13 +135,8 @@ export default function MobileNav({ sections, base, rest, site, live }) {
               </Link>
             );
           })}
-          <Link
-            href={`${base}/engine-room`}
-            className={`mnav-item${rest.startsWith("/engine-room") ? " is-active" : ""}`}
-            aria-current={rest.startsWith("/engine-room") ? "page" : undefined}
-            onClick={close}
-          >
-            Engine Room
+          <Link href="/engine-hub" className="mnav-item" onClick={close}>
+            Engine hub
             <span className={`agent-dot${site.engineEnabled ? " online" : ""}`} />
           </Link>
         </nav>

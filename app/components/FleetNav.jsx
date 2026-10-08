@@ -137,8 +137,21 @@ function ImageIcon(props) {
   );
 }
 
+/** Two rooms side by side, a figure in each — the engine hub. */
+function RoomsIcon() {
+  return (
+    <svg {...ICON}>
+      <rect x="3.5" y="5" width="7.5" height="14" rx="1.6" />
+      <rect x="13" y="5" width="7.5" height="14" rx="1.6" />
+      <circle cx="7.25" cy="13" r="1.6" />
+      <circle cx="16.75" cy="13" r="1.6" />
+    </svg>
+  );
+}
+
 const LINKS = [
   { href: "/", label: "All titles", Icon: GridIcon },
+  { href: "/engine-hub", label: "Engine hub", Icon: RoomsIcon },
   { href: "/analytics", label: "Group analytics", Icon: ChartIcon },
   { href: "/trending", label: "Trending Topics", Icon: TrendIcon },
   { href: "/interviews", label: "Interviews", Icon: PersonIcon },

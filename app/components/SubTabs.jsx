@@ -71,7 +71,4 @@ export const CONTENT_TABS = [
   { href: "/linkedin", label: "LinkedIn" },
 ];
 
-export const ENGINE_TABS = [
-  { href: "/engine-room", label: "The team" },
-  { href: "/engine-room/costs", label: "Costs" },
-];
+

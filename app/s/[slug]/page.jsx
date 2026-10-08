@@ -189,7 +189,7 @@ export default async function Dashboard({ params }) {
             )}
           </Widget>
 
-          <Widget title="Engine Room" href="/engine-room" cta="The team">
+          <Widget title="Agents" href="/engine-hub" cta="Engine hub">
             <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 10 }}>
               {agents.slice(0, 4).map((a) => {
                 const state = !onShift && a.state !== "working" ? "asleep" : a.state;
@@ -223,7 +223,7 @@ export default async function Dashboard({ params }) {
             </div>
           </Widget>
 
-          <Widget title="Research pipeline" href="/engine-room" cta="Researcher">
+          <Widget title="Research pipeline">
             {topics.length === 0 && <div style={{ fontSize: 12.5, opacity: 0.5 }}>No topics queued.</div>}
             {topics.map((t) => (
               <div key={t.id} style={{ padding: "6px 0", borderBottom: "1px solid rgba(255,255,255,.06)" }}>
