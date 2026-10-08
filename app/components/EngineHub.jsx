@@ -92,6 +92,16 @@ function share(part, whole) {
   return whole ? `${Math.round((part / whole) * 100)}%` : "—";
 }
 
+function Fig({ label, value, sub, tone }) {
+  return (
+    <div className="hub-fig">
+      <div className="hub-fig-l">{label}</div>
+      <div className="hub-fig-v" style={tone ? { color: tone } : undefined}>{value}</div>
+      <div className="hub-fig-s">{sub}</div>
+    </div>
+  );
+}
+
 function TwoUp({ label, today, week }) {
   return (
     <div className="hub-two">
@@ -244,6 +254,8 @@ export default function EngineHub() {
   const [error, setError] = useState(null);
   const [selected, setSelected] = useState(null);
   const [agentKey, setAgentKey] = useState(null);
+  const [unblocking, setUnblocking] = useState(null);
+  const [unblockError, setUnblockError] = useState(null);
   const [resting, setResting] = useState(false);
 
   const load = useCallback(async () => {
@@ -256,6 +268,22 @@ export default function EngineHub() {
       setError(e.message);
     }
   }, []);
+
+  // Back on duty now rather than at the hourly recovery. It does not re-run
+  // anything; the agent takes its next job on its own schedule.
+  const unblock = async (slug, key, id) => {
+    setUnblocking(id);
+    setUnblockError(null);
+    try {
+      const res = await fetch(`/api/agents/unblock?site=${encodeURIComponent(slug)}&agent=${key}`, { method: "POST" });
+      if (res.status === 403) throw new Error("Your account can view the hub but not change agents.");
+      if (!res.ok) throw new Error(`Couldn't unblock it (status ${res.status}). Try again.`);
+      await load();
+    } catch (e) {
+      setUnblockError(e.message);
+    }
+    setUnblocking(null);
+  };
 
   useEffect(() => {
     load();
@@ -297,46 +325,22 @@ export default function EngineHub() {
 
   return (
     <>
-      <div className="hub-bar">
-        <div className="fleet-fig">
-          <div className="fleet-fig-v">{all.length}</div>
-          <div className="fleet-fig-l">agents</div>
-        </div>
-        <div className="fleet-fig">
-          <div className="fleet-fig-v" style={{ color: "var(--neon-green)" }}>{working}</div>
-          <div className="fleet-fig-l">working now</div>
-        </div>
-        <div className="fleet-fig">
-          <div className="fleet-fig-v" style={blocked.length ? { color: "var(--neon-red)" } : undefined}>{blocked.length}</div>
-          <div className="fleet-fig-l">blocked</div>
-        </div>
-        <div className="fleet-fig">
-          <div className="fleet-fig-v">{runsToday}</div>
-          <div className="fleet-fig-l">runs today</div>
-        </div>
-        <div className="fleet-fig">
-          <div className="fleet-fig-v">{usd(spendToday)}</div>
-          <div className="fleet-fig-l">spend today</div>
-          <div className="hub-fig-h">{usd(spendWeek)} in 7 days</div>
-        </div>
-        <div className="fleet-fig">
-          <div className="fleet-fig-v">{publishedToday}</div>
-          <div className="fleet-fig-l">articles published today</div>
-          <div className="hub-fig-h">{publishedWeek} in 7 days</div>
-        </div>
-        <div className="fleet-fig">
-          <div className="fleet-fig-v">{usd(perArticleToday)}</div>
-          <div className="fleet-fig-l">cost per article today</div>
-          <div className="hub-fig-h">{usd(perArticleWeek)} over 7 days</div>
-        </div>
-        <ul className="hub-legend">
-          <li><i style={{ background: "var(--neon-green)" }} />Working</li>
-          <li><i style={{ background: "var(--muted)" }} />Idle</li>
-          <li><i style={{ background: "#ff3b4e" }} />Blocked</li>
-          <li><i style={{ background: "#ffd45c" }} />Director</li>
-          {resting && <li className="hub-offshift">Off shift until 7am</li>}
-        </ul>
+      <div className="hub-strip">
+        <Fig label="Agents" value={all.length} sub={`across ${sites.length} titles`} />
+        <Fig label="Working now" value={working} tone={working ? "var(--neon-green)" : undefined} sub={`${all.length - working - blocked.length} idle`} />
+        <Fig label="Blocked" value={blocked.length} tone={blocked.length ? "var(--neon-red)" : undefined} sub={blocked.length ? "see Needs you" : "all clear"} />
+        <Fig label="Runs today" value={runsToday} sub="since midnight" />
+        <Fig label="Spend today" value={usd(spendToday)} sub={`${usd(spendWeek)} in 7 days`} />
+        <Fig label="Published today" value={publishedToday} sub={`${publishedWeek} in 7 days`} />
+        <Fig label="Cost per article" value={usd(perArticleToday)} sub={`${usd(perArticleWeek)} over 7 days`} />
       </div>
+      <ul className="hub-legend">
+        <li><i style={{ background: "var(--neon-green)" }} />Working</li>
+        <li><i style={{ background: "var(--muted)" }} />Idle</li>
+        <li><i style={{ background: "#ff3b4e" }} />Blocked</li>
+        <li><i style={{ background: "#ffd45c" }} />Director</li>
+        {resting && <li className="hub-offshift">Off shift until 7am</li>}
+      </ul>
 
       <section className="hub-grid">
         {sites.map((s) => (
@@ -458,25 +462,47 @@ export default function EngineHub() {
           {blocked.length > 0 && <span className="hub-needs-n">{blocked.length}</span>}
         </h3>
         {blocked.length ? (
-          <div className="hub-roster hub-roster-wide">
-            {blocked.map((a) => (
-              <button
-                key={`${a.siteId}-${a.key}`}
-                type="button"
-                className="hub-ag"
-                onClick={() => {
-                  setSelected(siteById[a.siteId]?.slug);
-                  setAgentKey(a.key);
-                }}
-              >
-                <span className="hub-dot is-blocked" />
-                <div style={{ minWidth: 0 }}>
-                  <div className="hub-ag-name">{siteById[a.siteId]?.name} · {a.name}</div>
-                  <div className="hub-ag-task">{a.detail || a.currentTask || "Blocked"}</div>
+          <>
+          <div className="hub-needs-list">
+            {blocked.map((a) => {
+              const site = siteById[a.siteId];
+              const id = `${a.siteId}-${a.key}`;
+              const info = a.block;
+              return (
+                <div key={id} className="hub-need">
+                  <span className="hub-dot is-blocked" />
+                  <button
+                    type="button"
+                    className="hub-need-main"
+                    onClick={() => {
+                      setSelected(site?.slug);
+                      setAgentKey(a.key);
+                    }}
+                  >
+                    <span className="hub-ag-name">{site?.name} · {a.name}</span>
+                    <span className="hub-need-why">{info?.error || a.detail || "Its last run failed"}</span>
+                    <span className={`hub-need-when${info?.needsPerson ? " is-stuck" : ""}`}>
+                      {info?.needsPerson
+                        ? `Failed ${info.streak} runs in a row, so it waits for you`
+                        : info?.recoversAt
+                          ? `Failed at ${ukTime(info.failedAt)} · back on duty by itself at ${ukTime(info.recoversAt)}`
+                          : "Back on duty by itself within the hour"}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    className="hub-unblock"
+                    disabled={unblocking === id}
+                    onClick={() => unblock(site?.slug, a.key, id)}
+                  >
+                    {unblocking === id ? "Unblocking…" : "Unblock"}
+                  </button>
                 </div>
-              </button>
-            ))}
+              );
+            })}
           </div>
+          {unblockError && <p className="hub-need-err">{unblockError}</p>}
+          </>
         ) : (
           <p className="hub-quiet">Nothing blocked across the fleet.</p>
         )}

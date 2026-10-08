@@ -3844,7 +3844,6 @@ a.gc-warn:hover { border-color: rgba(251, 191, 36, 0.8); }
 
 /* Engine hub — every title's engine room on one screen. Each room takes its
    colour from --c, set inline from ROOM_COLOUR in EngineHub.jsx. */
-.hub-bar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 34px; margin: 0 0 22px; }
 .hub-legend { display: flex; flex-wrap: wrap; gap: 14px; margin: 0 0 4px auto; padding: 0; list-style: none; font-size: 12px; color: var(--muted); }
 .hub-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; }
 .hub-offshift { color: var(--neon-amber); }
@@ -3926,7 +3925,6 @@ button.hub-ag { cursor: pointer; }
 .hub-two-l { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-bottom: 4px; }
 .hub-two-row { display: flex; flex-wrap: nowrap; align-items: baseline; gap: 12px; font-size: 11px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .hub-two-row b { font-size: 15px; color: var(--text); margin-right: 3px; }
-.hub-fig-h { margin-top: 3px; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .hub-needs { margin-top: 18px; }
 .hub-needs-n { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: #ff3b4e; color: #fff; font-size: 11px; }
 .hub-roster-wide { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
@@ -3950,3 +3948,26 @@ button.hub-ag { cursor: pointer; }
 @media (max-width: 900px) { .hub-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .hub-below { grid-template-columns: minmax(0, 1fr); } .hub-legend { margin-left: 0; } }
 @media (max-width: 520px) { .hub-grid { grid-template-columns: minmax(0, 1fr); } .hub-roster { grid-template-columns: minmax(0, 1fr); } }
 @media (prefers-reduced-motion: reduce) { .hub-room *, .hub-room *::before, .hub-room *::after { animation: none !important; } }
+
+/* Engine hub — figures strip and Needs you. One cell per figure, every cell
+   the same three lines, so the numbers share a baseline. */
+.hub-strip { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); margin: 0 0 10px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); overflow: hidden; }
+.hub-fig { padding: 14px 18px; min-width: 0; border-left: 1px solid var(--line); }
+.hub-fig:first-child { border-left: 0; }
+.hub-fig-l { font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hub-fig-v { margin: 4px 0 2px; font-size: 26px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.hub-fig-s { font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+.hub-strip + .hub-legend { justify-content: flex-end; margin: 0 0 20px; }
+.hub-needs-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 8px; }
+.hub-need { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; background: var(--surface-2); border: 1px solid rgba(255, 59, 78, 0.25); min-width: 0; }
+.hub-need-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; padding: 0; border: 0; background: none; color: inherit; font: inherit; font-size: 12px; text-align: left; cursor: pointer; }
+.hub-need-why { color: var(--text); opacity: 0.85; font-size: 12px; }
+.hub-need-when { color: var(--muted); font-size: 11px; }
+.hub-need-when.is-stuck { color: var(--neon-amber); }
+.hub-unblock { flex: none; padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(52, 245, 197, 0.45); background: rgba(52, 245, 197, 0.1); color: var(--neon-green); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+.hub-unblock:hover { background: rgba(52, 245, 197, 0.18); }
+.hub-unblock:disabled { opacity: 0.6; cursor: wait; }
+.hub-unblock:focus-visible, .hub-need-main:focus-visible { outline: 2px solid var(--neon-cyan); outline-offset: 2px; }
+.hub-need-err { margin: 8px 0 0; font-size: 12px; color: var(--neon-red); }
+@media (max-width: 1100px) { .hub-strip { grid-template-columns: repeat(4, minmax(0, 1fr)); } .hub-fig:nth-child(5) { border-left: 0; } .hub-fig:nth-child(n + 5) { border-top: 1px solid var(--line); } }
+@media (max-width: 560px) { .hub-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } .hub-fig:nth-child(odd) { border-left: 0; } .hub-fig:nth-child(n + 3) { border-top: 1px solid var(--line); } .hub-needs-list { grid-template-columns: minmax(0, 1fr); } }

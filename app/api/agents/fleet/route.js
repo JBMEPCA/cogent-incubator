@@ -3,6 +3,7 @@ import { fleetRead } from "@/lib/prisma";
 import { listSites } from "@/lib/site";
 import { ukDayStart } from "@/lib/schedule";
 import { AGENTS } from "@/lib/agents/registry";
+import { failStreak, BLOCK_RECOVER_MS, BLOCK_STREAK } from "@/lib/agents/runtime";
 
 export const dynamic = "force-dynamic";
 
@@ -52,6 +53,26 @@ export async function GET() {
     }),
   ]);
 
+  // Why each blocked agent is blocked, and whether it will come back by itself
+  // (see recoverBlocked). Only blocked agents are looked up, so this is a
+  // handful of small queries at most.
+  const blockInfo = {};
+  await Promise.all(
+    agents
+      .filter((a) => a.state === "blocked")
+      .map(async (a) => {
+        const f = await failStreak(a.siteId, a.key);
+        const stuck = f.streak >= BLOCK_STREAK;
+        blockInfo[`${a.siteId}:${a.key}`] = {
+          streak: f.streak,
+          error: f.error,
+          failedAt: f.lastFailedAt,
+          recoversAt: !stuck && f.lastFailedAt ? new Date(f.lastFailedAt.getTime() + BLOCK_RECOVER_MS) : null,
+          needsPerson: stuck,
+        };
+      })
+  );
+
   const events = [
     ...runs.map((r) => ({ siteId: r.siteId, agent: r.agentKey, articleId: r.articleId, usd: r.costUsd, at: r.startedAt })),
     ...scripted.map((a) => ({ siteId: a.siteId, agent: "scripted", articleId: a.id, usd: a.costUsd, at: a.publishedAt })),
@@ -90,6 +111,7 @@ export async function GET() {
               name: AGENTS[a.key]?.name || a.key,
               accent: AGENTS[a.key]?.accent,
               costs: { todayUsd: am.todayUsd, weekUsd: am.weekUsd },
+              block: blockInfo[`${a.siteId}:${a.key}`] || null,
             };
           }),
       };

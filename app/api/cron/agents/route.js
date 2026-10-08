@@ -1,6 +1,6 @@
 import { forEachSite, cronGuard, activeSites } from "@/lib/cron";
 import { getSiteContext } from "@/lib/site";
-import { ensureAgents, reapStaleRuns } from "@/lib/agents/runtime";
+import { ensureAgents, reapStaleRuns, recoverBlocked } from "@/lib/agents/runtime";
 import { runResearcher } from "@/lib/agents/researcher";
 import { runLinkedIn } from "@/lib/agents/linkedin";
 import { isLinkedInConfigured, authFor } from "@/lib/linkedin";
@@ -91,6 +91,10 @@ export async function GET(request) {
 async function tickOne(ctx, { forced, stage }) {
   const { site, db } = ctx;
   await ensureAgents(site.id);
+
+  // Database only and free, so it runs out of hours too: a one-off failure
+  // should not sit red overnight waiting for the first tick of the day.
+  if (!forced) await recoverBlocked(site.id);
 
   // Office hours. A manual wake from the Engine Room still works out of hours,
   // so you are never locked out of your own team.
