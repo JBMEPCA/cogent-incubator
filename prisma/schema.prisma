@@ -410,6 +410,93 @@ model BlackBookContact {
   updatedAt    DateTime  @updatedAt
 }
 
+// The advertiser list: brands we want to sell space to. The Black Book is the
+// inbound side (people who asked); this is the outbound side (people we ask).
+//
+// Fleet-wide and keyed by company domain, not by title, because the rule that
+// matters is per company: a brand that suits three titles must hear from us
+// once, not three times in a week, and must not get a sales pitch while an
+// interview or backlink conversation with it is still open. Neither check is
+// possible if each title keeps its own copy. siteIds works as on the Black
+// Book: the titles the brand suits, an empty list meaning all of them.
+model Advertiser {
+  id           String   @id @default(cuid())
+  company      String
+  domain       String   @unique
+  website      String?
+  category     String?
+  siteIds      String[] @default([])
+  // manual | csv | prospect (copied from a title's research list)
+  source       String   @default("manual")
+  // Where the row came from in words: a CSV file name, "Elevate 2026
+  // exhibitors". The sources differ a lot in how likely they are to buy.
+  sourceDetail String?
+  // UK PECR: limited companies, PLCs and LLPs can be emailed cold with an
+  // opt-out; sole traders and partnerships cannot without consent, and a lot
+  // of gyms, barbers and practices are exactly that. Filled in by the
+  // Companies House check: limited | plc | llp | other | not_found. Null means
+  // not checked yet, which the send path will treat as "no".
+  companyType      String?
+  companyNumber    String?
+  companyCheckedAt DateTime?
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  contacts AdvertiserContact[]
+  offers   AdvertiserOffer[]
+}
+
+// A person at an advertiser, normally someone in marketing. One row per email
+// across the whole fleet, so a re-imported list cannot create a second copy.
+model AdvertiserContact {
+  id           String     @id @default(cuid())
+  advertiser   Advertiser @relation(fields: [advertiserId], references: [id], onDelete: Cascade)
+  advertiserId String
+  firstName    String?
+  lastName     String?
+  jobTitle     String?
+  email        String     @unique
+  phone        String?
+  linkedinUrl  String?
+  source       String     @default("manual")
+  // good | risky | bad, from MillionVerifier, as on NewsletterProspect. Null
+  // means not checked; nothing unchecked is mailed.
+  verifyStatus String?
+  verifyResult String?
+  verifiedAt   DateTime?
+  createdAt    DateTime   @default(now())
+
+  offers AdvertiserOffer[]
+
+  @@index([advertiserId])
+}
+
+// Every offer an advertiser has been sent, by mail merge or by hand. This is
+// the "when did they last hear from us" record the spacing rule reads.
+// siteId is the title the offer was for, kept as a plain id like the Black
+// Book's, since the table is fleet-wide.
+model AdvertiserOffer {
+  id           String             @id @default(cuid())
+  advertiser   Advertiser         @relation(fields: [advertiserId], references: [id], onDelete: Cascade)
+  advertiserId String
+  contact      AdvertiserContact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  contactId    String?
+  siteId       String?
+  // The mail merge's name, or "One-off" for something sent by hand.
+  campaign     String
+  product      AdProduct?
+  hook         String?
+  sentAt       DateTime           @default(now())
+  // sent | replied | handed_over | declined | bounced
+  outcome      String             @default("sent")
+  notes        String?
+  createdAt    DateTime           @default(now())
+
+  @@index([advertiserId, sentAt])
+  @@index([sentAt])
+}
+
 // Fleet-wide toggles and cursors. Per-title settings live on EngineSetting.
 model GlobalSetting {
   key   String @id

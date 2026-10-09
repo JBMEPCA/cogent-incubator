@@ -104,6 +104,17 @@ function PressIcon() {
   );
 }
 
+/** A megaphone: the brands we sell advertising to. */
+function MegaphoneIcon() {
+  return (
+    <svg {...ICON}>
+      <path d="M3.5 10v4a1.5 1.5 0 0 0 1.5 1.5h2.5l8 4.5v-16l-8 4.5H5A1.5 1.5 0 0 0 3.5 10z" />
+      <path d="M7.5 15.5l1.5 5" />
+      <path d="M18.5 9.5a3.5 3.5 0 0 1 0 5" />
+    </svg>
+  );
+}
+
 /** A folder: the shared Drive of media packs and documents. */
 function FolderIcon() {
   return (
@@ -158,6 +169,7 @@ const LINKS = [
   { href: "/needs-image", label: "Needs an image", Icon: ImageIcon },
   { href: "/costs", label: "Costs", Icon: MoneyIcon },
   { href: "/press", label: "PR", Icon: PressIcon },
+  { href: "/advertisers", label: "Advertisers", Icon: MegaphoneIcon },
 ];
 
 export default function FleetNav() {
