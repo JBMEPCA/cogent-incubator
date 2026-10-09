@@ -8,6 +8,7 @@ import { bridgeReady } from "@/lib/social-bridge";
 import { runBacklink } from "@/lib/agents/backlink";
 import { runDirector, runEditor, runDesigner, runSeo, runFinance, sweepHeldArticles, imageWorkAvailable } from "@/lib/agents/team";
 import { withinOfficeHours } from "@/lib/site";
+import { runNearlyThere, runGapCheck, runRefreshOld } from "@/lib/agents/upkeep";
 
 export const dynamic = "force-dynamic";
 // 60 was never a platform limit, it was this line. Fluid compute is enabled on
@@ -77,13 +78,103 @@ export async function GET(request) {
     }
     fleet.push({ site: ctx.site.slug, ...(await tickOne(ctx, { forced, stage })) });
   }
+
+  // Titles the Director loop reached, in the same rotated order.
+  const housekeeping =
+    stage === "director" && !forced
+      ? await housekeepingPass(ordered.filter((c) => !deferred.includes(c.site.slug)), started)
+      : [];
+
   return Response.json({
     titles: fleet.length,
     fleet,
+    ...(housekeeping.length ? { housekeeping } : {}),
     ...(deferred.length
       ? { deferred, deferredReason: "fleet deadline reached; the order rotates each tick, so these move up the queue" }
       : {}),
   });
+}
+
+// When each agent, or one agent's particular job, last had a turn. With a
+// trigger, that job's own clock; without, the agent's latest turn at anything.
+function attemptsFrom(rows) {
+  return (key, trigger = null) => {
+    let latest = null;
+    for (const r of rows) {
+      if (r.agentKey !== key || (trigger && r.trigger !== trigger)) continue;
+      const at = r._max?.startedAt;
+      if (at && (!latest || at > latest)) latest = at;
+    }
+    return latest;
+  };
+}
+
+// The agents that keep a title in order rather than produce content, each on
+// its own interval in hours. Shared by the worker ladder and the housekeeping
+// pass, so the two can never disagree about who is due.
+async function housekeepingFor(site, attemptOf) {
+  const hoursSince = (d) => (d ? (Date.now() - new Date(d).getTime()) / 36e5 : 999);
+  // The LinkedIn Manager only writes when the title can actually post.
+  //
+  // Community Management API has been in review since late August, so no title
+  // has a token and nothing the agent drafts can publish. Its posts also expire
+  // five days after their slot, so a queue built while disconnected is worthless
+  // by the time approval lands: 71 expired against 4 posted by 8 September, and
+  // £1.08 of the fortnight's spend went on writing them.
+  //
+  // Nothing is switched off permanently. The moment a title stores a token the
+  // agent rejoins the ladder on its own, with no redeploy.
+  // Or posting through the Make bridge, which needs drafts just the same.
+  const linkedInReady = isLinkedInConfigured(await authFor(site)) || (await bridgeReady(site, "linkedin"));
+  // [agent, run, trigger, every N hours, timed by its own trigger]. The weekly
+  // jobs look after what is already published (lib/agents/upkeep.js) and are
+  // timed by trigger, because their agents run other work all day.
+  const HOUSEKEEPING = [
+    ["seo", runSeo, "link_sweep", 12],
+    ...(linkedInReady ? [["linkedin", runLinkedIn, "daily_queue", 12]] : []),
+    ["backlink", runBacklink, "daily_sweep", 12],
+    ["finance", runFinance, "daily_summary", 24],
+    ["editor", runNearlyThere, "nearly_there", 168, true],
+    ["researcher", runGapCheck, "gap_check", 168, true],
+    ["editor", runRefreshOld, "refresh_old", 168, true],
+  ];
+  const overdueBy = (key, every, trigger) => hoursSince(attemptOf(key, trigger)) / every;
+  // Each due entry carries how overdue it is, relative to its own interval.
+  const due = HOUSEKEEPING.map(([key, fn, trigger, every, own]) => [key, fn, trigger, every, overdueBy(key, every, own ? trigger : null)]).filter(
+    (e) => e[4] > 1
+  );
+  return { linkedInReady, due, overdueBy };
+}
+
+// Housekeeping's own turn, in the Director request.
+//
+// It used to compete with content for the worker's single slot, and only won
+// when the shelf was healthy or content had nothing left to do. Every shelf has
+// been thin since September and content always has something to do, so from
+// 20 Sep 2026 SEO, Backlink and Finance all but stopped: the five titles
+// launched on 18 Sep had never had a Finance run by 9 Oct, and three had never
+// had an SEO run. The Director stage is short (it is skipped unless there is
+// commissioning or a report to rule on) and Haiku-cheap, so the time left in
+// its request goes to whichever housekeeping agent is most overdue, one per
+// title, rotating with the tick. Nothing new STARTS after the deadline, which
+// leaves an SEO sweep room to finish inside Cloudflare's ~100s.
+const HOUSEKEEPING_START_BY_MS = 45_000;
+
+async function housekeepingPass(contexts, started) {
+  const out = [];
+  for (const ctx of contexts) {
+    if (Date.now() - started > HOUSEKEEPING_START_BY_MS) break;
+    const { site, db } = ctx;
+    if (!withinOfficeHours(site)) continue;
+    const lastAttempts = await db.agentRun.groupBy({ by: ["agentKey", "trigger"], _max: { startedAt: true } });
+    const attemptOf = attemptsFrom(lastAttempts);
+    const { due } = await housekeepingFor(site, attemptOf);
+    if (!due.length) continue;
+    const [key, fn, trigger] = [...due].sort((a, b) => b[4] - a[4])[0];
+    const r = await fn(site, trigger);
+    out.push({ site: site.slug, agent: key, ok: r?.ok, summary: r?.summary || r?.skipped || r?.error || null });
+  }
+  return out;
 }
 
 // One title's tick. Everything below is the original logic, now taking the site
@@ -175,7 +266,7 @@ async function tickOne(ctx, { forced, stage }) {
       // only written when a run finishes cleanly, so gating on it means a
       // failing agent looks permanently overdue and takes every tick for ever.
       // A failed attempt still counts as a turn taken.
-      db.agentRun.groupBy({ by: ["agentKey"], _max: { startedAt: true } }),
+      db.agentRun.groupBy({ by: ["agentKey", "trigger"], _max: { startedAt: true } }),
     ]);
 
   const hoursSince = (d) => (d ? (Date.now() - new Date(d).getTime()) / 36e5 : 999);
@@ -190,8 +281,7 @@ async function tickOne(ctx, { forced, stage }) {
   // nicety and an unlinked article earns nothing while it waits, so SEO leads;
   // a mention is worth chasing while an article is still new, so Backlink sits
   // above Finance, which is only ever advisory.
-  const attemptOf = (key) =>
-    lastAttempts.find((r) => r.agentKey === key)?._max?.startedAt;
+  const attemptOf = attemptsFrom(lastAttempts);
   // The LinkedIn Manager only writes when the title can actually post.
   //
   // Community Management API has been in review since late August, so no title
@@ -203,16 +293,7 @@ async function tickOne(ctx, { forced, stage }) {
   // Nothing is switched off permanently. The moment a title stores a token the
   // agent rejoins the ladder on its own, with no redeploy.
   // Or posting through the Make bridge, which needs drafts just the same.
-  const linkedInReady = isLinkedInConfigured(await authFor(site)) || (await bridgeReady(site, "linkedin"));
-
-  const HOUSEKEEPING = [
-    ["seo", runSeo, "link_sweep", 12],
-    ...(linkedInReady ? [["linkedin", runLinkedIn, "daily_queue", 12]] : []),
-    ["backlink", runBacklink, "daily_sweep", 12],
-    ["finance", runFinance, "daily_summary", 24],
-  ];
-  const overdueBy = (key, every) => hoursSince(attemptOf(key)) / every;
-  const due = HOUSEKEEPING.filter(([key, , , every]) => overdueBy(key, every) > 1);
+  const { linkedInReady, due, overdueBy } = await housekeepingFor(site, attemptOf);
 
   // A guaranteed turn, because priority inside the chain was not enough. One
   // worker runs per tick and the Director commissions something most hours, so
@@ -223,10 +304,10 @@ async function tickOne(ctx, { forced, stage }) {
   // hour; nothing waits days.
   const STARVED_AT = 2;
   const starved = due
-    .filter(([key, , , every]) => overdueBy(key, every) > STARVED_AT)
+    .filter((e) => e[4] > STARVED_AT)
     // Worst relative to its own interval, so a 12h agent two days late still
     // outranks a 24h agent three days late.
-    .sort((a, b) => overdueBy(b[0], b[3]) - overdueBy(a[0], a[3]));
+    .sort((a, b) => b[4] - a[4]);
 
   // How many imaged, publishable articles this title is actually holding.
   // Not the bank: a piece with no picture cannot fill a slot, and counting it

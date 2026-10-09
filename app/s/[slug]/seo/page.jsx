@@ -396,6 +396,26 @@ export default async function SeoPage({ params }) {
                           → “{payload.newTitle}”
                         </p>
                       )}
+                      {/* What a written change will actually say, so it can be
+                          read before it is approved rather than after. */}
+                      {payload?.seoTitle && (
+                        <p className="micro" style={{ margin: "0 0 6px", color: "var(--neon-cyan)" }}>
+                          Search title → “{payload.seoTitle}”
+                        </p>
+                      )}
+                      {payload?.metaDesc && (
+                        <p className="micro" style={{ margin: "0 0 10px", color: "var(--neon-cyan)" }}>
+                          Description → “{payload.metaDesc}”
+                        </p>
+                      )}
+                      {s.kind === "content_edit" && payload?.find && payload?.replaceWith && (
+                        <div style={{ display: "grid", gap: 6, margin: "0 0 10px", fontSize: 12.5, lineHeight: 1.5 }}>
+                          <div style={{ color: "var(--muted)", textDecoration: "line-through" }}>
+                            {payload.find.replace(/<[^>]+>/g, "")}
+                          </div>
+                          <div style={{ color: "var(--neon-cyan)" }}>{payload.replaceWith.replace(/<[^>]+>/g, "")}</div>
+                        </div>
+                      )}
                       {s.status === "failed" && (
                         <p className="micro" style={{ color: "var(--neon-red)", margin: "0 0 10px" }}>
                           Failed: {s.error}
