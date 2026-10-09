@@ -8,7 +8,7 @@ import { bridgeReady } from "@/lib/social-bridge";
 import { runBacklink } from "@/lib/agents/backlink";
 import { runDirector, runEditor, runDesigner, runSeo, runFinance, sweepHeldArticles, imageWorkAvailable } from "@/lib/agents/team";
 import { withinOfficeHours } from "@/lib/site";
-import { runNearlyThere, runGapCheck, runRefreshOld } from "@/lib/agents/upkeep";
+import { runNearlyThere, runGapCheck, runRefreshOld, runInternalLinks } from "@/lib/agents/upkeep";
 
 export const dynamic = "force-dynamic";
 // 60 was never a platform limit, it was this line. Fluid compute is enabled on
@@ -130,13 +130,16 @@ async function housekeepingFor(site, attemptOf) {
   // jobs look after what is already published (lib/agents/upkeep.js) and are
   // timed by trigger, because their agents run other work all day.
   const HOUSEKEEPING = [
-    ["seo", runSeo, "link_sweep", 12],
+    // Daily and free since 9 Oct 2026: brand links and link counts, no model.
+    // The paid half, internal links, is the weekly internal_links job below.
+    ["seo", runSeo, "link_sweep", 24],
     ...(linkedInReady ? [["linkedin", runLinkedIn, "daily_queue", 12]] : []),
     ["backlink", runBacklink, "daily_sweep", 12],
     ["finance", runFinance, "daily_summary", 24],
     ["editor", runNearlyThere, "nearly_there", 168, true],
     ["researcher", runGapCheck, "gap_check", 168, true],
     ["editor", runRefreshOld, "refresh_old", 168, true],
+    ["seo", runInternalLinks, "internal_links", 168, true],
   ];
   const overdueBy = (key, every, trigger) => hoursSince(attemptOf(key, trigger)) / every;
   // Each due entry carries how overdue it is, relative to its own interval.
