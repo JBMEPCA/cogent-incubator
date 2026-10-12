@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Header from "@/app/components/Header";
 import SubTabs, { CRM_TABS } from "@/app/components/SubTabs";
 import { notFound } from "next/navigation";
@@ -40,6 +41,15 @@ export default async function AdvertisersPage({ params }) {
       <Header />
       <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px clamp(14px, 4vw, 24px)" }}>
         <SubTabs items={CRM_TABS} active="/advertisers" />
+        <section className="panel" style={{ marginBottom: 22, display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
+          <p style={{ margin: 0, fontSize: 14, flex: 1, minWidth: 240 }}>
+            Contacts, offers and mail-merge lists live on the fleet <strong>Advertisers</strong> page, one list for
+            every title. This page is the title&rsquo;s research list.
+          </p>
+          <Link className="btn" href={`/advertisers?title=${site.slug}`}>
+            Open the advertiser list →
+          </Link>
+        </section>
         <div
           className="stagger"
           style={{
