@@ -5024,3 +5024,7 @@ button.hub-ag { cursor: pointer; }
   .adv-sum > :nth-child(6) { grid-row: 1; grid-column: 2; }
   .adv-sum-head { display: none; }
 }
+
+/* How many messages a conversation holds, before its subject. */
+.dw-mcount { display: inline-block; min-width: 18px; margin-right: 6px; padding: 0 5px; border-radius: 9px; font-size: 10.5px; font-weight: 700; line-height: 16px; text-align: center; background: rgba(139, 151, 198, 0.18); color: var(--muted); }
+.dw-light .dw-mcount { background: var(--lt-fill-2); color: var(--lt-ink-2); }

@@ -45,7 +45,10 @@ export function MailRow({ m }) {
     <Link href={`/s/${m.site.slug}/mail/${m.id}`} className="dw-mrow">
       <span className={`dw-unread${m.unread ? "" : " is-read"}`} aria-label={m.unread ? "Unread" : undefined} />
       <span className={`dw-from${m.unread ? "" : " is-read"}`}>{m.fromParsed.name || m.fromParsed.email}</span>
-      <span className="dw-subj">{m.subject || "(no subject)"}</span>
+      <span className="dw-subj">
+        {m.count > 1 && <span className="dw-mcount" title={`${m.count} messages in this conversation`}>{m.count}</span>}
+        {m.subject || "(no subject)"}
+      </span>
       <span className="dw-mmeta">
         {m.kind === "backlink" && <span className="dw-link-tag" title="Reply from a backlink contact">LINK</span>}
         <span className="dw-tchip" style={{ background: m.site.accentHex }} title={m.site.name}>
