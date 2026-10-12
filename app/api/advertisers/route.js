@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import { optOutsFor } from "@/lib/advertisers";
+import { OFFER_REST_DAYS, advertiserFilter, optOutsFor } from "@/lib/advertisers";
+import { brandType, isBrandType } from "@/lib/advertiser-groups";
 
 export const dynamic = "force-dynamic";
 
@@ -22,13 +23,25 @@ const cell = (v) => {
 const day = (d) => (d ? new Date(d).toISOString().slice(0, 10) : "");
 
 export async function GET(request) {
-  const slug = new URL(request.url).searchParams.get("title");
+  const sp = new URL(request.url).searchParams;
+  const slug = sp.get("title");
   const sites = await prisma.site.findMany({ select: { id: true, name: true, slug: true } });
   const names = new Map(sites.map((s) => [s.id, s.name]));
   const title = slug ? sites.find((s) => s.slug === slug) : null;
+  const type = isBrandType(sp.get("type")) ? sp.get("type") : "";
+
+  // The same filters as the page, so "Export this view" is what was on screen.
+  const { and } = await advertiserFilter(prisma, {
+    siteId: title?.id,
+    q: (sp.get("q") || "").trim(),
+    show: sp.get("show") || "",
+    tierA: sp.get("tier") === "a",
+    type,
+    restSince: new Date(Date.now() - OFFER_REST_DAYS * 864e5),
+  });
 
   const advertisers = await prisma.advertiser.findMany({
-    where: title ? { OR: [{ siteIds: { has: title.id } }, { siteIds: { isEmpty: true } }] } : {},
+    where: { AND: and },
     orderBy: { company: "asc" },
     include: {
       contacts: { orderBy: { createdAt: "asc" } },
@@ -38,12 +51,12 @@ export async function GET(request) {
   const optedOut = await optOutsFor(advertisers.map((a) => a.domain));
 
   const rows = [
-    ["Company", "Domain", "Website", "Category", "First name", "Last name", "Job title", "Email", "Phone", "LinkedIn",
+    ["Company", "Domain", "Website", "Brand type", "Tier", "Category", "First name", "Last name", "Job title", "Email", "Phone", "LinkedIn",
       "Relevant to", "Last offer", "Last campaign", "Source"],
   ];
   for (const a of advertisers) {
     if (optedOut.has(a.domain)) continue;
-    const brand = [a.company, a.domain, a.website, a.category];
+    const brand = [a.company, a.domain, a.website, brandType(a.category).label, a.notes?.includes("Tier A") ? "A" : "", a.category];
     const tail = [
       a.siteIds.length ? a.siteIds.map((id) => names.get(id) || "Removed title").join("; ") : "All titles",
       day(a.offers[0]?.sentAt),
@@ -56,7 +69,7 @@ export async function GET(request) {
     }
   }
   const csv = "﻿" + rows.map((r) => r.map(cell).join(",")).join("\r\n");
-  const name = `advertisers${title ? `-${title.slug}` : ""}-${day(new Date())}.csv`;
+  const name = `advertisers${title ? `-${title.slug}` : ""}${type ? `-${type}` : ""}-${day(new Date())}.csv`;
 
   return new Response(csv, {
     headers: {
