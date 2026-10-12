@@ -9,7 +9,17 @@ import { listSites } from "@/lib/site";
 import { shortTitle } from "@/lib/black-book-labels";
 import { normaliseDomain } from "@/lib/advertiser-csv";
 import { PRODUCTS, productLabel } from "@/lib/crm";
-import { OUTCOMES, OFFER_REST_DAYS, editorialByDomain, optOutsFor, outcomeInfo } from "@/lib/advertisers";
+import {
+  OUTCOMES,
+  OFFER_REST_DAYS,
+  advertiserFilter,
+  advertiserPage,
+  editorialByDomain,
+  optOutsFor,
+  outcomeInfo,
+  titleScope,
+} from "@/lib/advertisers";
+import { BRAND_TYPES, OTHER, brandType, isBrandType } from "@/lib/advertiser-groups";
 import {
   addContact,
   deleteAdvertiser,
@@ -66,34 +76,15 @@ export default async function AdvertisersPage({ searchParams }) {
   const title = sites.find((s) => s.slug === sp.title) || null;
   const q = (sp.q || "").toString().trim();
   const show = SHOW.some((s) => s.value === sp.show) ? sp.show : "";
+  const type = isBrandType(sp.type) ? sp.type : "";
+  const tierA = sp.tier === "a";
   const page = Math.max(1, Number(sp.page) || 1);
 
   const restSince = daysAgo(OFFER_REST_DAYS);
-  const and = [];
-  if (title) and.push({ OR: [{ siteIds: { has: title.id } }, { siteIds: { isEmpty: true } }] });
-  if (q) {
-    and.push({
-      OR: [
-        { company: { contains: q, mode: "insensitive" } },
-        { domain: { contains: q.toLowerCase() } },
-        { category: { contains: q, mode: "insensitive" } },
-        { contacts: { some: { email: { contains: q.toLowerCase() } } } },
-      ],
-    });
-  }
-  if (show === "contacts") and.push({ contacts: { some: {} } });
-  if (show === "nocontacts") and.push({ contacts: { none: {} } });
-  if (show === "offered") and.push({ offers: { some: {} } });
-  // "Ready" is finished below, because the opt-out and editorial checks are
-  // not in this table; the query narrows to what it can.
-  if (show === "ready") and.push({ contacts: { some: {} } }, { offers: { none: { sentAt: { gte: restSince } } } });
-  const where = and.length ? { AND: and } : {};
+  const { and, typeCounts, total } = await advertiserFilter(prisma, { siteId: title?.id, q, show, tierA, type, restSince });
 
-  const [total, advertisers, stats, prospects] = await Promise.all([
-    prisma.advertiser.count({ where }),
-    prisma.advertiser.findMany({
-      where,
-      orderBy: [{ company: "asc" }],
+  const [{ rows: advertisers, countA }, tabCounts, stats, prospects] = await Promise.all([
+    advertiserPage(prisma, and, {
       skip: (page - 1) * PAGE,
       take: PAGE,
       include: {
@@ -101,6 +92,8 @@ export default async function AdvertisersPage({ searchParams }) {
         offers: { orderBy: { sentAt: "desc" }, take: 6, include: { contact: { select: { email: true } } } },
       },
     }),
+    // One count per tab: the whole list, then each title.
+    Promise.all([prisma.advertiser.count(), ...sites.map((s) => prisma.advertiser.count({ where: titleScope(s.id) }))]),
     Promise.all([
       prisma.advertiser.count(),
       prisma.advertiserContact.count(),
@@ -134,12 +127,17 @@ export default async function AdvertisersPage({ searchParams }) {
 
   const qs = (over) => {
     const p = new URLSearchParams();
-    const merged = { title: title?.slug, q, show, page: String(page), ...over };
+    const merged = { title: title?.slug, type, tier: tierA ? "a" : "", q, show, page: String(page), ...over };
     for (const [k, v] of Object.entries(merged)) if (v && !(k === "page" && v === "1")) p.set(k, v);
     const s = p.toString();
     return s ? `?${s}` : "";
   };
   const pages = Math.max(1, Math.ceil(total / PAGE));
+  const typeChips = [...BRAND_TYPES, OTHER]
+    .map((t) => ({ ...t, n: typeCounts[t.key] || 0 }))
+    .filter((t) => t.n > 0 || t.key === type)
+    .sort((x, y) => y.n - x.n);
+  const allTypes = Object.values(typeCounts).reduce((s, n) => s + n, 0);
 
   return (
     <main className="fleet-wrap">
@@ -184,30 +182,66 @@ export default async function AdvertisersPage({ searchParams }) {
           </div>
         </section>
 
-        <details className="panel stagger adv-panel" style={{ marginBottom: 18 }}>
-          <summary>
-            <h2>Import a CSV</h2>
-          </summary>
-          <AdvertiserImport sites={sites} researchCount={researchCount} />
-        </details>
+        <div className="adv-tools">
+          <details className="panel stagger adv-panel">
+            <summary>
+              <h2>Import a CSV</h2>
+            </summary>
+            <AdvertiserImport sites={sites} researchCount={researchCount} />
+          </details>
 
-        <details className="panel stagger adv-panel" style={{ marginBottom: 24 }}>
-          <summary>
-            <h2>Add one by hand</h2>
-          </summary>
-          <AdvertiserForm sites={sites} categories={categories} />
-        </details>
+          <details className="panel stagger adv-panel">
+            <summary>
+              <h2>Add one by hand</h2>
+            </summary>
+            <AdvertiserForm sites={sites} categories={categories} />
+          </details>
+        </div>
+
+        <nav className="adv-tabs stagger" aria-label="Titles">
+          {[{ slug: "", label: "All titles", emoji: "🌍", n: tabCounts[0] }, ...sites.map((s, i) => ({ slug: s.slug, ...shortTitle(s.name), name: s.name, n: tabCounts[i + 1] }))].map(
+            (t) => (
+              <Link
+                key={t.slug || "all"}
+                href={`/advertisers${qs({ title: t.slug, type: "", page: "1" })}`}
+                className={`adv-tab${(title?.slug || "") === t.slug ? " is-active" : ""}`}
+                title={t.name}
+                aria-current={(title?.slug || "") === t.slug ? "page" : undefined}
+              >
+                <span aria-hidden="true">{t.emoji}</span> {t.label}
+                <span className="adv-tab-n">{t.n.toLocaleString("en-GB")}</span>
+              </Link>
+            )
+          )}
+        </nav>
 
         <section className="panel stagger">
+          <div className="adv-types" aria-label="Brand types">
+            <Link href={`/advertisers${qs({ type: "", page: "1" })}`} className={`adv-type${type ? "" : " is-active"}`}>
+              All types <span className="adv-tab-n">{allTypes.toLocaleString("en-GB")}</span>
+            </Link>
+            {typeChips.map((t) => (
+              <Link
+                key={t.key}
+                href={`/advertisers${qs({ type: t.key === type ? "" : t.key, page: "1" })}`}
+                className={`adv-type${t.key === type ? " is-active" : ""}`}
+              >
+                {t.label} <span className="adv-tab-n">{t.n.toLocaleString("en-GB")}</span>
+              </Link>
+            ))}
+          </div>
+
           <form method="get" className="adv-filters">
-            <select name="title" defaultValue={title?.slug || ""} aria-label="Title">
-              <option value="">All titles</option>
-              {sites.map((s) => (
-                <option key={s.id} value={s.slug}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
+            {title && <input type="hidden" name="title" value={title.slug} />}
+            {type && <input type="hidden" name="type" value={type} />}
+            <Link
+              href={`/advertisers${qs({ tier: tierA ? "" : "a", page: "1" })}`}
+              className={`adv-type adv-tier-toggle${tierA ? " is-active" : ""}`}
+              title="Brands with evidence they already pay to reach this audience: exhibitors, sponsors, paid directory listings"
+            >
+              ★ Tier A only
+            </Link>
+            {tierA && <input type="hidden" name="tier" value="a" />}
             <select name="show" defaultValue={show} aria-label="Show">
               {SHOW.map((s) => (
                 <option key={s.value} value={s.value}>
@@ -221,16 +255,17 @@ export default async function AdvertisersPage({ searchParams }) {
             </button>
             <a
               className="btn-ghost"
-              href={`/api/advertisers${title ? `?title=${title.slug}` : ""}`}
-              title="One row per contact. Brands that opted out are left off."
+              href={`/api/advertisers${qs({ page: "1" })}`}
+              title="Exactly the brands in this view, one row per contact. Brands that opted out are left off."
             >
-              Export CSV{title ? ` (${shortTitle(title.name).label})` : ""}
+              Export this view
             </a>
           </form>
 
           <p className="micro" style={{ color: "var(--muted)", margin: "12px 0 6px" }}>
-            {total} brand{total === 1 ? "" : "s"}
-            {show === "ready" ? `, ${rows.length} ready on this page` : ""}
+            {total.toLocaleString("en-GB")} brand{total === 1 ? "" : "s"}
+            {!tierA && countA ? ` · ${countA.toLocaleString("en-GB")} tier A, shown first` : ""}
+            {show === "ready" ? ` · ${rows.length} ready on this page` : ""}
             {pages > 1 ? ` · page ${page} of ${pages}` : ""}
           </p>
 
@@ -297,11 +332,18 @@ function AdvertiserRow({ a, st, ed, sites, siteById }) {
     <details className="adv-row">
       <summary className="adv-sum">
         <span className="adv-brand">
-          <strong>{a.company}</strong>
+          <strong>
+            {a.notes?.includes("Tier A") && (
+              <span className="adv-tier" title="Tier A: already pays to reach this audience (exhibitor, sponsor or paid listing)">
+                A
+              </span>
+            )}
+            {a.company}
+          </strong>
           <span className="micro" style={{ color: "var(--muted)" }}>
-            {a.domain}
-            {a.category ? ` · ${a.category}` : ""}
+            {a.domain} · {brandType(a.category).label}
           </span>
+          {a.category && <span className="adv-cat">{a.category}</span>}
         </span>
         <span className="adv-pills">
           <TitlePills ids={a.siteIds} siteById={siteById} />
