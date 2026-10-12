@@ -71,6 +71,9 @@ const STEPS = [
   "/api/cron/trending",
   "/api/cron/scan-feeds",
   "/api/cron/scan-feeds",
+  // Advertiser contacts from each brand's own website, about 300 a run until
+  // the list is done, then a cheap no-op. Last, so it never delays publishing.
+  "/api/cron/advertiser-contacts",
 ];
 
 // Jobs that are not hourly. They live here rather than in a GitHub workflow for
@@ -183,6 +186,7 @@ const HALF_PAST = [
   "/api/cron/agents?stage=director",
   "/api/cron/agents?stage=worker",
   "/api/cron/trending",
+  "/api/cron/advertiser-contacts",
 ];
 
 // The press desk, on its own trigger every fifteen minutes, day and night.

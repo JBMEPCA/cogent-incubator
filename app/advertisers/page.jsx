@@ -4,6 +4,7 @@ import AdvertiserForm from "@/app/components/AdvertiserForm";
 import AdvertiserImport from "@/app/components/AdvertiserImport";
 import BlackBookTitlePills from "@/app/components/BlackBookTitlePills";
 import ConfirmSubmit from "@/app/components/ConfirmSubmit";
+import HuntContactButton from "@/app/components/HuntContactButton";
 import { prisma, fleetRead } from "@/lib/prisma";
 import { listSites } from "@/lib/site";
 import { shortTitle } from "@/lib/black-book-labels";
@@ -20,6 +21,7 @@ import {
   titleScope,
 } from "@/lib/advertisers";
 import { BRAND_TYPES, OTHER, brandType, isBrandType } from "@/lib/advertiser-groups";
+import { huntProgress } from "@/lib/advertiser-hunt";
 import {
   addContact,
   deleteAdvertiser,
@@ -27,6 +29,7 @@ import {
   deleteOffer,
   logOffer,
   setOfferOutcome,
+
   updateAdvertiser,
 } from "@/lib/advertiser-actions";
 
@@ -103,6 +106,7 @@ export default async function AdvertisersPage({ searchParams }) {
     fleetRead().advertiserProspect.findMany({ select: { website: true } }),
   ]);
   const [brandCount, contactCount, resting, replies] = stats;
+  const hunt = await huntProgress();
 
   const domains = advertisers.map((a) => a.domain);
   const [editorial, optOuts] = await Promise.all([editorialByDomain(domains), optOutsFor(domains)]);
@@ -164,6 +168,13 @@ export default async function AdvertisersPage({ searchParams }) {
                   Black Book
                 </Link>
                 .
+              </p>
+              <p className="micro" style={{ margin: "10px 0 0", color: "var(--muted)" }}>
+                Website contact sweep:{" "}
+                <strong style={{ color: "var(--text)" }}>{hunt.fromWebsite.toLocaleString("en-GB")}</strong> found ·{" "}
+                {hunt.checkedNone.toLocaleString("en-GB")} checked with nothing published ·{" "}
+                {hunt.remaining.toLocaleString("en-GB")} still to check
+                {hunt.phase === "done" ? " · finished" : hunt.phase === "A" ? " · working through tier A first" : ""}
               </p>
             </div>
             <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
@@ -423,6 +434,9 @@ function AdvertiserRow({ a, st, ed, sites, siteById }) {
             </tbody>
           </table>
         )}
+        <div>
+          <HuntContactButton id={a.id} />
+        </div>
         <form action={addContact.bind(null, a.id)} className="adv-inline">
           <input name="email" type="email" required placeholder="email@" style={{ flex: "2 1 200px" }} />
           <input name="firstName" placeholder="First name" style={{ flex: "1 1 110px" }} />
