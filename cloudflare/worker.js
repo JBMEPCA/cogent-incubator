@@ -284,6 +284,9 @@ async function runAll(env, now = new Date(), steps = null) {
     "/api/cron/seo-apply",
     "/api/cron/subscriber-drip",
     "/api/cron/press",
+    // Since 13 Oct 2026 the trending refresh also writes, pictures and publishes
+    // what it commissions, so it runs to its 300s like the agent stage.
+    "/api/cron/trending",
   ];
   const stillWorking = (r) => r.status === 524 && LONG_RUNNING.some((path) => r.path.startsWith(path));
   const failures = results.filter((r) => (r.error || r.status >= 400) && !stillWorking(r));
