@@ -66,6 +66,45 @@ function Cost({ usd }) {
   );
 }
 
+/** Pence or pounds from USD, at the same rate as the 40p ceiling. */
+function gbp(usd) {
+  if (usd == null) return "—";
+  const p = (usd / USD_PER_GBP) * 100;
+  return p < 100 ? `${Math.round(p)}p` : `£${(p / 100).toFixed(2)}`;
+}
+
+function TrendingSummary({ s }) {
+  const n = (v) => Number(v || 0).toLocaleString("en-GB");
+  const stats = [
+    { label: "Live articles", value: n(s.live), note: s.inProgress ? `${s.inProgress} in progress` : null },
+    { label: "Organic clicks", value: n(s.clicks), note: "Search Console" },
+    { label: "Impressions", value: n(s.impressions), note: "Search Console" },
+    { label: "Article views", value: n(s.views), note: "GA4" },
+    { label: "AI spend", value: gbp(s.spentAll), note: "writing and checks" },
+    { label: "Per live article", value: gbp(s.perLive), note: "ceiling 40p" },
+    { label: "Per organic click", value: s.clicks ? gbp(s.spentAll / s.clicks) : "—", note: s.clicks ? null : "no clicks yet" },
+  ];
+  return (
+    <section className="panel trend-summary" style={{ padding: 18, marginBottom: 24 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 14 }}>
+        <h3 style={{ margin: 0, fontSize: 14 }}>What trending articles have earned</h3>
+        <span className="micro">
+          every article commissioned from a trend{s.firstAt ? ` since ${ukTime(s.firstAt)}` : ""} · search figures run a day or more behind
+        </span>
+      </div>
+      <div className="trend-summary-grid">
+        {stats.map((x) => (
+          <div key={x.label}>
+            <div className="stat-value" style={{ fontSize: 24 }}>{x.value}</div>
+            <div className="stat-label">{x.label}</div>
+            {x.note && <div className="micro" style={{ marginTop: 2, opacity: 0.8 }}>{x.note}</div>}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default async function TrendingPage({ searchParams }) {
   const params = (await searchParams) || {};
   const showAll = params.all === "1";
@@ -89,7 +128,7 @@ export default async function TrendingPage({ searchParams }) {
       where: { status: "commissioned" },
       include: { site: true },
       orderBy: { commissionedAt: "desc" },
-      take: 60,
+      take: 150,
     }),
     prisma.trendingTopic.findFirst({ orderBy: { lastSeenAt: "desc" }, select: { lastSeenAt: true } }),
     prisma.trendingTopic.count({ where: { lastSeenAt: { gte: since }, status: "irrelevant" } }),
@@ -119,7 +158,7 @@ export default async function TrendingPage({ searchParams }) {
   const live = commissioned
     .filter(isLive)
     .sort((x, y) => new Date(articleById.get(y.articleId).publishedAt) - new Date(articleById.get(x.articleId).publishedAt))
-    .slice(0, 40);
+    .slice(0, 150);
   const perf = live.length
     ? await livePerformance(
         live.map((t) => {
@@ -128,6 +167,24 @@ export default async function TrendingPage({ searchParams }) {
         })
       )
     : new Map();
+
+  // The headline numbers for everything commissioned from a trend: what it has
+  // earned in search and what it has cost. Search figures are summed only where
+  // GA4 or Search Console has reported, so a dash stays a dash rather than
+  // becoming a zero that drags the totals down.
+  const sumOf = (key) => live.reduce((n, t) => n + (perf.get(t.articleId)?.[key] ?? 0), 0);
+  const spentAll = commissioned.reduce((n, t) => n + (costById.get(t.articleId) || 0), 0);
+  const spentLive = live.reduce((n, t) => n + (costById.get(t.articleId) || 0), 0);
+  const summary = {
+    live: live.length,
+    inProgress: inProgress.length,
+    clicks: sumOf("clicks"),
+    impressions: sumOf("impressions"),
+    views: sumOf("views"),
+    spentAll,
+    perLive: live.length ? spentLive / live.length : null,
+    firstAt: commissioned.length ? commissioned[commissioned.length - 1].commissionedAt : null,
+  };
 
   const liveCutoff = Date.now() - LIVE_MINUTES * 60000;
   // Matched first, then still live, then biggest. Volume leads within that
@@ -228,6 +285,8 @@ export default async function TrendingPage({ searchParams }) {
             </div>
           </div>
         </section>
+
+        <TrendingSummary s={summary} />
 
         {!matched.length && (
           <section className="panel" style={{ marginBottom: 24 }}>
