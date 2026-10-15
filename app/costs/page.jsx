@@ -264,15 +264,31 @@ export default async function FleetCostsPage() {
   const dayNo = Math.ceil(month.daysElapsed);
   const titleMax = Math.max(...titles.map((t) => t.projectedUsd), 1);
   const agentTotal = byAgent.reduce((n, a) => n + a.thisUsd, 0);
-  // Largest first, each in its own hue from the validated set; the long tail
-  // shares one slate so a fifth colour never stands for "£0.24 of images".
-  const spend = byAgent
+  // JB, 15 Oct 2026: one line per bill, the way the money actually leaves —
+  // every agent's API usage folded into a single Anthropic API line (the agent
+  // split survives as its tooltip), then each subscription, then the titles'
+  // own fixed bills together. The rows add up to "Spent so far" above, because
+  // fixed bills count in full from the 1st there too.
+  const apiBreakdown = byAgent
     .filter((a) => a.thisUsd * rate >= 0.005)
-    .map((a, i) => ({
-      ...a,
-      label: AGENT_LABELS[a.agent] || a.agent,
+    .map((a) => `${AGENT_LABELS[a.agent] || a.agent} ${gbp(a.thisUsd, rate)}`)
+    .join(" · ");
+  const lines = [
+    { key: "api", label: "Anthropic API", note: "usage so far, every agent and script", usd: agentTotal, title: apiBreakdown },
+    ...subscriptions
+      .filter((s) => s.key !== "anthropic" && Number(s.monthlyUsd) > 0)
+      .map((s) => ({ key: s.key, label: s.label, note: "monthly bill", usd: Number(s.monthlyUsd) })),
+    { key: "title-fixed", label: "Domains and per-title bills", note: `${titles.length} titles`, usd: totals.titleFixedUsd },
+  ].filter((l) => l.usd * rate >= 0.005);
+  const spendTotal = lines.reduce((n, l) => n + l.usd, 0);
+  // Largest first, each in its own hue from the validated set; the long tail
+  // shares one slate so a sixth colour never stands for "£9 of domains".
+  const spend = lines
+    .sort((a, b) => b.usd - a.usd)
+    .map((l, i) => ({
+      ...l,
       colour: i < SERIES.length ? SERIES[i] : "#64748b",
-      pct: agentTotal ? Math.round((a.thisUsd / agentTotal) * 100) : 0,
+      pct: spendTotal ? Math.round((l.usd / spendTotal) * 100) : 0,
     }));
   const confirmCount = subscriptions.filter((s) => s.confirm).length;
 
@@ -361,32 +377,32 @@ export default async function FleetCostsPage() {
         <section className="gc-panel">
           <div className="gc-panel-head">
             <h2>What it is spent on</h2>
-            <span className="gc-panel-note">{month.label} so far</span>
+            <span className="gc-panel-note">{month.label} so far · <strong className="num">{gbp(spendTotal, rate)}</strong></span>
           </div>
-          {agentTotal > 0 && (
+          {spendTotal > 0 && (
             <div className="gc-stack">
               {spend.map((a) => (
-                <div key={a.agent} style={{ width: `${(a.thisUsd / agentTotal) * 100}%`, background: a.colour }}
-                  title={`${a.label}: ${gbp(a.thisUsd, rate)}`} />
+                <div key={a.key} style={{ width: `${(a.usd / spendTotal) * 100}%`, background: a.colour }}
+                  title={`${a.label}: ${gbp(a.usd, rate)}`} />
               ))}
             </div>
           )}
           <div className="gc-bars">
             {spend.map((a) => (
-              <div key={a.agent} className="gc-bar-row">
+              <div key={a.key} className="gc-bar-row" title={a.title}>
                 <span className="gc-bar-pct num" style={{ color: a.colour }}>{a.pct}%</span>
                 <div className="gc-bar-main">
                   <div className="gc-bar-top">
-                    <span>{a.label}</span>
-                    <strong className="num">{gbp(a.thisUsd, rate)}</strong>
+                    <span>{a.label} <span className="gc-note">· {a.note}</span></span>
+                    <strong className="num">{gbp(a.usd, rate)}</strong>
                   </div>
                   <div className="gc-track">
-                    <div className="gc-fill" style={{ width: `${Math.max(1.5, (a.thisUsd / agentTotal) * 100)}%`, background: `linear-gradient(90deg, ${a.colour}99, ${a.colour})`, boxShadow: `0 0 12px ${a.colour}66` }} />
+                    <div className="gc-fill" style={{ width: `${Math.max(1.5, (a.usd / spendTotal) * 100)}%`, background: `linear-gradient(90deg, ${a.colour}99, ${a.colour})`, boxShadow: `0 0 12px ${a.colour}66` }} />
                   </div>
                 </div>
               </div>
             ))}
-            {!agentTotal && <p className="gc-panel-note">Nothing spent yet this month.</p>}
+            {!spendTotal && <p className="gc-panel-note">Nothing spent yet this month.</p>}
           </div>
         </section>
       </div>
