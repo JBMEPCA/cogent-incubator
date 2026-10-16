@@ -89,7 +89,7 @@ function TrendingSummary({ s }) {
       <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 14 }}>
         <h3 style={{ margin: 0, fontSize: 14 }}>What trending articles have earned</h3>
         <span className="micro">
-          every article commissioned from a trend{s.firstAt ? ` since ${ukTime(s.firstAt)}` : ""} · search figures run a day or more behind
+          articles commissioned from this tab only{s.firstAt ? `, since ${ukTime(s.firstAt)}` : ""} · marked From Trending in Rising Articles · search figures run a day or more behind
         </span>
       </div>
       <div className="trend-summary-grid">
@@ -330,7 +330,7 @@ export default async function TrendingPage({ searchParams }) {
           </section>
         )}
 
-        <RisingArticles data={rising} sites={sites} />
+        <RisingArticles data={rising} sites={sites} trendUrls={[...perf.values()].map((m) => m?.link).filter(Boolean)} />
 
         <section className="panel" style={{ padding: 18, marginBottom: 24 }}>
           <h3 style={{ margin: "0 0 4px", fontSize: 14 }}>Commissioned from trends</h3>

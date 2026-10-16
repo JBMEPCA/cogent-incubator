@@ -120,7 +120,15 @@ export function Figures({ row }) {
   );
 }
 
-export default function RisingArticles({ data, sites }) {
+// trendUrls: the live URLs of articles commissioned from the Trending tab.
+// Rising Articles covers every article on every title, so without a marker a
+// wire story's clicks read as if they belonged in the trending summary above,
+// which counts trending commissions only (16 Oct 2026: 112 clicks across the
+// top three rows against 86 in the summary, two of the three being wire).
+const bare = (u) => String(u || "").replace(/[?#].*$/, "").replace(/\/$/, "").toLowerCase();
+
+export default function RisingArticles({ data, sites, trendUrls = [] }) {
+  const fromTrending = new Set(trendUrls.map(bare));
   const { dates = [], rows = [], errors = [] } = data || {};
   const siteById = new Map(sites.map((s) => [s.id, s]));
   const last = dates[dates.length - 1];
@@ -153,6 +161,7 @@ export default function RisingArticles({ data, sites }) {
                   <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 4 }}>
                     {site && <SiteMark site={site} size={18} showStatus={false} />}
                     <span className="micro">{site?.name}</span>
+                    {fromTrending.has(bare(r.url)) && <span className="chip chip-content" style={{ fontSize: 9, padding: "1px 7px" }}>From Trending</span>}
                   </div>
                   <a href={r.url} target="_blank" rel="noreferrer noopener" style={{ color: "var(--text)", fontSize: 14, fontWeight: 600, textDecoration: "none" }}>
                     {r.title} ↗
