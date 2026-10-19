@@ -74,22 +74,28 @@ function gbp(usd) {
 }
 
 function TrendingSummary({ s }) {
-  const n = (v) => Number(v || 0).toLocaleString("en-GB");
+  const n = (v) => (v == null ? "—" : Number(v).toLocaleString("en-GB"));
+  // Two sets of articles in one panel, each figure labelled with its own.
+  // The search figures are totals of the Rising Articles list below, over the
+  // same windows its rows show, so the panel adds up to what is under it. The
+  // spend figures stay with the pieces commissioned from trends, which are
+  // the only articles they cost anything for.
+  const of = `${s.rising.count} rising articles`;
   const stats = [
-    { label: "Live articles", value: n(s.live), note: s.inProgress ? `${s.inProgress} in progress` : null },
-    { label: "Organic clicks", value: n(s.clicks), note: "Search Console" },
-    { label: "Impressions", value: n(s.impressions), note: "Search Console" },
-    { label: "Article views", value: n(s.views), note: "GA4" },
+    { label: "Organic clicks", value: n(s.rising.clicks), note: `${of} · all time` },
+    { label: "Impressions", value: n(s.rising.impressions), note: `${of} · 7 days` },
+    { label: "Article views", value: n(s.rising.views), note: `${of} · 7 days` },
+    { label: "Live from trends", value: n(s.live), note: s.inProgress ? `${s.inProgress} in progress` : null },
     { label: "AI spend", value: gbp(s.spentAll), note: "writing and checks" },
     { label: "Per live article", value: gbp(s.perLive), note: "ceiling 40p" },
-    { label: "Per organic click", value: s.clicks ? gbp(s.spentAll / s.clicks) : "—", note: s.clicks ? null : "no clicks yet" },
   ];
   return (
     <section className="panel trend-summary" style={{ padding: 18, marginBottom: 24 }}>
       <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 14 }}>
-        <h3 style={{ margin: 0, fontSize: 14 }}>What trending articles have earned</h3>
+        <h3 style={{ margin: 0, fontSize: 14 }}>What rising and trending articles have earned</h3>
         <span className="micro">
-          every article commissioned from a trend{s.firstAt ? ` since ${ukTime(s.firstAt)}` : ""} · search figures run a day or more behind
+          search figures: the Rising Articles list below · spend: articles commissioned from a trend
+          {s.firstAt ? ` since ${ukTime(s.firstAt)}` : ""}
         </span>
       </div>
       <div className="trend-summary-grid">
@@ -168,19 +174,23 @@ export default async function TrendingPage({ searchParams }) {
       )
     : new Map();
 
-  // The headline numbers for everything commissioned from a trend: what it has
-  // earned in search and what it has cost. Search figures are summed only where
-  // GA4 or Search Console has reported, so a dash stays a dash rather than
-  // becoming a zero that drags the totals down.
-  const sumOf = (key) => live.reduce((n, t) => n + (perf.get(t.articleId)?.[key] ?? 0), 0);
+  // The headline numbers. Search figures total the Rising Articles rows over
+  // their 7 day window; views stay a dash if no row's title has GA4, rather
+  // than a zero. Spend is for everything commissioned from a trend.
+  const risingRows = rising.rows || [];
+  const sumRising = (key) => risingRows.reduce((n, r) => n + (r[key] ?? 0), 0);
   const spentAll = commissioned.reduce((n, t) => n + (costById.get(t.articleId) || 0), 0);
   const spentLive = live.reduce((n, t) => n + (costById.get(t.articleId) || 0), 0);
   const summary = {
     live: live.length,
     inProgress: inProgress.length,
-    clicks: sumOf("clicks"),
-    impressions: sumOf("impressions"),
-    views: sumOf("views"),
+    rising: {
+      count: risingRows.length,
+      // The same figure each row shows large, so the column adds up by eye.
+      clicks: risingRows.reduce((n, r) => n + (r.clicksAll ?? r.clicks ?? 0), 0),
+      impressions: sumRising("recent"),
+      views: risingRows.some((r) => r.views != null) ? sumRising("views") : null,
+    },
     spentAll,
     perLive: live.length ? spentLive / live.length : null,
     firstAt: commissioned.length ? commissioned[commissioned.length - 1].commissionedAt : null,
