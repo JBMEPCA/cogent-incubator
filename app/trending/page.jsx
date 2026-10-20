@@ -124,8 +124,9 @@ export default async function TrendingPage({ searchParams }) {
 
   const [topics, commissioned, latest, hidden, rising] = await Promise.all([
     prisma.trendingTopic.findMany({
-      // Google Trends only: Search Console movers have their own section now.
-      where: { source: "google_trends", lastSeenAt: { gte: since }, status: { in: showAll ? ["new", "irrelevant"] : ["new"] } },
+      // Google Trends and stories trending on a title's own wire. Search
+      // Console movers have their own section now.
+      where: { source: { in: ["google_trends", "news_cluster"] }, lastSeenAt: { gte: since }, status: { in: showAll ? ["new", "irrelevant"] : ["new"] } },
       include: { site: { select: { slug: true, name: true, status: true, markAccent: true, accentHex: true, markUrl: true } } },
       orderBy: [{ lastSeenAt: "desc" }],
       take: 200,
@@ -274,9 +275,10 @@ export default async function TrendingPage({ searchParams }) {
         <section className="panel panel-glow stagger" style={{ marginBottom: 24 }}>
           <div className="trend-intro">
             <div style={{ flex: 1, minWidth: 260 }}>
-              <h2 style={{ margin: "0 0 6px", fontSize: 18 }}>What people are searching for right now</h2>
+              <h2 style={{ margin: "0 0 6px", fontSize: 18 }}>What people are searching for and reporting right now</h2>
               <p style={{ color: "var(--muted)", fontSize: 14, margin: 0, maxWidth: 720 }}>
-                Google&rsquo;s live trending searches, matched to the title whose readers would care.
+                Google&rsquo;s live trending searches, and stories three or more outlets have run on a title&rsquo;s own
+                wire in the last day and a half, matched to the title whose readers would care.
                 Commission one and it is written from the publishers&rsquo; reporting, checked, and published
                 as soon as it passes, without waiting for a slot.
               </p>
