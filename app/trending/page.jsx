@@ -8,7 +8,7 @@ import RefreshButton from "./RefreshButton";
 import AutoToggle from "./AutoToggle";
 import PushLiveButton from "./PushLiveButton";
 import WithdrawButton from "./WithdrawButton";
-import { livePerformance } from "@/lib/trending-performance";
+import { livePerformance, trendingSearchTotals } from "@/lib/trending-performance";
 import { risingArticles } from "@/lib/rising-articles";
 import RisingArticles from "./RisingArticles";
 import { ShowMore, ShowMoreRows } from "./ShowMore";
@@ -73,61 +73,49 @@ function gbp(usd) {
   return p < 100 ? `${Math.round(p)}p` : `£${(p / 100).toFixed(2)}`;
 }
 
-function TrendingSummary({ s }) {
+const RANGES = [
+  { key: "7d", label: "7D", days: 7 },
+  { key: "1m", label: "1M", days: 30 },
+  { key: "all", label: "All time", days: null },
+];
+
+function TrendingSummary({ s, hrefForRange }) {
   const n = (v) => (v == null ? "—" : Number(v).toLocaleString("en-GB"));
-  // Two lines, because they answer two questions and kept being mistaken for
-  // one. The top is a running total that only grows: everything commissioned
-  // from a trend, each article's own Google figures since it went live. The
-  // second is this week's movers, the totals of the Rising Articles list, which
-  // rise and fall as articles join and leave it. The panel showed only the
-  // second from 19 Oct, and its clicks fell as the John Healey piece (74
-  // clicks) stopped rising week on week and left the list.
-  const top = [
-    { label: "Organic clicks", value: n(s.all.clicks), note: "Search Console" },
-    { label: "Impressions", value: n(s.all.impressions), note: "Search Console" },
-    { label: "Article views", value: n(s.all.views), note: "GA4" },
-    { label: "Live articles", value: n(s.live), note: s.inProgress ? `${s.inProgress} in progress` : null },
-    { label: "AI spend", value: gbp(s.spentAll), note: "writing and checks" },
-    { label: "Per live article", value: gbp(s.perLive), note: "ceiling 40p" },
-  ];
-  const week = [
-    { label: "clicks, all time", value: n(s.rising.clicks) },
-    { label: "impressions, 7 days", value: n(s.rising.impressions) },
-    { label: "views, 7 days", value: n(s.rising.views) },
+  // The five numbers JB asked for (23 Oct 2026), over one chosen window.
+  // Clicks and impressions are Google Search Console, the domain property,
+  // for every article commissioned from a trend. Posts and cost are the
+  // trending articles published, and the AI spend incurred, in the window.
+  const stats = [
+    { label: "Organic clicks", value: n(s.clicks) },
+    { label: "Impressions", value: n(s.impressions) },
+    { label: "Total cost", value: gbp(s.cost) },
+    { label: "Per article cost", value: s.posts ? gbp(s.cost / s.posts) : "—" },
+    { label: "Total posts", value: n(s.posts) },
   ];
   return (
     <section className="panel trend-summary" style={{ padding: 18, marginBottom: 24 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 14 }}>
-        <h3 style={{ margin: 0, fontSize: 14 }}>All trending articles, all time</h3>
-        <span className="micro">
-          every article commissioned from this tab{s.firstAt ? ` since ${ukTime(s.firstAt)}` : ""}, each since it went live · only grows · search figures run a day or more behind
-        </span>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 14 }}>
+        <h3 style={{ margin: 0, fontSize: 14 }}>Trending articles</h3>
+        <nav className="trend-range" aria-label="Period">
+          {RANGES.map((r) => (
+            <Link key={r.key} href={hrefForRange(r.key)} className={`fleet-nav-btn${s.range === r.key ? " is-active" : ""}`} scroll={false}>
+              {r.label}
+            </Link>
+          ))}
+        </nav>
       </div>
       <div className="trend-summary-grid">
-        {top.map((x) => (
+        {stats.map((x) => (
           <div key={x.label}>
-            <div className="stat-value" style={{ fontSize: 24 }}>{x.value}</div>
+            <div className="stat-value" style={{ fontSize: 26 }}>{x.value}</div>
             <div className="stat-label">{x.label}</div>
-            {x.note && <div className="micro" style={{ marginTop: 2, opacity: 0.8 }}>{x.note}</div>}
           </div>
         ))}
       </div>
-      {s.all.missing > 0 && (
-        <p className="micro" style={{ margin: "10px 0 0", opacity: 0.8 }}>
-          {s.all.missing} of {s.live} live articles have no search figures yet: not yet indexed, or their address could not be read this time
-        </p>
-      )}
-      <div className="trend-summary-week">
-        <span className="micro" style={{ color: "var(--text)" }}>Rising this week</span>
-        <span className="micro">the {s.rising.count} articles in Rising Articles below, any source · changes as articles join and leave the list</span>
-        <div className="trend-summary-week-stats">
-          {week.map((x) => (
-            <span key={x.label}>
-              <strong className="num">{x.value}</strong> <span className="micro">{x.label}</span>
-            </span>
-          ))}
-        </div>
-      </div>
+      <p className="micro" style={{ margin: "12px 0 0", opacity: 0.85 }}>
+        Clicks and impressions: Google Search Console, all versions of each site. Google reports a day or more behind.
+        {s.unmatched ? ` ${s.unmatched} live trending article${s.unmatched === 1 ? " has" : "s have"} no search data in this period yet.` : ""}
+      </p>
     </section>
   );
 }
@@ -196,37 +184,40 @@ export default async function TrendingPage({ searchParams }) {
       )
     : new Map();
 
-  // The headline numbers. Search figures total the Rising Articles rows over
-  // their 7 day window; views stay a dash if no row's title has GA4, rather
-  // than a zero. Spend is for everything commissioned from a trend.
-  const risingRows = rising.rows || [];
-  const sumRising = (key) => risingRows.reduce((n, r) => n + (r[key] ?? 0), 0);
-  const spentAll = commissioned.reduce((n, t) => n + (costById.get(t.articleId) || 0), 0);
-  const spentLive = live.reduce((n, t) => n + (costById.get(t.articleId) || 0), 0);
-  // Each live trending article's own Google figures since it went live
-  // (lib/trending-performance.js). An article with no row yet adds nothing and
-  // is counted as missing, so the panel can say how many are not in yet.
-  const perfRows = live.map((t) => perf.get(t.articleId) || {});
-  const allSum = (key) => perfRows.reduce((n, m) => n + (m[key] ?? 0), 0);
+  // The summary panel: one period, chosen by ?range= (7d, 1m, all).
+  const range = RANGES.some((r) => r.key === params.range) ? params.range : "all";
+  const rangeDays = RANGES.find((r) => r.key === range).days;
+  const rangeStart = rangeDays ? new Date(Date.now() - rangeDays * 864e5) : null;
+  const slugOf = (x) => String(x || "").toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  const search = await trendingSearchTotals(
+    live.map((t) => {
+      const a = articleById.get(t.articleId);
+      return { siteId: t.siteId, link: perf.get(t.articleId)?.link || null, slugs: [slugOf(t.term), slugOf(a?.title)] };
+    }),
+    rangeDays
+  );
+  // Spend in the window: AI runs on trending articles that started in it.
+  const periodSpend = articleIds.length
+    ? await fleetRead().agentRun.aggregate({
+        where: { articleId: { in: articleIds }, ...(rangeStart ? { startedAt: { gte: rangeStart } } : {}) },
+        _sum: { costUsd: true },
+      })
+    : { _sum: { costUsd: 0 } };
   const summary = {
-    live: live.length,
-    inProgress: inProgress.length,
-    all: {
-      clicks: allSum("clicks"),
-      impressions: allSum("impressions"),
-      views: perfRows.some((m) => m.views != null) ? allSum("views") : null,
-      missing: perfRows.filter((m) => m.clicks == null).length,
-    },
-    rising: {
-      count: risingRows.length,
-      // The same figure each row shows large, so the column adds up by eye.
-      clicks: risingRows.reduce((n, r) => n + (r.clicksAll ?? r.clicks ?? 0), 0),
-      impressions: sumRising("recent"),
-      views: risingRows.some((r) => r.views != null) ? sumRising("views") : null,
-    },
-    spentAll,
-    perLive: live.length ? spentLive / live.length : null,
-    firstAt: commissioned.length ? commissioned[commissioned.length - 1].commissionedAt : null,
+    range,
+    clicks: search.clicks,
+    impressions: search.impressions,
+    unmatched: Math.max(0, search.total - search.matched),
+    cost: periodSpend._sum.costUsd || 0,
+    posts: live.filter((t) => !rangeStart || new Date(articleById.get(t.articleId).publishedAt) >= rangeStart).length,
+  };
+  const hrefForRange = (key) => {
+    const q = new URLSearchParams();
+    if (only) q.set("site", only);
+    if (showAll) q.set("all", "1");
+    if (key !== "all") q.set("range", key);
+    const qs = q.toString();
+    return qs ? `/trending?${qs}` : "/trending";
   };
 
   const liveCutoff = Date.now() - LIVE_MINUTES * 60000;
@@ -287,6 +278,7 @@ export default async function TrendingPage({ searchParams }) {
     const q = new URLSearchParams();
     if (slug) q.set("site", slug);
     if (showAll) q.set("all", "1");
+    if (params.range && params.range !== "all") q.set("range", params.range);
     const qs = q.toString();
     return qs ? `/trending?${qs}` : "/trending";
   };
@@ -330,7 +322,7 @@ export default async function TrendingPage({ searchParams }) {
           </div>
         </section>
 
-        <TrendingSummary s={summary} />
+        <TrendingSummary s={summary} hrefForRange={hrefForRange} />
 
         {!matched.length && (
           <section className="panel" style={{ marginBottom: 24 }}>

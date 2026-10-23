@@ -5145,3 +5145,9 @@ button.hub-ag { cursor: pointer; }
 .trend-summary-week-stats { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-left: auto; }
 .trend-summary-week-stats strong { font-size: 14px; }
 @media (max-width: 640px) { .trend-summary-week-stats { margin-left: 0; } }
+
+
+/* Trending summary: the 7D / 1M / All time switch. */
+.trend-range { display: flex; gap: 6px; }
+.trend-range .fleet-nav-btn { padding: 5px 12px; font-size: 12px; }
+.trend-range .fleet-nav-btn.is-active { color: var(--text); border-color: var(--neon-cyan); box-shadow: var(--glow-cyan); }
