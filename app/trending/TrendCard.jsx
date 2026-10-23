@@ -26,6 +26,8 @@ export default function TrendCard({ topic, sites }) {
   const [pending, startTransition] = useTransition();
   const busy = pending || (state && state.step && !state.done);
   const gsc = topic.source === "search_console";
+  // A story several outlets ran on the title's own wire: sized in outlets, not searches.
+  const wire = topic.source === "news_cluster";
 
   const commission = () =>
     startTransition(async () => {
@@ -61,9 +63,9 @@ export default function TrendCard({ topic, sites }) {
       <div className={`trend-volume${gsc ? " is-gsc" : ""}`}>
         <div className="trend-volume-num">
           {compact(topic.trafficNum)}
-          {!gsc && topic.trafficNum ? "+" : ""}
+          {!gsc && !wire && topic.trafficNum ? "+" : ""}
         </div>
-        <div className="trend-volume-label">{gsc ? "impressions · 3 days" : `searches · ${topic.market}`}</div>
+        <div className="trend-volume-label">{gsc ? "impressions · 3 days" : wire ? "outlets · 36 hours" : `searches · ${topic.market}`}</div>
         {gsc && topic.spike ? <span className="trend-spike">▲ {topic.spike}× normal</span> : null}
         {gsc && topic.position ? <span className="trend-volume-label">we rank {topic.position}</span> : null}
         {topic.relevance > 0 && (
@@ -88,7 +90,7 @@ export default function TrendCard({ topic, sites }) {
             </span>
           )}
           {topic.live && <span className="trend-live">Trending now</span>}
-          <span className="micro">{gsc ? "Rising on our site" : "Google Trends"} · {topic.seen}</span>
+          <span className="micro">{gsc ? "Rising on our site" : wire ? "Trade wire" : "Google Trends"} · {topic.seen}</span>
           {!state?.done && (
             <button type="button" className="trend-dismiss" onClick={dismiss} disabled={busy} aria-label={`Dismiss ${topic.term}`} title="Dismiss">
               ×

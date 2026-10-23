@@ -74,32 +74,59 @@ function gbp(usd) {
 }
 
 function TrendingSummary({ s }) {
-  const n = (v) => Number(v || 0).toLocaleString("en-GB");
-  const stats = [
+  const n = (v) => (v == null ? "—" : Number(v).toLocaleString("en-GB"));
+  // Two lines, because they answer two questions and kept being mistaken for
+  // one. The top is a running total that only grows: everything commissioned
+  // from a trend, each article's own Google figures since it went live. The
+  // second is this week's movers, the totals of the Rising Articles list, which
+  // rise and fall as articles join and leave it. The panel showed only the
+  // second from 19 Oct, and its clicks fell as the John Healey piece (74
+  // clicks) stopped rising week on week and left the list.
+  const top = [
+    { label: "Organic clicks", value: n(s.all.clicks), note: "Search Console" },
+    { label: "Impressions", value: n(s.all.impressions), note: "Search Console" },
+    { label: "Article views", value: n(s.all.views), note: "GA4" },
     { label: "Live articles", value: n(s.live), note: s.inProgress ? `${s.inProgress} in progress` : null },
-    { label: "Organic clicks", value: n(s.clicks), note: "Search Console" },
-    { label: "Impressions", value: n(s.impressions), note: "Search Console" },
-    { label: "Article views", value: n(s.views), note: "GA4" },
     { label: "AI spend", value: gbp(s.spentAll), note: "writing and checks" },
     { label: "Per live article", value: gbp(s.perLive), note: "ceiling 40p" },
-    { label: "Per organic click", value: s.clicks ? gbp(s.spentAll / s.clicks) : "—", note: s.clicks ? null : "no clicks yet" },
+  ];
+  const week = [
+    { label: "clicks, all time", value: n(s.rising.clicks) },
+    { label: "impressions, 7 days", value: n(s.rising.impressions) },
+    { label: "views, 7 days", value: n(s.rising.views) },
   ];
   return (
     <section className="panel trend-summary" style={{ padding: 18, marginBottom: 24 }}>
       <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 14 }}>
-        <h3 style={{ margin: 0, fontSize: 14 }}>What trending articles have earned</h3>
+        <h3 style={{ margin: 0, fontSize: 14 }}>All trending articles, all time</h3>
         <span className="micro">
-          articles commissioned from this tab only{s.firstAt ? `, since ${ukTime(s.firstAt)}` : ""} · marked From Trending in Rising Articles · search figures run a day or more behind
+          every article commissioned from this tab{s.firstAt ? ` since ${ukTime(s.firstAt)}` : ""}, each since it went live · only grows · search figures run a day or more behind
         </span>
       </div>
       <div className="trend-summary-grid">
-        {stats.map((x) => (
+        {top.map((x) => (
           <div key={x.label}>
             <div className="stat-value" style={{ fontSize: 24 }}>{x.value}</div>
             <div className="stat-label">{x.label}</div>
             {x.note && <div className="micro" style={{ marginTop: 2, opacity: 0.8 }}>{x.note}</div>}
           </div>
         ))}
+      </div>
+      {s.all.missing > 0 && (
+        <p className="micro" style={{ margin: "10px 0 0", opacity: 0.8 }}>
+          {s.all.missing} of {s.live} live articles have no search figures yet: not yet indexed, or their address could not be read this time
+        </p>
+      )}
+      <div className="trend-summary-week">
+        <span className="micro" style={{ color: "var(--text)" }}>Rising this week</span>
+        <span className="micro">the {s.rising.count} articles in Rising Articles below, any source · changes as articles join and leave the list</span>
+        <div className="trend-summary-week-stats">
+          {week.map((x) => (
+            <span key={x.label}>
+              <strong className="num">{x.value}</strong> <span className="micro">{x.label}</span>
+            </span>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -118,8 +145,9 @@ export default async function TrendingPage({ searchParams }) {
 
   const [topics, commissioned, latest, hidden, rising] = await Promise.all([
     prisma.trendingTopic.findMany({
-      // Google Trends only: Search Console movers have their own section now.
-      where: { source: "google_trends", lastSeenAt: { gte: since }, status: { in: showAll ? ["new", "irrelevant"] : ["new"] } },
+      // Google Trends and stories trending on a title's own wire. Search
+      // Console movers have their own section now.
+      where: { source: { in: ["google_trends", "news_cluster"] }, lastSeenAt: { gte: since }, status: { in: showAll ? ["new", "irrelevant"] : ["new"] } },
       include: { site: { select: { slug: true, name: true, status: true, markAccent: true, accentHex: true, markUrl: true } } },
       orderBy: [{ lastSeenAt: "desc" }],
       take: 200,
@@ -168,19 +196,34 @@ export default async function TrendingPage({ searchParams }) {
       )
     : new Map();
 
-  // The headline numbers for everything commissioned from a trend: what it has
-  // earned in search and what it has cost. Search figures are summed only where
-  // GA4 or Search Console has reported, so a dash stays a dash rather than
-  // becoming a zero that drags the totals down.
-  const sumOf = (key) => live.reduce((n, t) => n + (perf.get(t.articleId)?.[key] ?? 0), 0);
+  // The headline numbers. Search figures total the Rising Articles rows over
+  // their 7 day window; views stay a dash if no row's title has GA4, rather
+  // than a zero. Spend is for everything commissioned from a trend.
+  const risingRows = rising.rows || [];
+  const sumRising = (key) => risingRows.reduce((n, r) => n + (r[key] ?? 0), 0);
   const spentAll = commissioned.reduce((n, t) => n + (costById.get(t.articleId) || 0), 0);
   const spentLive = live.reduce((n, t) => n + (costById.get(t.articleId) || 0), 0);
+  // Each live trending article's own Google figures since it went live
+  // (lib/trending-performance.js). An article with no row yet adds nothing and
+  // is counted as missing, so the panel can say how many are not in yet.
+  const perfRows = live.map((t) => perf.get(t.articleId) || {});
+  const allSum = (key) => perfRows.reduce((n, m) => n + (m[key] ?? 0), 0);
   const summary = {
     live: live.length,
     inProgress: inProgress.length,
-    clicks: sumOf("clicks"),
-    impressions: sumOf("impressions"),
-    views: sumOf("views"),
+    all: {
+      clicks: allSum("clicks"),
+      impressions: allSum("impressions"),
+      views: perfRows.some((m) => m.views != null) ? allSum("views") : null,
+      missing: perfRows.filter((m) => m.clicks == null).length,
+    },
+    rising: {
+      count: risingRows.length,
+      // The same figure each row shows large, so the column adds up by eye.
+      clicks: risingRows.reduce((n, r) => n + (r.clicksAll ?? r.clicks ?? 0), 0),
+      impressions: sumRising("recent"),
+      views: risingRows.some((r) => r.views != null) ? sumRising("views") : null,
+    },
     spentAll,
     perLive: live.length ? spentLive / live.length : null,
     firstAt: commissioned.length ? commissioned[commissioned.length - 1].commissionedAt : null,
@@ -264,9 +307,10 @@ export default async function TrendingPage({ searchParams }) {
         <section className="panel panel-glow stagger" style={{ marginBottom: 24 }}>
           <div className="trend-intro">
             <div style={{ flex: 1, minWidth: 260 }}>
-              <h2 style={{ margin: "0 0 6px", fontSize: 18 }}>What people are searching for right now</h2>
+              <h2 style={{ margin: "0 0 6px", fontSize: 18 }}>What people are searching for and reporting right now</h2>
               <p style={{ color: "var(--muted)", fontSize: 14, margin: 0, maxWidth: 720 }}>
-                Google&rsquo;s live trending searches, matched to the title whose readers would care.
+                Google&rsquo;s live trending searches, and stories three or more outlets have run on a title&rsquo;s own
+                wire in the last day and a half, matched to the title whose readers would care.
                 Commission one and it is written from the publishers&rsquo; reporting, checked, and published
                 as soon as it passes, without waiting for a slot.
               </p>

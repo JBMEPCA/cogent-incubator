@@ -5138,3 +5138,10 @@ button.hub-ag { cursor: pointer; }
 @media (max-width: 640px) {
   .trend-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 }
+
+
+/* Trending summary: the weekly movers line under the all-time totals. */
+.trend-summary-week { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line); }
+.trend-summary-week-stats { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-left: auto; }
+.trend-summary-week-stats strong { font-size: 14px; }
+@media (max-width: 640px) { .trend-summary-week-stats { margin-left: 0; } }
