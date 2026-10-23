@@ -11,9 +11,11 @@ import {
   imageForPost,
   mentionsForPost,
   renderCommentary,
+  recordTags,
 } from "@/lib/linkedin";
 import { bridgeFor, bridgeReady, sendToBridge } from "@/lib/social-bridge";
 import { socialPictureFor } from "@/lib/social-overlay";
+import { lookupBudget } from "@/lib/linkedin-mentions";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -33,6 +35,11 @@ export async function GET(request) {
   if (!withinPostingHours()) {
     return Response.json({ skipped: `outside posting hours (${postingHoursLabel()})` });
   }
+
+  // One allowance of company lookups for the whole run, shared by every title
+  // that posts in it: ten titles each taking their own would outlast the 60
+  // seconds this function has. A company not reached is looked up next time.
+  const tagBudget = lookupBudget({ calls: 24, ms: 25000 });
 
   return Response.json(
     await forEachSite(async ({ site, db, creds }) => {
@@ -83,7 +90,7 @@ export async function GET(request) {
       });
 
       try {
-        const result = direct ? await publishDirect(site, post, creds) : await publishViaBridge(site, post, creds);
+        const result = direct ? await publishDirect(site, post, creds) : await publishViaBridge(site, post, creds, tagBudget);
         // No URN, no post. LinkedIn returns an identifier for anything it
         // actually published, so a result without one means the call went
         // through the motions and put nothing on the page. Four posts were
@@ -119,7 +126,8 @@ export async function GET(request) {
  *
  * Tagging is off unless a title asks for it, so a page can be watched before
  * the rest follow it. Add "tagging": true to a title's social_bridge
- * EngineSetting to opt it in.
+ * EngineSetting to opt it in, and "brandScan": true to also have Haiku name
+ * brands the article never linked (see lib/linkedin-mentions.js).
  *
  * The untagged path still sends the text exactly as it always has. That is
  * deliberate: renderCommentary escapes the whole post to LinkedIn's little
@@ -130,11 +138,16 @@ export async function GET(request) {
  * no LinkedIn token of their own. What may be tagged is still decided by the
  * website check in lib/linkedin-mentions.js, which never left our side.
  */
-async function bridgeCommentary(site, post) {
+async function bridgeCommentary(site, post, budget) {
   const text = post.text.trim();
   if (!(await bridgeFor(site)).tagging) return text;
-  const mentions = await mentionsForPost(site, post, { accessToken: null });
-  return mentions.length ? renderCommentary(text, mentions) : text;
+  const mentions = await mentionsForPost(site, post, { accessToken: null }, { budget });
+  const commentary = mentions.length ? renderCommentary(text, mentions) : text;
+  // One row per post (GlobalSetting linkedin:tags:<postId>), so the hit rate
+  // can be measured. Written when Make takes the text, which is as near to
+  // "posted" as the bridge lets us see.
+  await recordTags(site, post, mentions, commentary);
+  return commentary;
 }
 
 // A direct post uploads its picture itself, so an interview's overlay goes up
@@ -153,7 +166,7 @@ async function publishDirect(site, post, creds) {
 // A post through Make carries the same text and picture as a direct one. The
 // picture goes as a public JPEG at LinkedIn's 1.91:1, or, for an interview,
 // as the branded overlay in the photo's own shape (lib/social-overlay).
-async function publishViaBridge(site, post, creds) {
+async function publishViaBridge(site, post, creds, tagBudget) {
   const { url, alt } = await imageForPost(site, post);
   // Never hand Make a post with no picture. Its image download fails on an
   // empty address, and one failed run makes Make switch the whole scenario off
@@ -168,7 +181,7 @@ async function publishViaBridge(site, post, creds) {
   });
   const { id } = await sendToBridge(site, {
     destination: "linkedin",
-    text: await bridgeCommentary(site, post),
+    text: await bridgeCommentary(site, post, tagBudget),
     imageUrl: picture.url,
     imageAlt: (alt || site.name || "").slice(0, 300),
     link: post.sourceUrl || null,
