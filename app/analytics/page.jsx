@@ -288,10 +288,10 @@ export default async function GroupAnalyticsPage({ searchParams }) {
   const view = VIEWS.some((v) => v.key === sp.view) ? sp.view : "overview";
   const focus = allRows.find((r) => r.slug === sp.title) || null;
   const rows = focus ? [focus] : allRows;
-  const { totals, trend, channels, topPages, topQueries, connected } = focus ? summarise(rows) : data;
+  const { totals, trend, channels, topPages, topQueries, topClicked = [], topImpressions = [], connected } = focus ? summarise(rows) : data;
   // The fleet payload caps its lists at twelve; the full ranking is recomputed
   // here so the Content view can show more than the overview does.
-  const ranked = focus ? { topPages, topQueries } : summarise(allRows);
+  const ranked = focus ? { topPages, topQueries, topClicked, topImpressions } : summarise(allRows);
 
   const href = (next) => {
     const q = new URLSearchParams();
@@ -381,6 +381,46 @@ export default async function GroupAnalyticsPage({ searchParams }) {
         <Empty>No article views recorded yet.</Empty>
       )}
     </Card>
+  );
+
+  // Most organic clicks and most impressions, every article on every title,
+  // from Google Search Console. A page has only its address here, so its title
+  // is read from the slug.
+  const titleFromPath = (p) => {
+    const words = decodeURIComponent(String(p).replace(/\/+$/, "").split("/").pop() || "").replace(/[-_]+/g, " ").trim();
+    return words.charAt(0).toUpperCase() + words.slice(1);
+  };
+  const gscPageItems = (list, by) => {
+    const max = Math.max(1, ...list.map((p) => p[by]));
+    return list.map((p, i) => ({
+      key: `${by}-${p.siteSlug}-${p.path}-${i}`,
+      primary: titleFromPath(p.path),
+      meta: focus ? shortPath(p.path) : p.siteName,
+      colour: colours[p.siteSlug],
+      position: p.position,
+      value: int(by === "clicks" ? p.clicks : p.impressions),
+      unit: by === "clicks" ? "clicks" : "impr.",
+      sub: by === "clicks" ? `${int(p.impressions)} impr.` : `${int(p.clicks)} clicks`,
+      share: p[by] / max,
+    }));
+  };
+  const topArticles = (limit) => (
+    <section className="an-pair">
+      <Card title="Most organic clicks" note={`${focus ? "this title's" : "every title's"} articles · google clicks over ${windowLabel} · Search Console`}>
+        {ranked.topClicked?.length ? (
+          <RankedList items={gscPageItems(ranked.topClicked.slice(0, limit), "clicks")} />
+        ) : (
+          <Empty>No article has a Google click in this window yet.</Empty>
+        )}
+      </Card>
+      <Card title="Most impressions" note={`times shown in google over ${windowLabel} · Search Console`}>
+        {ranked.topImpressions?.length ? (
+          <RankedList items={gscPageItems(ranked.topImpressions.slice(0, limit), "impressions")} />
+        ) : (
+          <Empty>No article has appeared in Google in this window yet.</Empty>
+        )}
+      </Card>
+    </section>
   );
 
   const searched = (limit, withAction) => (
@@ -577,6 +617,8 @@ export default async function GroupAnalyticsPage({ searchParams }) {
             {mostRead(6, true)}
             {searched(6, true)}
           </section>
+
+          {topArticles(10)}
         </>
       )}
 
@@ -666,6 +708,8 @@ export default async function GroupAnalyticsPage({ searchParams }) {
             {trendCard("Impressions per day", searchSpark("impressions"), "var(--neon-violet)", "impressions", "No impressions recorded yet.")}
             {trendCard("Clicks per day", searchSpark("clicks"), "var(--neon-amber)", "clicks", "No search clicks recorded yet.")}
           </section>
+
+          {topArticles(20)}
 
           <section className="an-pair">
             <Card title="Earning clicks" note="queries that brought a reader in, by clicks">
