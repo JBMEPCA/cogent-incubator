@@ -5168,3 +5168,109 @@ button.hub-ag { cursor: pointer; }
   color: var(--muted);
 }
 .gc-bar-group-head strong { color: var(--text); font-size: 14px; letter-spacing: 0; }
+
+/* ---------- Home: the assistant ----------
+   The prompt box at the top of the dashboard (app/components/home/AssistantBox).
+   as- for "assistant". */
+.as-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 460px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.as-msg {
+  max-width: 78%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.as-user {
+  align-self: flex-end;
+  background: rgba(46, 62, 238, 0.35);
+  border: 1px solid var(--line-bright);
+}
+.as-bot {
+  align-self: flex-start;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+}
+.as-trail {
+  align-self: flex-start;
+  font-size: 11.5px;
+  color: var(--muted);
+  font-family: var(--font-mono), monospace;
+}
+.as-working { color: var(--neon-cyan); }
+.as-card {
+  align-self: stretch;
+  border: 1px solid var(--line-bright);
+  border-left: 3px solid var(--neon-amber);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: rgba(251, 191, 36, 0.05);
+}
+.as-done { border-left-color: var(--neon-green); background: rgba(52, 245, 197, 0.04); }
+.as-failed { border-left-color: var(--neon-red); background: rgba(251, 113, 133, 0.05); }
+.as-cancelled { border-left-color: var(--muted); background: transparent; opacity: 0.75; }
+.as-running { border-left-color: var(--neon-cyan); }
+.as-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+}
+.as-status { font-size: 12px; color: var(--muted); }
+.as-preview {
+  margin: 8px 0 0;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 260px;
+  overflow-y: auto;
+  color: var(--text);
+}
+.as-result { margin: 8px 0 0; font-size: 12.5px; color: var(--muted); overflow-wrap: anywhere; }
+.as-card-actions { display: flex; gap: 8px; margin-top: 10px; }
+.as-confirm { border-color: var(--neon-green); color: var(--neon-green); }
+.as-err { margin: 0; font-size: 13px; color: var(--neon-red); }
+.as-form {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+.as-form textarea {
+  flex: 1;
+  min-width: 0;
+  resize: vertical;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--line-bright);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 14px;
+}
+.as-form textarea:focus { outline: 2px solid var(--neon-cyan); outline-offset: 1px; }
+.as-form .btn:disabled { opacity: 0.5; cursor: default; transform: none; }
+.as-examples { display: flex; flex-wrap: wrap; gap: 6px; }
+.as-chip {
+  font-size: 12px;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+.as-chip:hover { color: var(--text); border-color: var(--line-bright); }
+@media (max-width: 720px) {
+  .as-msg { max-width: 92%; }
+  .as-form { flex-direction: column; align-items: stretch; }
+}
