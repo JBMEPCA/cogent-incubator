@@ -10,6 +10,7 @@ import AgentsWidget from "./components/home/AgentsWidget";
 import TrafficWidget from "./components/home/TrafficWidget";
 import CalendarWidget from "./components/home/CalendarWidget";
 import TodoWidget from "./components/home/TodoWidget";
+import AssistantWidget from "./components/home/AssistantWidget";
 import { Widget } from "./components/home/Widget";
 import { SkelLine } from "./components/Skeleton";
 import { fleetSnapshot } from "@/lib/fleet";
@@ -19,9 +20,13 @@ import { canEdit } from "@/lib/permissions";
 import { auth } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
+// The assistant's Confirm button runs as a server action of this page, and a
+// confirmed image upload or reply can take longer than the default.
+export const maxDuration = 300;
 
 // The home page: a dashboard of widgets, each a summary of a page you can open
-// for the whole thing. Targets lead because they are the month's question
+// for the whole thing. The assistant's prompt box sits above them all, for
+// admins only (26 Oct 2026). Targets lead the widgets because they are the month's question
 // ("are we on track?"), then traffic and the to-do list, the inbox and the
 // Black Book, costs, agents and the calendar, and the titles last (JB's order,
 // 8 Oct 2026). The ten big title cards this
@@ -122,6 +127,7 @@ export default async function Home() {
       {head}
 
       <div className="dw-grid">
+        <AssistantWidget canEdit={editable} />
         <TargetsWidget sites={sites} actuals={actuals} targets={targets} canEdit={editable} />
 
         <Suspense fallback={<Loading title="Fleet traffic" span={8} rows={4} />}>
