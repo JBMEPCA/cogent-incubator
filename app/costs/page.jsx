@@ -303,29 +303,12 @@ export default async function FleetCostsPage() {
         <span className="gc-panel-note">covers {month.prevLabel}, with {month.label}&apos;s projection</span>
       </div>
 
-      {/* ---- The three numbers: this month only, split by how the cost behaves. */}
+      {/* ---- The three numbers: this month only, title and figure and nothing
+          else, so they read from across a meeting room. Total first. */}
       <section className="gc-heroes">
-        <Hero
-          label={`Variable costs · ${month.label}`}
-          value={gbp(totals.thisUsageUsd, rate)}
-          proj={`→ ${gbp(totals.projectedUsageUsd, rate)} projected`}
-          delta={<Delta now={totals.thisUsageUsd} then={totals.prevSamePointUsageUsd} against={`vs ${gbp(totals.prevSamePointUsageUsd, rate)} by day ${dayNo} of ${month.prevLabel}`} />}
-          sub={`AI usage so far, day ${dayNo} of ${month.daysInMonth}. Rises with every article written.`}
-        />
-        <Hero
-          label={`Fixed costs · ${month.label}`}
-          value={gbp(totals.fixedUsd, rate)}
-          proj="the same every month"
-          sub={`${fixedLines.length} bill${fixedLines.length === 1 ? "" : "s"}: software ${gbp(totals.subscriptionsUsd, rate)} · per-title ${gbp(totals.titleFixedUsd, rate)}`}
-        />
-        <Hero
-          tone="accent"
-          label={`Total costs · ${month.label}`}
-          value={gbp(totals.thisUsd, rate)}
-          proj={`→ ${gbp(totals.projectedUsd, rate)} projected`}
-          delta={<Delta now={totals.projectedUsd} then={totals.prevUsd} against={`vs ${gbp(totals.prevUsd, rate)} in ${month.prevLabel}`} />}
-          sub={`Spent so far, plus ${gbp(totals.dailyRateUsd, rate, { exact: true })} a day for the ${Math.round(month.daysLeft)} days left`}
-        />
+        <Hero tone="accent" label={`Total costs · ${month.label}`} value={gbp(totals.thisUsd, rate)} />
+        <Hero label={`Variable costs · ${month.label}`} value={gbp(totals.thisUsageUsd, rate)} />
+        <Hero label={`Fixed costs · ${month.label}`} value={gbp(totals.fixedUsd, rate)} />
       </section>
 
       {/* ---- Smaller supporting figures. */}
