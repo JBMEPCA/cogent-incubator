@@ -58,11 +58,12 @@ function Delta({ now, then, against }) {
   );
 }
 
-function Hero({ label, value, sub, delta, tone }) {
+function Hero({ label, value, sub, delta, tone, proj }) {
   return (
     <div className={`gc-hero${tone ? ` is-${tone}` : ""}`}>
       <div className="gc-hero-label">{label}</div>
       <div className="gc-hero-value num">{value}</div>
+      {proj && <div className="gc-hero-proj num">{proj}</div>}
       {delta}
       {sub && <div className="gc-hero-sub">{sub}</div>}
     </div>
@@ -251,7 +252,7 @@ export default async function FleetCostsPage() {
     );
   }
 
-  const { titles, subscriptions, unconfirmed, byAgent, totals, month, running, months, rate } = data;
+  const { titles, subscriptions, unconfirmed, fixedLines, byAgent, totals, month, running, months, rate } = data;
   const dayNo = Math.ceil(month.daysElapsed);
   const titleMax = Math.max(...titles.map((t) => t.projectedUsd), 1);
   const agentTotal = byAgent.reduce((n, a) => n + a.thisUsd, 0);
@@ -266,6 +267,31 @@ export default async function FleetCostsPage() {
       pct: agentTotal ? Math.round((a.thisUsd / agentTotal) * 100) : 0,
     }));
 
+  // Fixed bills itemised beside the AI spend, each on its own line, so the
+  // panel answers "where does the money go" for all of it, not just the model.
+  const FIXED_HUES = ["#a78bfa", "#8b5cf6", "#c4b5fd", "#7c3aed", "#ddd6fe", "#6d28d9"];
+  const fixedTotal = fixedLines.reduce((n, f) => n + f.usd, 0);
+  const allTotal = agentTotal + fixedTotal;
+  const share = (usd) => (allTotal ? (usd / allTotal) * 100 : 0);
+  const groups = [
+    {
+      key: "ai", title: "AI usage", note: "so far", total: agentTotal,
+      lines: spend.map((a) => ({ key: a.agent, label: a.label, usd: a.thisUsd, colour: a.colour })),
+    },
+    {
+      key: "fixed", title: "Fixed bills", note: "a month", total: fixedTotal,
+      lines: fixedLines.map((f, i) => ({
+        key: f.key,
+        label: f.titles ? `${f.label} (${f.titles} title${f.titles === 1 ? "" : "s"})` : f.label,
+        usd: f.usd,
+        colour: FIXED_HUES[i % FIXED_HUES.length],
+      })),
+    },
+  ].filter((g) => g.lines.length);
+
+  const perMagUsd = totals.titleCount ? totals.thisUsd / totals.titleCount : null;
+  const perMagProjectedUsd = totals.titleCount ? totals.projectedUsd / totals.titleCount : null;
+
   return (
     <main className="fleet-wrap">
       {head}
@@ -277,25 +303,28 @@ export default async function FleetCostsPage() {
         <span className="gc-panel-note">covers {month.prevLabel}, with {month.label}&apos;s projection</span>
       </div>
 
-      {/* ---- The three numbers. */}
+      {/* ---- The three numbers: this month only, split by how the cost behaves. */}
       <section className="gc-heroes">
         <Hero
-          label={`Spent so far · ${month.label}`}
-          value={gbp(totals.thisUsd, rate)}
-          delta={<Delta now={totals.thisUsd} then={totals.prevSamePointUsd} against={`vs ${gbp(totals.prevSamePointUsd, rate)} by day ${dayNo} of ${month.prevLabel}`} />}
-          sub={`Day ${dayNo} of ${month.daysInMonth}`}
+          label={`Variable costs · ${month.label}`}
+          value={gbp(totals.thisUsageUsd, rate)}
+          proj={`→ ${gbp(totals.projectedUsageUsd, rate)} projected`}
+          delta={<Delta now={totals.thisUsageUsd} then={totals.prevSamePointUsageUsd} against={`vs ${gbp(totals.prevSamePointUsageUsd, rate)} by day ${dayNo} of ${month.prevLabel}`} />}
+          sub={`AI usage so far, day ${dayNo} of ${month.daysInMonth}. Rises with every article written.`}
+        />
+        <Hero
+          label={`Fixed costs · ${month.label}`}
+          value={gbp(totals.fixedUsd, rate)}
+          proj="the same every month"
+          sub={`${fixedLines.length} bill${fixedLines.length === 1 ? "" : "s"}: software ${gbp(totals.subscriptionsUsd, rate)} · per-title ${gbp(totals.titleFixedUsd, rate)}`}
         />
         <Hero
           tone="accent"
-          label={`Projected · ${month.label}`}
-          value={gbp(totals.projectedUsd, rate)}
-          delta={<Delta now={totals.projectedUsd} then={totals.prevUsd} against={`vs ${month.prevLabel}`} />}
-          sub={`Spent so far + ${gbp(totals.dailyRateUsd, rate, { exact: true })} a day for the ${Math.round(month.daysLeft)} days left`}
-        />
-        <Hero
-          label={`Last month · ${month.prevLabel}`}
-          value={gbp(totals.prevUsd, rate)}
-          sub={`${totals.publishedPrev} articles published`}
+          label={`Total costs · ${month.label}`}
+          value={gbp(totals.thisUsd, rate)}
+          proj={`→ ${gbp(totals.projectedUsd, rate)} projected`}
+          delta={<Delta now={totals.projectedUsd} then={totals.prevUsd} against={`vs ${gbp(totals.prevUsd, rate)} in ${month.prevLabel}`} />}
+          sub={`Spent so far, plus ${gbp(totals.dailyRateUsd, rate, { exact: true })} a day for the ${Math.round(month.daysLeft)} days left`}
         />
       </section>
 
@@ -320,9 +349,9 @@ export default async function FleetCostsPage() {
           <div className="gc-mini-sub">average over the last 7 days</div>
         </div>
         <div className="gc-mini">
-          <div className="gc-mini-value num">{gbp(totals.fixedUsd, rate, { exact: true })}</div>
-          <div className="gc-mini-label">fixed bills a month</div>
-          <div className="gc-mini-sub">domains and subscriptions</div>
+          <div className="gc-mini-value num">{gbp(perMagUsd, rate, { exact: true })}</div>
+          <div className="gc-mini-label">avg cost per magazine</div>
+          <div className="gc-mini-sub">so far · {gbp(perMagProjectedUsd, rate, { exact: true })} projected for {month.label}</div>
         </div>
       </section>
 
@@ -356,34 +385,42 @@ export default async function FleetCostsPage() {
         {/* ---- What it is spent on. */}
         <section className="gc-panel">
           <div className="gc-panel-head">
-            <h2>What it is spent on</h2>
-            <span className="gc-panel-note">{month.label} so far</span>
+            <h2>Where the money goes</h2>
+            <span className="gc-panel-note">{month.label}: AI so far, bills for the month</span>
           </div>
-          {agentTotal > 0 && (
+          {allTotal > 0 && (
             <div className="gc-stack">
-              {spend.map((a) => (
-                <div key={a.agent} style={{ width: `${(a.thisUsd / agentTotal) * 100}%`, background: a.colour }}
-                  title={`${a.label}: ${gbp(a.thisUsd, rate)}`} />
+              {groups.flatMap((g) => g.lines).map((l) => (
+                <div key={l.key} style={{ width: `${share(l.usd)}%`, background: l.colour }}
+                  title={`${l.label}: ${gbp(l.usd, rate)}`} />
               ))}
             </div>
           )}
-          <div className="gc-bars">
-            {spend.map((a) => (
-              <div key={a.agent} className="gc-bar-row">
-                <span className="gc-bar-pct num" style={{ color: a.colour }}>{a.pct}%</span>
-                <div className="gc-bar-main">
-                  <div className="gc-bar-top">
-                    <span>{a.label}</span>
-                    <strong className="num">{gbp(a.thisUsd, rate)}</strong>
-                  </div>
-                  <div className="gc-track">
-                    <div className="gc-fill" style={{ width: `${Math.max(1.5, (a.thisUsd / agentTotal) * 100)}%`, background: `linear-gradient(90deg, ${a.colour}99, ${a.colour})`, boxShadow: `0 0 12px ${a.colour}66` }} />
-                  </div>
-                </div>
+          {groups.map((g) => (
+            <div key={g.key} className="gc-bar-group">
+              <div className="gc-bar-group-head">
+                <span>{g.title}</span>
+                <span className="num"><strong>{gbp(g.total, rate)}</strong> {g.note} · {Math.round(share(g.total))}%</span>
               </div>
-            ))}
-            {!agentTotal && <p className="gc-panel-note">Nothing spent yet this month.</p>}
-          </div>
+              <div className="gc-bars">
+                {g.lines.map((l) => (
+                  <div key={l.key} className="gc-bar-row">
+                    <span className="gc-bar-pct num" style={{ color: l.colour }}>{Math.round(share(l.usd))}%</span>
+                    <div className="gc-bar-main">
+                      <div className="gc-bar-top">
+                        <span>{l.label}</span>
+                        <strong className="num">{gbp(l.usd, rate)}</strong>
+                      </div>
+                      <div className="gc-track">
+                        <div className="gc-fill" style={{ width: `${Math.max(1.5, share(l.usd))}%`, background: `linear-gradient(90deg, ${l.colour}99, ${l.colour})`, boxShadow: `0 0 12px ${l.colour}66` }} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+          {!allTotal && <p className="gc-panel-note">Nothing spent yet this month.</p>}
         </section>
       </div>
 

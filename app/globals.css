@@ -5151,3 +5151,20 @@ button.hub-ag { cursor: pointer; }
 .trend-range { display: flex; gap: 6px; }
 .trend-range .fleet-nav-btn { padding: 5px 12px; font-size: 12px; }
 .trend-range .fleet-nav-btn.is-active { color: var(--text); border-color: var(--neon-cyan); box-shadow: var(--glow-cyan); }
+
+/* Group costs — variable / fixed / total, and itemised bills */
+.gc-hero-proj { font-size: 17px; font-weight: 700; color: #8fc2ff; margin-top: -2px; }
+.gc-bar-group + .gc-bar-group { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
+.gc-bar-group-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.gc-bar-group-head strong { color: var(--text); font-size: 14px; letter-spacing: 0; }
