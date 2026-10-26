@@ -25,7 +25,10 @@ const SEND = process.argv.includes("--send");
 const specPath = (process.argv.find((a) => a.startsWith("--spec=")) || "").split("=").slice(1).join("=");
 if (!specPath) throw new Error("--spec=path.json required");
 const spec = JSON.parse(fs.readFileSync(specPath, "utf8"));
-for (const k of ["to", "toName", "postId", "body"]) if (!spec[k]) throw new Error(`spec missing ${k}`);
+// postId is optional: a reply that carries no article (questions, a decline)
+// has no URL to resolve and must not contain the ${URL} placeholder.
+for (const k of ["to", "toName", "body"]) if (!spec[k]) throw new Error(`spec missing ${k}`);
+if (!spec.postId && spec.body.includes("${URL}")) throw new Error("body has ${URL} but spec has no postId");
 if (/[—–]/.test(spec.body)) throw new Error("em or en dash in the body");
 
 const { prisma } = await import("../lib/prisma.js");
@@ -42,15 +45,18 @@ const ssh = (cmd) => execFileSync("ssh", ["-i", keyPath, "-o", "StrictHostKeyChe
 const sq = (x) => `'${String(x).replace(/'/g, `'"'"'`)}'`;
 const wp = (a) => ssh(`cd ${sq(docroot)} && wp ${a}`);
 
+let URL = "";
+if (spec.postId) {
 const status = wp(`post get ${spec.postId} --field=post_status`);
 if (status !== "publish") { console.error(`post ${spec.postId} is "${status}", not publish. Not sending.`); process.exit(1); }
-const URL = wp(`post url ${spec.postId}`);
+URL = wp(`post url ${spec.postId}`);
 // Validate against whatever the title's own home is, not a hardcoded host, so
 // this works for every title. Still refuses anything that is not a clean
 // top-level post permalink on that domain.
 const HOME = wp(`option get home`).replace(/\/+$/, "");
 if (!new RegExp(`^${HOME.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}/[a-z0-9-]+/$`).test(URL))
   throw new Error(`live URL looks wrong for ${HOME}: "${URL}"`);
+}
 const BODY = spec.body.replaceAll("${URL}", URL);
 
 const esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");

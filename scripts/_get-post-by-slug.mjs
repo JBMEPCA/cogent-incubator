@@ -1,0 +1,13 @@
+import os from "node:os"; import { execFileSync } from "node:child_process";
+const slug = process.argv[2];
+const { prisma } = await import("../lib/prisma.js"); const { siteCredentials } = await import("../lib/site.js");
+const site = await prisma.site.findUnique({ where: { slug: "smart-sme" } }); const { creds } = await siteCredentials(site.id); await prisma.$disconnect();
+const s = creds.sftp; const key = s.privateKeyPath.replace(/^~/, os.homedir()); const docroot = s.themePath.replace(/\/wp-content\/themes\/.*$/, "");
+const ssh = (c) => execFileSync("ssh", ["-i", key, "-o", "BatchMode=yes", "-p", String(s.port || 18765), `${s.username}@${s.host}`, c], { encoding: "utf8", timeout: 120000, maxBuffer: 32e6 }).trim();
+const wp = (a) => ssh(`cd '${docroot}' && wp ${a}`);
+const id = wp(`post list --post_type=post --name=${slug} --post_status=any --field=ID`).split(/\s+/)[0];
+console.log(`ID=${id}`);
+console.log(wp(`post get ${id} --fields=ID,post_title,post_status,post_date_gmt,post_modified_gmt,post_excerpt --format=json`));
+console.log("tags:", wp(`post term list ${id} post_tag --field=slug`), "| cat:", wp(`post term list ${id} category --field=name`));
+console.log("---CONTENT---");
+console.log(wp(`post get ${id} --field=post_content`));

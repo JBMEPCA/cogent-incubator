@@ -1,0 +1,13 @@
+import { PrismaClient } from "@prisma/client";
+const p = new PrismaClient();
+const since = new Date("2026-10-01T00:00:00Z");
+const direct = { "airport-business-magazine": 1312, "barbering-business": 272, "dental-business-news": 396, "fleet-magazine": 650, "golf-resort-magazine": 774, "gym-business-news": 857, "nursery-daily": 570, "senior-lifestyle-business": 589, "smart-farming-news": 922, "smart-sme": 1070 };
+const q = (s, ...a) => p.$queryRawUnsafe(s, ...a);
+const out = await q(`SELECT s.slug, count(*)::int n FROM "OutreachEmail" o JOIN "Site" s ON s.id=o."siteId" WHERE o."sentAt" >= $1 GROUP BY 1`, since);
+const it = await q(`SELECT s.slug, count(*)::int n FROM "InterviewTarget" t JOIN "Site" s ON s.id=t."siteId" WHERE t."updatedAt" >= $1 AND t.status NOT IN ('candidate') GROUP BY 1`, since).catch(e => [{ slug: "err", n: e.message.slice(0, 80) }]);
+const pub = await q(`SELECT s.slug, count(*)::int n FROM "Article" a JOIN "Site" s ON s.id=a."siteId" WHERE a."publishedAt" >= $1 GROUP BY 1`, since);
+const m = (rows) => Object.fromEntries(rows.map(r => [r.slug, r.n]));
+const O = m(out), I = m(it), P = m(pub);
+console.log("title".padEnd(27), "direct", "outreach sent", "interview rows touched", "published");
+for (const k of Object.keys(direct).sort((a, b) => direct[b] - direct[a])) console.log(k.padEnd(27), String(direct[k]).padStart(6), String(O[k] || 0).padStart(13), String(I[k] || 0).padStart(22), String(P[k] || 0).padStart(9));
+await p.$disconnect();

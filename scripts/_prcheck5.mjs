@@ -1,0 +1,13 @@
+import { PrismaClient } from "@prisma/client";
+const p = new PrismaClient();
+const sites = await p.site.findMany({ select: { id: true, slug: true }, orderBy: { createdAt: "asc" } });
+const sme = sites.find(s=>s.slug==="smart-sme");
+const last = await p.feedItem.findMany({ where: { siteId: sme.id, link: { startsWith: "gmail:" } }, select: { title: true, discoveredAt: true, status: true }, orderBy: { discoveredAt: "desc" }, take: 8 });
+console.log("Smart SME: last emails ever seen at press@:");
+if (!last.length) console.log("  none, ever");
+for (const i of last) console.log(`  ${i.discoveredAt.toISOString().slice(0,16)}  [${i.status}]  ${i.title.slice(0,70)}`);
+const cnt = await p.feedItem.count({ where: { siteId: sme.id, link: { startsWith: "gmail:" } } });
+console.log(`  total ever: ${cnt}`);
+console.log("\nfleet totals ever, by title:");
+for (const s of sites) console.log(`  ${s.slug.padEnd(28)} ${await p.feedItem.count({ where: { siteId: s.id, link: { startsWith: "gmail:" } } })}`);
+await p.$disconnect();

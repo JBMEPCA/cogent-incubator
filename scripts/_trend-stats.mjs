@@ -1,0 +1,13 @@
+import { PrismaClient } from "@prisma/client";
+const p = new PrismaClient();
+const q = (s) => p.$queryRawUnsafe(s);
+console.log("first seen:", (await q(`SELECT min("firstSeenAt")::text a, max("firstSeenAt")::text b, count(*)::int n FROM "TrendingTopic"`))[0]);
+console.log("\nby source/status:"); for (const r of await q(`SELECT source, status, count(*)::int n FROM "TrendingTopic" GROUP BY 1,2 ORDER BY 1,2`)) console.log(" ", r.source, r.status, r.n);
+console.log("\nper title: matched / commissioned / dismissed / still new  (google_trends | search_console)");
+for (const r of await q(`SELECT s.slug, t.source, count(*)::int matched, count(*) FILTER (WHERE t.status='commissioned')::int comm, count(*) FILTER (WHERE t.status='dismissed')::int dism, count(*) FILTER (WHERE t.status='new')::int nw, round(avg(t.relevance))::int rel, round(avg(t."trafficNum"))::int traf FROM "TrendingTopic" t JOIN "Site" s ON s.id=t."siteId" GROUP BY 1,2 ORDER BY 1,2`)) console.log(" ", r.slug.padEnd(26), r.source.padEnd(15), "matched", r.matched, "comm", r.comm, "dism", r.dism, "new", r.nw, "avgRel", r.rel, "avgTraffic", r.traf);
+console.log("\nmarkets per site:"); for (const r of await q(`SELECT slug, markets::text m, status::text FROM "Site" ORDER BY "createdAt"`)) console.log(" ", r.slug, r.m, r.status);
+console.log("\ngoogle_trends feed size per day (last 7d):"); for (const r of await q(`SELECT to_char("firstSeenAt",'MM-DD') d, market, count(*)::int n, count(*) FILTER (WHERE "siteId" IS NOT NULL)::int matched FROM "TrendingTopic" WHERE source='google_trends' AND "firstSeenAt" > now()-interval '7 days' GROUP BY 1,2 ORDER BY 1,2`)) console.log(" ", r.d, r.market, r.n, "matched", r.matched);
+console.log("\nirrelevant google_trends sample whose 'why' mentions an industry word:");
+for (const r of await q(`SELECT term, "trafficNum", left(why,110) why FROM "TrendingTopic" WHERE source='google_trends' AND status='irrelevant' AND why ~* '(farm|dental|dentist|gym|fitness|nursery|childcare|care home|retire|airport|airline|flight|barber|golf|truck|haulage|fleet)' ORDER BY "firstSeenAt" DESC LIMIT 20`)) console.log("  ", r.term, r.trafficNum, "|", r.why);
+console.log("\ncommissioned trend articles:"); for (const r of await q(`SELECT s.slug, t.source, t.term, t."trafficNum", a.status::text ast, to_char(t."commissionedAt",'MM-DD') d FROM "TrendingTopic" t JOIN "Site" s ON s.id=t."siteId" LEFT JOIN "Article" a ON a.id=t."articleId" WHERE t.status='commissioned' ORDER BY t."commissionedAt"`)) console.log("  ", r.d, r.slug.slice(0,14).padEnd(15), r.source.slice(0,6), String(r.trafficNum).padStart(6), r.ast, "|", r.term.slice(0,60));
+await p.$disconnect();

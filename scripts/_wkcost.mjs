@@ -1,0 +1,16 @@
+import { PrismaClient } from "@prisma/client";
+const p = new PrismaClient();
+const A = new Date("2026-09-30T23:00:00Z"), B = new Date();
+const runs = await p.agentRun.findMany({ where: { startedAt: { gte: A, lt: B } }, select: { costUsd: true, ok: true, agentKey: true } });
+const usd = runs.reduce((n, r) => n + (r.costUsd || 0), 0);
+const byAgent = {};
+for (const r of runs) byAgent[r.agentKey] = (byAgent[r.agentKey] || 0) + (r.costUsd || 0) * 0.79;
+console.log(`runs ${runs.length}, failed ${runs.filter((r) => !r.ok).length}, total £${(usd * 0.79).toFixed(2)}`);
+console.log(Object.entries(byAgent).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} £${v.toFixed(2)}`).join("  "));
+const kills = await p.agentMessage.findMany({ where: { createdAt: { gte: A }, OR: [{ subject: { startsWith: "Retired" } }, { subject: { startsWith: "Gave up" } }] }, select: { subject: true, siteId: true } });
+const sites = await p.site.findMany({ select: { id: true, slug: true } });
+console.log("\nkills:", kills.length);
+for (const k of kills) console.log(`  ${sites.find((s) => s.id === k.siteId)?.slug}: ${k.subject.slice(0, 80)}`);
+const kes = await p.article.findMany({ where: { title: { contains: "Kesman", mode: "insensitive" } }, select: { title: true, status: true, wpPostId: true, publishedAt: true } });
+console.log("\nKesman article rows:", JSON.stringify(kes));
+await p.$disconnect();

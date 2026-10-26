@@ -140,7 +140,7 @@ export async function GET(request) {
       // image with no provenance - pasted in by hand - is still looked at.
       if (article.imageUrl && !featuredMediaId && article.imageSource) {
         const slug = article.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 60);
-        const media = await uploadMedia(wp, { imageUrl: article.imageUrl, alt: article.imageAlt, filename: slug });
+        const media = await uploadMedia(wp, { imageUrl: article.imageUrl, alt: article.imageAlt, filename: slug, lead: true });
         featuredMediaId = media.id;
         check = { ok: true, reason: "approved by the picture gate at selection" };
       }
@@ -192,6 +192,7 @@ export async function GET(request) {
             imageUrl: article.imageUrl,
             alt: check.altText || article.imageAlt,
             filename: slug,
+            lead: true,
           });
           featuredMediaId = media.id;
         } else {

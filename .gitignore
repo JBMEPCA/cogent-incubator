@@ -84,3 +84,4 @@ scripts/roster/
 .claude/worktrees/
 scripts/tmp/
 scripts/replies/
+scripts/advertiser-pack/audience-raw.json

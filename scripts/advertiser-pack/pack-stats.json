@@ -1,0 +1,245 @@
+{
+  "pulledAt": "2026-10-20T08:39:53.751Z",
+  "sites": {
+    "smart-sme": {
+      "name": "Smart SME",
+      "domain": "smartsme.co.uk",
+      "launchedAt": "2026-07-31T00:00:00.000Z",
+      "audience": "Founders, chief executives, managing directors, directors and managers of UK businesses under 250 staff, in any sector: ecommerce, services, trades, manufacturing, hospitality, retail, professional firms. Not technical people. Very busy, wanting to learn how AI, software and modern services can move their business on, and to bring their staff along with them. Anyone who works in a business, at any level, is welcome; this is the broadest title in the group",
+      "subscribers": 8765,
+      "ukPercent": 3.2,
+      "email": {
+        "sends": 16,
+        "delivered": 84017,
+        "avgDelivered": 5251,
+        "openRate": 0.438768344501708,
+        "clickRate": 0.02601854386612233,
+        "clickToOpen": 0.05929904513888889,
+        "unsubRate": 0.001654427080233762
+      },
+      "web": {
+        "from": "2026-09-20",
+        "to": "2026-10-19",
+        "visits": 1671,
+        "users": 1592,
+        "views": 3304
+      }
+    },
+    "fleet-magazine": {
+      "name": "The Fleet Magazine",
+      "domain": "thefleetmagazine.co.uk",
+      "launchedAt": "2026-08-17T14:30:29.438Z",
+      "audience": "The operations director of a 40-vehicle haulier, and everyone doing that job under another name: fleet directors, fleet managers and transport managers responsible for UK vans, trucks and company cars, from ten vehicles to 250-plus, together with the finance, HR and procurement people who share those decisions. Not the general public buying or taxing a car",
+      "subscribers": 3259,
+      "ukPercent": 8.4,
+      "email": {
+        "sends": 14,
+        "delivered": 32958,
+        "avgDelivered": 2354,
+        "openRate": 0.519752412160932,
+        "clickRate": 0.03959584926269798,
+        "clickToOpen": 0.07618213660245184,
+        "unsubRate": 0.0011529825838946539
+      },
+      "web": {
+        "from": "2026-09-20",
+        "to": "2026-10-19",
+        "visits": 472,
+        "users": 411,
+        "views": 854
+      }
+    },
+    "golf-resort-magazine": {
+      "name": "Golf Resort Magazine",
+      "domain": "golfresortmagazine.com",
+      "launchedAt": null,
+      "audience": "Golf resort owners, investors, general managers, directors of golf, course managers, developers, architects, golf tour operators and their suppliers, worldwide — from single independent resorts to multi-property management companies.",
+      "subscribers": 4740,
+      "ukPercent": 0.7,
+      "email": {
+        "sends": 13,
+        "delivered": 44009,
+        "avgDelivered": 3385,
+        "openRate": 0.4704265036697039,
+        "clickRate": 0.07257606398691177,
+        "clickToOpen": 0.15427715789982127,
+        "unsubRate": 0.001363357495057829
+      },
+      "web": {
+        "from": "2026-09-20",
+        "to": "2026-10-19",
+        "visits": 877,
+        "users": 768,
+        "views": 1550
+      }
+    },
+    "barbering-business": {
+      "name": "Barbering Business",
+      "domain": "barberingbusiness.com",
+      "launchedAt": null,
+      "audience": "Barbershop owners and managers, and the chair-renting self-employed barbers who buy their own kit: anyone with spending power in a UK barbershop, from a single chair to a multi-site group. They know barbering inside out and business much less well, and they read on a phone between clients. Not consumers wanting a haircut, not ladies' salons",
+      "subscribers": 1673,
+      "ukPercent": 3.9,
+      "email": {
+        "sends": 9,
+        "delivered": 11926,
+        "avgDelivered": 1325,
+        "openRate": 0.23310414221029682,
+        "clickRate": 0.01291296327352004,
+        "clickToOpen": 0.05539568345323741,
+        "unsubRate": 0.005534127117222874
+      },
+      "web": {
+        "from": "2026-09-20",
+        "to": "2026-10-19",
+        "visits": 168,
+        "users": 93,
+        "views": 313
+      }
+    },
+    "airport-business-magazine": {
+      "name": "Airport Business Magazine",
+      "domain": "airportbusinessmagazine.com",
+      "launchedAt": null,
+      "audience": "The people who run airports and are paid to be there. At the top, chief executives, managing directors and commercial directors of airports worldwide. Below them, the heads of security, passenger experience, operations and cargo who make the buying decisions. Around them, the developers, contractors, consultants and suppliers who build and equip airports. Never the passenger",
+      "subscribers": 4743,
+      "ukPercent": 0.4,
+      "email": {
+        "sends": 12,
+        "delivered": 43490,
+        "avgDelivered": 3624,
+        "openRate": 0.6205564497585652,
+        "clickRate": 0.04168774430903656,
+        "clickToOpen": 0.06717800503927672,
+        "unsubRate": 0.0005518510002299379
+      },
+      "web": {
+        "from": "2026-09-20",
+        "to": "2026-10-19",
+        "visits": 542,
+        "users": 508,
+        "views": 1186
+      }
+    },
+    "gym-business-news": {
+      "name": "Gym Business News",
+      "domain": "gymbusinessnews.com",
+      "launchedAt": null,
+      "audience": "Owners and managers of independent gyms, boutique and class studios, self-employed personal trainers running their own business, and franchisees of fitness brands: people who carry the lease, the payroll and the direct-debit book, from a one-room PT studio to a small multi-site group, UK first and international second. They know training inside out and the business side much less well. Not gym members or anyone looking for a workout, nutrition or results advice, and not the head offices of the big chains, who have their own trade press",
+      "subscribers": 1820,
+      "ukPercent": 4.1,
+      "email": {
+        "sends": 7,
+        "delivered": 10748,
+        "avgDelivered": 1535,
+        "openRate": 0.7302754000744325,
+        "clickRate": 0.024190547078526237,
+        "clickToOpen": 0.03312523888393426,
+        "unsubRate": 0.004093784890212133
+      },
+      "web": {
+        "from": "2026-09-20",
+        "to": "2026-10-19",
+        "visits": 328,
+        "users": 184,
+        "views": 613
+      }
+    },
+    "nursery-daily": {
+      "name": "Nursery Daily",
+      "domain": "nurserydaily.com",
+      "launchedAt": null,
+      "audience": "People paid to run a UK early years setting as a business: nursery owners and directors, group operations, finance and M&A leads, nursery managers, pre-school chairs and managers, childminders running it as a business, out-of-school club operators, and the investors, lenders, brokers and suppliers who deal with them. England-led, with Scotland, Wales and Northern Ireland named whenever their rules differ. They know childcare inside out and read for the money: funding rates, fees and occupancy, deals and valuations, property, staffing cost and compliance cost. Not parents choosing or paying for childcare, and not practitioners looking for teaching or child development advice",
+      "subscribers": 1124,
+      "ukPercent": 1.2,
+      "email": {
+        "sends": 7,
+        "delivered": 7267,
+        "avgDelivered": 1038,
+        "openRate": 0.558552359983487,
+        "clickRate": 0.04004403467730838,
+        "clickToOpen": 0.07169253510716925,
+        "unsubRate": 0.0022017338654190177
+      },
+      "web": {
+        "from": "2026-09-20",
+        "to": "2026-10-19",
+        "visits": 172,
+        "users": 118,
+        "views": 310
+      }
+    },
+    "senior-lifestyle-business": {
+      "name": "Senior Lifestyle Business",
+      "domain": "seniorlifestylebusiness.com",
+      "launchedAt": null,
+      "audience": "The people who develop, fund and run retirement communities where residents have their own front door: operator chief executives, finance directors and heads of department, development and land directors, sales and marketing directors, village general managers, investors, REITs, private equity, fund managers, banks and lenders, planners, architects, council commissioners, and the advisers and suppliers who serve them. They read us to see what is changing across the sector and what their peers are doing with it: new legislation, what other villages and communities are building, where to put the next pound of time or money, and which product or partner is worth a look. A knowledge hub for how the global senior living and retirement community industry is evolving, written from the perspective of fellow providers. UK-led, with Australia and New Zealand as the second market and the US as the benchmark the UK should be learning from. Never the resident or their family, and never the care home, which belongs to CIM's Care Home Magazine",
+      "subscribers": 1950,
+      "ukPercent": 0.2,
+      "email": {
+        "sends": 7,
+        "delivered": 11635,
+        "avgDelivered": 1662,
+        "openRate": 0.6352385045122475,
+        "clickRate": 0.06738289643317576,
+        "clickToOpen": 0.10607495602760114,
+        "unsubRate": 0.0004297378599054577
+      },
+      "web": {
+        "from": "2026-09-20",
+        "to": "2026-10-19",
+        "visits": 257,
+        "users": 226,
+        "views": 632
+      }
+    },
+    "dental-business-news": {
+      "name": "Dental Business News",
+      "domain": "dentalbusinessnews.com",
+      "launchedAt": null,
+      "audience": "UK dental practice principals and owners, practice managers, and the people who run, buy, sell, finance and supply dental practices: group operations and M&A teams, associates planning to own a practice, brokers, specialist accountants and lawyers, lenders, and supplier sales teams. Associate dentists, hygienists and therapists are read here too and are valuable readers, but they are read as people with a stake in how the practice is run, never as clinicians reading for clinical technique. They know dentistry inside out and read for the business of it: the NHS contract, private conversion, valuations and deals, staffing, compliance, finance and premises. Never patients looking for treatment, never students, and never anyone reading for oral-health advice",
+      "subscribers": 2293,
+      "ukPercent": 2.4,
+      "email": {
+        "sends": 7,
+        "delivered": 10954,
+        "avgDelivered": 1565,
+        "openRate": 0.5289392002921307,
+        "clickRate": 0.017071389446777434,
+        "clickToOpen": 0.032274767000345185,
+        "unsubRate": 0.0020996896111009676
+      },
+      "web": {
+        "from": "2026-09-20",
+        "to": "2026-10-19",
+        "visits": 127,
+        "users": 96,
+        "views": 176
+      }
+    },
+    "smart-farming-news": {
+      "name": "Smart Farming News",
+      "domain": "smartfarmingnews.com",
+      "launchedAt": null,
+      "audience": "People who own, run, finance or advise a UK farm or rural land business and make its money decisions: owner-occupiers, tenant farmers, estate owners and managers, diversification managers, and the land agents, rural solicitors, rural accountants and agri-lenders who advise them. They know farming well and are weighing technology, land-use deals and tax rules as investments, so every piece answers what it costs, what it returns and who has done it. Ireland only where it moves UK farm money. Not consumers, farm-shop visitors, tourists, Clarkson viewers, smallholding dreamers or hobby farmers",
+      "subscribers": 2003,
+      "ukPercent": 1.5,
+      "email": {
+        "sends": 7,
+        "delivered": 12049,
+        "avgDelivered": 1721,
+        "openRate": 0.6071873184496639,
+        "clickRate": 0.04987965806290978,
+        "clickToOpen": 0.08214871514488792,
+        "unsubRate": 0.0015768943480786786
+      },
+      "web": {
+        "from": "2026-09-20",
+        "to": "2026-10-19",
+        "visits": 178,
+        "users": 156,
+        "views": 387
+      }
+    }
+  }
+}

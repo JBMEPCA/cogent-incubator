@@ -4,8 +4,15 @@ import TrendChart from "../components/TrendChart";
 import { SharePie, Sparkline, RankedList, colourMap } from "../components/FleetCharts";
 import { fleetAnalytics, summarise } from "@/lib/fleet-analytics";
 import Scroller from "@/app/components/Scroller";
+import { after } from "next/server";
+import {
+  PERIODS, cachedLinkedInStats, engagementRate, freshness, linkedInPeriod, refreshLinkedInStats, statsHook,
+} from "@/lib/linkedin-stats";
+import { refreshLinkedInStatsNow } from "@/lib/linkedin-stats-actions";
 
 export const dynamic = "force-dynamic";
+// The LinkedIn Refresh button waits on Make for five calls a title.
+export const maxDuration = 60;
 
 // Every title's numbers on one screen.
 //
@@ -45,17 +52,18 @@ const VIEWS = [
   { key: "audience", label: "Audience" },
   { key: "search", label: "Search" },
   { key: "content", label: "Content" },
+  { key: "linkedin", label: "LinkedIn" },
 ];
 
 // Change against the previous window of the same length, as a compact chip.
 // Position is the one metric where down is good.
-function Delta({ now, before, lowerIsBetter = false }) {
+function Delta({ now, before, lowerIsBetter = false, vs = "the previous 28 days" }) {
   if (!before) return <span className="an-chip">no prior data</span>;
   const change = ((now - before) / before) * 100;
   if (!isFinite(change) || Math.abs(change) < 0.5) return <span className="an-chip">flat</span>;
   const good = lowerIsBetter ? change < 0 : change > 0;
   return (
-    <span className={`an-chip num ${good ? "is-good" : "is-bad"}`} title="vs the previous 28 days">
+    <span className={`an-chip num ${good ? "is-good" : "is-bad"}`} title={`vs ${vs}`}>
       {change > 0 ? "▲" : "▼"} {Math.abs(change).toFixed(0)}%
     </span>
   );
@@ -180,8 +188,10 @@ export default async function GroupAnalyticsPage({ searchParams }) {
     const q = new URLSearchParams();
     const v = next.view ?? view;
     const t = next.title === undefined ? focus?.slug : next.title;
+    const p = next.period ?? sp.period;
     if (v !== "overview") q.set("view", v);
     if (t) q.set("title", t);
+    if (v === "linkedin" && p && p !== "7d") q.set("period", p);
     const s = q.toString();
     return s ? `/analytics?${s}` : "/analytics";
   };
@@ -293,6 +303,59 @@ export default async function GroupAnalyticsPage({ searchParams }) {
     gap: 16,
   });
 
+  // ── LinkedIn ──────────────────────────────────────────────────────────
+  // Read from a cache, never live: every figure costs Make operations, so the
+  // page shows the last snapshot and a stale one is refreshed after the
+  // response has gone, ready for the next visit.
+  let li = null;
+  if (view === "linkedin") {
+    const [hook, cache] = await Promise.all([statsHook(), cachedLinkedInStats()]);
+    const { stale, label: updated } = freshness(cache);
+    if (hook && stale) after(() => refreshLinkedInStats().catch(() => {}));
+    const { period, titles } = await linkedInPeriod(cache, sp.period);
+    const liRows = rows.map((r) => ({ ...r, li: titles[r.slug] || null }));
+    const withData = liRows.filter((r) => r.li && !r.li.error);
+    const add = (pick) => withData.reduce((n, r) => n + (pick(r) || 0), 0);
+    const keys = ["impressions", "clicks", "likes", "comments", "shares", "followersGained", "posts"];
+    const now = Object.fromEntries(keys.map((k) => [k, add((r) => r.li.now[k])]));
+    const hasPrev = withData.some((r) => r.li.prev);
+    const prev = hasPrev ? Object.fromEntries(keys.map((k) => [k, add((r) => r.li.prev?.[k])])) : null;
+    // Posts are our own count, so they stand even for a page LinkedIn refused.
+    const posted = liRows.filter((r) => r.li);
+    now.posts = posted.reduce((n, r) => n + r.li.now.posts, 0);
+    if (prev) prev.posts = posted.reduce((n, r) => n + (r.li.prev?.posts || 0), 0);
+    const pageRows = withData.filter((r) => r.li.now.pageViews != null);
+    now.pageViews = pageRows.length ? add((r) => r.li.now.pageViews) : null;
+    if (prev) prev.pageViews = pageRows.length ? add((r) => r.li.prev?.pageViews) : null;
+    const followerRows = withData.filter((r) => r.li.followers != null);
+    // Fleet daily series, summed by date across titles.
+    const byDate = new Map();
+    for (const r of withData) {
+      for (const d of r.li.trend) {
+        const t = byDate.get(d.date) || { date: d.date, impressions: 0, followersGained: 0, engagements: 0 };
+        t.impressions += d.impressions || 0;
+        t.followersGained += d.followersGained || 0;
+        t.engagements += (d.likes || 0) + (d.comments || 0) + (d.shares || 0) + (d.clicks || 0);
+        byDate.set(d.date, t);
+      }
+    }
+    li = {
+      hook: Boolean(hook),
+      cache,
+      updated,
+      period,
+      rows: liRows,
+      now,
+      prev,
+      followers: followerRows.length ? add((r) => r.li.followers) : null,
+      trend: [...byDate.values()].sort((a, b) => a.date.localeCompare(b.date)),
+      errors: [...new Set(liRows.flatMap((r) => (r.li?.error ? [`${r.name}: ${r.li.error}`] : [])))],
+      partial: withData.flatMap((r) => r.li.errors.map((e) => `${r.name}: ${e}`)),
+    };
+  }
+  const liDelta = (k) =>
+    li?.prev ? <Delta now={li.now[k]} before={li.prev[k]} vs={`the previous ${li.period.days} days`} /> : null;
+
   return (
     <main className="fleet-wrap">
       <header className="fleet-head">
@@ -358,7 +421,7 @@ export default async function GroupAnalyticsPage({ searchParams }) {
         </div>
       </div>
 
-      {unconnected.length > 0 && (view === "overview" || focus) && (
+      {unconnected.length > 0 && view !== "linkedin" && (view === "overview" || focus) && (
         <div className="panel" style={{ borderColor: "rgba(251,191,36,0.4)", padding: "14px 18px" }}>
           <p style={{ margin: "0 0 6px", color: "var(--muted)", fontSize: 13 }}>
             <strong style={{ color: "var(--neon-amber)" }}>
@@ -662,6 +725,176 @@ export default async function GroupAnalyticsPage({ searchParams }) {
                   ariaLabel="Share of page views by title" empty="No page views recorded yet." />
               </Card>
             </section>
+          )}
+        </>
+      )}
+
+      {/* ── LINKEDIN ───────────────────────────────────────────────────── */}
+      {view === "linkedin" && (
+        <>
+          <div className="an-filters">
+            <div className="an-titles" aria-label="Period">
+              {PERIODS.map((p) => (
+                <Link key={p.key} href={href({ period: p.key })} className={`an-pill${p.key === li.period.key ? " is-active" : ""}`}>
+                  {p.label}
+                </Link>
+              ))}
+            </div>
+            {li.hook && (
+              <form action={refreshLinkedInStatsNow} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <span className="micro">
+                  {li.cache ? `updated ${li.updated}` : "fetching the first snapshot — reload in a minute"}
+                </span>
+                <button type="submit" className="btn btn-ghost" style={{ padding: "5px 12px", fontSize: 12.5 }}>
+                  Refresh
+                </button>
+              </form>
+            )}
+          </div>
+
+          {!li.hook && (
+            <div className="panel" style={{ borderColor: "rgba(251,191,36,0.4)", padding: "14px 18px" }}>
+              <p style={{ margin: "0 0 6px", fontSize: 13 }}>
+                <strong style={{ color: "var(--neon-amber)" }}>LinkedIn statistics are not connected yet.</strong>
+              </p>
+              <p style={{ margin: 0, color: "var(--muted)", fontSize: 12.5, maxWidth: 720 }}>
+                The pages post through Make, so they are read through Make too. Duplicate the organisation-lookup
+                scenario, set its LinkedIn &ldquo;Make an API Call&rdquo; URL to <code>{"{{1.path}}"}</code> with
+                headers <code>LinkedIn-Version: 202607</code> and <code>X-Restli-Protocol-Version: 2.0.0</code> and
+                &ldquo;Send unencoded query string parameters&rdquo; on, and save its webhook address as
+                GlobalSetting <code>make_linkedin_api_url</code>.
+              </p>
+            </div>
+          )}
+
+          {(li.errors.length > 0 || li.partial.length > 0) && (
+            <div className="panel" style={{ borderColor: "rgba(251,191,36,0.4)", padding: "14px 18px" }}>
+              <p style={{ margin: "0 0 6px", color: "var(--muted)", fontSize: 13 }}>
+                <strong style={{ color: "var(--neon-amber)" }}>LinkedIn did not answer everything.</strong> Totals count
+                only what came back.
+              </p>
+              <ul style={{ margin: 0, paddingLeft: 18, color: "var(--muted)", fontSize: 12.5 }}>
+                {[...li.errors, ...li.partial].slice(0, 8).map((e, i) => (
+                  <li key={i} style={{ marginBottom: 3 }}>{e}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {li.cache && (
+            <>
+              <section className="an-kpis stagger">
+                <Kpi label="Impressions" value={int(li.now.impressions)} colour="var(--neon-violet)" delta={liDelta("impressions")}
+                  spark={li.trend.map((d) => ({ date: d.date, value: d.impressions }))} />
+                <Kpi label="Likes" value={int(li.now.likes)} colour="var(--neon-red)" delta={liDelta("likes")} />
+                <Kpi label="Comments" value={int(li.now.comments)} colour="var(--neon-amber)" delta={liDelta("comments")} />
+                <Kpi label="Reposts" value={int(li.now.shares)} colour="var(--neon-green)" delta={liDelta("shares")} />
+                <Kpi label="Clicks" value={int(li.now.clicks)} colour="var(--neon-cyan)" delta={liDelta("clicks")} />
+                <Kpi label="Engagement rate" value={engagementRate(li.now) == null ? "—" : pct(engagementRate(li.now))}
+                  colour="var(--brand-2)" foot="clicks, likes, comments and reposts ÷ impressions" />
+                <Kpi label={li.period.days ? "Followers gained" : "Followers gained, all time"} value={int(li.now.followersGained)}
+                  colour="var(--neon-green)" delta={liDelta("followersGained")}
+                  spark={li.period.days ? li.trend.map((d) => ({ date: d.date, value: d.followersGained })) : null} />
+                <Kpi label="Total followers" value={li.followers == null ? "—" : int(li.followers)} colour="var(--neon-cyan)" foot="approximate · from LinkedIn's follower breakdown" />
+                <Kpi label="Posts" value={int(li.now.posts)} colour="var(--brand-2)" delta={liDelta("posts")}
+                  foot={li.now.posts ? `${int(li.now.impressions / li.now.posts)} impressions a post` : "posted by the engine"} />
+                <Kpi label="Page views" value={li.now.pageViews == null ? "—" : int(li.now.pageViews)} colour="var(--neon-violet)"
+                  delta={liDelta("pageViews")} foot={li.period.days ? "visits to the company page" : "not given for all time"} />
+              </section>
+
+              {!focus && (
+                <section>
+                  <SectionHead title="Every page" note={`${li.period.days ? `last ${li.period.days} days` : "all time"} · most followers first`} />
+                  <div className="panel" style={{ padding: "16px 18px" }}>
+                    <Scroller>
+                      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 960 }}>
+                        <thead>
+                          <tr>
+                            <th className="micro" style={{ ...headCell, textAlign: "left", paddingLeft: 0 }}>Title</th>
+                            <th className="micro" style={headCell}>Followers</th>
+                            <th className="micro" style={headCell}>Gained</th>
+                            <th className="micro" style={headCell}>Posts</th>
+                            <th className="micro" style={headCell}>Impr.</th>
+                            <th className="micro" style={headCell}>Likes</th>
+                            <th className="micro" style={headCell}>Comments</th>
+                            <th className="micro" style={headCell}>Reposts</th>
+                            <th className="micro" style={headCell}>Clicks</th>
+                            <th className="micro" style={headCell}>Eng.</th>
+                            <th className="micro" style={headCell}>Page views</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {[...li.rows]
+                            .sort((a, b) => (b.li?.followers ?? -1) - (a.li?.followers ?? -1))
+                            .map((r) => {
+                              const n = r.li && !r.li.error ? r.li.now : null;
+                              const rate = n ? engagementRate(n) : null;
+                              return (
+                                <tr key={r.id} className="an-row">
+                                  <td style={{ ...cell, textAlign: "left", paddingLeft: 0, maxWidth: 260 }}>
+                                    <Link href={href({ title: r.slug })}
+                                      style={{ color: "var(--text)", textDecoration: "none", display: "flex", alignItems: "center", gap: 9 }}>
+                                      <span className="an-dot" style={{ background: colours[r.slug] }} />
+                                      <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{r.name}</span>
+                                    </Link>
+                                    {!n && <span className="micro" style={{ paddingLeft: 17 }}>{r.li ? "no data" : "not fetched yet"}</span>}
+                                  </td>
+                                  <td className="num" style={cell}>{r.li?.followers == null ? "—" : int(r.li.followers)}</td>
+                                  <td className="num" style={{ ...cell, color: n?.followersGained ? "var(--neon-green)" : "var(--muted)" }}>
+                                    {n ? int(n.followersGained) : "—"}
+                                  </td>
+                                  <td className="num" style={{ ...cell, color: "var(--muted)" }}>{r.li ? int(r.li.now.posts) : "—"}</td>
+                                  <td className="num" style={cell}>{n ? int(n.impressions) : "—"}</td>
+                                  <td className="num" style={{ ...cell, color: "var(--muted)" }}>{n ? int(n.likes) : "—"}</td>
+                                  <td className="num" style={{ ...cell, color: "var(--muted)" }}>{n ? int(n.comments) : "—"}</td>
+                                  <td className="num" style={{ ...cell, color: "var(--muted)" }}>{n ? int(n.shares) : "—"}</td>
+                                  <td className="num" style={{ ...cell, color: "var(--muted)" }}>{n ? int(n.clicks) : "—"}</td>
+                                  <td className="num" style={cell}>{rate == null ? "—" : pct(rate)}</td>
+                                  <td className="num" style={{ ...cell, color: "var(--muted)" }}>
+                                    {n?.pageViews == null ? "—" : int(n.pageViews)}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                        </tbody>
+                      </table>
+                    </Scroller>
+                    <p className="micro" style={{ margin: "12px 0 0" }}>
+                      posts are the ones the engine put out · engagement is clicks, likes, comments and reposts over
+                      impressions · LinkedIn&apos;s figures run about a day behind
+                    </p>
+                  </div>
+                </section>
+              )}
+
+              <section style={grid(340)}>
+                {trendCard(
+                  li.period.days ? "Impressions per day" : "Impressions per day, last 60 days",
+                  li.trend.map((d) => ({ date: d.date, value: d.impressions })),
+                  "var(--neon-violet)", "impressions", "No impressions recorded yet.",
+                )}
+                {trendCard(
+                  li.period.days ? "Followers gained per day" : "Followers gained per day, last 60 days",
+                  li.trend.map((d) => ({ date: d.date, value: d.followersGained })),
+                  "var(--neon-green)", "followers", "No followers gained yet.",
+                )}
+              </section>
+
+              {!focus && (
+                <section style={grid(340)}>
+                  <Card title="Followers, by title" note="who has built the biggest page">
+                    <SharePie slices={byTitle((r) => li.rows.find((x) => x.slug === r.slug)?.li?.followers)}
+                      centre={li.followers == null ? "—" : int(li.followers)} centreLabel="followers"
+                      ariaLabel="Share of LinkedIn followers by title" empty="No follower counts yet." />
+                  </Card>
+                  <Card title="Impressions, by title" note={li.period.days ? `last ${li.period.days} days` : "all time"}>
+                    <SharePie slices={byTitle((r) => li.rows.find((x) => x.slug === r.slug)?.li?.now?.impressions)}
+                      centre={int(li.now.impressions)} centreLabel="impressions"
+                      ariaLabel="Share of LinkedIn impressions by title" empty="No impressions recorded yet." />
+                  </Card>
+                </section>
+              )}
+            </>
           )}
         </>
       )}

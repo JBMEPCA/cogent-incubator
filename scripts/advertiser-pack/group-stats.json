@@ -1,0 +1,203 @@
+{
+  "pulledAt": "2026-10-20T08:38:45.092Z",
+  "lists": {
+    "Nursery Daily": {
+      "subscribers": 1124,
+      "sendsYear": 7,
+      "emailsYear": 7844,
+      "sends90": 7,
+      "delivered90": 7267,
+      "opens90": 4059,
+      "clicks90": 291,
+      "openRate": 0.558552359983487,
+      "clickRate": 0.04004403467730838
+    },
+    "Golf Resort Magazine": {
+      "subscribers": 4740,
+      "sendsYear": 13,
+      "emailsYear": 44573,
+      "sends90": 13,
+      "delivered90": 44009,
+      "opens90": 20703,
+      "clicks90": 3194,
+      "openRate": 0.4704265036697039,
+      "clickRate": 0.07257606398691177
+    },
+    "Barbering Business": {
+      "subscribers": 1673,
+      "sendsYear": 9,
+      "emailsYear": 12343,
+      "sends90": 9,
+      "delivered90": 11926,
+      "opens90": 2780,
+      "clicks90": 154,
+      "openRate": 0.23310414221029682,
+      "clickRate": 0.01291296327352004
+    },
+    "BMA India": {
+      "subscribers": 29731,
+      "sendsYear": 80,
+      "emailsYear": 608444,
+      "sends90": 9,
+      "delivered90": 266679,
+      "opens90": 80809,
+      "clicks90": 10696,
+      "openRate": 0.30301973533724064,
+      "clickRate": 0.04010814499829383
+    },
+    "Smart SME": {
+      "subscribers": 8765,
+      "sendsYear": 16,
+      "emailsYear": 84636,
+      "sends90": 16,
+      "delivered90": 84017,
+      "opens90": 36864,
+      "clicks90": 2186,
+      "openRate": 0.438768344501708,
+      "clickRate": 0.02601854386612233
+    },
+    "Hotel Magazine": {
+      "subscribers": 27133,
+      "sendsYear": 59,
+      "emailsYear": 1227033,
+      "sends90": 53,
+      "delivered90": 1056369,
+      "opens90": 368711,
+      "clicks90": 45834,
+      "openRate": 0.3490361795925477,
+      "clickRate": 0.043388247856572845
+    },
+    "The Fleet Magazine": {
+      "subscribers": 3259,
+      "sendsYear": 14,
+      "emailsYear": 33616,
+      "sends90": 14,
+      "delivered90": 32958,
+      "opens90": 17130,
+      "clicks90": 1305,
+      "openRate": 0.519752412160932,
+      "clickRate": 0.03959584926269798
+    },
+    "Salon Magazine": {
+      "subscribers": 13981,
+      "sendsYear": 137,
+      "emailsYear": 2009019,
+      "sends90": 19,
+      "delivered90": 194365,
+      "opens90": 74714,
+      "clicks90": 8524,
+      "openRate": 0.38440048362616724,
+      "clickRate": 0.04385563244411288
+    },
+    "GuildProp": {
+      "subscribers": 2034,
+      "sendsYear": 4,
+      "emailsYear": 8456,
+      "sends90": 0,
+      "delivered90": 0,
+      "opens90": 0,
+      "clicks90": 0,
+      "openRate": null,
+      "clickRate": null
+    },
+    "Care Home Magazine": {
+      "subscribers": 12633,
+      "sendsYear": 36,
+      "emailsYear": 349770,
+      "sends90": 32,
+      "delivered90": 295057,
+      "opens90": 101775,
+      "clicks90": 16901,
+      "openRate": 0.3449333518608269,
+      "clickRate": 0.05728045767427988
+    },
+    "Gym Business News": {
+      "subscribers": 1820,
+      "sendsYear": 7,
+      "emailsYear": 11369,
+      "sends90": 7,
+      "delivered90": 10748,
+      "opens90": 7849,
+      "clicks90": 260,
+      "openRate": 0.7302754000744325,
+      "clickRate": 0.024190547078526237
+    },
+    "Smart Farming News": {
+      "subscribers": 2003,
+      "sendsYear": 7,
+      "emailsYear": 12452,
+      "sends90": 7,
+      "delivered90": 12049,
+      "opens90": 7316,
+      "clicks90": 601,
+      "openRate": 0.6071873184496639,
+      "clickRate": 0.04987965806290978
+    },
+    "Dental Business News": {
+      "subscribers": 2293,
+      "sendsYear": 7,
+      "emailsYear": 11935,
+      "sends90": 7,
+      "delivered90": 10954,
+      "opens90": 5794,
+      "clicks90": 187,
+      "openRate": 0.5289392002921307,
+      "clickRate": 0.017071389446777434
+    },
+    "MEPCA": {
+      "subscribers": 33546,
+      "sendsYear": 317,
+      "emailsYear": 8461262,
+      "sends90": 78,
+      "delivered90": 2360811,
+      "opens90": 650473,
+      "clicks90": 125189,
+      "openRate": 0.2755294684750283,
+      "clickRate": 0.05302796369552666
+    },
+    "Total Grooming Magazine": {
+      "subscribers": 16565,
+      "sendsYear": 64,
+      "emailsYear": 938901,
+      "sends90": 26,
+      "delivered90": 344110,
+      "opens90": 113584,
+      "clicks90": 4615,
+      "openRate": 0.3300804975153294,
+      "clickRate": 0.013411409142425387
+    },
+    "Bar Magazine": {
+      "subscribers": 17949,
+      "sendsYear": 287,
+      "emailsYear": 6574155,
+      "sends90": 66,
+      "delivered90": 719119,
+      "opens90": 236855,
+      "clicks90": 35443,
+      "openRate": 0.32936829648500454,
+      "clickRate": 0.04928669663852575
+    },
+    "Senior Living Business": {
+      "subscribers": 1950,
+      "sendsYear": 7,
+      "emailsYear": 11820,
+      "sends90": 7,
+      "delivered90": 11635,
+      "opens90": 7391,
+      "clicks90": 784,
+      "openRate": 0.6352385045122475,
+      "clickRate": 0.06738289643317576
+    },
+    "Airport Business Magazine": {
+      "subscribers": 4743,
+      "sendsYear": 12,
+      "emailsYear": 44034,
+      "sends90": 12,
+      "delivered90": 43490,
+      "opens90": 26988,
+      "clicks90": 1813,
+      "openRate": 0.6205564497585652,
+      "clickRate": 0.04168774430903656
+    }
+  }
+}

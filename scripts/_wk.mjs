@@ -9,7 +9,7 @@ for (const s of sites) {
   const rows = await p.siteCredential.findMany({ where: { siteId: s.id, kind: "mailchimp" } });
   if (!rows.length) continue;
   const aid = decryptJson(rows[0].payloadEnc).audienceId;
-  const r = reports.find((x) => x.list_id === aid && x.send_time > "2026-10-05T00:00");
+  const r = reports.find((x) => x.list_id === aid && x.send_time > "2026-10-08T00:00");
   if (!r) { console.log(`${s.slug.padEnd(28)} no send`); continue; }
   const o = r.opens || {}, c = r.clicks || {};
   sent += r.emails_sent; human += c.subscriber_clicks_human ?? 0; opens += o.proxy_excluded_unique_opens ?? 0;

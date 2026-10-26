@@ -14,13 +14,13 @@ for (const s of sites) {
   if (g?.ga4PropertyId) {
     try {
       const r = await googlePost(ga, `https://analyticsdata.googleapis.com/v1beta/properties/${String(g.ga4PropertyId).trim()}:runReport`, {
-        dateRanges: [{ startDate: "2026-09-26", endDate: "2026-09-27" }],
+        dateRanges: [{ startDate: "2026-10-05", endDate: "2026-10-06" }],
         metrics: [{ name: "activeUsers" }, { name: "screenPageViews" }],
       });
       users = r.rows?.[0]?.metricValues?.[0]?.value ?? "0";
       views = r.rows?.[0]?.metricValues?.[1]?.value ?? "0";
       const e = await googlePost(ga, `https://analyticsdata.googleapis.com/v1beta/properties/${String(g.ga4PropertyId).trim()}:runReport`, {
-        dateRanges: [{ startDate: "2026-09-26", endDate: "2026-09-27" }],
+        dateRanges: [{ startDate: "2026-10-05", endDate: "2026-10-06" }],
         dimensionFilter: { filter: { fieldName: "sessionMedium", stringFilter: { value: "email" } } },
         metrics: [{ name: "sessions" }],
       });
@@ -32,7 +32,7 @@ for (const s of sites) {
   if (g?.gscSiteUrl) {
     try {
       const r = await googlePost(gs, `https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(g.gscSiteUrl)}/searchAnalytics/query`, {
-        startDate: "2026-09-20", endDate: "2026-09-26", dimensions: ["date"], dataState: "all",
+        startDate: "2026-09-29", endDate: "2026-10-05", dimensions: ["date"], dataState: "all",
       });
       clicks = (r.rows || []).reduce((n, x) => n + x.clicks, 0);
       imps = (r.rows || []).reduce((n, x) => n + x.impressions, 0);

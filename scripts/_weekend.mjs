@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 const p = new PrismaClient();
-const A = new Date("2026-09-25T23:00:00Z"), B = new Date("2026-09-27T23:00:00Z");
+const A = new Date("2026-10-04T23:00:00Z"), B = new Date();
 const uk = (d) => new Date(d).toLocaleString("en-GB", { timeZone: "Europe/London", weekday: "short", hour: "2-digit", minute: "2-digit" });
 const sites = await p.site.findMany({ select: { id: true, slug: true }, orderBy: { createdAt: "asc" } });
 let tot = 0, usd = 0, fails = 0;

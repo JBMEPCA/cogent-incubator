@@ -3,7 +3,7 @@ const SP = "C:/Users/CIMLTD~1/AppData/Local/Temp/claude/C--Users-CIM-Ltd--claude
 const P = "C:/Users/CIM Ltd/.claude/Claude Code Projects/cogent-incubator/assets/newsletter-proofs";
 const slugs = ["smart-sme","fleet-magazine","golf-resort-magazine","barbering-business","airport-business-magazine","gym-business-news","nursery-daily","senior-lifestyle-business","dental-business-news","smart-farming-news"];
 for (const s of slugs) {
-  const src = `${SP}/shot2-${s}.png`;
+  const src = `${SP}/shot3-${s}.png`;
   const { data, info } = await sharp(src).raw().toBuffer({ resolveWithObject: true });
   const ch = info.channels;
   const at = (x, y) => { const i = (y * info.width + x) * ch; return [data[i], data[i + 1], data[i + 2]]; };
@@ -17,6 +17,6 @@ for (const s of slugs) {
     }
     if (differs) { last = y; break; }
   }
-  await sharp(src).extract({ left: 0, top: 0, width: info.width, height: Math.min(info.height, last + 40) }).png({ compressionLevel: 9 }).toFile(`${P}/oct5-${s}.png`);
+  await sharp(src).extract({ left: 0, top: 0, width: info.width, height: Math.min(info.height, last + 40) }).png({ compressionLevel: 9 }).toFile(`${P}/oct8-${s}.png`);
   console.log(s, Math.min(info.height, last + 40));
 }
