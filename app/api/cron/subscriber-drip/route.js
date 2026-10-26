@@ -106,7 +106,14 @@ export async function GET(request) {
       if (!hit.length) {
         return Response.json({ error: `no active title with slug "${only}"` }, { status: 404 });
       }
-      return Response.json({ sites: hit.length, ran: hit.filter((r) => r.ok).length, results: hit });
+      // 502 when the title threw, so the worker's alert fires. A 200 carrying
+      // ok:false is how Fleet's import failed on every run from 29 September
+      // to 26 October without one email about it.
+      const failed = hit.some((r) => r.error);
+      return Response.json(
+        { sites: hit.length, ran: hit.filter((r) => r.ok).length, results: hit },
+        { status: failed ? 502 : 200 }
+      );
     }
     return Response.json(out);
   } catch (e) {
