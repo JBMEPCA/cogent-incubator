@@ -5168,3 +5168,150 @@ button.hub-ag { cursor: pointer; }
   color: var(--muted);
 }
 .gc-bar-group-head strong { color: var(--text); font-size: 14px; letter-spacing: 0; }
+
+/* ---------- Newsletter lists (/lists) ---------- */
+
+.lists-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.lists-card h2 {
+  margin: 0 0 6px;
+  font-size: 16px;
+}
+
+.lists-note {
+  margin: 0 0 14px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--muted);
+  max-width: 780px;
+}
+
+.lists-table {
+  width: 100%;
+  min-width: 860px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.lists-table th {
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  padding: 0 12px 8px 0;
+  font-weight: 600;
+}
+
+.lists-table td {
+  padding: 9px 12px 9px 0;
+  border-top: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.lists-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.lists-table .is-low {
+  color: var(--neon-amber);
+  font-weight: 600;
+}
+
+.lists-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.lists-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.lists-file {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lists-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.lists-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--muted);
+  min-width: 0;
+}
+
+.lists-form select,
+.lists-form input[type="file"] {
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font: inherit;
+  font-size: 13px;
+  max-width: 100%;
+}
+
+.lists-btn {
+  background: var(--brand);
+  color: #fff;
+  border: 0;
+  border-radius: 999px;
+  padding: 9px 18px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.lists-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.lists-bar {
+  margin-top: 14px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.lists-bar div {
+  height: 100%;
+  background: var(--neon-cyan);
+  transition: width 0.3s;
+}
+
+.lists-error {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: var(--neon-red);
+}
+
+.lists-result {
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 1.55;
+}

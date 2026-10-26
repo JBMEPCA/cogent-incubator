@@ -160,12 +160,23 @@ function RoomsIcon() {
   );
 }
 
+/** An envelope — the newsletter lists. */
+function MailIcon() {
+  return (
+    <svg {...ICON}>
+      <rect x="3" y="5.5" width="18" height="13" rx="2.4" />
+      <path d="M3.5 7l8.5 6 8.5-6" />
+    </svg>
+  );
+}
+
 const LINKS = [
   { href: "/", label: "Home", Icon: GridIcon },
   { href: "/engine-hub", label: "Engine", Icon: RoomsIcon },
   { href: "/analytics", label: "Analytics", Icon: ChartIcon },
   { href: "/trending", label: "Trending", Icon: TrendIcon },
   { href: "/interviews", label: "Interviews", Icon: PersonIcon },
+  { href: "/lists", label: "Lists", Icon: MailIcon },
   { href: "/needs-image", label: "Needs an image", Icon: ImageIcon },
   { href: "/costs", label: "Costs", Icon: MoneyIcon },
   { href: "/press", label: "PR", Icon: PressIcon },
