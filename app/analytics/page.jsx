@@ -11,12 +11,14 @@ import { fleetPulse } from "@/lib/pulse";
 import PulsePanel from "./PulsePanel";
 import Scroller from "@/app/components/Scroller";
 import {
-  cachedLinkedInStats, engagementRate, freshness, linkedInPeriod, refreshLinkedInStats, statsHook,
+  CREDITS_PER_TITLE, cachedLinkedInStats, engagementRate, freshness, linkedInPeriod, statsHook,
 } from "@/lib/linkedin-stats";
 import { refreshLinkedInStatsNow } from "@/lib/linkedin-stats-actions";
 
 export const dynamic = "force-dynamic";
 // The LinkedIn Refresh button waits on Make for five calls a title.
+// (It is the only thing that fetches LinkedIn figures; nothing refreshes them
+// on its own.)
 export const maxDuration = 60;
 
 // Every title's numbers on one screen.
@@ -469,14 +471,12 @@ export default async function GroupAnalyticsPage({ searchParams }) {
   });
 
   // ── LinkedIn ──────────────────────────────────────────────────────────
-  // Read from a cache, never live: every figure costs Make operations, so the
-  // page shows the last snapshot and a stale one is refreshed after the
-  // response has gone, ready for the next visit.
+  // Read from a cache, never live: every figure costs Make credits, so the
+  // page shows the last snapshot and only the Refresh button fetches a new one.
   let li = null;
   if (view === "linkedin") {
     const [hook, cache] = await Promise.all([statsHook(), cachedLinkedInStats()]);
-    const { stale, label: updated } = freshness(cache);
-    if (hook && stale) after(() => refreshLinkedInStats().catch(() => {}));
+    const { label: updated } = freshness(cache);
     const { period: liPeriod, titles } = await linkedInPeriod(cache, period.key);
     const liRows = rows.map((r) => ({ ...r, li: titles[r.slug] || null }));
     const withData = liRows.filter((r) => r.li && !r.li.error);
@@ -507,6 +507,9 @@ export default async function GroupAnalyticsPage({ searchParams }) {
       hook: Boolean(hook),
       cache,
       updated,
+      // Refresh always covers the whole fleet, whichever title is filtered, and
+      // only pages with a known LinkedIn page cost anything.
+      credits: (allRows.filter((r) => titles[r.slug]?.orgId).length || allRows.length) * CREDITS_PER_TITLE,
       days: liPeriod.days,
       rows: liRows,
       now,
@@ -852,10 +855,11 @@ export default async function GroupAnalyticsPage({ searchParams }) {
           {li.hook && (
             <form action={refreshLinkedInStatsNow} style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <span className="micro">
-                {li.cache ? `LinkedIn figures updated ${li.updated}` : "fetching the first snapshot — reload in a minute"}
+                {li.cache ? `LinkedIn figures updated ${li.updated} · only refreshed when you press Refresh` : "no figures yet — press Refresh"}
               </span>
-              <button type="submit" className="btn btn-ghost" style={{ padding: "5px 12px", fontSize: 12.5 }}>
-                Refresh
+              <button type="submit" className="btn btn-ghost" style={{ padding: "5px 12px", fontSize: 12.5, whiteSpace: "nowrap", flex: "none" }}
+                title="Fetches every title's LinkedIn figures through Make">
+                Refresh · {li.credits} credits used
               </button>
             </form>
           )}
