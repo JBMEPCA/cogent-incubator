@@ -106,6 +106,16 @@ export default function AssistantBox({ initial, unavailable }) {
     bottom.current?.scrollIntoView({ block: "nearest" });
   }, [items.length, busy]);
 
+  // Saved server-side too, or the old thread comes back on the next reload.
+  const clear = async () => {
+    setView(null);
+    setError(null);
+    const res = await fetch("/api/assistant", { method: "DELETE" }).catch(() => null);
+    const data = await res?.json().catch(() => ({}));
+    if (data?.view) setView(data.view);
+    else setError("Cleared here, but the old chat may come back on reload.");
+  };
+
   const ask = async (e) => {
     e?.preventDefault();
     const text = prompt.trim();
@@ -147,8 +157,8 @@ export default function AssistantBox({ initial, unavailable }) {
         </div>
         {items.length > 0 && (
           <div className="dw-actions">
-            <button type="button" className="dw-btn" onClick={() => { setView(null); setError(null); }} disabled={busy}>
-              New conversation
+            <button type="button" className="dw-btn" onClick={clear} disabled={busy}>
+              Clear chat
             </button>
           </div>
         )}

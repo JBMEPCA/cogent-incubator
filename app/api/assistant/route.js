@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { canEdit } from "@/lib/permissions";
 import { runAssistant } from "@/lib/assistant/run";
-import { prismaStore, conversationView } from "@/lib/assistant/store";
+import { prismaStore, conversationView, clearConversation } from "@/lib/assistant/store";
 
 export const dynamic = "force-dynamic";
 // A request can read a few mailboxes and build a newsletter proof, which runs
@@ -23,6 +23,13 @@ export async function GET(request) {
   if (!userId) return Response.json({ error: "Admins only." }, { status: 403 });
   const id = new URL(request.url).searchParams.get("c");
   return Response.json({ view: await conversationView(userId, id || null) });
+}
+
+/** Clear chat: start an empty conversation so a reload stays clear. */
+export async function DELETE() {
+  const userId = await caller();
+  if (!userId) return Response.json({ error: "Admins only." }, { status: 403 });
+  return Response.json({ view: await clearConversation(userId) });
 }
 
 /** Ask. Body: { prompt, conversationId? }. Answers with the updated thread. */
