@@ -98,7 +98,7 @@ export default async function ConnectionsPage() {
                 {TITLE_KINDS.map((k) => (
                   <th key={k.kind}>{k.label}</th>
                 ))}
-                <th>LinkedIn</th>
+                <th>Social posting</th>
               </tr>
             </thead>
             <tbody>
@@ -110,7 +110,7 @@ export default async function ConnectionsPage() {
                       {t.name}
                     </Link>
                   </td>
-                  {[...TITLE_KINDS.map((k) => k.kind), "linkedin"].map((kind) => {
+                  {[...TITLE_KINDS.map((k) => k.kind), "social"].map((kind) => {
                     const c = t.cells[kind];
                     const tip = [STATE_LABEL[c.state], c.error, c.checkedAt && `checked ${when(c.checkedAt)}`]
                       .filter(Boolean)
@@ -120,7 +120,7 @@ export default async function ConnectionsPage() {
                         <span className="conn-cell">
                           <Dot state={c.state} />
                           <span className={c.state === "bad" ? "conn-bad-text" : "lists-muted"}>
-                            {c.state === "bad" ? c.error || "Failing" : STATE_LABEL[c.state]}
+                            {c.state === "bad" ? c.error || "Failing" : c.label || STATE_LABEL[c.state]}
                           </span>
                         </span>
                       </td>
