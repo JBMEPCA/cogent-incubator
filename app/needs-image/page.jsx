@@ -1,5 +1,6 @@
 import Link from "next/link";
 import FleetNav from "../components/FleetNav";
+import SubTabs, { FLEET_EDITORIAL_TABS } from "@/app/components/SubTabs";
 import PhotoUploader from "../s/[slug]/content/article/[id]/PhotoUploader";
 import { needsImage } from "@/lib/needs-image";
 import { uploadImageForHeldArticle, dismissNeedsImage } from "@/lib/actions";
@@ -43,6 +44,7 @@ export default async function NeedsImagePage() {
         </div>
         <FleetNav />
       </header>
+      <SubTabs items={FLEET_EDITORIAL_TABS} active="/needs-image" />
 
       <section className="panel" style={{ padding: 18 }}>
         <h3 style={{ margin: "0 0 4px", fontSize: 14 }}>

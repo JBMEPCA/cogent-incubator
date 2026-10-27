@@ -1,5 +1,6 @@
 import Link from "next/link";
 import FleetNav from "@/app/components/FleetNav";
+import SubTabs, { FLEET_EDITORIAL_TABS } from "@/app/components/SubTabs";
 import SiteMark from "@/app/components/SiteMark";
 import { prisma, fleetRead } from "@/lib/prisma";
 import { interviewStats, STATUS_LABEL } from "@/lib/interviews";
@@ -84,6 +85,7 @@ export default async function FleetInterviewsPage() {
           <FleetNav />
         </div>
       </header>
+      <SubTabs items={FLEET_EDITORIAL_TABS} active="/interviews" />
 
       <div style={{ maxWidth: 1360, margin: "0 auto" }}>
         <section className="panel panel-glow stagger" style={{ marginBottom: 24 }}>

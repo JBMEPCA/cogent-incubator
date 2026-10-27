@@ -1,22 +1,28 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useActiveSite } from "./FleetContext";
 
-// Nav item with a live status light: green and blinking while any agent is
-// mid-run, amber when the team is on shift but idle, red when something is
-// blocked, and dim when the engine is off.
+// The engine pill: a status light and a one-line state, and the way into the
+// engine hub. Green and blinking while any agent is mid-run, amber when the
+// team is on shift but idle, red when something is blocked, and dim when the
+// engine is off.
 //
-// This used to be a server component that queried the agent table directly.
-// It now sits inside a client header (so it can build slug-aware links), which
-// rules that out, so the counts come from the agents endpoint instead. One
-// small request per page load, scoped to the title being viewed.
+// This replaced two things that said the same thing: an "Engine Room" nav link
+// with a light on it, and a separate "Engine running" caption further right.
+// One control now answers both "is it running?" and "where do I look?".
+//
+// It sits inside a client header (so it can build slug-aware links), so the
+// counts come from the agents endpoint rather than a direct query. One small
+// request per page load, scoped to the title being viewed.
 
 const COLOURS = { red: "#dc2626", green: "#059669", amber: "#d97706", off: "#5b6884" };
 
 export default function EngineRoomLight() {
   const site = useActiveSite();
+  const pathname = usePathname() || "";
   const [counts, setCounts] = useState(null);
 
   useEffect(() => {
@@ -45,39 +51,45 @@ export default function EngineRoomLight() {
   const blocked = counts?.blocked ?? 0;
   const tone = !site.engineEnabled ? "off" : blocked ? "red" : working ? "green" : "amber";
 
-  const title = !site.engineEnabled
-    ? "Engine switched off for this title"
+  const label = !site.engineEnabled
+    ? "Engine off"
     : blocked
-      ? `${blocked} agent${blocked === 1 ? "" : "s"} blocked`
+      ? `${blocked} blocked`
       : working
-        ? `${working} agent${working === 1 ? "" : "s"} working`
-        : "On shift, nothing running";
+        ? "Engine working"
+        : "Engine on";
+
+  const title = !site.engineEnabled
+    ? "Engine switched off for this title. Open the engine hub"
+    : blocked
+      ? `${blocked} agent${blocked === 1 ? "" : "s"} blocked. Open the engine hub`
+      : working
+        ? `${working} agent${working === 1 ? "" : "s"} working. Open the engine hub`
+        : "On shift, nothing running. Open the engine hub";
+
+  // The per-title Engine Room was retired into the fleet engine hub; its
+  // Costs page is the one engine page still inside a title, so the pill lights
+  // there.
+  const active = pathname.startsWith(`/s/${site.slug}/engine-room`);
 
   return (
     <Link
       href="/engine-hub"
-      className="nav-link"
+      className={`engine-pill site-util${active ? " is-active" : ""}`}
       title={title}
-      style={{ display: "inline-flex", alignItems: "center", gap: 7 }}
+      aria-current={active ? "page" : undefined}
     >
-      Engine hub
       <span
         aria-hidden="true"
+        className="engine-pill-dot"
         style={{
-          width: 8,
-          height: 8,
-          borderRadius: "50%",
           background: COLOURS[tone],
           opacity: tone === "off" ? 0.45 : 1,
           animation:
             tone === "green" || tone === "red" ? "erBlink 1.4s ease-in-out infinite" : "none",
         }}
       />
-      <span
-        style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)" }}
-      >
-        {title}
-      </span>
+      {label}
     </Link>
   );
 }

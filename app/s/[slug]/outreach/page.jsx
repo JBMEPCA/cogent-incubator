@@ -1,6 +1,6 @@
 import LinkVerdict from "@/app/components/LinkVerdict";
 import Header from "@/app/components/Header";
-import SubTabs, { ANALYTICS_TABS } from "@/app/components/SubTabs";
+import SubTabs, { DISTRIBUTION_TABS } from "@/app/components/SubTabs";
 import { notFound } from "next/navigation";
 import { getSiteContext } from "@/lib/site";
 import {
@@ -75,7 +75,7 @@ export default async function OutreachPage({ params }) {
     <>
       <Header />
       <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px clamp(14px, 4vw, 24px)" }}>
-        <SubTabs items={ANALYTICS_TABS} active="/outreach" />
+        <SubTabs items={DISTRIBUTION_TABS} active="/outreach" />
 
         <AuthorityTrend rows={trend.rows} summary={trend.summary} />
 

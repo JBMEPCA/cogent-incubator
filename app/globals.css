@@ -1571,6 +1571,156 @@ body[data-readonly="true"] form .btn {
   color: var(--text);
 }
 
+/* ---------- Header: badge menu, engine pill, settings gear ---------- */
+
+.site-nav {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.site-badge-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.title-menu {
+  position: relative;
+}
+
+.title-menu-btn {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.18s, background 0.18s, border-color 0.18s;
+}
+
+.title-menu-btn:hover,
+.title-menu-btn.is-open {
+  color: var(--text);
+  background: rgba(101, 125, 255, 0.12);
+  border-color: var(--line);
+}
+
+.title-menu-btn.is-open svg {
+  transform: rotate(180deg);
+}
+
+.title-menu-btn:focus-visible,
+.site-gear:focus-visible,
+.engine-pill:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 2px;
+}
+
+.title-menu-list {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  border-radius: 10px;
+  border: 1px solid var(--line-bright);
+  background: var(--surface);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5);
+  z-index: 20;
+}
+
+.title-menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 7px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+.title-menu-item:hover,
+.title-menu-item:focus-visible {
+  color: var(--text);
+  background: rgba(101, 125, 255, 0.12);
+  outline: none;
+}
+
+.title-menu-item.site-visit-nav {
+  color: var(--neon-cyan);
+}
+
+/* Pushed right, where the old engine caption and utility links were. */
+.site-tools {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.engine-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 13px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: color 0.18s, border-color 0.18s, background 0.18s;
+}
+
+.engine-pill:hover {
+  color: var(--text);
+  border-color: var(--line-bright);
+}
+
+.engine-pill.is-active {
+  color: var(--neon-cyan);
+  border-color: rgba(34, 211, 238, 0.45);
+  background: rgba(34, 211, 238, 0.1);
+}
+
+.engine-pill-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.site-gear {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--muted);
+  transition: color 0.18s, border-color 0.18s, background 0.18s;
+}
+
+.site-gear:hover {
+  color: var(--text);
+  border-color: var(--line-bright);
+}
+
+.site-gear.is-active {
+  color: var(--neon-cyan);
+  border-color: rgba(34, 211, 238, 0.45);
+  background: rgba(34, 211, 238, 0.1);
+}
+
 /* ================================================================== NARROW
    Everything below is about one thing: nothing may push the page wider than
    the phone it is being read on. The app is laid out with inline styles on
@@ -1922,6 +2072,7 @@ th {
     display: none;
   }
 
+  .site-badge-group,
   .site-badge {
     flex: 1;
     min-width: 0;

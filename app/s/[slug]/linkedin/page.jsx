@@ -10,7 +10,7 @@ import {
   disconnectLinkedIn,
   selectLinkedInOrganisation,
 } from "@/lib/actions";
-import SubTabs, { CONTENT_TABS } from "@/app/components/SubTabs";
+import SubTabs, { DISTRIBUTION_TABS } from "@/app/components/SubTabs";
 import {
   getConnection,
   isLinkedInAppConfigured,
@@ -71,7 +71,7 @@ export default async function LinkedInPage({searchParams, params}) {
     <>
       <Header />
       <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px clamp(14px, 4vw, 24px)" }}>
-        <SubTabs items={CONTENT_TABS} active="/linkedin" />
+        <SubTabs items={DISTRIBUTION_TABS} active="/linkedin" />
         {query?.connected && (
           <div className="panel" style={{ marginBottom: 16, borderColor: "var(--neon-cyan)" }}>
             Connected to LinkedIn as {query.connected}. Posts will now publish on their own.

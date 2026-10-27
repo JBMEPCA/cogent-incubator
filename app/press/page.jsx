@@ -1,5 +1,6 @@
 import Link from "next/link";
 import FleetNav from "@/app/components/FleetNav";
+import SubTabs, { FLEET_EDITORIAL_TABS } from "@/app/components/SubTabs";
 import Scroller from "@/app/components/Scroller";
 import PressPush from "@/app/components/PressPush";
 import { pressBoard, replyMode, REPLY_MODE_NOTE, OUTCOMES } from "@/lib/press-desk";
@@ -101,6 +102,7 @@ export default async function PressPage({ searchParams }) {
           <FleetNav />
         </div>
       </header>
+      <SubTabs items={FLEET_EDITORIAL_TABS} active="/press" />
 
       <div style={{ maxWidth: 1360, margin: "0 auto" }}>
         <section className="panel panel-glow stagger" style={{ marginBottom: 20 }}>

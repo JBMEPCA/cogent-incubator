@@ -1,5 +1,6 @@
 import Link from "next/link";
 import FleetNav from "../components/FleetNav";
+import SubTabs, { FLEET_ENGINE_TABS } from "@/app/components/SubTabs";
 import { fleetCosts, AGENT_LABELS } from "@/lib/fleet-costs";
 import { SERIES } from "@/app/components/CostCharts";
 import { canEdit } from "@/lib/permissions";
@@ -234,13 +235,16 @@ export default async function FleetCostsPage() {
   }
 
   const head = (
-    <header className="fleet-head">
-      <div>
-        <span className="micro">Cogent Incubator</span>
-        <h1>Group costs</h1>
-      </div>
-      <FleetNav />
-    </header>
+    <>
+      <header className="fleet-head">
+        <div>
+          <span className="micro">Cogent Incubator</span>
+          <h1>Group costs</h1>
+        </div>
+        <FleetNav />
+      </header>
+      <SubTabs items={FLEET_ENGINE_TABS} active="/costs" />
+    </>
   );
 
   if (error) {

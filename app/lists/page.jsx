@@ -1,5 +1,6 @@
 import Link from "next/link";
 import FleetNav from "../components/FleetNav";
+import SubTabs, { FLEET_COMMERCIAL_TABS } from "@/app/components/SubTabs";
 import ListImport from "../components/ListImport";
 import Scroller from "../components/Scroller";
 import { listSizes } from "@/lib/prospect-import";
@@ -53,6 +54,7 @@ export default async function ListsPage() {
         </div>
         <FleetNav />
       </header>
+      <SubTabs items={FLEET_COMMERCIAL_TABS} active="/lists" />
 
       {error && <p style={{ color: "#fca5a5" }}>Could not read the lists: {error}</p>}
 

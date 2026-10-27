@@ -5,13 +5,14 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-// The fleet-level nav: the three screens that are about the whole operation
-// rather than one title.
+// The fleet-level nav: the screens that are about the whole operation rather
+// than one title.
 //
-// These used to be a plain text link under the heading, which is where a
-// fleet-wide page goes to be missed — it read as a caption rather than as
-// somewhere to go. As buttons in the top right they sit where the eye lands
-// after the heading, and there is now somewhere obvious for a fourth to live.
+// Five buttons, each landing on the first of its sub-tabs (FLEET_*_TABS in
+// SubTabs.jsx) and staying lit across the rest. It had grown to eleven, one per
+// page, which wrapped to two rows and made every button the same weight. Grouped
+// by what the work is for: the machinery and what it costs, the numbers, the
+// editorial desk, and selling.
 //
 // The icons are drawn here rather than imported, same reasoning as the gear in
 // Header.jsx, and drawn to one spec so they read as a set: 24-unit box, no
@@ -57,41 +58,7 @@ function ChartIcon() {
   );
 }
 
-/** A note with a coin on it — spend. */
-function MoneyIcon() {
-  return (
-    <svg {...ICON}>
-      <rect x="3" y="6" width="18" height="12" rx="2.4" />
-      <circle cx="12" cy="12" r="2.6" />
-      <path d="M6.5 12h.01" />
-      <path d="M17.5 12h.01" />
-    </svg>
-  );
-}
-
-/** A head and shoulders — the interview pipeline is people, not documents. */
-function PersonIcon() {
-  return (
-    <svg {...ICON}>
-      <circle cx="12" cy="8" r="3.5" />
-      <path d="M4.5 20.5a7.5 7.5 0 0 1 15 0" />
-    </svg>
-  );
-}
-
-/** A door with an arrow leaving it. */
-function ExitIcon() {
-  return (
-    <svg {...ICON}>
-      <path d="M9.5 20.5h-4a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2h4" />
-      <path d="M15.5 16.5l4.5-4.5-4.5-4.5" />
-      <path d="M20 12H9.5" />
-    </svg>
-  );
-}
-
-/** A sheet with a headline rule and a block of type — a press release on the
-    desk, drawn to the same 24-unit spec as the rest of the row. */
+/** A sheet with a headline rule and a block of type — the editorial desk. */
 function PressIcon() {
   return (
     <svg {...ICON}>
@@ -115,39 +82,6 @@ function MegaphoneIcon() {
   );
 }
 
-/** A folder: the shared Drive of media packs and documents. */
-function FolderIcon() {
-  return (
-    <svg {...ICON}>
-      <path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2.5h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z" />
-    </svg>
-  );
-}
-
-/** A line that climbs and breaks upward — a search spike. */
-function TrendIcon() {
-  return (
-    <svg {...ICON}>
-      <path d="M3.5 17.5l5.5-5.5 4 4 7.5-7.5" />
-      <path d="M15 8.5h5.5V14" />
-    </svg>
-  );
-}
-
-// Media packs and other team documents live in a shared Google Drive folder,
-// not in the app. Opens in a new tab because it leaves the dashboard.
-const FILES_URL = "https://drive.google.com/drive/folders/1mgveqN4PRsWVqYDcU6dd1H63GZSST6vM";
-
-function ImageIcon(props) {
-  return (
-    <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.4" {...props}>
-      <rect x="1.8" y="2.8" width="12.4" height="10.4" rx="1.6" />
-      <path d="M2.4 11.2 6 7.9l2.5 2.3L10.8 8l2.8 2.6" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="6.1" cy="5.9" r="1.05" />
-    </svg>
-  );
-}
-
 /** Two rooms side by side, a figure in each — the engine hub. */
 function RoomsIcon() {
   return (
@@ -160,32 +94,19 @@ function RoomsIcon() {
   );
 }
 
-/** An envelope — the newsletter lists. */
-function MailIcon() {
-  return (
-    <svg {...ICON}>
-      <rect x="3" y="5.5" width="18" height="13" rx="2.4" />
-      <path d="M3.5 7l8.5 6 8.5-6" />
-    </svg>
-  );
-}
-
 const LINKS = [
   { href: "/", label: "Home", Icon: GridIcon },
-  { href: "/engine-hub", label: "Engine", Icon: RoomsIcon },
-  { href: "/analytics", label: "Analytics", Icon: ChartIcon },
-  { href: "/trending", label: "Trending", Icon: TrendIcon },
-  { href: "/interviews", label: "Interviews", Icon: PersonIcon },
-  { href: "/lists", label: "Lists", Icon: MailIcon },
-  { href: "/needs-image", label: "Needs an image", Icon: ImageIcon },
-  { href: "/costs", label: "Costs", Icon: MoneyIcon },
-  { href: "/press", label: "PR", Icon: PressIcon },
-  { href: "/advertisers", label: "Advertisers", Icon: MegaphoneIcon },
+  { href: "/engine-hub", label: "Engine", Icon: RoomsIcon, also: ["/costs"] },
+  { href: "/analytics", label: "Analytics", Icon: ChartIcon, also: ["/trending"] },
+  { href: "/interviews", label: "Editorial", Icon: PressIcon, also: ["/press", "/needs-image"], badge: true },
+  { href: "/advertisers", label: "Commercial", Icon: MegaphoneIcon, also: ["/lists"] },
 ];
 
 export default function FleetNav() {
   const pathname = usePathname() || "/";
-  // How many articles are waiting on a photograph a person has to find.
+  // How many articles are waiting on a photograph a person has to find. It
+  // rides on Editorial now that Needs an image is one of its sub-tabs, so the
+  // count is still visible from every fleet page.
   //
   // Fetched rather than passed in, because this nav sits in every page's
   // header and threading one integer through all of them to show a badge is
@@ -203,10 +124,10 @@ export default function FleetNav() {
 
   return (
     <nav className="fleet-nav" aria-label="Fleet views">
-      {LINKS.map(({ href, label, Icon }) => {
+      {LINKS.map(({ href, label, Icon, also = [], badge }) => {
         // Exact match throughout: "/" would otherwise prefix-match every page
-        // in the app, and the two fleet pages have nothing nested under them.
-        const active = pathname === href;
+        // in the app.
+        const active = [href, ...also].includes(pathname);
         return (
           <Link
             key={href}
@@ -216,17 +137,12 @@ export default function FleetNav() {
           >
             <Icon />
             {label}
-            {href === "/needs-image" && needsImage > 0 && (
-              <span className="nav-badge" aria-label={`${needsImage} waiting`}>{needsImage}</span>
+            {badge && needsImage > 0 && (
+              <span className="nav-badge" aria-label={`${needsImage} need an image`}>{needsImage}</span>
             )}
           </Link>
         );
       })}
-      <a href={FILES_URL} target="_blank" rel="noopener noreferrer" className="fleet-nav-btn">
-        <FolderIcon />
-        Files
-        <span aria-hidden="true">↗</span>
-      </a>
     </nav>
   );
 }

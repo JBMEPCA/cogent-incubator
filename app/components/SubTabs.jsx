@@ -26,7 +26,13 @@ export default function SubTabs({ items, active }) {
     // Styling moved to .subtabs in globals.css so the phone rules can turn
     // this from a wrapping block into a single scrolling line.
     <div className="subtabs">
-      {items.map((t) => (
+      {items.map((t) =>
+        t.external ? (
+          <a key={t.href} href={t.href} target="_blank" rel="noopener noreferrer" className="nav-link">
+            {t.label}
+            <span aria-hidden="true"> ↗</span>
+          </a>
+        ) : (
         <Link
           key={t.href}
           href={`${base}${t.href}`}
@@ -43,32 +49,65 @@ export default function SubTabs({ items, active }) {
         >
           {t.label}
         </Link>
-      ))}
+        )
+      )}
     </div>
   );
 }
+
+// The groupings here and the sections in nav-sections.js are one design: a
+// section's `also` list is exactly the other hrefs in its tab set.
 
 export const CRM_TABS = [
   { href: "/crm", label: "Pipeline" },
   { href: "/advertisers", label: "Advertisers" },
 ];
 
+// Measurement only. The things you send and the replies to them moved out to
+// Distribution.
 export const ANALYTICS_TABS = [
   { href: "/analytics", label: "Performance" },
   { href: "/seo", label: "SEO" },
-  { href: "/outreach", label: "Backlinks" },
-  { href: "/mail", label: "Mail" },
-  { href: "/newsletter", label: "Newsletter" },
 ];
 
-// The LinkedIn queue is a content surface, so it lives with the rest of them
-// rather than taking a sixth slot in the top nav.
+export const DISTRIBUTION_TABS = [
+  { href: "/mail", label: "Inbox" },
+  { href: "/newsletter", label: "Newsletter" },
+  { href: "/linkedin", label: "LinkedIn" },
+  { href: "/outreach", label: "Backlinks" },
+];
+
 export const CONTENT_TABS = [
-  { href: "/content", label: "Engine" },
+  { href: "/content", label: "Articles" },
   { href: "/content?tab=schedule", label: "Schedule" },
   { href: "/content?tab=pr", label: "PR Sources" },
   { href: "/interviews", label: "Interviews" },
-  { href: "/linkedin", label: "LinkedIn" },
 ];
 
+// Fleet-level sets, one per FleetNav group. No title in the URL there, so
+// SubTabs leaves them unprefixed.
+export const FLEET_ENGINE_TABS = [
+  { href: "/engine-hub", label: "The team" },
+  { href: "/costs", label: "Costs" },
+];
 
+export const FLEET_ANALYTICS_TABS = [
+  { href: "/analytics", label: "Performance" },
+  { href: "/trending", label: "Trending" },
+];
+
+export const FLEET_EDITORIAL_TABS = [
+  { href: "/interviews", label: "Interviews" },
+  { href: "/press", label: "PR" },
+  { href: "/needs-image", label: "Needs an image" },
+];
+
+// Media packs and other team documents live in a shared Google Drive folder,
+// not in the app, so Files opens in a new tab.
+export const FILES_URL = "https://drive.google.com/drive/folders/1mgveqN4PRsWVqYDcU6dd1H63GZSST6vM";
+
+export const FLEET_COMMERCIAL_TABS = [
+  { href: "/advertisers", label: "Advertisers" },
+  { href: "/lists", label: "Lists" },
+  { href: FILES_URL, label: "Files", external: true },
+];

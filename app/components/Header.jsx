@@ -6,6 +6,8 @@ import SiteMark from "./SiteMark";
 import EngineRoomLight from "./EngineRoomLight";
 import { useActiveSite } from "./FleetContext";
 import MobileNav from "./MobileNav";
+import TitleMenu from "./TitleMenu";
+import { SECTIONS, sectionActive } from "./nav-sections";
 import { visitUrl } from "@/lib/site-url";
 
 // The header inside a title.
@@ -14,27 +16,19 @@ import { visitUrl } from "@/lib/site-url";
 // the same component serves every publication. It reads the active title from
 // fleet context instead of taking a prop, which is what lets the ten pages
 // underneath it stay exactly as they were.
+//
+// Left: the title badge and its menu (visit, all titles, sign out). Middle:
+// the five sections. Right: the engine pill and the settings gear, the two
+// things about the title's machinery rather than its work.
 
-const SECTIONS = [
-  { seg: "", label: "Dashboard" },
-  { seg: "/crm", label: "CRM" },
-  { seg: "/content", label: "Content" },
-  { seg: "/analytics", label: "Analytics" },
-  // Promoted to the main nav from the Analytics tab row: with sending
-  // automated, "has anyone written back?" is a question asked often enough
-  // to deserve a top-level answer.
-  { seg: "/mail", label: "Mail" },
-  // Sits in the main nav rather than beside "Sign out", where it read as
-  // account chrome and got missed. This is where a title is set up, so on a
-  // fleet it is one of the pages you reach for most, not an afterthought.
-  { seg: "/settings", label: "Settings", icon: true },
-];
+// Settings is not a section, but the phone sheet lists it with them.
+const SETTINGS = { seg: "/settings", label: "Settings" };
 
 // A gear, inline so there is no icon dependency for one glyph.
 function Gear() {
   return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-      strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 5, verticalAlign: -2 }} aria-hidden="true">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <circle cx="12" cy="12" r="3" />
       <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
     </svg>
@@ -62,66 +56,55 @@ export default function Header() {
   // nothing to visit.
   const live = visitUrl(site);
 
+  const onSettings = sectionActive(SETTINGS, rest);
+
   return (
     <header className="site-header">
-      <Link href={base} className="site-badge">
-        <SiteMark site={site} size={30} showStatus={false} />
-        <span className="site-badge-name">
-          {site.name}
-          {site.strapline && <em>{site.strapline}</em>}
-        </span>
-      </Link>
+      <div className="site-badge-group">
+        <Link href={base} className="site-badge">
+          <SiteMark site={site} size={30} showStatus={false} />
+          <span className="site-badge-name">
+            {site.name}
+            {site.strapline && <em>{site.strapline}</em>}
+          </span>
+        </Link>
+        <TitleMenu site={site} live={live} />
+      </div>
 
-      <nav className="site-nav" style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+      {/* Layout lives in .site-nav, not inline: an inline display beat the
+          phone rule that hides this row, so it drew over the badge. */}
+      <nav className="site-nav">
         {SECTIONS.map((s) => {
-          const href = `${base}${s.seg}`;
-          const active = s.seg === "" ? rest === "/" : rest.startsWith(s.seg);
+          const active = sectionActive(s, rest);
           return (
             <Link
               key={s.seg || "dash"}
-              href={href}
+              href={`${base}${s.seg}`}
               className="nav-link"
+              aria-current={active ? "page" : undefined}
               style={active ? { color: "var(--text)", background: "rgba(101,125,255,.12)" } : undefined}
             >
-              {s.icon && <Gear />}
               {s.label}
             </Link>
           );
         })}
-        <EngineRoomLight />
       </nav>
 
-      <span
-        className="micro site-engine"
-        style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}
-      >
-        <span className={`agent-dot${site.engineEnabled ? " online" : ""}`} />
-        {site.engineEnabled ? "Engine running" : "Engine off"}
-      </span>
-
-      {live && (
-        <a
-          href={live}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="nav-link site-visit-nav site-util"
-          title={`Open ${site.domain} in a new tab`}
-          style={{ fontSize: 13 }}
+      <div className="site-tools site-util">
+        <EngineRoomLight />
+        <Link
+          href={`${base}/settings`}
+          className={`site-gear${onSettings ? " is-active" : ""}`}
+          title="Title settings"
+          aria-label="Title settings"
+          aria-current={onSettings ? "page" : undefined}
         >
-          Visit site
-          <span aria-hidden="true"> ↗</span>
-        </a>
-      )}
-
-      <Link href="/" className="nav-link site-util" style={{ fontSize: 13 }}>
-        All titles
-      </Link>
-      <a href="/logout" className="nav-link site-util" style={{ fontSize: 13 }}>
-        Sign out
-      </a>
+          <Gear />
+        </Link>
+      </div>
 
       {/* Renders nothing above 760px; below it, this is the whole nav. */}
-      <MobileNav sections={SECTIONS} base={base} rest={rest} site={site} live={live} />
+      <MobileNav sections={[...SECTIONS, SETTINGS]} base={base} rest={rest} site={site} live={live} />
     </header>
   );
 }
