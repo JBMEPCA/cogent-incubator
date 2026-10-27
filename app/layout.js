@@ -4,6 +4,7 @@ import TitleRail from "./components/TitleRail";
 import { FleetProvider } from "./components/FleetContext";
 import { listSites } from "@/lib/site";
 import { currentRole } from "@/lib/permissions";
+import { auth } from "@/lib/auth";
 import ReadOnlyBanner from "./components/ReadOnlyBanner";
 import ReadOnlyGuard from "./components/ReadOnlyGuard";
 
@@ -32,7 +33,7 @@ export const viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#0e1116",
+  themeColor: "#0d1220",
 };
 
 export default async function RootLayout({ children }) {
@@ -51,10 +52,35 @@ export default async function RootLayout({ children }) {
   // still renders; the actions are guarded independently and refuse on their
   // own when the database is unreachable.
   let readOnly = false;
+  // A session whose account row has gone: the account was removed in App
+  // settings while its sign-in token was still valid. The token alone would
+  // keep the whole app readable until it expired, so the shell is withheld
+  // instead. Only a successful lookup that finds no row counts; a database
+  // error leaves this false, so an outage never locks everyone out.
+  let removed = false;
   try {
-    readOnly = (await currentRole()) === "viewer";
+    const session = await auth();
+    const role = await currentRole();
+    readOnly = role === "viewer";
+    removed = !!session?.user?.id && role === null;
   } catch {
     readOnly = false;
+  }
+
+  if (removed) {
+    return (
+      <html lang="en" className={grotesk.variable}>
+        <body>
+          <main className="fleet-wrap">
+            <section className="panel fleet-empty">
+              <h1>This account has been removed</h1>
+              <p>Ask an admin for a new account if you still need access.</p>
+              <a href="/logout" className="btn">Sign out</a>
+            </section>
+          </main>
+        </body>
+      </html>
+    );
   }
 
   return (

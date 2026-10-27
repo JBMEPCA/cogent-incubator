@@ -4,11 +4,11 @@
      them keep working; they now hold calm values rather than neon ones. */
 
   /* Surfaces */
-  --bg: #0e1116;
-  --surface: #151a21;
-  --surface-2: #1b212a;
-  --line: rgba(255, 255, 255, 0.07);
-  --line-bright: rgba(255, 255, 255, 0.14);
+  --bg: #0d1220;
+  --surface: #161c29;
+  --surface-2: #1f2737;
+  --line: rgba(170, 190, 255, 0.09);
+  --line-bright: rgba(170, 190, 255, 0.18);
 
   /* Ink */
   --text: #e8ebf0;
@@ -5568,7 +5568,7 @@ button.hub-ag { cursor: pointer; }
 /* Header and rail: solid, not blurred. backdrop-filter re-samples the page
    behind on every scroll frame, which is what made phones stutter. */
 .site-header {
-  background: rgba(14, 17, 22, 0.97);
+  background: rgba(13, 18, 32, 0.97);
   backdrop-filter: none;
   border-bottom-color: var(--line);
   padding-top: 10px;
@@ -5819,4 +5819,288 @@ body {
 .fleet-wrap > * {
   min-width: 0;
   max-width: 100%;
+}
+
+/* ---------- Contrast pass ----------
+   The page now carries a slight blue (--bg) under neutral-blue cards, so a
+   card reads as a card. Pills and segmented controls sit one step lighter
+   than whatever they are on, so they never disappear into it. */
+
+/* Page background: a faint top-down blue wash, painted once (not fixed, so
+   it costs nothing on scroll). */
+body {
+  background: linear-gradient(180deg, #111a30 0, var(--bg) 420px) no-repeat, var(--bg) !important;
+}
+
+.fleet-nav-btn,
+.engine-pill,
+.site-gear {
+  background: var(--surface);
+}
+
+.fleet-nav-btn:hover,
+.engine-pill:hover,
+.site-gear:hover {
+  background: var(--surface-2);
+}
+
+.chip-general {
+  background: var(--surface-2);
+}
+
+/* To Do's: the inputs, filter pills and tick boxes were written for white
+   paper. On the dark card they came out white-on-white. */
+.dw-notes-fields input,
+.dw-notes-fields select {
+  background: var(--surface-2);
+  color: var(--text);
+  border-color: var(--line-bright);
+  color-scheme: dark;
+}
+
+.dw-notes-fields input:focus,
+.dw-notes-fields select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.dw-notes .dw-notes-task::placeholder {
+  color: var(--muted);
+}
+
+.dw-notes-filter button {
+  background: var(--surface-2);
+  border-color: var(--line-bright);
+  color: #c3c9d6;
+}
+
+.dw-notes-filter button[aria-pressed="true"] {
+  background: var(--who, var(--accent));
+  border-color: var(--who, var(--accent));
+  color: #fff;
+}
+
+.dw-notes-list input[type="checkbox"] {
+  background: transparent;
+  border-color: #5b6578;
+}
+
+.dw-notes-due.soon,
+.dw-notes-clear {
+  color: var(--neon-amber);
+}
+
+.dw-notes-due.late,
+.dw-notes-late,
+.dw-notes-err {
+  color: var(--neon-red);
+}
+
+/* Native date and select pickers follow the page, not a light default. */
+:root {
+  color-scheme: dark;
+}
+
+/* ---------- App settings: accounts ---------- */
+
+.fleet-nav-cog {
+  padding: 7px 10px;
+}
+
+.fleet-nav-cog svg {
+  opacity: 0.9;
+}
+
+.acct-panel {
+  margin-bottom: 18px;
+}
+
+.acct-panel h2 {
+  margin: 0 0 4px;
+  font-size: 17px;
+}
+
+.acct-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.acct-head .micro {
+  max-width: 720px;
+  margin: 0;
+}
+
+.acct-count {
+  flex: none;
+  font-size: 12px;
+  color: var(--muted);
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+
+.acct-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.acct-row {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(0, 2fr);
+  gap: 10px 24px;
+  align-items: start;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+
+.acct-who {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-width: 0;
+}
+
+.acct-who b {
+  font-weight: 600;
+}
+
+.acct-who code {
+  font-size: 12px;
+  color: var(--text);
+  background: var(--surface-2);
+  padding: 1px 6px;
+  border-radius: 5px;
+}
+
+.acct-avatar {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 650;
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.acct-you {
+  margin-left: 8px;
+  vertical-align: 1px;
+}
+
+.acct-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  align-items: center;
+}
+
+.acct-inline {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.acct-inline select,
+.acct-inline input {
+  height: 32px;
+  padding: 0 9px;
+  font-size: 13px;
+}
+
+.acct-controls .btn-ghost {
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 550;
+}
+
+.acct-controls .btn-ghost.acct-quiet {
+  color: var(--muted);
+}
+
+.acct-controls .btn-ghost.acct-danger {
+  color: var(--neon-red);
+}
+
+.acct-out {
+  flex-basis: 100%;
+}
+
+.acct-out p,
+.acct-create-out p {
+  margin: 4px 0 0;
+}
+
+.acct-onetime {
+  margin-top: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(224, 164, 58, 0.4);
+  background: rgba(224, 164, 58, 0.08);
+}
+
+.acct-onetime-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.acct-onetime code {
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  color: var(--text);
+  user-select: all;
+}
+
+.acct-create {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+  gap: 12px;
+  align-items: end;
+  margin-top: 12px;
+}
+
+.acct-create .field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.acct-create-out {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 900px) {
+  .acct-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .acct-create {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .acct-create-go {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 520px) {
+  .acct-head {
+    flex-direction: column;
+  }
+
+  .acct-create {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .acct-create .btn {
+    width: 100%;
+  }
 }
