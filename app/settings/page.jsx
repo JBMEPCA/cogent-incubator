@@ -1,5 +1,4 @@
-import FleetNav from "@/app/components/FleetNav";
-import SubTabs, { APP_SETTINGS_TABS } from "@/app/components/SubTabs";
+import SettingsHead, { AdminsOnly } from "./SettingsHead";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { canEdit } from "@/lib/permissions";
@@ -18,29 +17,13 @@ const day = (d) =>
   new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "Europe/London" });
 
 export default async function AppSettingsPage() {
-  const head = (
-    <>
-      <header className="fleet-head">
-        <div>
-          <span className="micro">Cogent Incubator</span>
-          <h1>App settings</h1>
-        </div>
-        <div className="fleet-head-right">
-          <FleetNav />
-        </div>
-      </header>
-      <SubTabs items={APP_SETTINGS_TABS} active="/settings" />
-    </>
-  );
+  const head = <SettingsHead active="/settings" />;
 
   if (!(await canEdit())) {
     return (
       <main className="fleet-wrap">
         {head}
-        <section className="panel fleet-empty">
-          <h1>Admins only</h1>
-          <p>Accounts can only be managed from an admin account.</p>
-        </section>
+        <AdminsOnly />
       </main>
     );
   }

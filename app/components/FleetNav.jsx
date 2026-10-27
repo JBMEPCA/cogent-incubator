@@ -157,8 +157,8 @@ export default function FleetNav() {
           own controls rather than a sixth area of work. */}
       <Link
         href="/settings"
-        className={`fleet-nav-btn fleet-nav-cog${pathname === "/settings" ? " is-active" : ""}`}
-        aria-current={pathname === "/settings" ? "page" : undefined}
+        className={`fleet-nav-btn fleet-nav-cog${pathname.startsWith("/settings") ? " is-active" : ""}`}
+        aria-current={pathname.startsWith("/settings") ? "page" : undefined}
         aria-label="App settings"
         title="App settings"
       >

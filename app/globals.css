@@ -6184,3 +6184,178 @@ body {
     flex-wrap: nowrap;
   }
 }
+
+/* ---------- App settings: automations and connections ---------- */
+
+.auto-intro {
+  max-width: 720px;
+  margin: 0 0 6px;
+}
+
+.auto-list,
+.conn-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.auto-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px 24px;
+  align-items: center;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+
+.auto-what b {
+  font-weight: 600;
+}
+
+.auto-what .micro {
+  margin: 3px 0 0;
+  max-width: 620px;
+}
+
+.auto-warn {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--neon-amber);
+}
+
+.auto-control {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.auto-control p {
+  margin: 0;
+}
+
+.auto-seg {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  border-radius: 9px;
+  background: var(--surface-2);
+  border: 1px solid var(--line-bright);
+}
+
+.auto-seg button {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 6px 14px;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.auto-seg button:hover {
+  color: var(--text);
+}
+
+.auto-seg button.is-on {
+  background: var(--accent);
+  color: #fff;
+}
+
+.auto-seg button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.conn-check {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: none;
+}
+
+.conn-row {
+  display: grid;
+  grid-template-columns: auto minmax(180px, 1fr) minmax(0, 1.4fr);
+  gap: 6px 14px;
+  align-items: center;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+
+.conn-what {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.conn-what b {
+  font-weight: 600;
+}
+
+.conn-result {
+  font-size: 13px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.conn-result.is-bad {
+  color: var(--neon-red);
+}
+
+.conn-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex: none;
+  display: inline-block;
+  background: #5b6578;
+}
+
+.conn-dot.is-ok { background: var(--neon-green); }
+.conn-dot.is-bad { background: var(--neon-red); }
+.conn-dot.is-unknown { background: var(--neon-amber); }
+.conn-dot.is-none { background: transparent; border: 1px solid #5b6578; }
+
+.conn-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+.conn-bad-text {
+  color: var(--neon-red);
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 700px) {
+  .auto-row,
+  .conn-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .conn-row .conn-dot {
+    display: none;
+  }
+
+  .auto-control {
+    align-items: flex-start;
+  }
+
+  .conn-check {
+    flex-wrap: wrap;
+  }
+}
+
+.auto-preview-note {
+  margin: 10px 0 4px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(224, 164, 58, 0.4);
+  background: rgba(224, 164, 58, 0.08);
+}

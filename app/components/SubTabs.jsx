@@ -112,7 +112,9 @@ export const FLEET_COMMERCIAL_TABS = [
   { href: FILES_URL, label: "Files", external: true },
 ];
 
-// App settings (the cog at the end of the fleet bar). One section so far.
+// App settings (the cog at the end of the fleet bar).
 export const APP_SETTINGS_TABS = [
   { href: "/settings", label: "Accounts" },
+  { href: "/settings/automations", label: "Automations" },
+  { href: "/settings/connections", label: "Connections" },
 ];
