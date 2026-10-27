@@ -55,34 +55,12 @@ function ChartIcon() {
   );
 }
 
-/** A note with a coin on it — spend. */
-function MoneyIcon() {
-  return (
-    <svg {...ICON}>
-      <rect x="3" y="6" width="18" height="12" rx="2.4" />
-      <circle cx="12" cy="12" r="2.6" />
-      <path d="M6.5 12h.01" />
-      <path d="M17.5 12h.01" />
-    </svg>
-  );
-}
-
 /** A head and shoulders — the interview pipeline is people, not documents. */
 function PersonIcon() {
   return (
     <svg {...ICON}>
       <circle cx="12" cy="8" r="3.5" />
       <path d="M4.5 20.5a7.5 7.5 0 0 1 15 0" />
-    </svg>
-  );
-}
-
-/** A line that climbs and breaks upward — a search spike. */
-function TrendIcon() {
-  return (
-    <svg {...ICON}>
-      <path d="M3.5 17.5l5.5-5.5 4 4 7.5-7.5" />
-      <path d="M15 8.5h5.5V14" />
     </svg>
   );
 }
@@ -99,13 +77,16 @@ function RoomsIcon() {
   );
 }
 
+// Four buttons, each landing on the first of its sub-tabs (FLEET_*_TABS in
+// SubTabs.jsx) and staying lit across the rest. Costs sits under the engine
+// hub because that is what the money is spent on, mirroring the Engine Room
+// inside a title; Trending sits under Analytics as the outside view beside
+// the fleet's own numbers.
 const LINKS = [
   { href: "/", label: "All titles", Icon: GridIcon },
-  { href: "/engine-hub", label: "Engine hub", Icon: RoomsIcon },
-  { href: "/analytics", label: "Group analytics", Icon: ChartIcon },
-  { href: "/trending", label: "Trending Topics", Icon: TrendIcon },
+  { href: "/engine-hub", label: "Engine hub", Icon: RoomsIcon, also: ["/costs"] },
+  { href: "/analytics", label: "Analytics", Icon: ChartIcon, also: ["/trending"] },
   { href: "/interviews", label: "Interviews", Icon: PersonIcon },
-  { href: "/costs", label: "Group costs", Icon: MoneyIcon },
 ];
 
 export default function FleetNav() {
@@ -113,10 +94,11 @@ export default function FleetNav() {
 
   return (
     <nav className="fleet-nav" aria-label="Fleet views">
-      {LINKS.map(({ href, label, Icon }) => {
+      {LINKS.map(({ href, label, Icon, also = [] }) => {
         // Exact match throughout: "/" would otherwise prefix-match every page
-        // in the app, and the two fleet pages have nothing nested under them.
-        const active = pathname === href;
+        // in the app. The one nested fleet page, the printable cost report,
+        // has no nav on it.
+        const active = [href, ...also].includes(pathname);
         return (
           <Link
             key={href}

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Header from "@/app/components/Header";
-import SubTabs, { ANALYTICS_TABS } from "@/app/components/SubTabs";
+import SubTabs, { DISTRIBUTION_TABS } from "@/app/components/SubTabs";
 import { notFound } from "next/navigation";
 import { getSiteContext } from "@/lib/site";
 import { listInbox, outreachSender } from "@/lib/gmail";
@@ -57,7 +57,7 @@ export default async function MailPage({ params }) {
     <>
       <Header />
       <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px clamp(14px, 4vw, 24px)" }}>
-        <SubTabs items={ANALYTICS_TABS} active="/mail" />
+        <SubTabs items={DISTRIBUTION_TABS} active="/mail" />
 
         <section className="panel panel-glow stagger" style={{ marginBottom: 24 }}>
           <h1 style={{ margin: "0 0 6px", fontSize: 22 }}>Mail</h1>

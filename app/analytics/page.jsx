@@ -1,5 +1,6 @@
 import Link from "next/link";
 import FleetNav from "../components/FleetNav";
+import SubTabs, { FLEET_ANALYTICS_TABS } from "@/app/components/SubTabs";
 import TrendChart from "../components/TrendChart";
 import { SharePie, Sparkline, RankedList, colourMap } from "../components/FleetCharts";
 import { fleetAnalytics, summarise } from "@/lib/fleet-analytics";
@@ -138,6 +139,7 @@ function Shell({ children }) {
         </div>
         <FleetNav />
       </header>
+      <SubTabs items={FLEET_ANALYTICS_TABS} active="/analytics" />
       {children}
     </main>
   );
@@ -389,6 +391,8 @@ export default async function GroupAnalyticsPage({ searchParams }) {
           )}
         </div>
       </header>
+
+      <SubTabs items={FLEET_ANALYTICS_TABS} active="/analytics" />
 
       {/* ── Filters ────────────────────────────────────────────────────── */}
       <div className="an-filters">

@@ -1,4 +1,5 @@
 import FleetNav from "@/app/components/FleetNav";
+import SubTabs, { FLEET_ENGINE_TABS } from "@/app/components/SubTabs";
 import EngineHub from "@/app/components/EngineHub";
 
 export const dynamic = "force-dynamic";
@@ -17,6 +18,7 @@ export default function EngineHubPage() {
           <FleetNav />
         </div>
       </header>
+      <SubTabs items={FLEET_ENGINE_TABS} active="/engine-hub" />
       <EngineHub />
     </main>
   );

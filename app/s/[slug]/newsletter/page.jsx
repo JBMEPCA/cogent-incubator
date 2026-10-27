@@ -1,7 +1,7 @@
 import Header from "@/app/components/Header";
 import { notFound } from "next/navigation";
 import { getSiteContext } from "@/lib/site";
-import SubTabs, { ANALYTICS_TABS } from "@/app/components/SubTabs";
+import SubTabs, { DISTRIBUTION_TABS } from "@/app/components/SubTabs";
 import { newsletterReport } from "@/lib/newsletter-stats";
 import { isNewsletterConfigured } from "@/lib/newsletter";
 import { prospectStats } from "@/lib/prospects";
@@ -72,7 +72,7 @@ export default async function NewsletterStatsPage({ params }) {
       <>
         <Header />
         <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px clamp(14px, 4vw, 24px)" }}>
-          <SubTabs items={ANALYTICS_TABS} active="/newsletter" />
+          <SubTabs items={DISTRIBUTION_TABS} active="/newsletter" />
           <h1 style={{ margin: "0 0 5px", fontSize: 25 }}>Newsletter</h1>
           <p style={{ fontSize: 13.5, opacity: 0.7 }}>Mailchimp is not connected. Add MAILCHIMP_API_KEY and redeploy.</p>
         </main>
@@ -91,7 +91,7 @@ export default async function NewsletterStatsPage({ params }) {
     <>
       <Header />
       <main style={{ maxWidth: 1360, margin: "0 auto", padding: "28px clamp(14px, 4vw, 24px)" }}>
-        <SubTabs items={ANALYTICS_TABS} active="/newsletter" />
+        <SubTabs items={DISTRIBUTION_TABS} active="/newsletter" />
 
         <div style={{ marginBottom: 18 }}>
           <h1 style={{ margin: "0 0 5px", fontSize: 25 }}>Newsletter</h1>

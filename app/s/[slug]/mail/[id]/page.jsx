@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Header from "@/app/components/Header";
-import SubTabs, { ANALYTICS_TABS } from "@/app/components/SubTabs";
+import SubTabs, { DISTRIBUTION_TABS } from "@/app/components/SubTabs";
 import { notFound } from "next/navigation";
 import { getSiteContext } from "@/lib/site";
 import { readInboxMessage } from "@/lib/gmail";
@@ -37,7 +37,7 @@ export default async function MailMessagePage({ params }) {
     <>
       <Header />
       <main style={{ maxWidth: 900, margin: "0 auto", padding: "28px clamp(14px, 4vw, 24px)" }}>
-        <SubTabs items={ANALYTICS_TABS} active="/mail" />
+        <SubTabs items={DISTRIBUTION_TABS} active="/mail" />
 
         <p style={{ margin: "0 0 14px" }}>
           <Link href={`/s/${site.slug}/mail`} className="micro" style={{ color: "var(--neon-cyan)" }}>

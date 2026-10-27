@@ -48,30 +48,49 @@ export default function SubTabs({ items, active }) {
   );
 }
 
+// The groupings here and the sections in nav-sections.js are one design: a
+// section's `also` list is exactly the other hrefs in its tab set.
+
 export const CRM_TABS = [
   { href: "/crm", label: "Pipeline" },
   { href: "/advertisers", label: "Advertisers" },
 ];
 
+// Measurement only. The things you send and the replies to them moved out to
+// Distribution.
 export const ANALYTICS_TABS = [
   { href: "/analytics", label: "Performance" },
   { href: "/seo", label: "SEO" },
-  { href: "/outreach", label: "Backlinks" },
-  { href: "/mail", label: "Mail" },
-  { href: "/newsletter", label: "Newsletter" },
 ];
 
-// The LinkedIn queue is a content surface, so it lives with the rest of them
-// rather than taking a sixth slot in the top nav.
+export const DISTRIBUTION_TABS = [
+  { href: "/mail", label: "Inbox" },
+  { href: "/newsletter", label: "Newsletter" },
+  { href: "/linkedin", label: "LinkedIn" },
+  { href: "/outreach", label: "Backlinks" },
+];
+
 export const CONTENT_TABS = [
-  { href: "/content", label: "Engine" },
+  { href: "/content", label: "Articles" },
   { href: "/content?tab=schedule", label: "Schedule" },
   { href: "/content?tab=pr", label: "PR Sources" },
   { href: "/interviews", label: "Interviews" },
-  { href: "/linkedin", label: "LinkedIn" },
 ];
 
 export const ENGINE_TABS = [
   { href: "/engine-room", label: "The team" },
   { href: "/engine-room/costs", label: "Costs" },
+];
+
+// Fleet-level sets. No title in the URL there, so SubTabs leaves them
+// unprefixed. The engine pair mirrors ENGINE_TABS on purpose: the same two
+// questions, asked of one title or of all of them.
+export const FLEET_ENGINE_TABS = [
+  { href: "/engine-hub", label: "The team" },
+  { href: "/costs", label: "Costs" },
+];
+
+export const FLEET_ANALYTICS_TABS = [
+  { href: "/analytics", label: "Performance" },
+  { href: "/trending", label: "Trending topics" },
 ];

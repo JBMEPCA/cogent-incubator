@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import SiteMark from "./SiteMark";
+import { sectionActive } from "./nav-sections";
 
 // The section nav on a phone.
 //
@@ -120,7 +121,7 @@ export default function MobileNav({ sections, base, rest, site, live }) {
 
         <nav className="mnav-list" aria-label="Sections">
           {sections.map((s) => {
-            const active = s.seg === "" ? rest === "/" : rest.startsWith(s.seg);
+            const active = sectionActive(s, rest);
             return (
               <Link
                 key={s.seg || "dash"}

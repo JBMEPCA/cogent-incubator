@@ -1,5 +1,6 @@
 import Link from "next/link";
 import FleetNav from "@/app/components/FleetNav";
+import SubTabs, { FLEET_ANALYTICS_TABS } from "@/app/components/SubTabs";
 import SiteMark from "@/app/components/SiteMark";
 import { prisma, fleetRead } from "@/lib/prisma";
 import { WINDOW_HOURS, parseNews } from "@/lib/trending";
@@ -118,6 +119,8 @@ export default async function TrendingPage({ searchParams }) {
           <FleetNav />
         </div>
       </header>
+
+      <SubTabs items={FLEET_ANALYTICS_TABS} active="/trending" />
 
       <div style={{ maxWidth: 1360, margin: "0 auto" }}>
         <section className="panel panel-glow stagger" style={{ marginBottom: 24 }}>
