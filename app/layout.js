@@ -1,4 +1,4 @@
-import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import TitleRail from "./components/TitleRail";
 import { FleetProvider } from "./components/FleetContext";
@@ -7,14 +7,13 @@ import { currentRole } from "@/lib/permissions";
 import ReadOnlyBanner from "./components/ReadOnlyBanner";
 import ReadOnlyGuard from "./components/ReadOnlyGuard";
 
-const grotesk = Space_Grotesk({
+// One family for everything. It was a display grotesk plus a mono for labels,
+// two downloads before first paint; globals.css now points --font-mono here
+// too. The variable name is kept so nothing that reads it has to change.
+const grotesk = Inter({
   variable: "--font-grotesk",
   subsets: ["latin"],
-});
-
-const mono = JetBrains_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata = {
@@ -33,7 +32,7 @@ export const viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#05070f",
+  themeColor: "#0e1116",
 };
 
 export default async function RootLayout({ children }) {
@@ -59,7 +58,7 @@ export default async function RootLayout({ children }) {
   }
 
   return (
-    <html lang="en" className={`${grotesk.variable} ${mono.variable}`}>
+    <html lang="en" className={grotesk.variable}>
       <body data-readonly={readOnly ? "true" : undefined}>
         {readOnly && <ReadOnlyGuard />}
         <FleetProvider sites={sites}>

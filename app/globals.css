@@ -1,23 +1,32 @@
 :root {
+  /* Refined dark (Oct 2026). One accent, flat surfaces, no glow.
+     The --neon-* names are kept so the hundreds of inline styles that use
+     them keep working; they now hold calm values rather than neon ones. */
+
   /* Surfaces */
-  --bg: #05070f;
-  --surface: #0b1022;
-  --surface-2: #111a36;
-  --line: rgba(101, 125, 255, 0.14);
-  --line-bright: rgba(101, 125, 255, 0.35);
+  --bg: #0e1116;
+  --surface: #151a21;
+  --surface-2: #1b212a;
+  --line: rgba(255, 255, 255, 0.07);
+  --line-bright: rgba(255, 255, 255, 0.14);
 
   /* Ink */
-  --text: #eef2ff;
-  --muted: #8b97c6;
+  --text: #e8ebf0;
+  --muted: #8a93a3;
 
-  /* Brand (logo blue) + neon accents for glow/UI */
-  --brand: #2e3eee;
-  --brand-2: #5a6aff;
-  --neon-cyan: #22d3ee;
-  --neon-green: #34f5c5;
-  --neon-violet: #a78bfa;
-  --neon-amber: #fbbf24;
-  --neon-red: #fb7185;
+  /* The one accent. --neon-cyan is what every "active" state uses, so it
+     becomes the accent too; brand stays the logo blue for marks. */
+  --accent: #5b8def;
+  --accent-soft: rgba(91, 141, 239, 0.12);
+  --brand: #3b5bdb;
+  --brand-2: #5b8def;
+  --neon-cyan: #5b8def;
+
+  /* Status colours: muted enough to sit on slate without shouting. */
+  --neon-green: #3fb68b;
+  --neon-violet: #9b8cf0;
+  --neon-amber: #e0a43a;
+  --neon-red: #e5616f;
 
   /* Categorical data marks (validated for dark surface, L 0.48–0.67) */
   --cat-cyan: #0891b2;
@@ -26,8 +35,14 @@
   --cat-amber: #d97706;
   --cat-slate: #64748b;
 
-  --glow-brand: 0 0 24px rgba(46, 62, 238, 0.45);
-  --glow-cyan: 0 0 18px rgba(34, 211, 238, 0.35);
+  /* Kept as names, emptied of effect. */
+  --glow-brand: none;
+  --glow-cyan: none;
+
+  /* One family everywhere. Labels that used the mono now share it; numbers
+     stay aligned through tabular figures, not a monospace face. */
+  --font-mono: var(--font-grotesk);
+  --radius: 10px;
 }
 
 * {
@@ -42,29 +57,15 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-grotesk), "Segoe UI", system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* Ambient neon field + grid */
-body {
-  background-image:
-    radial-gradient(900px 500px at 8% -10%, rgba(46, 62, 238, 0.28), transparent 60%),
-    radial-gradient(700px 420px at 95% 5%, rgba(34, 211, 238, 0.14), transparent 60%),
-    radial-gradient(800px 600px at 50% 110%, rgba(139, 92, 246, 0.16), transparent 60%);
-  background-attachment: fixed;
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(rgba(101, 125, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(101, 125, 255, 0.05) 1px, transparent 1px);
-  background-size: 44px 44px;
-  mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 30%, transparent 75%);
-  z-index: 0;
-}
+/* The ambient gradients and the masked grid were three fixed full-screen
+   layers repainted on every scroll, the single biggest cost on a phone.
+   A flat background is both the new look and the speed fix. */
 
 main,
 header {
@@ -77,24 +78,33 @@ a {
   text-decoration: none;
 }
 
+code,
+pre,
+kbd {
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+
 /* ---------- Type ---------- */
 
 h1,
 h2,
 h3 {
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
+  font-weight: 650;
 }
 
 .num {
   font-variant-numeric: tabular-nums;
 }
 
+/* Small supporting text. It was spaced uppercase mono, which turned every
+   description into a block of shouting; now it reads as a quiet caption. */
 .micro {
-  font-family: var(--font-mono), monospace;
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--muted);
+  font-variant-numeric: tabular-nums;
 }
 
 /* ---------- Controls ---------- */
@@ -110,20 +120,20 @@ textarea {
 input,
 select,
 textarea {
-  background: rgba(5, 7, 15, 0.6);
-  border: 1px solid var(--line);
+  background: var(--bg);
+  border: 1px solid var(--line-bright);
   border-radius: 8px;
   color: var(--text);
   padding: 9px 11px;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
 input:focus,
 select:focus,
 textarea:focus {
   outline: none;
-  border-color: var(--neon-cyan);
-  box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.4), var(--glow-cyan);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 ::placeholder {
@@ -131,22 +141,23 @@ textarea:focus {
 }
 
 .btn {
-  background: linear-gradient(120deg, var(--brand) 0%, #3d7bff 60%, var(--neon-cyan) 130%);
+  background: var(--accent);
   color: #fff;
   border: none;
   border-radius: 8px;
-  padding: 9px 20px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  padding: 9px 18px;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: var(--glow-brand);
-  transition: transform 0.15s, box-shadow 0.2s, filter 0.2s;
+  transition: background 0.15s;
 }
 
 .btn:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.15);
-  box-shadow: 0 0 32px rgba(61, 123, 255, 0.6);
+  background: #6f9cf2;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .btn-ghost {
@@ -156,45 +167,35 @@ textarea:focus {
   border-radius: 6px;
   padding: 4px 8px;
   cursor: pointer;
-  transition: color 0.15s, background 0.15s, text-shadow 0.15s;
+  transition: color 0.15s, background 0.15s;
 }
 
 .btn-ghost:hover {
-  color: var(--neon-cyan);
-  background: rgba(34, 211, 238, 0.08);
-  text-shadow: 0 0 12px rgba(34, 211, 238, 0.8);
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 /* ---------- Panels ---------- */
 
 .panel {
   position: relative;
-  background: linear-gradient(180deg, rgba(122, 143, 255, 0.06) 0%, rgba(122, 143, 255, 0) 40%),
-    var(--surface);
+  background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--radius);
   padding: 20px;
-  animation: fadeUp 0.5s ease-out both;
-  transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+  transition: border-color 0.15s;
 }
 
 .panel:hover {
   border-color: var(--line-bright);
-  box-shadow: 0 0 34px rgba(46, 62, 238, 0.18);
 }
 
 .panel-glow {
-  border-color: rgba(34, 211, 238, 0.35);
-  box-shadow: 0 0 30px rgba(34, 211, 238, 0.12);
+  border-color: rgba(91, 141, 239, 0.3);
 }
 
-/* Staggered entrance */
-.stagger > *:nth-child(1) { animation-delay: 0.02s; }
-.stagger > *:nth-child(2) { animation-delay: 0.08s; }
-.stagger > *:nth-child(3) { animation-delay: 0.14s; }
-.stagger > *:nth-child(4) { animation-delay: 0.2s; }
-.stagger > *:nth-child(5) { animation-delay: 0.26s; }
-.stagger > *:nth-child(6) { animation-delay: 0.32s; }
+/* The staggered fade-in held every panel invisible for up to 0.8s after the
+   data had arrived. Content now appears the moment it renders. */
 
 /* ---------- Stat tiles ---------- */
 
@@ -204,17 +205,13 @@ textarea:focus {
 
 .stat-value {
   font-size: 26px;
-  font-weight: 700;
+  font-weight: 650;
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
-  text-shadow: 0 0 18px rgba(34, 211, 238, 0.35);
 }
 
 .stat-label {
-  font-family: var(--font-mono), monospace;
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font-size: 12px;
   color: var(--muted);
   margin-bottom: 6px;
 }
@@ -224,76 +221,56 @@ textarea:focus {
 .bar-track {
   height: 6px;
   border-radius: 4px;
-  background: rgba(101, 125, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
   overflow: hidden;
 }
 
 .bar-fill {
   height: 100%;
   border-radius: 4px;
-  background: linear-gradient(90deg, var(--brand-2), var(--neon-cyan));
-  box-shadow: 0 0 12px rgba(34, 211, 238, 0.55);
-  transform-origin: left;
-  animation: barGrow 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  background: var(--accent);
   position: relative;
 }
 
 .bar-fill.done {
-  background: linear-gradient(90deg, #059669, var(--neon-green));
-  box-shadow: 0 0 12px rgba(52, 245, 197, 0.55);
-}
-
-.bar-fill::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
-  animation: shimmer 2.6s linear infinite;
+  background: var(--neon-green);
 }
 
 /* Horizontal mini bar chart rows */
 .hbar {
   height: 10px;
   border-radius: 0 4px 4px 0;
-  transform-origin: left;
-  animation: barGrow 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* ---------- Chips ---------- */
 
 .chip {
   display: inline-block;
-  font-family: var(--font-mono), monospace;
-  font-size: 10px;
+  font-size: 11.5px;
   font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
   border-radius: 999px;
-  padding: 3px 10px;
+  padding: 2px 9px;
   border: 1px solid transparent;
 }
 
-.chip-brand    { background: rgba(8, 145, 178, 0.16);  color: #67e8f9; border-color: rgba(8, 145, 178, 0.4); }
-.chip-content  { background: rgba(139, 92, 246, 0.14); color: #c4b5fd; border-color: rgba(139, 92, 246, 0.4); }
-.chip-audience { background: rgba(5, 150, 105, 0.16);  color: #6ee7b7; border-color: rgba(5, 150, 105, 0.4); }
-.chip-monetise { background: rgba(217, 119, 6, 0.14);  color: #fcd34d; border-color: rgba(217, 119, 6, 0.4); }
-.chip-general  { background: rgba(100, 116, 139, 0.16); color: #b0bdd8; border-color: rgba(100, 116, 139, 0.4); }
+.chip-brand    { background: rgba(91, 141, 239, 0.14); color: #a9c3f7; }
+.chip-content  { background: rgba(155, 140, 240, 0.14); color: #c6bdf6; }
+.chip-audience { background: rgba(63, 182, 139, 0.14); color: #8fd9bc; }
+.chip-monetise { background: rgba(224, 164, 58, 0.14); color: #ecc883; }
+.chip-general  { background: rgba(255, 255, 255, 0.06); color: #b4bccb; }
 
 /* ---------- Agent status ---------- */
 
 .agent-dot {
-  width: 9px;
-  height: 9px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: var(--neon-amber);
-  box-shadow: 0 0 10px rgba(251, 191, 36, 0.9);
-  animation: pulse 2.2s ease-in-out infinite;
   flex-shrink: 0;
 }
 
 .agent-dot.online {
   background: var(--neon-green);
-  box-shadow: 0 0 10px rgba(52, 245, 197, 0.9);
 }
 
 /* ---------- Header / logo ---------- */
@@ -5571,4 +5548,275 @@ button.hub-ag { cursor: pointer; }
   margin-top: 12px;
   font-size: 13px;
   line-height: 1.55;
+}
+
+/* ===================================================== REFINED DARK LAYER
+   Oct 2026 cosmetic pass. Everything above was written for the neon look;
+   rather than edit two hundred rules one at a time, this layer, last in the
+   file, takes the glow, blur and decorative motion back out. Remove a rule
+   here and the old look returns for that element, which keeps the change
+   reviewable and easy to back out.
+   ========================================================================== */
+
+/* No glowing type anywhere. Ten rules set it, all decorative. */
+*,
+*::before,
+*::after {
+  text-shadow: none !important;
+}
+
+/* Header and rail: solid, not blurred. backdrop-filter re-samples the page
+   behind on every scroll frame, which is what made phones stutter. */
+.site-header {
+  background: rgba(14, 17, 22, 0.97);
+  backdrop-filter: none;
+  border-bottom-color: var(--line);
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.site-header::after {
+  display: none;
+}
+
+.rail {
+  backdrop-filter: none;
+  background: var(--surface);
+  border-color: var(--line);
+}
+
+.logo-sme {
+  box-shadow: none;
+  animation: none;
+}
+
+/* Nav links: plain state change, no glow. */
+.nav-link {
+  border-radius: 7px;
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.subtabs .nav-link[style] {
+  /* SubTabs paints its active tab inline in the old cyan glow colours; the
+     accent token now resolves to blue, so only the background needs taming. */
+  background: var(--accent-soft) !important;
+}
+
+/* Fleet bar: quiet pills, accent for the current one. */
+.fleet-nav-btn {
+  background: transparent;
+  border-color: var(--line-bright);
+  font-weight: 550;
+}
+
+.fleet-nav-btn:hover {
+  transform: none;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.fleet-nav-btn.is-active {
+  color: var(--text);
+  background: var(--accent-soft);
+  border-color: rgba(91, 141, 239, 0.45);
+  box-shadow: none;
+}
+
+.fleet-nav-btn.is-active svg {
+  color: var(--accent);
+}
+
+.engine-pill,
+.site-gear {
+  background: transparent;
+  border-color: var(--line-bright);
+}
+
+.engine-pill.is-active,
+.site-gear.is-active {
+  color: var(--text);
+  background: var(--accent-soft);
+  border-color: rgba(91, 141, 239, 0.45);
+}
+
+/* Page headings: a touch smaller and tighter. The eyebrow above them was a
+   spaced mono caption; as plain muted text it no longer competes. */
+.fleet-head h1 {
+  font-size: 26px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+/* Cards that brightened and glowed on hover now just firm up their edge. */
+.panel:hover,
+.panel.fleet-card:hover,
+.panel.fleet-card-new:hover {
+  box-shadow: none;
+  transform: none;
+}
+
+/* Status lights: still, not breathing. A light that is always pulsing stops
+   meaning anything; the green "working" blink in the engine pill is kept
+   because there it is the signal. */
+.trend-live::before {
+  box-shadow: none;
+}
+
+/* Chart and figure glows. */
+.trend-volume-num {
+  color: var(--text);
+}
+
+/* Motion that delays content or loops forever without telling you anything.
+   Skeleton shimmer and the engine-working blink are left alone. */
+.panel,
+.stagger > *,
+.hbar {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- Home: one card system ----------
+   Home had three looks side by side: neon hero panels, white phone-style
+   cards (Mail, Black Book) and a yellow notepad. Each kind draws from its own
+   variables, so retuning the variables brings them into one family without
+   touching a component. */
+
+.dw,
+.dw-grid > .dw,
+.dw-grid > .dw:hover,
+.dw-grid > .dw-light,
+.dw-grid > .dw-light:hover,
+.dw-grid > .dw-notes,
+.dw-grid > .dw-notes:hover,
+.dw-grid > .dw-targets,
+.dw-grid > .dw-traffic {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: none;
+  transform: none;
+}
+
+.dw-targets {
+  padding: 18px;
+}
+
+/* The ring tiles inside Targets sat on their own darker glass. */
+.dw-ring,
+.dw-ted-ring {
+  background: var(--surface-2);
+  border-color: var(--line);
+  box-shadow: none;
+}
+
+.dw-light {
+  --lt-bg: var(--surface);
+  --lt-fill: var(--surface-2);
+  --lt-fill-2: #232a35;
+  --lt-rule: var(--line);
+  --lt-ink: var(--text);
+  --lt-ink-2: #c3c9d4;
+  --lt-muted: var(--muted);
+  --lt-blue: var(--accent);
+}
+
+.dw-light .btn,
+.dw-light .btn:hover {
+  background: var(--accent);
+}
+
+.dw-mail-ic,
+.dw-bb-badge {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* To Do's keeps its ruled lines, so it still reads as a list you write on,
+   but on the dark page with amber as its only colour. */
+.dw-notes {
+  --note-yellow: var(--neon-amber);
+  --note-yellow-2: var(--neon-amber);
+  --note-paper: var(--surface);
+  --note-rule: rgba(255, 255, 255, 0.05);
+  --note-ink: var(--text);
+  --note-muted: var(--muted);
+}
+
+.dw-notes-top {
+  background: transparent;
+  border-bottom: 1px solid var(--line);
+}
+
+.dw-notes-top h2 {
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.dw-notes-top span {
+  color: var(--neon-amber);
+}
+
+.dw-notes-fields button {
+  color: #1d1606;
+}
+
+.dw-head h2 {
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.dw-open {
+  color: var(--accent);
+}
+
+.dw-search:focus-within {
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.bb-check:has(input:checked),
+.bb-all:has(input:checked) {
+  box-shadow: none;
+}
+
+.gc-hero.is-accent {
+  background: var(--surface-2);
+}
+
+/* Phones had their own restated glow field on body, and the rail a cyan
+   hairline down its edge. Both go with the rest of the glow. */
+body {
+  background-image: none !important;
+}
+
+.rail::before {
+  display: none;
+}
+
+/* Period pickers (Today / 7D / 1M) and any other selected-segment control. */
+.period-tab.is-active,
+.dw-month button[aria-pressed="true"] {
+  background: var(--accent);
+  box-shadow: none;
+}
+
+/* Fleet pages are a flex column, and a flex child's default min-width is its
+   widest content, so one wide table inside stretched the whole page to 950px
+   on a phone. Trending fixed this inline for itself; this fixes every page.
+   Wide tables still scroll inside their own container. */
+.fleet-wrap > * {
+  min-width: 0;
+  max-width: 100%;
 }
