@@ -28,6 +28,7 @@ const FILTERS = [
   { key: "all", label: "Everything", match: () => true },
   { key: "used", label: "Used", match: (r) => OUTCOMES[r.outcome].used },
   { key: "held", label: "Held", match: (r) => r.outcome === "held" },
+  { key: "pitches", label: "Pitches", match: (r) => r.outcome === "pitch" || r.pitchPiece },
   { key: "not-used", label: "Not used", match: (r) => r.outcome === "rejected" },
 ];
 
@@ -115,7 +116,7 @@ export default async function PressPage({ searchParams }) {
                 the site and thanks the sender.
               </p>
               <p className="micro" style={{ color: "var(--muted)", marginTop: 8 }}>
-                Last desk run {fmt(lastRunAt)}. It ticks every fifteen minutes, around the clock.
+                Last desk run {fmt(lastRunAt)}. It ticks every five minutes, around the clock.
               </p>
             </div>
             <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
@@ -266,6 +267,10 @@ export default async function PressPage({ searchParams }) {
                           <span className="micro" style={{ color: "var(--muted)" }}>waiting on the embargo</span>
                         ) : r.outcome === "pending" && !r.stuck ? (
                           <span className="micro" style={{ color: "var(--muted)" }}>the desk has it</span>
+                        ) : r.outcome === "pitch" ? (
+                          <span className="micro" style={{ color: "var(--muted)" }}>see Pitch/ labels in Gmail</span>
+                        ) : r.pitchPiece ? (
+                          <span className="micro" style={{ color: "var(--muted)" }}>answer it in the Gmail thread</span>
                         ) : (
                           <PressPush
                             id={r.id}

@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
 /**
- * The press desk, every fifteen minutes, around the clock.
+ * The press desk, every five minutes, around the clock (fifteen until 27 Oct 2026).
  *
  * JB's rule, 21 Sep 2026: a release sent to press@ is live within the hour, so
  * we are early rather than one of fifty. The engine's own clock ticks only at

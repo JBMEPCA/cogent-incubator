@@ -185,7 +185,7 @@ const HALF_PAST = [
   "/api/cron/trending",
 ];
 
-// The press desk, on its own trigger every fifteen minutes, day and night.
+// The press desk, on its own trigger every five minutes, day and night.
 //
 // JB, 21 September 2026: a release sent to press@ goes live within the hour.
 // The engine's ticks above only run at :05 and :35 inside UK office hours, so
@@ -318,7 +318,9 @@ const handler = {
     // engine including the feed scan, the half-past one runs publishing and a
     // second agent tick.
     const halfPast = event.cron?.startsWith("35 ");
-    const press = event.cron?.startsWith("*/15 ");
+    // Every five minutes since 27 Oct 2026 (wrangler.toml), written as a list
+    // starting at two past so it never coincides with the :05/:35 ticks.
+    const press = event.cron?.startsWith("2,7,12,");
     ctx.waitUntil(runAll(env, new Date(event.scheduledTime), press ? PRESS : halfPast ? HALF_PAST : null));
   },
 
