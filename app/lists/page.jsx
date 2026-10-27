@@ -1,9 +1,10 @@
 import Link from "next/link";
 import FleetNav from "../components/FleetNav";
-import SubTabs, { FLEET_COMMERCIAL_TABS } from "@/app/components/SubTabs";
+import SubTabs, { FLEET_ANALYTICS_TABS } from "@/app/components/SubTabs";
 import ListImport from "../components/ListImport";
 import Scroller from "../components/Scroller";
 import { listSizes } from "@/lib/prospect-import";
+import { fleetSendStats, FLEET_SEND_WINDOW_DAYS } from "@/lib/newsletter-stats";
 import { canEdit } from "@/lib/permissions";
 
 export const dynamic = "force-dynamic";
@@ -20,6 +21,8 @@ export const dynamic = "force-dynamic";
 const LOW_WEEKS = 4;
 
 const n = (v) => (v == null ? "–" : v.toLocaleString());
+// Mailchimp gives rates as fractions (0.243).
+const pct = (v) => (v == null ? "–" : `${(v * 100).toFixed(1)}%`);
 const day = (d) =>
   d ? new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "Europe/London" }) : "–";
 
@@ -34,11 +37,15 @@ export default async function ListsPage() {
   const editable = await canEdit();
   let rows = null;
   let error = null;
-  try {
-    rows = await listSizes();
-  } catch (e) {
-    error = e.message;
-  }
+  // Sends come from one cached Mailchimp report for the whole account. A
+  // failure there costs the sends table, never the lists above it.
+  const [sizes, sends] = await Promise.all([
+    listSizes().catch((e) => ({ error: e.message })),
+    fleetSendStats().catch((e) => ({ __error: e.message })),
+  ]);
+  if (sizes.error) error = sizes.error;
+  else rows = sizes;
+  const sendError = sends.__error || null;
 
   const totals = rows && {
     members: rows.reduce((s, r) => s + (r.members ?? 0), 0),
@@ -50,11 +57,11 @@ export default async function ListsPage() {
       <header className="fleet-head">
         <div>
           <span className="micro">Cogent Incubator</span>
-          <h1>Newsletter lists</h1>
+          <h1>eNewsletter lists</h1>
         </div>
         <FleetNav />
       </header>
-      <SubTabs items={FLEET_COMMERCIAL_TABS} active="/lists" />
+      <SubTabs items={FLEET_ANALYTICS_TABS} active="/lists" />
 
       {error && <p style={{ color: "#fca5a5" }}>Could not read the lists: {error}</p>}
 
@@ -117,6 +124,79 @@ export default async function ListsPage() {
           <p className="lists-note" style={{ marginTop: 10 }}>
             Amber means less than {LOW_WEEKS} weeks of queue left at the title&rsquo;s weekly rate.
           </p>
+        </section>
+      )}
+
+      {rows && (
+        <section className="lists-card">
+          <h2>eNewsletters sent, last {FLEET_SEND_WINDOW_DAYS} days</h2>
+          <p className="lists-note">
+            Every issue each title sent: the Monday briefing and the Thursday weekly. Open and click rates are averaged
+            across the issues, weighted by how many each went to. From Mailchimp, refreshed every fifteen minutes.
+          </p>
+          {sendError ? (
+            <p className="lists-note" style={{ color: "var(--neon-red)" }}>Could not read Mailchimp reports: {sendError}</p>
+          ) : (
+            <Scroller>
+              <table className="lists-table">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th className="num">Issues</th>
+                    <th className="num">Emails sent</th>
+                    <th className="num">Open rate</th>
+                    <th className="num">Click rate</th>
+                    <th className="num">Unsubscribed</th>
+                    <th className="num">Bounced</th>
+                    <th>Last sent</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((r) => {
+                    const s = r.audienceId ? sends[r.audienceId] : null;
+                    return (
+                      <tr key={r.slug}>
+                        <td>
+                          <Link href={`/s/${r.slug}/newsletter`} className="lists-title">
+                            <span className="lists-dot" style={{ background: r.accentHex }} />
+                            {r.name}
+                          </Link>
+                        </td>
+                        {!r.audienceId ? (
+                          <td colSpan={7} className="lists-muted">No Mailchimp audience connected</td>
+                        ) : !s || !s.issues ? (
+                          <>
+                            <td className="num">0</td>
+                            <td className="num">–</td>
+                            <td className="num">–</td>
+                            <td className="num">–</td>
+                            <td className="num">–</td>
+                            <td className="num">–</td>
+                            <td>{s?.last ? day(s.last.sentAt) : "Never"}</td>
+                          </>
+                        ) : (
+                          <>
+                            <td className="num" title={`${s.briefings} briefing, ${s.issues - s.briefings} weekly`}>
+                              {n(s.issues)}
+                            </td>
+                            <td className="num">{n(s.emails)}</td>
+                            <td className="num">{pct(s.openRate)}</td>
+                            <td className="num">{pct(s.clickRate)}</td>
+                            <td className="num">{n(s.unsubscribed)}</td>
+                            <td className="num">{n(s.bounced)}</td>
+                            <td>
+                              {day(s.last.sentAt)}
+                              <span className="lists-muted"> · {n(s.last.sent)} sent, {pct(s.last.open)} opened</span>
+                            </td>
+                          </>
+                        )}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </Scroller>
+          )}
         </section>
       )}
 

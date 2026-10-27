@@ -146,14 +146,23 @@ export default function AssistantBox({ initial, unavailable }) {
   };
 
   return (
-    <section className="dw dw-span-12 as" aria-label="Assistant">
+    <section className="dw dw-span-12 as" aria-label="Cogent Assistant">
       <header className="dw-head">
-        <div>
-          <h2>Assistant</h2>
+        <div className="as-ident">
+          {/* The animated robot, with a still frame for anyone who has asked
+              their device for less motion. Cropped to its circle and sized
+              for the card in public/, about 100 KB. */}
+          <picture className="as-avatar">
+            <source srcSet="/cogent-assistant.png" media="(prefers-reduced-motion: reduce)" />
+            <img src="/cogent-assistant.webp" alt="" width="56" height="56" />
+          </picture>
+          <div>
+          <h2>Cogent Assistant</h2>
           <p className="dw-sub">
             Small jobs and questions: mail, list sizes, interview questions, proofs, quick post fixes. Anything that
             sends to someone else or changes a site waits for your Confirm.
           </p>
+          </div>
         </div>
         {items.length > 0 && (
           <div className="dw-actions">

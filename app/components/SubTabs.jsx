@@ -94,6 +94,7 @@ export const FLEET_ENGINE_TABS = [
 export const FLEET_ANALYTICS_TABS = [
   { href: "/analytics", label: "Performance" },
   { href: "/trending", label: "Trending" },
+  { href: "/lists", label: "eNewsletter lists" },
 ];
 
 export const FLEET_EDITORIAL_TABS = [
@@ -108,7 +109,6 @@ export const FILES_URL = "https://drive.google.com/drive/folders/1mgveqN4PRsWVqY
 
 export const FLEET_COMMERCIAL_TABS = [
   { href: "/advertisers", label: "Advertisers" },
-  { href: "/lists", label: "Lists" },
   { href: FILES_URL, label: "Files", external: true },
 ];
 

@@ -107,9 +107,9 @@ function CogIcon() {
 const LINKS = [
   { href: "/", label: "Home", Icon: GridIcon },
   { href: "/engine-hub", label: "Engine", Icon: RoomsIcon, also: ["/costs"] },
-  { href: "/analytics", label: "Analytics", Icon: ChartIcon, also: ["/trending"] },
+  { href: "/analytics", label: "Analytics", Icon: ChartIcon, also: ["/trending", "/lists"] },
   { href: "/interviews", label: "Editorial", Icon: PressIcon, also: ["/press", "/needs-image"], badge: true },
-  { href: "/advertisers", label: "Commercial", Icon: MegaphoneIcon, also: ["/lists"] },
+  { href: "/advertisers", label: "Commercial", Icon: MegaphoneIcon },
 ];
 
 export default function FleetNav() {
