@@ -109,7 +109,7 @@ const LINKS = [
   { href: "/engine-hub", label: "Engine", Icon: RoomsIcon, also: ["/costs"] },
   { href: "/analytics", label: "Analytics", Icon: ChartIcon, also: ["/trending", "/lists"] },
   { href: "/interviews", label: "Editorial", Icon: PressIcon, also: ["/press", "/needs-image"], badge: true },
-  { href: "/advertisers", label: "Commercial", Icon: MegaphoneIcon },
+  { href: "/advertisers", label: "Advertising", Icon: MegaphoneIcon },
 ];
 
 export default function FleetNav() {

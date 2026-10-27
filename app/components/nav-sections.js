@@ -3,7 +3,7 @@
 //
 // Each section lands on its first sub-tab (`seg`) and stays lit across the
 // rest of its sub-tabs (`also`). Grouped by what the work is for: making the
-// content, getting it out and hearing back, measuring it, and selling around
+// content, getting it out and hearing back, measuring it, and selling advertising around
 // it. Settings is not a section; it sits with the utilities on the right.
 
 export const SECTIONS = [
@@ -13,7 +13,7 @@ export const SECTIONS = [
   // because "has anyone written back?" is the question asked most often.
   { seg: "/mail", label: "Distribution", also: ["/newsletter", "/linkedin", "/outreach"] },
   { seg: "/analytics", label: "Analytics", also: ["/seo"] },
-  { seg: "/crm", label: "Commercial", also: ["/advertisers"] },
+  { seg: "/crm", label: "Advertising", also: ["/advertisers"] },
 ];
 
 /** Whether `rest` (the path below /s/[slug]) belongs to section `s`. */

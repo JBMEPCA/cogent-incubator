@@ -6158,3 +6158,29 @@ body {
 .lists-muted {
   color: var(--muted);
 }
+
+/* ---------- Fleet page header: bar stays top right ----------
+   With a description under the heading (Analytics has one), heading plus bar
+   was wider than the row, and flex-wrap dropped the bar underneath. On wide
+   screens the heading side now gives way instead, and the bar sits level with
+   the title. Narrow screens still stack, as before. */
+@media (min-width: 900px) {
+  .fleet-head {
+    flex-wrap: nowrap;
+    align-items: flex-start;
+  }
+
+  .fleet-head > :first-child {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .fleet-head > .fleet-nav,
+  .fleet-head > .fleet-head-right {
+    flex: none;
+  }
+
+  .fleet-head .fleet-nav {
+    flex-wrap: nowrap;
+  }
+}
