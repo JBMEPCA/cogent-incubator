@@ -133,7 +133,7 @@ export default async function CostsPage({ params }) {
             label="Projected AI / month"
             value={usd(report.projectedMonthly)}
             hint="at the current daily rate"
-            accent="#2E3EEE"
+            accent="#3b5bdb"
           />
           <Stat
             label="Total run rate"

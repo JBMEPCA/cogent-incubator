@@ -335,9 +335,9 @@ export default async function ContentPage({searchParams, params}) {
                                 className="score-chip"
                                 style={
                                   a.seoScore >= 75
-                                    ? { background: "rgba(5,150,105,0.16)", color: "#6ee7b7" }
+                                    ? { background: "rgba(5,150,105,0.16)", color: "#8fd9bc" }
                                     : a.seoScore >= 50
-                                      ? { background: "rgba(8,145,178,0.16)", color: "#67e8f9" }
+                                      ? { background: "rgba(8,145,178,0.16)", color: "#a9c3f7" }
                                       : { background: "rgba(217,119,6,0.14)", color: "#fcd34d" }
                                 }
                                 title={a.scoreRationale || "SEO benefit score"}

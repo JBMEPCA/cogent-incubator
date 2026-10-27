@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 // Light paper rather than the app's dark theme: this gets printed and read on
 // phones in email previews, where a black page reads as a broken attachment.
 
-const BLUE = "#2E3EEE";
+const BLUE = "#3b5bdb";
 const CYAN = "#0891b2";
 const INK = "#0f172a";
 const INK_2 = "#64748b";
@@ -227,7 +227,7 @@ export default async function CostReportPage({ searchParams }) {
 }
 
 const CSS = `
-.rp-shell { min-height: 100vh; background: #0b1022; padding: 24px 16px 60px; }
+.rp-shell { min-height: 100vh; background: #161c29; padding: 24px 16px 60px; }
 .rp-toolbar { max-width: 794px; margin: 0 auto 14px; display: flex; justify-content: space-between; align-items: center; }
 .rp-back { color: #8b97c6; text-decoration: none; font-size: 14px; }
 .rp-page {

@@ -41,8 +41,8 @@ export default function SubTabs({ items, active }) {
             t.href === current
               ? {
                   color: "var(--neon-cyan)",
-                  background: "rgba(34,211,238,0.08)",
-                  textShadow: "0 0 14px rgba(34,211,238,0.7)",
+                  background: "rgba(91, 141, 239,0.08)",
+                  textShadow: "0 0 14px rgba(91, 141, 239,0.7)",
                 }
               : undefined
           }

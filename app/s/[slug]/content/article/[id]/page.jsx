@@ -136,7 +136,7 @@ export default async function ArticlePage({ params, searchParams }) {
                 alignItems: "center",
                 padding: "10px 14px",
                 borderRadius: 12,
-                background: "rgba(101,125,255,0.06)",
+                background: "rgba(170, 190, 255,0.06)",
                 border: "1px solid var(--line)",
                 marginBottom: 14,
               }}
@@ -149,7 +149,7 @@ export default async function ArticlePage({ params, searchParams }) {
                   fontSize: 20,
                   background: article.seoScore >= 75 ? "rgba(5,150,105,0.16)" : article.seoScore >= 50 ? "rgba(8,145,178,0.16)" : "rgba(217,119,6,0.14)",
                   color: article.seoScore >= 75 ? "var(--neon-green)" : article.seoScore >= 50 ? "var(--neon-cyan)" : "var(--neon-amber)",
-                  "--badge-glow": article.seoScore >= 75 ? "rgba(52,245,197,0.4)" : article.seoScore >= 50 ? "rgba(34,211,238,0.4)" : "rgba(251,191,36,0.35)",
+                  "--badge-glow": article.seoScore >= 75 ? "rgba(63, 182, 139,0.4)" : article.seoScore >= 50 ? "rgba(91, 141, 239,0.4)" : "rgba(251,191,36,0.35)",
                 }}
               >
                 {article.seoScore}

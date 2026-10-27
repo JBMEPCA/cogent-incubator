@@ -8,9 +8,9 @@ import SiteMark from "../components/SiteMark";
 // what it says is a real design decision, not a field to skip past.
 
 const PRESETS = [
-  ["#2e3eee", "#5a6aff"],
-  ["#0891b2", "#22d3ee"],
-  ["#059669", "#34f5c5"],
+  ["#3b5bdb", "#5a6aff"],
+  ["#0891b2", "#5b8def"],
+  ["#059669", "#3fb68b"],
   ["#d97706", "#fbbf24"],
   ["#8b5cf6", "#a78bfa"],
   ["#c026d3", "#e879f9"],

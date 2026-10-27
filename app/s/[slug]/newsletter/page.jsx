@@ -45,14 +45,14 @@ function Trend({ issues }) {
       <h3 style={{ margin: "0 0 10px", fontSize: 15 }}>Engagement across issues</h3>
       <svg viewBox={`0 0 ${w} ${h}`} width="100%" role="img" aria-label="Open and click rate by issue">
         <line x1={pad} y1={y(OPEN_OK)} x2={w - pad} y2={y(OPEN_OK)} stroke="rgba(255,255,255,.14)" strokeDasharray="4 4" />
-        <path d={path("openRate")} fill="none" stroke="#2E3EEE" strokeWidth="2.5" />
+        <path d={path("openRate")} fill="none" stroke="#3b5bdb" strokeWidth="2.5" />
         <path d={path("clickRate")} fill="none" stroke="#059669" strokeWidth="2.5" />
         {series.map((s, i) => (
-          <circle key={s.id} cx={x(i)} cy={y(s.openRate)} r="3" fill="#2E3EEE" />
+          <circle key={s.id} cx={x(i)} cy={y(s.openRate)} r="3" fill="#3b5bdb" />
         ))}
       </svg>
       <div style={{ fontSize: 11.5, opacity: 0.6, display: "flex", gap: 16, flexWrap: "wrap" }}>
-        <span><span style={{ color: "#2E3EEE" }}>&#9632;</span> open rate</span>
+        <span><span style={{ color: "#3b5bdb" }}>&#9632;</span> open rate</span>
         <span><span style={{ color: "#059669" }}>&#9632;</span> click rate</span>
         <span style={{ opacity: 0.6 }}>dashed: 20% benchmark</span>
       </div>

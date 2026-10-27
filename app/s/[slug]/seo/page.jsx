@@ -78,15 +78,15 @@ const KIND_LABEL = {
 };
 
 function impactColor(impact) {
-  if (impact >= 75) return { color: "var(--neon-green)", glow: "rgba(52,245,197,0.45)", bg: "rgba(5,150,105,0.15)" };
-  if (impact >= 45) return { color: "var(--neon-cyan)", glow: "rgba(34,211,238,0.45)", bg: "rgba(8,145,178,0.15)" };
+  if (impact >= 75) return { color: "var(--neon-green)", glow: "rgba(63, 182, 139,0.45)", bg: "rgba(5,150,105,0.15)" };
+  if (impact >= 45) return { color: "var(--neon-cyan)", glow: "rgba(91, 141, 239,0.45)", bg: "rgba(8,145,178,0.15)" };
   return { color: "var(--neon-amber)", glow: "rgba(251,191,36,0.4)", bg: "rgba(217,119,6,0.14)" };
 }
 
 function scoreColor(score) {
   if (score == null) return { color: "var(--muted)", bg: "rgba(100,116,139,0.16)" };
-  if (score >= 75) return { color: "#6ee7b7", bg: "rgba(5,150,105,0.16)" };
-  if (score >= 50) return { color: "#67e8f9", bg: "rgba(8,145,178,0.16)" };
+  if (score >= 75) return { color: "#8fd9bc", bg: "rgba(5,150,105,0.16)" };
+  if (score >= 50) return { color: "#a9c3f7", bg: "rgba(8,145,178,0.16)" };
   return { color: "#fcd34d", bg: "rgba(217,119,6,0.14)" };
 }
 
@@ -187,7 +187,7 @@ export default async function SeoPage({ params }) {
               <defs>
                 <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stopColor="#5a6aff" />
-                  <stop offset="100%" stopColor="#22d3ee" />
+                  <stop offset="100%" stopColor="#5b8def" />
                 </linearGradient>
               </defs>
               <circle className="gauge-track" cx="95" cy="95" r="80" />

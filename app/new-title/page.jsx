@@ -98,7 +98,7 @@ async function createTitle(formData) {
       status: "setup",
       markPrimary: name.split(/\s+/)[0] || name,
       markAccent: String(formData.get("mark") || "").trim().slice(0, 4) || null,
-      accentHex: String(formData.get("accent") || "#2e3eee"),
+      accentHex: String(formData.get("accent") || "#3b5bdb"),
       accent2Hex: String(formData.get("accent2") || "#5a6aff"),
       bylineMode: String(formData.get("bylineMode") || "shared_person"),
       authorName: String(formData.get("authorName") || "").trim() || null,

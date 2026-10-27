@@ -30,7 +30,7 @@ export default function ScheduleCalendar({ days, slots = SLOTS }) {
               style={{
                 padding: 12,
                 borderColor: day.isToday ? "var(--line-bright)" : "var(--line)",
-                boxShadow: day.isToday ? "0 0 26px rgba(34,211,238,0.14)" : undefined,
+                boxShadow: day.isToday ? "0 0 26px rgba(91, 141, 239,0.14)" : undefined,
               }}
             >
               <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: 10 }}>
@@ -66,7 +66,7 @@ export default function ScheduleCalendar({ days, slots = SLOTS }) {
                         padding: "7px 9px",
                         borderRadius: 9,
                         border: "1px solid var(--line)",
-                        background: a ? "rgba(101,125,255,0.07)" : "transparent",
+                        background: a ? "rgba(170, 190, 255,0.07)" : "transparent",
                         opacity: a ? 1 : 0.55,
                         overflow: "hidden",
                       }}

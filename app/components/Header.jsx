@@ -82,7 +82,7 @@ export default function Header() {
               href={`${base}${s.seg}`}
               className="nav-link"
               aria-current={active ? "page" : undefined}
-              style={active ? { color: "var(--text)", background: "rgba(101,125,255,.12)" } : undefined}
+              style={active ? { color: "var(--text)", background: "rgba(170, 190, 255,.12)" } : undefined}
             >
               {s.label}
             </Link>

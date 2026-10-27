@@ -120,12 +120,8 @@ function RunningTotal({ running, month, totals, rate }) {
         </linearGradient>
         <linearGradient id="gc-line-this" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0%" stopColor="#5ab0ff" />
-          <stop offset="100%" stopColor="#22d3ee" />
+          <stop offset="100%" stopColor="#5b8def" />
         </linearGradient>
-        <filter id="gc-glow" x="-20%" y="-50%" width="140%" height="200%">
-          <feGaussianBlur stdDeviation="5" result="b" />
-          <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
-        </filter>
       </defs>
 
       {ticks.map((t) => (
@@ -149,19 +145,19 @@ function RunningTotal({ running, month, totals, rate }) {
       <path d={`M ${tx} ${ty} L ${ex} ${ey} L ${ex} ${floor} L ${tx} ${floor} Z`} fill="url(#gc-area-proj)" />
       <path d={`M ${tx} ${ty} L ${ex} ${ey}`} fill="none" stroke={THIS} strokeWidth="3" strokeDasharray="2 9" strokeLinecap="round" />
       <circle cx={ex} cy={ey} r="9" fill="none" stroke={THIS} strokeOpacity="0.35" strokeWidth="6" />
-      <circle cx={ex} cy={ey} r="5" fill="#0b1022" stroke="#5ab0ff" strokeWidth="3" />
+      <circle cx={ex} cy={ey} r="5" fill="#161c29" stroke="#5ab0ff" strokeWidth="3" />
       <Pill cx={ex + 14} cy={ey} anchor="start" size={15} text={gbp(totals.projectedUsd, rate)} fill={THIS} ink="#ffffff" />
       <text x={ex + 16} y={ey + 30} fontSize="11" fontWeight="700" letterSpacing="1.2" fill="#8fc2ff">PROJECTED</text>
 
-      {/* This month so far: the hero line, glowing. */}
+      {/* This month so far: the hero line. */}
       <path d={area(thisPts)} fill="url(#gc-area-this)" />
-      <path d={path(thisPts)} fill="none" stroke="url(#gc-line-this)" strokeWidth="4" strokeLinejoin="round" strokeLinecap="round" filter="url(#gc-glow)" />
+      <path d={path(thisPts)} fill="none" stroke="url(#gc-line-this)" strokeWidth="4" strokeLinejoin="round" strokeLinecap="round" />
       <line x1={tx} x2={tx} y1={T - 6} y2={floor} stroke="#5ab0ff" strokeOpacity="0.4" strokeDasharray="2 5" />
-      <circle className="gc-pulse" cx={tx} cy={ty} r="7" fill="#22d3ee" />
-      <circle cx={tx} cy={ty} r="7" fill="#22d3ee" stroke="#0b1022" strokeWidth="2.5">
+      <circle className="gc-pulse" cx={tx} cy={ty} r="7" fill="#5b8def" />
+      <circle cx={tx} cy={ty} r="7" fill="#5b8def" stroke="#161c29" strokeWidth="2.5">
         <title>{`Spent so far: ${gbp(totals.thisUsd, rate)}`}</title>
       </circle>
-      <Pill cx={tx} cy={ty - 26} size={13} text={gbp(totals.thisUsd, rate)} fill="#22d3ee" ink="#05070f" />
+      <Pill cx={tx} cy={ty - 26} size={13} text={gbp(totals.thisUsd, rate)} fill="#5b8def" ink="#0d1220" />
       <text x={tx} y={T - 12} textAnchor="middle" fontSize="11" fontWeight="700" letterSpacing="1.2" fill="#8fc2ff">TODAY</text>
     </svg>
   );
@@ -354,7 +350,7 @@ export default async function FleetCostsPage() {
         <div className="gc-panel-head">
           <h2>Running total this month</h2>
           <div className="gc-legend">
-            <span className="gc-key"><i style={{ background: "#22d3ee" }} />{month.label} so far <b className="num">{gbp(totals.thisUsd, rate)}</b></span>
+            <span className="gc-key"><i style={{ background: "#5b8def" }} />{month.label} so far <b className="num">{gbp(totals.thisUsd, rate)}</b></span>
             <span className="gc-key"><i className="is-dash" style={{ borderColor: THIS }} />Projected <b className="num">{gbp(totals.projectedUsd, rate)}</b></span>
             <span className="gc-key"><i style={{ background: PREV }} />{month.prevLabel} <b className="num">{gbp(totals.prevUsd, rate)}</b></span>
           </div>

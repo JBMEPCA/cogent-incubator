@@ -28,7 +28,7 @@ export default function AutoToggle({ on: initial }) {
       disabled={pending}
       className="fleet-nav-btn"
       title="When on, good matches (70+ fit, 2K+ searches, under 6 hours old, two words or more, most specific first; Airport Business paused) are commissioned, published and posted to LinkedIn automatically, up to three a title a day, each capped at 40p."
-      style={on ? { color: "var(--text)", borderColor: "var(--neon-green)", boxShadow: "0 0 14px rgba(52,245,197,0.3)" } : undefined}
+      style={on ? { color: "var(--text)", borderColor: "var(--neon-green)", boxShadow: "0 0 14px rgba(63, 182, 139,0.3)" } : undefined}
     >
       <span style={{ width: 8, height: 8, borderRadius: "50%", background: on ? "var(--neon-green)" : "var(--muted)" }} />
       Auto-commission {on ? "on" : "off"}

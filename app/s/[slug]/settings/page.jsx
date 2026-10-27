@@ -25,7 +25,7 @@ export const dynamic = "force-dynamic";
 // the state this whole screen exists to abolish: it looks configured, reads as
 // done, and fails at 6am when the Editor tries to publish.
 
-const SURFACE = { background: "var(--surface-2, #111a36)", border: "1px solid rgba(255,255,255,.07)" };
+const SURFACE = { background: "var(--surface-2, #1f2737)", border: "1px solid rgba(255,255,255,.07)" };
 
 // Human labels and input hints. The field names themselves are terse because
 // they are also the JSON keys in the encrypted payload.

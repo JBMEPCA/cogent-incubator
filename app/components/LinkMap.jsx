@@ -148,9 +148,9 @@ export default function LinkMap({ data }) {
               <line
                 key={i}
                 x1={a.x} y1={a.y} x2={b.x} y2={b.y}
-                stroke={hot ? "var(--neon-cyan)" : "rgba(101,125,255,0.22)"}
+                stroke={hot ? "var(--neon-cyan)" : "rgba(170, 190, 255,0.22)"}
                 strokeWidth={hot ? 1.8 : 0.8}
-                style={hot ? { filter: "drop-shadow(0 0 4px rgba(34,211,238,0.9))" } : undefined}
+                style={hot ? { filter: "drop-shadow(0 0 4px rgba(91, 141, 239,0.9))" } : undefined}
               />
             );
           })}
@@ -173,7 +173,7 @@ export default function LinkMap({ data }) {
                 </circle>
                 <circle
                   cx={n.x} cy={n.y} r={r} fill={fill}
-                  style={{ filter: `drop-shadow(0 0 ${hover === n.id ? 14 : 6}px ${n.kind === "post" ? "rgba(34,211,238,0.9)" : "rgba(167,139,250,0.8)"})` }}
+                  style={{ filter: `drop-shadow(0 0 ${hover === n.id ? 14 : 6}px ${n.kind === "post" ? "rgba(91, 141, 239,0.9)" : "rgba(167,139,250,0.8)"})` }}
                 />
                 <text
                   x={n.x} y={n.y - r - 7}

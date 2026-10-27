@@ -19,7 +19,7 @@ function Delta({ now, was, lowerIsBetter = false, dp = 0, suffix = "" }) {
   const good = lowerIsBetter ? diff < 0 : diff > 0;
   if (Math.abs(diff) < 0.05) return <span style={{ opacity: 0.5, fontSize: 12 }}>level</span>;
   return (
-    <span style={{ fontSize: 12, color: good ? "#6ee7b7" : "var(--neon-amber)" }}>
+    <span style={{ fontSize: 12, color: good ? "#8fd9bc" : "var(--neon-amber)" }}>
       {diff > 0 ? "▲" : "▼"} {fmt(Math.abs(diff), dp)}
       {suffix}
     </span>
@@ -114,12 +114,12 @@ export default function AuthorityTrend({ rows = [], summary }) {
       </div>
 
       <svg viewBox={`0 0 ${w} ${h}`} width="100%" role="img" aria-label="Average position and impressions over time">
-        <path d={path(impressions, yImp)} fill="none" stroke="#2E3EEE" strokeWidth="2.5" />
-        <path d={path(positions, yPos)} fill="none" stroke="#6ee7b7" strokeWidth="2.5" strokeDasharray="5 3" />
+        <path d={path(impressions, yImp)} fill="none" stroke="#3b5bdb" strokeWidth="2.5" />
+        <path d={path(positions, yPos)} fill="none" stroke="#8fd9bc" strokeWidth="2.5" strokeDasharray="5 3" />
       </svg>
       <div style={{ fontSize: 11.5, opacity: 0.6, display: "flex", gap: 16, flexWrap: "wrap" }}>
-        <span><span style={{ color: "#2E3EEE" }}>&#9632;</span> impressions</span>
-        <span><span style={{ color: "#6ee7b7" }}>&#9632;</span> average position (higher on the chart is better)</span>
+        <span><span style={{ color: "#3b5bdb" }}>&#9632;</span> impressions</span>
+        <span><span style={{ color: "#8fd9bc" }}>&#9632;</span> average position (higher on the chart is better)</span>
       </div>
     </section>
   );
