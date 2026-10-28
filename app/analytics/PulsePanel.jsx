@@ -12,6 +12,18 @@
 // so there is nothing to backfill from.
 
 const int = (n) => Math.round(n || 0).toLocaleString("en-GB");
+const pct = (n, of) => `${Math.round((100 * (n || 0)) / (of || 1))}%`;
+
+// Fixed order and colours, so a segment means the same thing on every row.
+// Search leads because it is the number that grows the business; direct is
+// mostly newsletter clicks, which arrive without a referrer.
+const SOURCES = [
+  { key: "search", label: "Search", color: "var(--neon-green)" },
+  { key: "direct", label: "Direct and newsletter", color: "var(--brand-2)" },
+  { key: "social", label: "Social", color: "var(--neon-violet)" },
+  { key: "internal", label: "Internal", color: "var(--neon-amber)" },
+  { key: "other", label: "Other", color: "var(--muted)" },
+];
 
 function since(iso) {
   if (!iso) return null;
@@ -53,6 +65,7 @@ export default function PulsePanel({ pulse, rows = [] }) {
     .map((r) => ({ row: r, p: pulse.bySite?.[r.id] }))
     .filter((x) => x.p && x.p.humans > 0)
     .sort((a, b) => b.p.humans - a.p.humans);
+  const max = counted[0]?.p.humans || 1;
 
   return (
     <section className="panel" style={{ padding: 18, marginBottom: 24 }}>
@@ -85,34 +98,53 @@ export default function PulsePanel({ pulse, rows = [] }) {
       </div>
 
       {counted.length ? (
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {counted.map(({ row, p }) => (
-            <div
-              key={row.id}
-              style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) 70px 150px", gap: 14, alignItems: "baseline" }}
-            >
-              <span style={{ display: "flex", alignItems: "center", gap: 9, minWidth: 0 }}>
-                <span
-                  style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: "50%",
-                    background: row.accentHex || "var(--brand-2)",
-                    flex: "none",
-                  }}
-                />
-                <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{row.name}</span>
+        <div className="pulse-list">
+          <div className="pulse-legend">
+            {SOURCES.map((s) => (
+              <span key={s.key}>
+                <i style={{ background: s.color }} />
+                {s.label}
               </span>
-              <span className="num" style={{ textAlign: "right", fontWeight: 600 }}>{int(p.humans)}</span>
-              <span className="micro" style={{ color: "var(--muted)" }}>
-                {Object.entries(p.sources || {})
-                  .filter(([k]) => k !== "bot")
-                  .sort((a, b) => b[1] - a[1])
-                  .map(([k, v]) => `${k} ${v}`)
-                  .join(", ") || "—"}
-              </span>
-            </div>
-          ))}
+            ))}
+          </div>
+          <div className="pulse-row pulse-head">
+            <span>Title</span>
+            <span>Where readers came from</span>
+            <span className="pulse-fig">Readers</span>
+            <span className="pulse-fig">From search</span>
+          </div>
+          {counted.map(({ row, p }) => {
+            const src = p.sources || {};
+            const total = SOURCES.reduce((n, s) => n + (src[s.key] || 0), 0) || 1;
+            const search = src.search || 0;
+            return (
+              <div key={row.id} className="pulse-row">
+                <span className="pulse-name">
+                  <span className="pulse-dot" style={{ background: row.accentHex || "var(--brand-2)" }} />
+                  <span className="pulse-title">{row.name}</span>
+                </span>
+                {/* Bar length is the title's readers against the biggest
+                    title's, so the column compares titles at a glance; the
+                    segments inside it are that title's own source split. */}
+                <span className="pulse-track">
+                  <span className="pulse-bar" style={{ width: `${(p.humans / max) * 100}%` }}>
+                    {SOURCES.filter((s) => src[s.key]).map((s) => (
+                      <span
+                        key={s.key}
+                        title={`${s.label}: ${int(src[s.key])} (${pct(src[s.key], total)})`}
+                        style={{ flex: src[s.key], background: s.color }}
+                      />
+                    ))}
+                  </span>
+                </span>
+                <span className="pulse-fig pulse-readers">{int(p.humans)}</span>
+                <span className="pulse-fig pulse-search">
+                  {pct(search, total)}
+                  <small>{int(search)}</small>
+                </span>
+              </div>
+            );
+          })}
         </div>
       ) : (
         <p className="micro" style={{ margin: 0 }}>
