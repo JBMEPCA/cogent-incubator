@@ -6462,3 +6462,17 @@ section.gc-panel {
   .pulse-row > .pulse-track { grid-column: 1 / -1; grid-row: 2; }
   .pulse-head > span:nth-child(2) { display: none; }
 }
+/* Legacy CIM titles under the fleet: greyed, dashed, clearly not fleet rows. */
+.pulse-legacy-head {
+  margin: 14px 0 0;
+  padding: 10px 0 6px;
+  border-top: 1px dashed var(--line-bright);
+  font-size: 11px;
+  color: var(--muted);
+  font-style: italic;
+}
+.pulse-row-legacy { opacity: 0.55; border-top-style: dashed; }
+.pulse-row-legacy .pulse-title { font-style: italic; }
+.pulse-row-legacy .pulse-bar { filter: saturate(0.35); }
+.pulse-row-legacy .pulse-search { color: var(--muted); }
+.pulse-dot-legacy { background: transparent; border: 1.5px solid var(--muted); box-sizing: border-box; }

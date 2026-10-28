@@ -44,7 +44,50 @@ function daysOf(iso) {
   return Math.max(1, Math.round((today - start) / 864e5) + 1);
 }
 
-export default function PulsePanel({ pulse, rows = [] }) {
+// CIM's established titles, greyed and on their own scale beneath the fleet.
+// They are tens of thousands of views to the fleet's hundreds, so a shared
+// scale would flatten every fleet bar to a sliver; the numbers carry the
+// comparison. Their figure is GA4 page views, so it is a yardstick only.
+function LegacyRows({ legacy }) {
+  const max = legacy[0]?.views || 1;
+  return (
+    <>
+      <div className="pulse-legacy-head">
+        For comparison: CIM&rsquo;s established titles · GA4 page views, every page, same dates · own scale
+      </div>
+      {legacy.map((t) => {
+        const src = t.sources || {};
+        const search = src.search || 0;
+        return (
+          <div key={t.name} className="pulse-row pulse-row-legacy">
+            <span className="pulse-name">
+              <span className="pulse-dot pulse-dot-legacy" />
+              <span className="pulse-title">{t.name}</span>
+            </span>
+            <span className="pulse-track">
+              <span className="pulse-bar" style={{ width: `${(t.views / max) * 100}%` }}>
+                {SOURCES.filter((s) => src[s.key]).map((s) => (
+                  <span
+                    key={s.key}
+                    title={`${s.label}: ${int(src[s.key])} (${pct(src[s.key], t.views)})`}
+                    style={{ flex: src[s.key], background: s.color }}
+                  />
+                ))}
+              </span>
+            </span>
+            <span className="pulse-fig pulse-readers">{int(t.views)}</span>
+            <span className="pulse-fig pulse-search">
+              {pct(search, t.views)}
+              <small>{int(search)}</small>
+            </span>
+          </div>
+        );
+      })}
+    </>
+  );
+}
+
+export default function PulsePanel({ pulse, rows = [], legacy = [] }) {
   if (!pulse || pulse.errors?.length && !pulse.counting) {
     return (
       <section className="panel" style={{ padding: 18, marginBottom: 24 }}>
@@ -145,6 +188,7 @@ export default function PulsePanel({ pulse, rows = [] }) {
               </div>
             );
           })}
+          {legacy.length > 0 && <LegacyRows legacy={legacy} />}
         </div>
       ) : (
         <p className="micro" style={{ margin: 0 }}>
