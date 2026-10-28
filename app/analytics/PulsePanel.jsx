@@ -44,10 +44,6 @@ function daysOf(iso) {
   return Math.max(1, Math.round((today - start) / 864e5) + 1);
 }
 
-// CIM's established titles beside the fleet's three biggest, all measured the
-// same way (GA4 page views, every page, same dates) and drawn on ONE scale, so
-// a bar's length really is its size against the others. The fleet rows keep
-// their colour; the established titles are greyed so they read as context.
 // Ahrefs Domain Rating, with the day it was taken on hover. Below 10 it keeps
 // one decimal, because 0.1 and 0 are different stories on a young title.
 function Dr({ r }) {
@@ -72,7 +68,9 @@ function DrCredit() {
 // Its own panel, never rows in the Pulse list: every figure here is GA4, for
 // the established titles and the fleet alike, because the established titles
 // run no Pulse and a Pulse count beside a GA4 one flatters the fleet about
-// threefold (GA4 misses the readers who never accept the consent banner).
+// threefold. The measure is engaged sessions, which strips the bot traffic
+// that inflated MEPCA's page views, on ONE scale so a bar's length is real
+// size. Fleet rows keep their colour; established titles are greyed.
 export function ComparePanel({ legacy = [], dr = null, since = null }) {
   if (!legacy.length) return null;
   const max = legacy[0]?.views || 1;
@@ -82,9 +80,9 @@ export function ComparePanel({ legacy = [], dr = null, since = null }) {
         Against CIM&rsquo;s established titles <span className="pulse-pill">GA4</span>
       </h3>
       <p style={{ margin: "0 0 12px", fontSize: 13, color: "var(--muted)", maxWidth: 820 }}>
-        Our three biggest new titles beside CIM&rsquo;s established ones, all measured the same way: GA4 page views,
-        every page, {since ? `since ${since}` : "same dates"}, drawn on one scale so a bar&rsquo;s length is its real
-        size.
+        Our three biggest new titles beside CIM&rsquo;s established ones, all measured the same way: GA4 engaged visits
+        (10 seconds or more, a second page, or an action), {since ? `since ${since}` : "same dates"}, on one scale so
+        a bar&rsquo;s length is its real size. Engaged visits leave out the bot traffic that inflates raw page views.
       </p>
       <div className="pulse-list">
         <div className="pulse-legend">
@@ -98,7 +96,7 @@ export function ComparePanel({ legacy = [], dr = null, since = null }) {
         <div className="pulse-row pulse-head">
           <span>Title</span>
           <span>Where visitors came from</span>
-          <span className="pulse-fig">Page views</span>
+          <span className="pulse-fig">Engaged visits</span>
           <span className="pulse-fig">From search</span>
           <span className="pulse-fig">DR</span>
         </div>
