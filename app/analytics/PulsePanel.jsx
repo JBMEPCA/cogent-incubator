@@ -48,7 +48,19 @@ function daysOf(iso) {
 // same way (GA4 page views, every page, same dates) and drawn on ONE scale, so
 // a bar's length really is its size against the others. The fleet rows keep
 // their colour; the established titles are greyed so they read as context.
-function LegacyRows({ legacy }) {
+// Ahrefs Domain Rating, with the day it was taken on hover. Below 10 it keeps
+// one decimal, because 0.1 and 0 are different stories on a young title.
+function Dr({ r }) {
+  if (!r) return <span className="pulse-fig pulse-dr">–</span>;
+  const v = r.dr < 10 ? Math.round(r.dr * 10) / 10 : Math.round(r.dr);
+  return (
+    <span className="pulse-fig pulse-dr" title={`Domain Rating by Ahrefs, ${r.at}`}>
+      {v}
+    </span>
+  );
+}
+
+function LegacyRows({ legacy, dr }) {
   const max = legacy[0]?.views || 1;
   return (
     <>
@@ -84,6 +96,7 @@ function LegacyRows({ legacy }) {
               {pct(search, t.views)}
               <small>{int(search)}</small>
             </span>
+            <Dr r={t.fleet ? dr?.bySlug?.[t.slug] : dr?.byName?.[t.name]} />
           </div>
         );
       })}
@@ -91,7 +104,7 @@ function LegacyRows({ legacy }) {
   );
 }
 
-export default function PulsePanel({ pulse, rows = [], legacy = [] }) {
+export default function PulsePanel({ pulse, rows = [], legacy = [], dr = null }) {
   if (!pulse || pulse.errors?.length && !pulse.counting) {
     return (
       <section className="panel" style={{ padding: 18, marginBottom: 24 }}>
@@ -159,6 +172,7 @@ export default function PulsePanel({ pulse, rows = [], legacy = [] }) {
             <span>Where readers came from</span>
             <span className="pulse-fig">Readers</span>
             <span className="pulse-fig">From search</span>
+            <span className="pulse-fig">DR</span>
           </div>
           {counted.map(({ row, p }) => {
             const src = p.sources || {};
@@ -189,10 +203,17 @@ export default function PulsePanel({ pulse, rows = [], legacy = [] }) {
                   {pct(search, total)}
                   <small>{int(search)}</small>
                 </span>
+                <Dr r={dr?.bySlug?.[row.slug]} />
               </div>
             );
           })}
-          {legacy.length > 0 && <LegacyRows legacy={legacy} />}
+          {legacy.length > 0 && <LegacyRows legacy={legacy} dr={dr} />}
+          {dr && (
+            <p className="pulse-attrib">
+              DR: <a href="https://ahrefs.com/" target="_blank" rel="noreferrer">Domain Rating by Ahrefs</a> · hover a
+              figure for the day it was taken
+            </p>
+          )}
         </div>
       ) : (
         <p className="micro" style={{ margin: 0 }}>
