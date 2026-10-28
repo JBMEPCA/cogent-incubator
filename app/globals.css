@@ -6482,3 +6482,13 @@ section.gc-panel {
 .pulse-row-legacy .pulse-dr { color: var(--muted); }
 .pulse-attrib { margin: 12px 0 0; font-size: 11px; color: var(--muted); }
 .pulse-attrib a { color: var(--muted); text-decoration: underline; }
+.pulse-pill {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--line-bright);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}

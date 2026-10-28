@@ -60,14 +60,58 @@ function Dr({ r }) {
   );
 }
 
-function LegacyRows({ legacy, dr }) {
+function DrCredit() {
+  return (
+    <p className="pulse-attrib">
+      DR: <a href="https://ahrefs.com/" target="_blank" rel="noreferrer">Domain Rating by Ahrefs</a> · hover a figure
+      for the day it was taken
+    </p>
+  );
+}
+
+// Its own panel, never rows in the Pulse list: every figure here is GA4, for
+// the established titles and the fleet alike, because the established titles
+// run no Pulse and a Pulse count beside a GA4 one flatters the fleet about
+// threefold (GA4 misses the readers who never accept the consent banner).
+export function ComparePanel({ legacy = [], dr = null, since = null }) {
+  if (!legacy.length) return null;
   const max = legacy[0]?.views || 1;
   return (
-    <>
-      <div className="pulse-legacy-head">
-        For comparison: CIM&rsquo;s established titles against our three biggest new ones · GA4 page views, every
-        page, same dates, one scale
+    <section className="panel" style={{ padding: 18, marginBottom: 24 }}>
+      <h3 style={{ margin: "0 0 4px", fontSize: 14, display: "flex", alignItems: "center", gap: 8 }}>
+        Against CIM&rsquo;s established titles <span className="pulse-pill">GA4</span>
+      </h3>
+      <p style={{ margin: "0 0 12px", fontSize: 13, color: "var(--muted)", maxWidth: 820 }}>
+        Our three biggest new titles beside CIM&rsquo;s established ones, all measured the same way: GA4 page views,
+        every page, {since ? `since ${since}` : "same dates"}, drawn on one scale so a bar&rsquo;s length is its real
+        size.
+      </p>
+      <div className="pulse-list">
+        <div className="pulse-legend">
+          {SOURCES.filter((s) => s.key !== "internal").map((s) => (
+            <span key={s.key}>
+              <i style={{ background: s.color }} />
+              {s.label}
+            </span>
+          ))}
+        </div>
+        <div className="pulse-row pulse-head">
+          <span>Title</span>
+          <span>Where visitors came from</span>
+          <span className="pulse-fig">Page views</span>
+          <span className="pulse-fig">From search</span>
+          <span className="pulse-fig">DR</span>
+        </div>
+        <LegacyRows legacy={legacy} dr={dr} max={max} />
+        {dr && <DrCredit />}
       </div>
+    </section>
+  );
+}
+
+function LegacyRows({ legacy, dr, max }) {
+  return (
+    <>
       {legacy.map((t) => {
         const src = t.sources || {};
         const search = src.search || 0;
@@ -104,7 +148,7 @@ function LegacyRows({ legacy, dr }) {
   );
 }
 
-export default function PulsePanel({ pulse, rows = [], legacy = [], dr = null }) {
+export default function PulsePanel({ pulse, rows = [], dr = null }) {
   if (!pulse || pulse.errors?.length && !pulse.counting) {
     return (
       <section className="panel" style={{ padding: 18, marginBottom: 24 }}>
@@ -207,13 +251,7 @@ export default function PulsePanel({ pulse, rows = [], legacy = [], dr = null })
               </div>
             );
           })}
-          {legacy.length > 0 && <LegacyRows legacy={legacy} dr={dr} />}
-          {dr && (
-            <p className="pulse-attrib">
-              DR: <a href="https://ahrefs.com/" target="_blank" rel="noreferrer">Domain Rating by Ahrefs</a> · hover a
-              figure for the day it was taken
-            </p>
-          )}
+          {dr && <DrCredit />}
         </div>
       ) : (
         <p className="micro" style={{ margin: 0 }}>

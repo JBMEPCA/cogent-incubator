@@ -10,7 +10,7 @@ import { after } from "next/server";
 import { periodFrom, DEFAULT_PERIOD, PERIODS } from "@/lib/periods";
 import { fleetPulse, legacyComparison } from "@/lib/pulse";
 import { domainRatingsForPanel } from "@/lib/domain-rating";
-import PulsePanel from "./PulsePanel";
+import PulsePanel, { ComparePanel } from "./PulsePanel";
 import Scroller from "@/app/components/Scroller";
 import {
   CREDITS_PER_TITLE, cachedLinkedInStats, engagementRate, freshness, linkedInPeriod, statsHook,
@@ -680,7 +680,22 @@ export default async function GroupAnalyticsPage({ searchParams }) {
 
           {/* Fleet-wide and counted from a different start date, so it only
               appears unfiltered — see PulsePanel for why it stands apart. */}
-          {!focus && <PulsePanel pulse={pulse} rows={rows} legacy={legacy} dr={dr} />}
+          {!focus && <PulsePanel pulse={pulse} rows={rows} dr={dr} />}
+          {!focus && (
+            <ComparePanel
+              legacy={legacy}
+              dr={dr}
+              since={
+                pulse?.first
+                  ? new Date(`${pulse.first}T12:00:00Z`).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "long",
+                      timeZone: "Europe/London",
+                    })
+                  : null
+              }
+            />
+          )}
 
           <section style={grid(340)}>
             {trendCard("Users per day", audienceSpark("users"), "var(--neon-green)", "users", "No sessions recorded yet.")}
