@@ -15,11 +15,11 @@ const int = (n) => Math.round(n || 0).toLocaleString("en-GB");
 const pct = (n, of) => `${Math.round((100 * (n || 0)) / (of || 1))}%`;
 
 // Fixed order and colours, so a segment means the same thing on every row.
-// Search leads because it is the number that grows the business; direct is
-// mostly newsletter clicks, which arrive without a referrer.
+// Direct (mostly newsletter clicks, which arrive without a referrer) is the
+// base of every bar, with search next to it.
 const SOURCES = [
-  { key: "search", label: "Search", color: "var(--neon-green)" },
   { key: "direct", label: "Direct and newsletter", color: "var(--brand-2)" },
+  { key: "search", label: "Search", color: "var(--neon-green)" },
   { key: "social", label: "Social", color: "var(--neon-violet)" },
   { key: "internal", label: "Internal", color: "var(--neon-amber)" },
   { key: "other", label: "Other", color: "var(--muted)" },
