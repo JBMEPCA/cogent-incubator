@@ -11,6 +11,7 @@ import PushLiveButton from "./PushLiveButton";
 import WithdrawButton from "./WithdrawButton";
 import { livePerformance, trendingSearchTotals } from "@/lib/trending-performance";
 import { risingCandidates, rankRising, risingSort } from "@/lib/rising-articles";
+import { sourcesForRows } from "@/lib/article-sources";
 import RisingArticles from "./RisingArticles";
 import { ShowMore, ShowMoreRows } from "./ShowMore";
 
@@ -212,6 +213,10 @@ export default async function TrendingPage({ searchParams }) {
     cost: periodSpend._sum.costUsd || 0,
     posts: live.filter((t) => !rangeStart || new Date(articleById.get(t.articleId).publishedAt) >= rangeStart).length,
   };
+  // Rising Articles as shown, and where each of its articles came from.
+  const risingShown = rankRising(rising, params.rsort);
+  const risingSources = await sourcesForRows(risingShown.rows).catch(() => ({}));
+
   // Rising Articles' own sort and period, kept apart from the summary's period.
   const hrefForRising = ({ sort, range }) => {
     const q = new URLSearchParams();
@@ -380,7 +385,7 @@ export default async function TrendingPage({ searchParams }) {
           </section>
         )}
 
-        <RisingArticles data={rankRising(rising, params.rsort)} sites={sites} trendUrls={[...perf.values()].map((m) => m?.link).filter(Boolean)} hrefFor={hrefForRising} />
+        <RisingArticles data={risingShown} sources={risingSources} sites={sites} trendUrls={[...perf.values()].map((m) => m?.link).filter(Boolean)} hrefFor={hrefForRising} />
 
         <section className="panel" style={{ padding: 18, marginBottom: 24 }}>
           <h3 style={{ margin: "0 0 4px", fontSize: 14 }}>Commissioned from trends</h3>

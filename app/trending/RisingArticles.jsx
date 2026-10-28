@@ -131,7 +131,10 @@ const bare = (u) => String(u || "").replace(/[?#].*$/, "").replace(/\/$/, "").to
 
 // hrefFor({ sort, range }) builds the page address for a control, keeping
 // everything else on the page as it is.
-export default function RisingArticles({ data, sites, trendUrls = [], hrefFor = null }) {
+// sources: { [row url]: { label, chip } } from lib/article-sources.js, so every
+// row says how the article was made: From Trending, Interview, Emailed PR,
+// Small firm story, Evergreen or News wire.
+export default function RisingArticles({ data, sites, trendUrls = [], hrefFor = null, sources = {} }) {
   const fromTrending = new Set(trendUrls.map(bare));
   const { dates = [], rows = [], errors = [], sort = "rising" } = data || {};
   const range = risingRange(data?.range);
@@ -199,7 +202,12 @@ export default function RisingArticles({ data, sites, trendUrls = [], hrefFor = 
                   <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 4 }}>
                     {site && <SiteMark site={site} size={18} showStatus={false} />}
                     <span className="micro">{site?.name}</span>
-                    {fromTrending.has(bare(r.url)) && <span className="chip chip-content" style={{ fontSize: 9, padding: "1px 7px" }}>From Trending</span>}
+                    {(() => {
+                      // The database match first; the trending URL list is the
+                      // fallback for a trending piece whose slug did not match.
+                      const s = sources[r.url] || (fromTrending.has(bare(r.url)) ? { label: "From Trending", chip: "chip-content" } : null);
+                      return s ? <span className={`chip ${s.chip}`} style={{ fontSize: 9, padding: "1px 7px" }}>{s.label}</span> : null;
+                    })()}
                   </div>
                   <a href={r.url} target="_blank" rel="noreferrer noopener" style={{ color: "var(--text)", fontSize: 14, fontWeight: 600, textDecoration: "none" }}>
                     {r.title} ↗
