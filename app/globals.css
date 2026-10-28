@@ -6423,3 +6423,12 @@ section.gc-panel {
 .adv-tab.is-active {
   box-shadow: none;
 }
+
+
+/* Rising Articles: heading with its sort and period controls. */
+.rising-head { display: flex; justify-content: space-between; align-items: center; gap: 10px 16px; flex-wrap: wrap; }
+.rising-controls { display: flex; gap: 10px; flex-wrap: wrap; }
+@media (max-width: 640px) {
+  .rising-controls { width: 100%; }
+  .rising-controls .trend-range { flex-wrap: wrap; }
+}

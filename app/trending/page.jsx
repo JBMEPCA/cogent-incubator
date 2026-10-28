@@ -10,7 +10,7 @@ import AutoToggle from "./AutoToggle";
 import PushLiveButton from "./PushLiveButton";
 import WithdrawButton from "./WithdrawButton";
 import { livePerformance, trendingSearchTotals } from "@/lib/trending-performance";
-import { risingArticles } from "@/lib/rising-articles";
+import { risingCandidates, rankRising, risingSort } from "@/lib/rising-articles";
 import RisingArticles from "./RisingArticles";
 import { ShowMore, ShowMoreRows } from "./ShowMore";
 
@@ -149,7 +149,7 @@ export default async function TrendingPage({ searchParams }) {
     }),
     prisma.trendingTopic.findFirst({ orderBy: { lastSeenAt: "desc" }, select: { lastSeenAt: true } }),
     prisma.trendingTopic.count({ where: { lastSeenAt: { gte: since }, status: "irrelevant" } }),
-    risingArticles().catch((e) => ({ dates: [], rows: [], errors: [e.message] })),
+    risingCandidates(params.rrange).catch((e) => ({ dates: [], rows: [], errors: [e.message] })),
   ]);
 
   // Articles are tenanted; this is the fleet view, so read them across titles.
@@ -211,6 +211,17 @@ export default async function TrendingPage({ searchParams }) {
     unmatched: Math.max(0, search.total - search.matched),
     cost: periodSpend._sum.costUsd || 0,
     posts: live.filter((t) => !rangeStart || new Date(articleById.get(t.articleId).publishedAt) >= rangeStart).length,
+  };
+  // Rising Articles' own sort and period, kept apart from the summary's period.
+  const hrefForRising = ({ sort, range }) => {
+    const q = new URLSearchParams();
+    for (const [k, v] of Object.entries(params)) if (typeof v === "string" && k !== "rsort" && k !== "rrange") q.set(k, v);
+    const nextRange = range ?? params.rrange ?? "7d";
+    const nextSort = risingSort(sort ?? params.rsort, nextRange);
+    if (nextRange !== "7d") q.set("rrange", nextRange);
+    if (nextSort !== "rising") q.set("rsort", nextSort);
+    const qs = q.toString();
+    return qs ? `/trending?${qs}` : "/trending";
   };
   const hrefForRange = (key) => {
     const q = new URLSearchParams();
@@ -369,7 +380,7 @@ export default async function TrendingPage({ searchParams }) {
           </section>
         )}
 
-        <RisingArticles data={rising} sites={sites} trendUrls={[...perf.values()].map((m) => m?.link).filter(Boolean)} />
+        <RisingArticles data={rankRising(rising, params.rsort)} sites={sites} trendUrls={[...perf.values()].map((m) => m?.link).filter(Boolean)} hrefFor={hrefForRising} />
 
         <section className="panel" style={{ padding: 18, marginBottom: 24 }}>
           <h3 style={{ margin: "0 0 4px", fontSize: 14 }}>Commissioned from trends</h3>
