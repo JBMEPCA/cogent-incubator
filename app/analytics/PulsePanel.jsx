@@ -44,7 +44,67 @@ function daysOf(iso) {
   return Math.max(1, Math.round((today - start) / 864e5) + 1);
 }
 
-export default function PulsePanel({ pulse, rows = [] }) {
+// CIM's established titles beside the fleet's three biggest, all measured the
+// same way (GA4 page views, every page, same dates) and drawn on ONE scale, so
+// a bar's length really is its size against the others. The fleet rows keep
+// their colour; the established titles are greyed so they read as context.
+// Ahrefs Domain Rating, with the day it was taken on hover. Below 10 it keeps
+// one decimal, because 0.1 and 0 are different stories on a young title.
+function Dr({ r }) {
+  if (!r) return <span className="pulse-fig pulse-dr">–</span>;
+  const v = r.dr < 10 ? Math.round(r.dr * 10) / 10 : Math.round(r.dr);
+  return (
+    <span className="pulse-fig pulse-dr" title={`Domain Rating by Ahrefs, ${r.at}`}>
+      {v}
+    </span>
+  );
+}
+
+function LegacyRows({ legacy, dr }) {
+  const max = legacy[0]?.views || 1;
+  return (
+    <>
+      <div className="pulse-legacy-head">
+        For comparison: CIM&rsquo;s established titles against our three biggest new ones · GA4 page views, every
+        page, same dates, one scale
+      </div>
+      {legacy.map((t) => {
+        const src = t.sources || {};
+        const search = src.search || 0;
+        return (
+          <div key={t.name} className={`pulse-row pulse-row-compare${t.fleet ? "" : " pulse-row-legacy"}`}>
+            <span className="pulse-name">
+              <span
+                className={`pulse-dot${t.fleet ? "" : " pulse-dot-legacy"}`}
+                style={t.fleet ? { background: t.accentHex || "var(--brand-2)" } : undefined}
+              />
+              <span className="pulse-title">{t.name}</span>
+            </span>
+            <span className="pulse-track">
+              <span className="pulse-bar" style={{ width: `${(t.views / max) * 100}%` }}>
+                {SOURCES.filter((s) => src[s.key]).map((s) => (
+                  <span
+                    key={s.key}
+                    title={`${s.label}: ${int(src[s.key])} (${pct(src[s.key], t.views)})`}
+                    style={{ flex: src[s.key], background: s.color }}
+                  />
+                ))}
+              </span>
+            </span>
+            <span className="pulse-fig pulse-readers">{int(t.views)}</span>
+            <span className="pulse-fig pulse-search">
+              {pct(search, t.views)}
+              <small>{int(search)}</small>
+            </span>
+            <Dr r={t.fleet ? dr?.bySlug?.[t.slug] : dr?.byName?.[t.name]} />
+          </div>
+        );
+      })}
+    </>
+  );
+}
+
+export default function PulsePanel({ pulse, rows = [], legacy = [], dr = null }) {
   if (!pulse || pulse.errors?.length && !pulse.counting) {
     return (
       <section className="panel" style={{ padding: 18, marginBottom: 24 }}>
@@ -112,6 +172,7 @@ export default function PulsePanel({ pulse, rows = [] }) {
             <span>Where readers came from</span>
             <span className="pulse-fig">Readers</span>
             <span className="pulse-fig">From search</span>
+            <span className="pulse-fig">DR</span>
           </div>
           {counted.map(({ row, p }) => {
             const src = p.sources || {};
@@ -142,9 +203,17 @@ export default function PulsePanel({ pulse, rows = [] }) {
                   {pct(search, total)}
                   <small>{int(search)}</small>
                 </span>
+                <Dr r={dr?.bySlug?.[row.slug]} />
               </div>
             );
           })}
+          {legacy.length > 0 && <LegacyRows legacy={legacy} dr={dr} />}
+          {dr && (
+            <p className="pulse-attrib">
+              DR: <a href="https://ahrefs.com/" target="_blank" rel="noreferrer">Domain Rating by Ahrefs</a> · hover a
+              figure for the day it was taken
+            </p>
+          )}
         </div>
       ) : (
         <p className="micro" style={{ margin: 0 }}>

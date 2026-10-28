@@ -8,7 +8,8 @@ import { fleetAnalytics, summarise } from "@/lib/fleet-analytics";
 import PeriodFilter from "@/app/components/PeriodFilter";
 import { after } from "next/server";
 import { periodFrom, DEFAULT_PERIOD, PERIODS } from "@/lib/periods";
-import { fleetPulse } from "@/lib/pulse";
+import { fleetPulse, legacyComparison } from "@/lib/pulse";
+import { domainRatingsForPanel } from "@/lib/domain-rating";
 import PulsePanel from "./PulsePanel";
 import Scroller from "@/app/components/Scroller";
 import {
@@ -268,6 +269,18 @@ export default async function GroupAnalyticsPage({ searchParams }) {
     pulse = await fleetPulse();
   } catch {
     pulse = null;
+  }
+  let legacy = [];
+  try {
+    legacy = await legacyComparison(pulse?.first || null);
+  } catch {
+    legacy = [];
+  }
+  let dr = null;
+  try {
+    dr = await domainRatingsForPanel();
+  } catch {
+    dr = null;
   }
 
   let data;
@@ -667,7 +680,7 @@ export default async function GroupAnalyticsPage({ searchParams }) {
 
           {/* Fleet-wide and counted from a different start date, so it only
               appears unfiltered — see PulsePanel for why it stands apart. */}
-          {!focus && <PulsePanel pulse={pulse} rows={rows} />}
+          {!focus && <PulsePanel pulse={pulse} rows={rows} legacy={legacy} dr={dr} />}
 
           <section style={grid(340)}>
             {trendCard("Users per day", audienceSpark("users"), "var(--neon-green)", "users", "No sessions recorded yet.")}
