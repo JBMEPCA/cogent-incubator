@@ -42,7 +42,7 @@ export async function GET(request, { params }) {
     if (!interview?.imageUrl) return new Response("Picture unavailable", { status: 502 });
     const dims = want.format === "instagram" ? { width: 1080, height: 1350 } : { width: 1200, height: 628 };
     try {
-      const res = await fetch(socialImage(interview.imageUrl, dims), { signal: AbortSignal.timeout(20000) });
+      const res = await fetch(await socialImage(interview.imageUrl, dims), { signal: AbortSignal.timeout(20000) });
       if (!res.ok) throw new Error(`proxy ${res.status}`);
       return new Response(Buffer.from(await res.arrayBuffer()), {
         headers: { "content-type": "image/jpeg", "cache-control": "public, max-age=300", "x-overlay": "fallback" },
