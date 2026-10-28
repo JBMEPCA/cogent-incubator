@@ -44,24 +44,28 @@ function daysOf(iso) {
   return Math.max(1, Math.round((today - start) / 864e5) + 1);
 }
 
-// CIM's established titles, greyed and on their own scale beneath the fleet.
-// They are tens of thousands of views to the fleet's hundreds, so a shared
-// scale would flatten every fleet bar to a sliver; the numbers carry the
-// comparison. Their figure is GA4 page views, so it is a yardstick only.
+// CIM's established titles beside the fleet's three biggest, all measured the
+// same way (GA4 page views, every page, same dates) and drawn on ONE scale, so
+// a bar's length really is its size against the others. The fleet rows keep
+// their colour; the established titles are greyed so they read as context.
 function LegacyRows({ legacy }) {
   const max = legacy[0]?.views || 1;
   return (
     <>
       <div className="pulse-legacy-head">
-        For comparison: CIM&rsquo;s established titles · GA4 page views, every page, same dates · own scale
+        For comparison: CIM&rsquo;s established titles against our three biggest new ones · GA4 page views, every
+        page, same dates, one scale
       </div>
       {legacy.map((t) => {
         const src = t.sources || {};
         const search = src.search || 0;
         return (
-          <div key={t.name} className="pulse-row pulse-row-legacy">
+          <div key={t.name} className={`pulse-row pulse-row-compare${t.fleet ? "" : " pulse-row-legacy"}`}>
             <span className="pulse-name">
-              <span className="pulse-dot pulse-dot-legacy" />
+              <span
+                className={`pulse-dot${t.fleet ? "" : " pulse-dot-legacy"}`}
+                style={t.fleet ? { background: t.accentHex || "var(--brand-2)" } : undefined}
+              />
               <span className="pulse-title">{t.name}</span>
             </span>
             <span className="pulse-track">

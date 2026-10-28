@@ -6476,3 +6476,5 @@ section.gc-panel {
 .pulse-row-legacy .pulse-bar { filter: saturate(0.35); }
 .pulse-row-legacy .pulse-search { color: var(--muted); }
 .pulse-dot-legacy { background: transparent; border: 1.5px solid var(--muted); box-sizing: border-box; }
+/* In the comparison section a fleet bar can be a few pixels long; keep it visible. */
+.pulse-row-compare .pulse-bar { min-width: 6px; }
