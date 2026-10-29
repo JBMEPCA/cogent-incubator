@@ -6492,3 +6492,22 @@ section.gc-panel {
   letter-spacing: 0.06em;
   color: var(--muted);
 }
+
+/* Latest eNewsletter stats, added 29 October 2026. */
+
+/* The subject line under an issue date. Narrow enough that a long headline
+   cannot push the ten number columns off the side of the card. */
+.lists-table .lists-file {
+  max-width: 260px;
+  white-space: nowrap;
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+/* An issue sent today, so this mornings send reads differently from Mondays
+   at a glance rather than having to read every date. */
+.lists-today {
+  color: var(--neon-green);
+  font-weight: 600;
+}
