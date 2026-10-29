@@ -1,5 +1,5 @@
 // Gmail signatures carrying each title's masthead, on every send-as identity:
-// the five title mailboxes, and the hub's send-as addresses for the other four.
+// the ten title mailboxes, and the hub's send-as addresses for the other nine.
 //
 //   node --env-file=.env --import ./scripts/_register.mjs scripts/set-gmail-signatures.mjs          dry run
 //   node --env-file=.env --import ./scripts/_register.mjs scripts/set-gmail-signatures.mjs --apply
@@ -26,15 +26,28 @@ const TITLES = {
   "jb@golfresortmagazine.com": { slug: "golf-resort-magazine", name: "Golf Resort Magazine", domain: "golfresortmagazine.com", accent: "#15694A", logoHeight: 28 },
   "jb@barberingbusiness.com": { slug: "barbering-business", name: "Barbering Business", domain: "barberingbusiness.com", accent: "#6E2B2B", logoHeight: 22 },
   "jb@airportbusinessmagazine.com": { slug: "airport-business-magazine", name: "Airport Business Magazine", domain: "airportbusinessmagazine.com", accent: "#123B66", logoHeight: 26 },
+  // The 18 Sep 2026 wave, added 29 Oct.
+  "jb@gymbusinessnews.com": { slug: "gym-business-news", name: "Gym Business News", domain: "gymbusinessnews.com", accent: "#D62828", logoHeight: 26 },
+  "jb@nurserydaily.com": { slug: "nursery-daily", name: "Nursery Daily", domain: "nurserydaily.com", accent: "#D6336C", logoHeight: 26 },
+  "jb@seniorlifestylebusiness.com": { slug: "senior-lifestyle-business", name: "Senior Lifestyle Business", domain: "seniorlifestylebusiness.com", accent: "#7A1F3D", logoHeight: 22 },
+  "jb@dentalbusinessnews.com": { slug: "dental-business-news", name: "Dental Business News", domain: "dentalbusinessnews.com", accent: "#0B5E63", logoHeight: 20 },
+  "jb@smartfarmingnews.com": { slug: "smart-farming-news", name: "Smart Farming News", domain: "smartfarmingnews.com", accent: "#2F6B2F", logoHeight: 24 },
 };
 
 // Heights differ because the marks differ: a long one-line mark at the height
 // of a compact two-line lockup would run half the width of the email.
-function signature(t) {
+//
+// press@<domain> is an alias on the jb@ account, with its own send-as identity,
+// so it gets its own signature: the press desk rather than a named editor.
+function signature(t, press = false) {
+  const who = press
+    ? `<strong>Press Desk</strong><br>` +
+      `<span style="color:#6b7280">${t.name}</span><br>` +
+      `<a href="mailto:press@${t.domain}" style="color:${t.accent};text-decoration:none">press@${t.domain}</a> &middot; `
+    : `<strong>${NAME}</strong><br>` + `<span style="color:#6b7280">Editor, ${t.name}</span><br>`;
   return (
     `<div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;color:#1c2027">` +
-    `<strong>${NAME}</strong><br>` +
-    `<span style="color:#6b7280">Editor, ${t.name}</span><br>` +
+    who +
     `<a href="https://${t.domain}" style="color:${t.accent};text-decoration:none">${t.domain}</a>` +
     `</div>` +
     `<div style="margin-top:10px">` +
@@ -58,12 +71,15 @@ for (const mailbox of Object.keys(TITLES)) {
   }).then((r) => r.json());
 
   for (const identity of list.sendAs || []) {
-    const t = TITLES[identity.sendAsEmail];
+    const press = identity.sendAsEmail.startsWith("press@");
+    const t = press
+      ? Object.values(TITLES).find((x) => identity.sendAsEmail === `press@${x.domain}`)
+      : TITLES[identity.sendAsEmail];
     if (!t) {
       console.log(`${mailbox} :: ${identity.sendAsEmail}  skipped, not a title address`);
       continue;
     }
-    const html = signature(t);
+    const html = signature(t, press);
     if (!APPLY) {
       console.log(`${mailbox} :: ${identity.sendAsEmail}  would set ${t.name} signature (${html.length} chars)`);
       continue;

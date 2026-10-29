@@ -105,7 +105,10 @@ mandatory wait, and everything hangs off it.
 4. **Google Workspace: add the domain as a SECONDARY domain to the existing org.**
    Never a new Workspace. The existing domain-wide delegation then covers the new
    mailbox with zero Google Cloud work; a new org means setting all of it up again.
-5. **Create the intake user** (`news@…`) and generate DKIM.
+5. **Create the intake user** (`news@…`) and generate DKIM. Once the jb@
+   mailbox exists, add it to `TITLES` in `scripts/set-gmail-signatures.mjs` and
+   run it with `--apply`. The 18 Sep 2026 wave went six weeks with blank
+   signatures because nobody did this; the script is idempotent, so rerun freely.
 6. **Write the content plan and the source list** while you wait.
 
    **A Google News query is not a source.** It yields a headline and a redirect
