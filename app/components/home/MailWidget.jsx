@@ -39,6 +39,10 @@ export function MailSearch({ q = "", icon = true }) {
   );
 }
 
+// Website enquiries by what the form's dropdown said, so an advertiser stands
+// out from a correction at a glance.
+const ENQUIRY_TAG = { advertising: "ADVERTISING", editorial: "EDITORIAL", correction: "CORRECTION", other: "ENQUIRY" };
+
 export function MailRow({ m }) {
   const t = shortTitle(m.site.name);
   return (
@@ -51,6 +55,11 @@ export function MailRow({ m }) {
       </span>
       <span className="dw-mmeta">
         {m.kind === "backlink" && <span className="dw-link-tag" title="Reply from a backlink contact">LINK</span>}
+        {m.kind === "enquiry" && (
+          <span className={`dw-enq-tag dw-enq-${m.enquiryType || "other"}`} title="Sent through the website's enquiry form">
+            {ENQUIRY_TAG[m.enquiryType] || ENQUIRY_TAG.other}
+          </span>
+        )}
         <span className="dw-tchip" style={{ background: m.site.accentHex }} title={m.site.name}>
           {t.label}
         </span>
@@ -66,6 +75,7 @@ export default async function MailWidget({ sites, canEdit, max = 25 }) {
   const { items, unavailable } = await fleetMail(sites);
   const unread = items.filter((m) => m.unread).length;
   const backlinks = items.filter((m) => m.kind === "backlink").length;
+  const enquiries = items.filter((m) => m.kind === "enquiry").length;
 
   return (
     <Widget
@@ -102,6 +112,15 @@ export default async function MailWidget({ sites, canEdit, max = 25 }) {
           </svg>
           <span>
             <b className="num">{backlinks}</b> backlink {backlinks === 1 ? "reply" : "replies"}
+          </span>
+        </Link>
+        <Link href="/mail?show=enquiry" className="dw-mtile">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e0a030" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M4 5.5h16v10H9l-5 4z" />
+            <path d="M8 9.5h8M8 12.5h5" />
+          </svg>
+          <span>
+            <b className="num">{enquiries}</b> website {enquiries === 1 ? "enquiry" : "enquiries"}
           </span>
         </Link>
       </div>

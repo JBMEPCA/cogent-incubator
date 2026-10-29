@@ -69,6 +69,10 @@ export default function BlackBookRow({ contact: c, sites }) {
             <span className="micro">Follow up on</span>
             <input name="followUpDate" type="date" defaultValue={c.followUpDate ? c.followUpDate.slice(0, 10) : ""} />
           </label>
+          <label className="field">
+            <span className="micro">Sales person</span>
+            <input name="salesPerson" list="bb-sales-people" defaultValue={c.salesPerson || ""} autoComplete="off" />
+          </label>
 
           <BlackBookTitlePills sites={sites} selected={c.siteIds} />
 
@@ -112,6 +116,9 @@ export default function BlackBookRow({ contact: c, sites }) {
         </span>
       </div>
       <div className="bb-tags">
+        <span className={`chip ${c.salesPerson ? "bb-seller-set" : "chip-general"} bb-seller`} title="Sales person allocated">
+          {c.salesPerson ? `👤 ${c.salesPerson}` : "👤 Not allocated"}
+        </span>
         {c.siteIds.length === 0 ? (
           <span className="chip chip-brand">🌍 All titles</span>
         ) : (

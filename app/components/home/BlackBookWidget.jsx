@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { shortTitle } from "@/lib/black-book-labels";
+import { shortTitle, isDue, dueFirst } from "@/lib/black-book-labels";
 import { Widget, WidgetNote } from "./Widget";
 import BlackBookQuickAdd from "./BlackBookQuickAdd";
 
@@ -7,7 +7,7 @@ import BlackBookQuickAdd from "./BlackBookQuickAdd";
 // follow-up, and open the full book for everything else (notes, editing,
 // export). The full book is the same component the home page used to show.
 
-const due = (c) => !!c.followUpDate && c.followUpDate.getTime() <= Date.now();
+const due = (c) => isDue(c.followUpDate);
 
 const fmtDay = (d) =>
   d.toLocaleDateString("en-GB", { timeZone: "Europe/London", day: "numeric", month: "short" });
@@ -25,11 +25,9 @@ export default async function BlackBookWidget({ sites }) {
   const pillSites = sites.map((s) => ({ id: s.id, name: s.name })).sort((a, b) => a.name.localeCompare(b.name));
   const byId = Object.fromEntries(sites.map((s) => [s.id, s.name]));
 
-  // Follow-ups that are due come first: that is what someone opening the
-  // dashboard can act on. Then the newest additions.
-  const shown = contacts
-    ? [...contacts.filter(due), ...contacts.filter((c) => !due(c))]
-    : [];
+  // Follow-ups that are due come first, most overdue at the top: that is
+  // what someone opening the dashboard can act on. Then the newest additions.
+  const shown = contacts ? dueFirst(contacts) : [];
   const dueCount = contacts ? contacts.filter(due).length : 0;
 
   return (
@@ -74,6 +72,7 @@ export default async function BlackBookWidget({ sites }) {
                       <b>{c.company}</b>
                       <span className="dw-bb-who">
                         {c.name || c.email} · {titles}
+                        {c.salesPerson ? ` · ${c.salesPerson}` : ""}
                       </span>
                     </span>
                     {due(c) ? (

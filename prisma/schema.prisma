@@ -405,6 +405,9 @@ model BlackBookContact {
   siteIds      String[]  @default([])
   notes        String?
   followUpDate DateTime?
+  // Who in sales owns this contact. A name rather than a User id: the
+  // salespeople are not all dashboard accounts.
+  salesPerson  String?
   source       String    @default("manual")
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt

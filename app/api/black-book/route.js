@@ -26,12 +26,13 @@ export async function GET() {
   const names = new Map(sites.map((s) => [s.id, s.name]));
 
   const rows = [
-    ["Company", "Name", "Email", "Relevant to", "Notes", "Follow up", "Added", "Source"],
+    ["Company", "Name", "Email", "Relevant to", "Sales person", "Notes", "Follow up", "Added", "Source"],
     ...contacts.map((c) => [
       c.company,
       c.name,
       c.email,
       c.siteIds.length ? c.siteIds.map((id) => names.get(id) || "Removed title").join("; ") : "All titles",
+      c.salesPerson,
       c.notes,
       day(c.followUpDate),
       day(c.createdAt),

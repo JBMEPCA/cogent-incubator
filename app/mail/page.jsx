@@ -11,12 +11,14 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "Mail worth reading" };
 
 // The full mailbox behind the home page widget: every title's mail worth
-// reading, searchable, and filterable to unread or backlink replies.
+// reading, searchable, and filterable to unread, backlink replies or website
+// enquiries.
 
 const FILTERS = [
   { key: "", label: "All" },
   { key: "unread", label: "Unread" },
   { key: "backlink", label: "Backlink replies" },
+  { key: "enquiry", label: "Website enquiries" },
 ];
 
 export default async function MailPage({ searchParams }) {
@@ -31,6 +33,7 @@ export default async function MailPage({ searchParams }) {
   const shown = items.filter((m) => {
     if (show === "unread" && !m.unread) return false;
     if (show === "backlink" && m.kind !== "backlink") return false;
+    if (show === "enquiry" && m.kind !== "enquiry") return false;
     if (!needle) return true;
     return [m.fromParsed.name, m.fromParsed.email, m.subject, m.site.name]
       .filter(Boolean)

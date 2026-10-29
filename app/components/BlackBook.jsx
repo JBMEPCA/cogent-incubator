@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
+import { dueFirst, isDue } from "@/lib/black-book-labels";
 import BlackBookForm from "./BlackBookForm";
-import BlackBookRow from "./BlackBookRow";
+import BlackBookList from "./BlackBookList";
 
 // The Black Book on the fleet overview: advertising contacts (mostly agencies
 // asking for a media pack) kept so someone can come back to them later.
@@ -9,15 +10,23 @@ import BlackBookRow from "./BlackBookRow";
 // Outside the component so the follow-up check is data, not render logic.
 async function loadContacts() {
   const rows = await prisma.blackBookContact.findMany({ orderBy: { createdAt: "desc" } });
-  const now = Date.now();
+  const now = new Date();
   // Dates go to client rows, so they travel as ISO strings.
-  return rows.map((c) => ({
+  return dueFirst(rows, now).map((c) => ({
     ...c,
     createdAt: c.createdAt.toISOString(),
     updatedAt: c.updatedAt.toISOString(),
     followUpDate: c.followUpDate ? c.followUpDate.toISOString() : null,
-    due: !!c.followUpDate && c.followUpDate.getTime() <= now,
+    due: isDue(c.followUpDate, now),
   }));
+}
+
+// The names the sales person box suggests: everyone already allocated, plus
+// the dashboard's accounts. Free text still works for someone new.
+async function loadSalesPeople(contacts) {
+  const users = await prisma.user.findMany({ select: { name: true } }).catch(() => []);
+  const names = [...contacts.map((c) => c.salesPerson), ...users.map((u) => u.name)];
+  return [...new Set(names.filter(Boolean).map((n) => n.trim()))].sort((a, b) => a.localeCompare(b));
 }
 
 export default async function BlackBook({ sites }) {
@@ -29,6 +38,9 @@ export default async function BlackBook({ sites }) {
     // Table not migrated yet. The rest of the overview must still render.
     unavailable = true;
   }
+  const suggested = await loadSalesPeople(contacts);
+  // The filter offers only people who actually have contacts.
+  const allocated = [...new Set(contacts.map((c) => c.salesPerson).filter(Boolean))].sort((a, b) => a.localeCompare(b));
 
   const pillSites = sites
     .map((s) => ({ id: s.id, name: s.name }))
@@ -48,19 +60,20 @@ export default async function BlackBook({ sites }) {
         )}
       </div>
 
+      {/* Shared by the add form and every row's edit form. */}
+      <datalist id="bb-sales-people">
+        {suggested.map((n) => (
+          <option key={n} value={n} />
+        ))}
+      </datalist>
+
       {unavailable ? (
         <p className="field-err">The Black Book table isn&apos;t in the database yet.</p>
       ) : (
         <BlackBookForm sites={pillSites} />
       )}
 
-      {contacts.length > 0 && (
-        <div className="bb-list">
-          {contacts.map((c) => (
-            <BlackBookRow key={c.id} contact={c} sites={pillSites} />
-          ))}
-        </div>
-      )}
+      {contacts.length > 0 && <BlackBookList contacts={contacts} sites={pillSites} salesPeople={allocated} />}
     </section>
   );
 }

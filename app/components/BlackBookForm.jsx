@@ -41,6 +41,10 @@ export default function BlackBookForm({ sites }) {
         <span className="micro">Follow up on</span>
         <input name="followUpDate" type="date" />
       </label>
+      <label className="field">
+        <span className="micro">Sales person</span>
+        <input name="salesPerson" list="bb-sales-people" placeholder="Who owns this contact" autoComplete="off" />
+      </label>
 
       <BlackBookTitlePills sites={sites} />
 
