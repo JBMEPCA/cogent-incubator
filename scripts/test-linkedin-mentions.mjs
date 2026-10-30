@@ -7,7 +7,7 @@
  *
  * Run: node --env-file=.env scripts/test-linkedin-mentions.mjs
  */
-import { vanityCandidates, renderCommentary, escapeCommentary } from "../lib/linkedin-mentions.js";
+import { vanityCandidates, nameCandidates, sameName, renderCommentary, escapeCommentary } from "../lib/linkedin-mentions.js";
 
 let failed = 0;
 const check = (name, got, want) => {
@@ -48,6 +48,33 @@ check(
 );
 check("no mention, plain escape", renderCommentary("Costs (net) rose.", []), escapeCommentary("Costs (net) rose."));
 check("hashtags survive", renderCommentary("Done. #barbering", []), "Done. #barbering");
+
+// Names as posts write them against names as LinkedIn holds them: the pairs
+// the 30 Oct 2026 audit found dropped, and two that must stay apart.
+check("The prefix ignored", sameName("The Dalaman Golf Club", "Dalaman Golf Club"), true);
+check("acronym in brackets", sameName("Society of Motor Manufacturers and Traders (SMMT)", "SMMT"), true);
+check("gloss after a dash", sameName("ACI World - Airports Council International", "ACI World"), true);
+check("legal suffix ignored", sameName("GXO Logistics, Inc.", "GXO Logistics"), true);
+check("run together", sameName("CloseBrothers", "Close Brothers"), true);
+check("'by' owner", sameName("ArrowXL by JP Home", "ArrowXL"), true);
+check("different company", sameName("Hilton Istanbul Airport", "Hilton"), false);
+check("shorter is not same", sameName("Dental Elite Valuers, Brokers & Recruiters", "Dental"), false);
+check("trade words after the name", sameName("Clyde Munro Dental Group", "Clyde Munro"), true);
+check("acronym needs a proven website", sameName("National Sheep Association", "NSA"), false);
+check("acronym with a proven website", sameName("National Sheep Association", "NSA", { loose: true }), true);
+check("prefix needs a proven website", sameName("PTx Trimble", "PTx"), false);
+check("prefix with a proven website", sameName("PTx Trimble", "PTx", { loose: true }), true);
+check("place after a brand is not trade words", sameName("Hilton Istanbul Airport", "Hilton"), false);
+has("one-word brand tries a UK page", nameCandidates("Evri"), "evri-uk");
+has("name guess with the", nameCandidates("The Dalaman Golf Club"), "the-dalaman-golf-club");
+has("name guess without the", nameCandidates("The Dalaman Golf Club"), "dalaman-golf-club");
+
+// The tag carries LinkedIn's full name, since LinkedIn only links an exact match.
+check(
+  "written name swapped for LinkedIn's",
+  renderCommentary("SMMT says registrations rose.", [{ urn: "urn:li:organization:1", name: "Society of Motor Manufacturers and Traders (SMMT)", written: "SMMT" }]),
+  "@[Society of Motor Manufacturers and Traders (SMMT)](urn:li:organization:1) says registrations rose."
+);
 
 console.log(failed ? `\n${failed} FAILED` : "\nall passed");
 process.exit(failed ? 1 : 0);
