@@ -1,4 +1,5 @@
-// Readers the sites counted for themselves.
+// Visits the sites counted for themselves. "Readers" until Nov 2026, renamed
+// because a count of page visits is not a count of people.
 //
 // This began life as a column in the comparison table and had to come out.
 // Every other column there is a 28 day window; this one started counting on 2
@@ -15,10 +16,12 @@ const int = (n) => Math.round(n || 0).toLocaleString("en-GB");
 const pct = (n, of) => `${Math.round((100 * (n || 0)) / (of || 1))}%`;
 
 // Fixed order and colours, so a segment means the same thing on every row.
-// Direct (mostly newsletter clicks, which arrive without a referrer) is the
-// base of every bar, with search next to it.
+// Email has its own source from Pulse 1.3.0 (newsletter links carry
+// utm_medium=email); before that, newsletter clicks arrived without a referrer
+// and were filed as direct, which is why old direct figures run so high.
 const SOURCES = [
-  { key: "direct", label: "Direct and newsletter", color: "var(--brand-2)" },
+  { key: "email", label: "Email", color: "var(--neon-red)" },
+  { key: "direct", label: "Direct", color: "var(--brand-2)" },
   { key: "search", label: "Search", color: "var(--neon-green)" },
   { key: "social", label: "Social", color: "var(--neon-violet)" },
   { key: "internal", label: "Internal", color: "var(--neon-amber)" },
@@ -150,7 +153,7 @@ export default function PulsePanel({ pulse, rows = [], dr = null }) {
   if (!pulse || pulse.errors?.length && !pulse.counting) {
     return (
       <section className="panel" style={{ padding: 18, marginBottom: 24 }}>
-        <h3 style={{ margin: "0 0 4px", fontSize: 14 }}>Readers, counted on the sites</h3>
+        <h3 style={{ margin: "0 0 4px", fontSize: 14 }}>Visits, counted on the sites</h3>
         <p className="micro" style={{ margin: 0 }}>
           {pulse?.errors?.[0] || "Not reporting yet."}
         </p>
@@ -168,12 +171,17 @@ export default function PulsePanel({ pulse, rows = [], dr = null }) {
     .filter((x) => x.p && x.p.humans > 0)
     .sort((a, b) => b.p.humans - a.p.humans);
   const max = counted[0]?.p.humans || 1;
+  // Which titles run Pulse 1.3.0 yet, and the latest day one switched: the
+  // honest start for the fleet as a whole.
+  const switched = Object.values(pulse.bySite || {}).map((p) => p.ruleSince).filter(Boolean);
+  const rules = { count: switched.length, since: switched.sort().at(-1) || null };
 
   return (
     <section className="panel" style={{ padding: 18, marginBottom: 24 }}>
-      <h3 style={{ margin: "0 0 4px", fontSize: 14 }}>Readers, counted on the sites</h3>
+      <h3 style={{ margin: "0 0 4px", fontSize: 14 }}>Visits, counted on the sites</h3>
       <p style={{ margin: "0 0 4px", fontSize: 13, color: "var(--muted)", maxWidth: 820 }}>
-        Counted by each site itself, with no cookie, so the consent banner cannot hide anyone.{" "}
+        Counted by each site itself, with no cookie, so the consent banner cannot hide anyone. A visit counts once the
+        page has been on screen for 3 seconds, which keeps out the mail scanners that open every newsletter link.{" "}
         {started ? (
           <>
             Since <strong style={{ color: "var(--text)" }}>{started}</strong>, which is {days === 1 ? "today" : `${days} days`}.
@@ -185,10 +193,17 @@ export default function PulsePanel({ pulse, rows = [], dr = null }) {
       <p className="rising-note">
         not comparable with the 28 day figures above · there is no history before the start date, because nothing recorded one · known crawlers counted separately
       </p>
+      <p className="rising-note">
+        {rules.count === 0
+          ? "the 3 second rule and the Email source are not on the sites yet (Pulse 1.3.0), so Direct still includes newsletter clicks and scanners"
+          : `3 second rule and Email source since ${since(rules.since)}${
+              rules.count < pulse.counting ? ` on ${rules.count} of ${pulse.counting} titles` : ""
+            } · days before that counted every page load, so totals that span the change run high`}
+      </p>
 
       <div style={{ display: "flex", gap: 32, flexWrap: "wrap", margin: "0 0 14px" }}>
         <div>
-          <div className="rstat-label">Readers</div>
+          <div className="rstat-label">Visits</div>
           <div className="rstat-value" style={{ color: "var(--neon-cyan)" }}>{int(pulse.totals.humans)}</div>
           <div className="rstat-sub">across {pulse.counting} titles reporting</div>
         </div>
@@ -211,8 +226,8 @@ export default function PulsePanel({ pulse, rows = [], dr = null }) {
           </div>
           <div className="pulse-row pulse-head">
             <span>Title</span>
-            <span>Where readers came from</span>
-            <span className="pulse-fig">Readers</span>
+            <span>Where visits came from</span>
+            <span className="pulse-fig">Visits</span>
             <span className="pulse-fig">From search</span>
             <span className="pulse-fig">DR</span>
           </div>
