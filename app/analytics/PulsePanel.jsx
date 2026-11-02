@@ -83,9 +83,11 @@ export function ComparePanel({ legacy = [], dr = null, since = null }) {
         Against CIM&rsquo;s established titles <span className="pulse-pill">GA4</span>
       </h3>
       <p style={{ margin: "0 0 12px", fontSize: 13, color: "var(--muted)", maxWidth: 820 }}>
-        Our three biggest new titles beside CIM&rsquo;s established ones, all measured the same way: GA4 engaged visits
-        (10 seconds or more, a second page, or an action), {since ? `since ${since}` : "same dates"}, on one scale so
-        a bar&rsquo;s length is its real size. Engaged visits leave out the bot traffic that inflates raw page views.
+        Our three biggest new titles beside CIM&rsquo;s established ones, {since ? `since ${since}` : "same dates"}, on one
+        scale so a bar&rsquo;s length is its real size. Search is the best count we can read for each title: Search
+        Console&rsquo;s Google clicks or Pulse, whichever is higher, because GA4 on our titles only sees readers who
+        accept cookies. Every other channel is GA4 engaged visits, the one measure CIM&rsquo;s titles share with ours;
+        GA4 fixes its own rule (10 seconds, a second page, or an action) and it cannot be set to Pulse&rsquo;s 3 seconds.
       </p>
       <div className="pulse-list">
         <div className="pulse-legend">
@@ -99,7 +101,7 @@ export function ComparePanel({ legacy = [], dr = null, since = null }) {
         <div className="pulse-row pulse-head">
           <span>Title</span>
           <span>Where visitors came from</span>
-          <span className="pulse-fig">Engaged visits</span>
+          <span className="pulse-fig">Visits</span>
           <span className="pulse-fig">From search</span>
           <span className="pulse-fig">DR</span>
         </div>
@@ -137,7 +139,7 @@ function LegacyRows({ legacy, dr, max }) {
               </span>
             </span>
             <span className="pulse-fig pulse-readers">{int(t.views)}</span>
-            <span className="pulse-fig pulse-search">
+            <span className="pulse-fig pulse-search" title={`Search figure from ${t.searchFrom || "GA4"}`}>
               {pct(search, t.views)}
               <small>{int(search)}</small>
             </span>
