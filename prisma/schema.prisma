@@ -446,8 +446,9 @@ model Advertiser {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  contacts AdvertiserContact[]
-  offers   AdvertiserOffer[]
+  contacts  AdvertiserContact[]
+  offers    AdvertiserOffer[]
+  campaigns Campaign[]
 }
 
 // A person at an advertiser, normally someone in marketing. One row per email
@@ -1343,4 +1344,140 @@ model AssistantAction {
 
   @@index([conversationId, createdAt])
   @@index([status])
+}
+
+// ---------------------------------------------------------------- campaigns
+//
+// What an advertiser has actually bought, and the record that we gave it to
+// them. Fleet-wide like Advertiser: one booking (Miele across the five new
+// titles, Nov 2026) can span several titles, so siteIds is a plain list as on
+// the Black Book, with an empty list meaning every title.
+//
+// Money is held in pence, net of VAT, so monthly totals add up exactly. The
+// value is what was sold; CampaignPayment is when the money actually lands,
+// which is what a month's revenue is worked out from.
+
+model Campaign {
+  id            String     @id @default(cuid())
+  // Restrict, not Cascade: deleting a brand must never take its money records
+  // with it. The brand's delete button refuses while it has campaigns.
+  advertiser    Advertiser @relation(fields: [advertiserId], references: [id], onDelete: Restrict)
+  advertiserId  String
+  name          String
+  siteIds       String[]   @default([])
+  // booked | live | complete | cancelled
+  status        String     @default("booked")
+  bookedBy      String?
+  // Who at the client signs things off, in words: "Anna Smith, anna@miele.co.uk".
+  clientContact String?
+  startDate     DateTime?
+  endDate       DateTime?
+  valuePence    Int        @default(0)
+  // The brief as sold: placements, frequency, anything promised in the deal.
+  specMd        String?
+  notes         String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  deliverables CampaignDeliverable[]
+  payments     CampaignPayment[]
+  results      CampaignResult[]
+  assets       CampaignAsset[]
+
+  @@index([advertiserId])
+}
+
+// One thing we owe the client: a banner run, a solus send, a sponsored piece.
+// Two deadlines, because a missed one is often the client's material arriving
+// late, and that needs to show as theirs, not ours.
+model CampaignDeliverable {
+  id          String     @id @default(cuid())
+  campaign    Campaign   @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId  String
+  siteId      String?
+  product     AdProduct?
+  title       String
+  // Sizes, word counts, links, UTM tags, placement: whatever the content must meet.
+  spec        String?
+  assetsDue   DateTime?
+  dueDate     DateTime?
+  runUntil    DateTime?
+  // planned | awaiting_assets | in_production | live | delivered | cancelled
+  status      String     @default("planned")
+  liveUrl     String?
+  deliveredAt DateTime?
+  notes       String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  results CampaignResult[]
+  assets  CampaignAsset[]
+
+  @@index([campaignId])
+  @@index([dueDate])
+}
+
+// One instalment. A booking paid monthly is one row per month.
+model CampaignPayment {
+  id          String    @id @default(cuid())
+  campaign    Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId  String
+  amountPence Int
+  dueDate     DateTime
+  // expected | invoiced | paid
+  status      String    @default("expected")
+  invoiceRef  String?
+  paidAt      DateTime?
+  notes       String?
+  createdAt   DateTime  @default(now())
+
+  @@index([campaignId])
+  @@index([dueDate])
+}
+
+// Numbers for a period, typed in from GA4, Mailchimp or the client's ad server.
+// Dated rows rather than one running total, so a report can show how a run
+// built up week by week.
+model CampaignResult {
+  id            String               @id @default(cuid())
+  campaign      Campaign             @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId    String
+  deliverable   CampaignDeliverable? @relation(fields: [deliverableId], references: [id], onDelete: SetNull)
+  deliverableId String?
+  periodStart   DateTime?
+  periodEnd     DateTime
+  impressions   Int?
+  clicks        Int?
+  // For e-shots and newsletter slots.
+  recipients    Int?
+  opens         Int?
+  // manual | ga4 | mailchimp | client
+  source        String               @default("manual")
+  notes         String?
+  createdAt     DateTime             @default(now())
+
+  @@index([campaignId])
+}
+
+// The client's material. Small files (banners, logos, PDFs up to the 4 MB
+// server action limit) are stored in the row so they open from the app;
+// anything bigger is a link to wherever it lives. Never select `data` in a
+// list query.
+model CampaignAsset {
+  id            String               @id @default(cuid())
+  campaign      Campaign             @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId    String
+  deliverable   CampaignDeliverable? @relation(fields: [deliverableId], references: [id], onDelete: SetNull)
+  deliverableId String?
+  name          String
+  url           String?
+  mimeType      String?
+  size          Int?
+  data          Bytes?
+  width         Int?
+  height        Int?
+  uploadedBy    String?
+  createdAt     DateTime             @default(now())
+
+  @@index([campaignId])
 }

@@ -522,7 +522,10 @@ function AdvertiserRow({ a, st, ed, sites, siteById }) {
         </form>
         {/* Outside the details form: a form inside a form is invalid HTML and
             breaks hydration for the whole page. */}
-        <div>
+        <div className="bb-actions">
+          <Link href={`/campaigns?new=${encodeURIComponent(a.domain)}`} className="btn-ghost" style={{ color: "var(--neon-cyan)" }}>
+            Book a campaign →
+          </Link>
           <ConfirmSubmit
             action={deleteAdvertiser.bind(null, a.id)}
             question={`Delete ${a.company}, its contacts and its offer history?`}

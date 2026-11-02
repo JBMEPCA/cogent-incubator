@@ -109,7 +109,7 @@ const LINKS = [
   { href: "/engine-hub", label: "Engine", Icon: RoomsIcon, also: ["/costs"] },
   { href: "/analytics", label: "Analytics", Icon: ChartIcon, also: ["/trending", "/lists"] },
   { href: "/interviews", label: "Editorial", Icon: PressIcon, also: ["/press", "/needs-image"], badge: true },
-  { href: "/advertisers", label: "Advertising", Icon: MegaphoneIcon },
+  { href: "/advertisers", label: "Advertising", Icon: MegaphoneIcon, also: ["/campaigns"], nested: true },
 ];
 
 export default function FleetNav() {
@@ -134,10 +134,11 @@ export default function FleetNav() {
 
   return (
     <nav className="fleet-nav" aria-label="Fleet views">
-      {LINKS.map(({ href, label, Icon, also = [], badge }) => {
+      {LINKS.map(({ href, label, Icon, also = [], badge, nested }) => {
         // Exact match throughout: "/" would otherwise prefix-match every page
         // in the app.
-        const active = [href, ...also].includes(pathname);
+        // nested also lights it on pages below those, such as one campaign.
+        const active = [href, ...also].includes(pathname) || (nested && also.some((p) => pathname.startsWith(`${p}/`)));
         return (
           <Link
             key={href}
