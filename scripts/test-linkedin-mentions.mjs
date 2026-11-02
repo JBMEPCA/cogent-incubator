@@ -73,7 +73,15 @@ has("name guess without the", nameCandidates("The Dalaman Golf Club"), "dalaman-
 check(
   "written name swapped for LinkedIn's",
   renderCommentary("SMMT says registrations rose.", [{ urn: "urn:li:organization:1", name: "Society of Motor Manufacturers and Traders (SMMT)", written: "SMMT" }]),
-  "@[Society of Motor Manufacturers and Traders (SMMT)](urn:li:organization:1) says registrations rose."
+  "@[Society of Motor Manufacturers and Traders \\(SMMT\\)](urn:li:organization:1) says registrations rose."
+);
+
+// Brackets in a page's name are escaped inside the tag, or the tag prints as
+// raw text (Nursery Daily, DWP, 1 Nov 2026).
+check(
+  "brackets in the name escaped",
+  renderCommentary("The DWP's report is out.", [{ urn: "urn:li:organization:163529", name: "Department for Work and Pensions (DWP)", written: "DWP" }]),
+  "The @[Department for Work and Pensions \\(DWP\\)](urn:li:organization:163529)'s report is out."
 );
 
 console.log(failed ? `\n${failed} FAILED` : "\nall passed");
