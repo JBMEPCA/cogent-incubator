@@ -6674,3 +6674,28 @@ section.gc-panel {
   .camp-del > :nth-child(5) { grid-row: 1; grid-column: 2; }
   .camp-del.adv-sum-head { display: none; }
 }
+
+/* The booking form: deal fields, then elements, then payments. */
+.camp-book { display: grid; gap: 12px; }
+.camp-book-h {
+  margin: 14px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
+}
+.camp-el {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 12px 14px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  min-width: 0;
+}
+.camp-el legend { padding: 0 6px; color: var(--muted); }
+.camp-el-types { display: flex; flex-wrap: wrap; gap: 6px; }
+.camp-el-remove { justify-self: start; }
+/* .adv-type was styled for links; as buttons and labels here they need the
+   browser's grey button fill taken off, or the unpicked ones look disabled. */
+.camp-book .adv-type { font: inherit; font-size: 13px; cursor: pointer; }
+.camp-book .adv-type:not(.is-active) { background: transparent; }

@@ -8,10 +8,11 @@ import ConfirmSubmit from "@/app/components/ConfirmSubmit";
 import { prisma } from "@/lib/prisma";
 import { listSites } from "@/lib/site";
 import { shortTitle } from "@/lib/black-book-labels";
-import { PRODUCTS, productLabel } from "@/lib/crm";
+
 import {
   CAMPAIGN_STATUSES,
   DELIVERABLE_STATUSES,
+  ELEMENT_TYPES,
   PAYMENT_STATUSES,
   RESULT_SOURCES,
   STATE_CHIP,
@@ -19,6 +20,7 @@ import {
   ctr,
   deliverableState,
   deliverableStatusLabel,
+  elementLabel,
   fmtBytes,
   money,
   paymentLate,
@@ -172,14 +174,14 @@ export default async function CampaignPage({ params }) {
 
         {/* ---------------- deliverables */}
         <section className="panel stagger adv-body">
-          <h2 style={{ margin: 0, fontSize: 16 }}>What we owe the client</h2>
+          <h2 style={{ margin: 0, fontSize: 16 }}>What they bought</h2>
           <p className="micro" style={{ color: "var(--muted)", margin: 0 }}>
-            One row per placement, send or piece. Material due is the client&apos;s deadline; Due is ours.
+            One element per banner, e-shot, newsletter slot or piece. Material due is the client&apos;s deadline; Due is ours.
           </p>
           {c.deliverables.length > 0 && (
             <div className="adv-list">
               <div className="camp-del adv-sum-head micro" aria-hidden="true">
-                <span>Deliverable</span>
+                <span>Element</span>
                 <span>Title</span>
                 <span>Material due</span>
                 <span>Due</span>
@@ -194,7 +196,7 @@ export default async function CampaignPage({ params }) {
                       <span className="adv-brand">
                         <strong>{d.title}</strong>
                         <span className="micro" style={{ color: "var(--muted)" }}>
-                          {[d.product && productLabel(d.product), d.spec].filter(Boolean).join(" · ")}
+                          {[d.product && elementLabel(d.product), d.spec].filter(Boolean).join(" · ")}
                         </span>
                       </span>
                       <span className="micro">{tn ? `${tn.emoji} ${tn.label}` : "—"}</span>
@@ -233,7 +235,7 @@ export default async function CampaignPage({ params }) {
                         </div>
                       </form>
                       <div>
-                        <ConfirmSubmit action={deleteDeliverable.bind(null, d.id)} question={`Delete "${d.title}"?`} label="Delete deliverable" />
+                        <ConfirmSubmit action={deleteDeliverable.bind(null, d.id)} question={`Delete "${d.title}"?`} label="Delete element" />
                       </div>
                     </div>
                   </details>
@@ -243,12 +245,12 @@ export default async function CampaignPage({ params }) {
           )}
           <details className="adv-panel">
             <summary>
-              <h2 style={{ fontSize: 14 }}>Add a deliverable</h2>
+              <h2 style={{ fontSize: 14 }}>Add element</h2>
             </summary>
             <form action={addDeliverable.bind(null, c.id)} className="bb-form">
               <DeliverableFields sites={campaignSites} />
               <div className="field-wide bb-actions">
-                <button type="submit" className="btn">Add</button>
+                <button type="submit" className="btn">Add element</button>
               </div>
             </form>
           </details>
@@ -533,17 +535,18 @@ function DeliverableFields({ d, sites }) {
   return (
     <>
       <label className="field">
-        <span className="micro">What</span>
-        <input name="title" required={!d} defaultValue={d?.title || ""} placeholder="e.g. Homepage MPU, December" />
-      </label>
-      <label className="field">
-        <span className="micro">Product</span>
-        <select name="product" defaultValue={d?.product || ""}>
-          <option value="">—</option>
-          {PRODUCTS.map((p) => (
+        <span className="micro">Type</span>
+        <select name="product" required defaultValue={d?.product || ""}>
+          {!d?.product && <option value="">Pick one…</option>}
+          {ELEMENT_TYPES.map((p) => (
             <option key={p.value} value={p.value}>{p.label}</option>
           ))}
+          {d?.product === "multiple" && <option value="multiple">Multiple</option>}
         </select>
+      </label>
+      <label className="field">
+        <span className="micro">Placement or name</span>
+        <input name="title" defaultValue={d?.title || ""} placeholder="Left blank, named from type and title" />
       </label>
       <label className="field">
         <span className="micro">Title</span>
