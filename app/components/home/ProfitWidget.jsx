@@ -12,7 +12,14 @@ import { revenueByMonth } from "@/lib/campaigns";
 // month's cost is the on-pace projection, and the forecast months reuse it,
 // because there is no better estimate of next month's spend than this one's.
 
-const FORECAST_MONTHS = 3;
+// The incubator's books start on 1 Nov 2026 (JB, 3 Nov): spend before then
+// was set-up, not trading, so it is left off rather than shown as losses.
+const START_MONTH = "2026-11";
+// Columns on the chart: the months since the start, topped up with forecast
+// months, never fewer than three of those.
+const COLUMNS = 6;
+const MIN_FORECAST = 3;
+const startLabel = new Date(`${START_MONTH}-01T12:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
 
 function addMonths(ym, n) {
   const [y, m] = ym.split("-").map(Number);
@@ -49,13 +56,15 @@ export default async function ProfitWidget({ costs }) {
   const current = costs.months.at(-1)?.key || new Date().toISOString().slice(0, 7);
   const projectedCost = costs.totals.projectedUsd * rate;
 
+  const actual = costs.months.filter((m) => m.key >= START_MONTH);
+  const forecastMonths = Math.max(MIN_FORECAST, COLUMNS - actual.length);
   const rows = [
-    ...costs.months.map((m) => ({
+    ...actual.map((m) => ({
       key: m.key,
       cost: m.key === current ? projectedCost : m.usd * rate,
       forecast: false,
     })),
-    ...Array.from({ length: FORECAST_MONTHS }, (_, i) => ({ key: addMonths(current, i + 1), cost: projectedCost, forecast: true })),
+    ...Array.from({ length: forecastMonths }, (_, i) => ({ key: addMonths(current, i + 1), cost: projectedCost, forecast: true })),
   ].map((r) => {
     const rv = revBy.get(r.key);
     const paid = (rv?.paidPence || 0) / 100;
@@ -76,7 +85,7 @@ export default async function ProfitWidget({ costs }) {
     { label: `Costs, ${shortMonth(current)}`, value: gbp(now.cost), sub: "on pace for month end" },
     { label: `Profit, ${shortMonth(current)}`, value: signed(now.profit), sub: "if everything due is paid", color: tone(now.profit) },
     {
-      label: `Profit, last ${past.length} months`,
+      label: `Profit since ${startLabel}`,
       value: signed(totalRev - totalCost),
       sub: `${gbp(totalRev)} in, ${gbp(totalCost)} out`,
       color: tone(totalRev - totalCost),
@@ -123,7 +132,7 @@ export default async function ProfitWidget({ costs }) {
         <span className="dw-pl-key">
           <span><i className="dw-sw" style={{ background: "var(--neon-green)" }} /> Revenue (solid received, faint due)</span>
           <span><i className="dw-sw" style={{ background: "var(--neon-amber)" }} /> Costs</span>
-          <span>Last {FORECAST_MONTHS} columns are a forecast</span>
+          <span>Last {forecastMonths} columns are a forecast</span>
         </span>
         {booked > 0 && (
           <span>
