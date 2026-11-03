@@ -6861,3 +6861,8 @@ section.gc-panel {
   .pl-plot { padding-left: 34px; }
   .pl-grid { left: 34px; }
 }
+/* Current month: what is spent (solid) inside what it is on pace for (faint). */
+.pl-cost-due { background: rgba(194, 132, 38, 0.38); }
+.pl-cost-due > i { position: absolute; left: 0; right: 0; bottom: 0; }
+.pl-of { font-size: 12px; font-weight: 400; color: var(--muted); }
+.pl-sofar { color: var(--text); font-weight: 600; }

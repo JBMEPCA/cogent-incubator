@@ -66,12 +66,19 @@ export default async function ProfitWidget({ costs }) {
   const revBy = new Map(revenue.map((r) => [r.month, r]));
   const current = costs.months.at(-1)?.key || new Date().toISOString().slice(0, 7);
   const projectedCost = costs.totals.projectedUsd * rate;
+  // What has actually gone out so far this month (JB, 3 Nov: the projection
+  // alone read as if it were already spent).
+  const spentNow = costs.totals.thisUsd * rate;
 
   const actual = costs.months.filter((m) => m.key >= START_MONTH);
   const forecastMonths = Math.max(MIN_FORECAST, COLUMNS - actual.length);
   const rows = [
-    ...actual.map((m) => ({ key: m.key, cost: m.key === current ? projectedCost : m.usd * rate, forecast: false })),
-    ...Array.from({ length: forecastMonths }, (_, i) => ({ key: addMonths(current, i + 1), cost: projectedCost, forecast: true })),
+    ...actual.map((m) =>
+      m.key === current
+        ? { key: m.key, cost: projectedCost, spent: Math.min(spentNow, projectedCost), forecast: false }
+        : { key: m.key, cost: m.usd * rate, spent: m.usd * rate, forecast: false }
+    ),
+    ...Array.from({ length: forecastMonths }, (_, i) => ({ key: addMonths(current, i + 1), cost: projectedCost, spent: 0, forecast: true })),
   ].map((r) => {
     const rv = revBy.get(r.key);
     const paid = (rv?.paidPence || 0) / 100;
@@ -94,6 +101,7 @@ export default async function ProfitWidget({ costs }) {
   const inProfit = now.profit >= 0;
   const margin = now.revenue > 0 ? Math.round((now.profit / now.revenue) * 100) : null;
   const daysPct = Math.min(1, costs.month.daysElapsed / costs.month.daysInMonth);
+  const profitSoFar = now.paid - spentNow;
 
   return (
     <Widget {...props} sub="Campaign payments from the Advertising tab, against fleet spend">
@@ -101,12 +109,15 @@ export default async function ProfitWidget({ costs }) {
         {/* ---------------- the month in numbers */}
         <div className="pl-side">
           <div className="pl-hero">
-            <span className="pl-eyebrow">Profit, {monthName(current, "long")}</span>
+            <span className="pl-eyebrow">Projected profit, {monthName(current, "long")}</span>
             <span className="pl-hero-value num">{signed(now.profit)}</span>
             <span className={`pl-status ${inProfit ? "is-up" : "is-down"}`}>
               <span aria-hidden="true">{inProfit ? "▲" : "▼"}</span>
-              {inProfit ? "In profit" : "Loss so far"}
+              {inProfit ? "On course for a profit" : "On course for a loss"}
               {margin != null && ` · ${margin}% margin`}
+            </span>
+            <span className="pl-note">
+              So far: {gbp(now.paid)} in, {gbp(spentNow)} out, <b className="num pl-sofar">{signed(profitSoFar)}</b>
             </span>
           </div>
 
@@ -126,12 +137,16 @@ export default async function ProfitWidget({ costs }) {
           <div className="pl-line">
             <div className="pl-line-head">
               <span><i className="pl-dot pl-cost" /> Costs</span>
-              <b className="num">{gbp(now.cost)}</b>
+              <b className="num">
+                {gbp(spentNow)} <span className="pl-of">of {gbp(projectedCost)}</span>
+              </b>
             </div>
             <div className="pl-meter" aria-hidden="true">
-              <span className="pl-cost" style={{ width: `${daysPct * 100}%` }} />
+              <span className="pl-cost" style={{ width: `${projectedCost ? Math.min(100, (spentNow / projectedCost) * 100) : 0}%` }} />
             </div>
-            <span className="pl-note">On pace for month end, {Math.round(daysPct * 100)}% of the month gone</span>
+            <span className="pl-note">
+              {gbp(spentNow)} spent so far, on pace for {gbp(projectedCost)} by month end ({Math.round(daysPct * 100)}% of the month gone)
+            </span>
           </div>
 
           <div className="pl-mini">
@@ -151,7 +166,7 @@ export default async function ProfitWidget({ costs }) {
           <div className="pl-legend">
             <span><i className="pl-dot pl-rev" /> Revenue</span>
             <span><i className="pl-dot pl-cost" /> Costs</span>
-            <span className="pl-note">Hover a month for the figures</span>
+            <span className="pl-note">Solid is actual, faint is still to come · hover for figures</span>
           </div>
           <div className="pl-plot" role="table" aria-label="Revenue and costs by month">
             <div className="pl-grid" aria-hidden="true">
@@ -174,7 +189,10 @@ export default async function ProfitWidget({ costs }) {
                     <span className="pl-bar pl-rev-due" style={{ height: pct(r.revenue) }}>
                       {r.paid > 0 && <i className="pl-rev" style={{ height: `${(r.paid / r.revenue) * 100}%` }} />}
                     </span>
-                    <span className="pl-bar pl-cost" style={{ height: pct(r.cost) }} />
+                    {/* Solid is spent, faint is still to come: only the current month has both. */}
+                    <span className="pl-bar pl-cost-due" style={{ height: pct(r.cost) }}>
+                      {r.spent > 0 && <i className="pl-cost" style={{ height: `${(r.spent / r.cost) * 100}%` }} />}
+                    </span>
                   </div>
                   <span role="cell" className="pl-month">
                     {monthName(r.key)}
@@ -187,9 +205,13 @@ export default async function ProfitWidget({ costs }) {
                     </strong>
                     <span><i className="pl-dot pl-rev" /> Revenue <b className="num">{gbp(r.revenue)}</b></span>
                     {r.due > 0 && r.paid > 0 && <span className="pl-tip-sub">{gbp(r.paid)} received</span>}
-                    <span><i className="pl-dot pl-cost" /> Costs <b className="num">{gbp(r.cost)}</b></span>
+                    <span>
+                      <i className="pl-dot pl-cost" /> {r.key === current ? "Costs, projected" : r.forecast ? "Costs, estimated" : "Costs"}{" "}
+                      <b className="num">{gbp(r.cost)}</b>
+                    </span>
+                    {r.key === current && <span className="pl-tip-sub">{gbp(r.spent)} spent so far</span>}
                     <span className="pl-tip-total">
-                      Profit <b className="num">{signed(r.profit)}</b>
+                      {r.key === current || r.forecast ? "Profit, projected" : "Profit"} <b className="num">{signed(r.profit)}</b>
                     </span>
                   </div>
                 </div>
