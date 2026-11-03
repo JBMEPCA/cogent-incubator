@@ -55,8 +55,9 @@ export default async function AvailabilityPage({ searchParams }) {
             <div>
               <h2 style={{ margin: "0 0 6px", fontSize: 18 }}>What is free to sell in {year}</h2>
               <p style={{ color: "var(--muted)", fontSize: 14, margin: 0, maxWidth: 680 }}>
-                Website positions are sold to one advertiser at a time. {free.toLocaleString("en-GB")} of {total.toLocaleString("en-GB")} title-months are
-                still free across the fleet. Book from a campaign&apos;s month grid.
+                {`Website positions are sold to one advertiser at a time. ${free.toLocaleString("en-GB")} of ${total.toLocaleString(
+                  "en-GB"
+                )} title-months are still free across the fleet. Book from a campaign's month grid.`}
               </p>
             </div>
             <div className="pg-year">

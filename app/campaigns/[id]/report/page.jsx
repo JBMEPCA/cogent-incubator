@@ -86,7 +86,9 @@ export default async function ReportPage({ params, searchParams }) {
   const sendRows = [...sends.values()].sort((a, b) => a.day - b.day);
   const mail = sendRows.reduce((s, r) => ({ sent: s.sent + r.sent, opens: s.opens + r.opens, clicks: s.clicks + r.clicks }), { sent: 0, opens: 0, clicks: 0 });
 
-  const placed = c.deliverables.filter((d) => d.position && (!month || overlapsMonth(d, month)));
+  // Only what has started: a report is about what ran, not what is booked.
+  const today = new Date().toISOString().slice(0, 10);
+  const placed = c.deliverables.filter((d) => d.position && runDays(d) && runDays(d).start <= today && (!month || overlapsMonth(d, month)));
   const creatives = placed.flatMap((d) => d.assets.map((a) => ({ ...a, d })));
   const period = month ? monthLabel(month) : runLabel(c);
 
@@ -214,7 +216,14 @@ export default async function ReportPage({ params, searchParams }) {
                   <tr key={d.id}>
                     <td>{sites.get(d.siteId)?.name || ""}</td>
                     <td>{positionInfo(d.position)?.label}</td>
-                    <td>{run ? (run.start === run.end ? fmtDay(run.start) : `${fmtDay(run.start)} to ${fmtDay(run.end)}`) : ""}</td>
+                    <td>
+                      {/* An email is one send, booked by the month: name the month, not a range. */}
+                      {positionInfo(d.position)?.email
+                        ? monthLabel(run.start.slice(0, 7))
+                        : run.start === run.end
+                          ? fmtDay(run.start)
+                          : `${fmtDay(run.start)} to ${fmtDay(run.end)}`}
+                    </td>
                   </tr>
                 );
               })}

@@ -94,9 +94,9 @@ for (const site of sites) {
     // Creates the table on this init, then pulls the feed once.
     wp(`eval 'do_action("init"); $r = cogent_ads_sync(true); echo is_wp_error($r) ? "ERR ".$r->get_error_message() : "ok";'`);
     const ads = wp(`eval 'echo count((array) get_option("cogent_ads_feed", array()));'`);
-    const err = wp(`option get cogent_ads_last_error 2>/dev/null || echo -`);
-    const prefix = ssh(`cd ${docroot} && wp db prefix --skip-themes --skip-plugins`).trim();
-    const table = ssh(`cd ${docroot} && wp db query "SHOW TABLES LIKE '${prefix}cogent_ads'" --skip-themes --skip-plugins 2>/dev/null | tail -1`);
+    const err = ssh(`cd ${docroot} && (wp option get cogent_ads_last_error --skip-themes 2>/dev/null || echo -)`);
+    // The prefix differs per SiteGround install (njm_ and so on), so match on the name.
+    const table = ssh(`cd ${docroot} && (wp db tables --all-tables --skip-themes --skip-plugins 2>/dev/null | grep cogent_ads || true)`);
     console.log(`${site.slug.padEnd(28)} installed · ${ads} ads in feed · table ${table || "NOT CREATED"}${err && err !== "-" ? ` · last error: ${err}` : ""}`);
     done++;
   } catch (e) {
