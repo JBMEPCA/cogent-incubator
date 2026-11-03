@@ -2,6 +2,7 @@ import Link from "next/link";
 import FleetNav from "@/app/components/FleetNav";
 import SubTabs, { FLEET_COMMERCIAL_TABS } from "@/app/components/SubTabs";
 import CampaignForm from "@/app/components/CampaignForm";
+import CampaignRow from "@/app/components/CampaignRow";
 import { prisma } from "@/lib/prisma";
 import { listSites } from "@/lib/site";
 import { shortTitle } from "@/lib/black-book-labels";
@@ -29,7 +30,7 @@ export default async function CampaignsPage({ searchParams }) {
   const now = new Date();
   const thisMonth = ukMonth(now);
 
-  const [sites, campaigns, preset] = await Promise.all([
+  const [sites, campaigns, preset, counted] = await Promise.all([
     listSites(),
     prisma.campaign.findMany({
       orderBy: [{ startDate: "desc" }, { createdAt: "desc" }],
@@ -40,7 +41,10 @@ export default async function CampaignsPage({ searchParams }) {
       },
     }),
     sp.new ? prisma.advertiser.findUnique({ where: { domain: String(sp.new) }, select: { id: true, company: true, siteIds: true } }) : null,
+    // Banner impressions and clicks per placement, as the sites counted them.
+    prisma.adStat.groupBy({ by: ["deliverableId"], where: { channel: "site" }, _sum: { views: true, clicks: true } }),
   ]);
+  const statsByDeliverable = new Map(counted.map((r) => [r.deliverableId, r._sum]));
   const siteById = new Map(sites.map((s) => [s.id, s]));
 
   // Twelve months from last month, so the one just closed is still on screen.
@@ -191,7 +195,7 @@ export default async function CampaignsPage({ searchParams }) {
                 <span>Campaign</span>
                 <span>Titles</span>
                 <span>Runs</span>
-                <span>Delivered</span>
+                <span>Impressions · clicks</span>
                 <span>Paid</span>
                 <span>Status</span>
               </div>
@@ -201,8 +205,16 @@ export default async function CampaignsPage({ searchParams }) {
                 const done = live.filter((d) => d.status === "live" || d.status === "delivered").length;
                 const paid = c.payments.filter((p) => p.status === "paid").reduce((s, p) => s + p.amountPence, 0);
                 const worst = live.map((d) => deliverableState(d, now)).sort((a, b) => (URGENT[a.level] ?? 9) - (URGENT[b.level] ?? 9))[0];
+                const web = c.deliverables.reduce(
+                  (t, d) => {
+                    const s = statsByDeliverable.get(d.id);
+                    return s ? { views: t.views + (s.views || 0), clicks: t.clicks + (s.clicks || 0) } : t;
+                  },
+                  { views: 0, clicks: 0 }
+                );
+                const banners = c.deliverables.some((d) => d.position && d.position !== "solus" && d.position !== "newsletter_banner" && d.position !== "sponsored_article");
                 return (
-                  <Link key={c.id} href={`/campaigns/${c.id}`} className="camp-sum camp-row">
+                  <CampaignRow key={c.id} campaignId={c.id} label={`${c.advertiser.company}, ${c.name}`}>
                     <span className="adv-brand">
                       <strong>{c.advertiser.company}</strong>
                       <span className="micro" style={{ color: "var(--muted)" }}>{c.name}</span>
@@ -228,7 +240,19 @@ export default async function CampaignsPage({ searchParams }) {
                       <span style={{ display: "block", color: "var(--muted)" }}>to {fmtDay(c.endDate)}</span>
                     </span>
                     <span className="micro">
-                      {live.length ? `${done} of ${live.length}` : "Nothing listed"}
+                      {banners ? (
+                        <>
+                          <b className="camp-num">{web.views.toLocaleString("en-GB")}</b> impr ·{" "}
+                          <b className="camp-num">{web.clicks.toLocaleString("en-GB")}</b> clicks
+                          <span style={{ display: "block", color: "var(--muted)" }}>
+                            {web.views ? `${((web.clicks / web.views) * 100).toFixed(2)}% click-through` : "none counted yet"}
+                          </span>
+                        </>
+                      ) : live.length ? (
+                        `${done} of ${live.length} delivered`
+                      ) : (
+                        "Nothing listed"
+                      )}
                       {worst && worst.level in URGENT && (
                         <span className={`chip ${STATE_CHIP[worst.level]}`} style={{ display: "table", marginTop: 4 }}>
                           {worst.label}
@@ -242,7 +266,7 @@ export default async function CampaignsPage({ searchParams }) {
                     <span>
                       <span className={`chip ${st.chip}`}>{st.label}</span>
                     </span>
-                  </Link>
+                  </CampaignRow>
                 );
               })}
             </div>

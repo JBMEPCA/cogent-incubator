@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useActionState, useState } from "react";
+import { startTransition, useActionState, useEffect, useRef, useState } from "react";
 import { uploadAssets } from "@/lib/campaign-actions";
 
 // Upload the client's banners, logos and copy.
@@ -52,9 +52,19 @@ async function shrink(file, bmp, maxW) {
   return new File([blob], file.name, { type });
 }
 
-export default function CampaignAssetUpload({ campaignId, deliverables }) {
+// fixed: the one placement given, no picker (the Campaigns list panel).
+// replace: the new artwork takes over from what is running in that placement.
+// onDone: told after each upload, so a panel can re-read itself.
+export default function CampaignAssetUpload({ campaignId, deliverables, fixed = false, replace = false, onDone }) {
   const [state, action, pending] = useActionState(uploadAssets.bind(null, campaignId), null);
-  const [deliverableId, setDeliverableId] = useState("");
+  const [deliverableId, setDeliverableId] = useState(fixed ? deliverables[0]?.id || "" : "");
+  const seen = useRef(state);
+  useEffect(() => {
+    if (state && state !== seen.current) {
+      seen.current = state;
+      onDone?.(state);
+    }
+  }, [state, onDone]);
   const [busy, setBusy] = useState(false);
   const [notes, setNotes] = useState([]);
   const slot = deliverables.find((d) => d.id === deliverableId)?.slot || null;
@@ -107,6 +117,7 @@ export default function CampaignAssetUpload({ campaignId, deliverables }) {
     const fd = new FormData();
     ready.forEach((f) => fd.append("files", f));
     if (deliverableId) fd.set("deliverableId", deliverableId);
+    if (replace) fd.set("replace", "1");
     startTransition(() => action(fd));
     form.reset();
   }
@@ -115,7 +126,7 @@ export default function CampaignAssetUpload({ campaignId, deliverables }) {
     <div style={{ display: "grid", gap: 6 }}>
       <form onSubmit={onSubmit} className="adv-inline">
         <input name="files" type="file" multiple required accept="image/*,application/pdf,.pdf,.html,.zip,.docx,.txt" style={{ flex: "2 1 240px" }} />
-        {deliverables.length > 0 && (
+        {!fixed && deliverables.length > 0 && (
           <select value={deliverableId} onChange={(e) => setDeliverableId(e.target.value)} aria-label="For placement">
             <option value="">Whole campaign</option>
             {deliverables.map((d) => (
@@ -126,10 +137,13 @@ export default function CampaignAssetUpload({ campaignId, deliverables }) {
           </select>
         )}
         <button type="submit" className="btn-ghost" disabled={pending || busy}>
-          {busy ? "Preparing…" : pending ? "Uploading…" : "Upload"}
+          {busy ? "Preparing…" : pending ? "Uploading…" : replace ? "Upload and replace" : "Upload"}
         </button>
         <span className="micro" style={{ color: state ? (state.ok ? "var(--neon-green)" : "var(--neon-amber)") : "var(--muted)" }}>
-          {state?.message || "PDFs become PNGs, oversized images are scaled. Pick the placement so artwork is sized to its slot."}
+          {state?.message ||
+            (replace
+              ? "The new artwork replaces what is running here. PDFs become PNGs; oversized images are scaled."
+              : "PDFs become PNGs, oversized images are scaled. Pick the placement so artwork is sized to its slot.")}
         </span>
       </form>
       {notes.length > 0 && (
