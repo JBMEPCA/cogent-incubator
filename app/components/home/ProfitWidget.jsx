@@ -11,6 +11,9 @@ import { revenueByMonth } from "@/lib/campaigns";
 // received part is shown separately so a late payer is visible. The current
 // month's cost is the on-pace projection, and the forecast months reuse it,
 // because there is no better estimate of next month's spend than this one's.
+//
+// Layout (JB, 3 Nov 2026): the month's profit as the headline, then the chart
+// with numbers on hover rather than a figure under every column.
 
 // The incubator's books start on 1 Nov 2026 (JB, 3 Nov): spend before then
 // was set-up, not trading, so it is left off rather than shown as losses.
@@ -26,12 +29,20 @@ function addMonths(ym, n) {
   const d = new Date(Date.UTC(y, m - 1 + n, 15));
   return d.toISOString().slice(0, 7);
 }
-const shortMonth = (ym) => new Date(`${ym}-15T12:00:00Z`).toLocaleString("en-GB", { month: "short", timeZone: "UTC" });
+const monthName = (ym, style = "short") => new Date(`${ym}-15T12:00:00Z`).toLocaleString("en-GB", { month: style, timeZone: "UTC" });
 const signed = (v) => (v < 0 ? `−${gbp(-v)}` : gbp(v));
+// Compact axis labels: £1.5k rather than £1,500.
+const axis = (v) => (v >= 1000 ? `£${(v / 1000).toFixed(v % 1000 ? 1 : 0)}k` : `£${Math.round(v)}`);
+
+/** The smallest round number at or above v, so gridlines land on £500, £1k, £2.5k. */
+function niceCeil(v) {
+  if (v <= 0) return 100;
+  const p = 10 ** Math.floor(Math.log10(v));
+  return [1, 2, 2.5, 5, 10].map((s) => s * p).find((s) => s >= v);
+}
 
 export default async function ProfitWidget({ costs }) {
-  const title = "Revenue, costs and profit";
-  const props = { span: 12, title, href: "/campaigns", linkLabel: "Open campaigns" };
+  const props = { span: 12, title: "Revenue, costs and profit", href: "/campaigns", linkLabel: "Open campaigns" };
   if (!costs) {
     return (
       <Widget {...props}>
@@ -59,11 +70,7 @@ export default async function ProfitWidget({ costs }) {
   const actual = costs.months.filter((m) => m.key >= START_MONTH);
   const forecastMonths = Math.max(MIN_FORECAST, COLUMNS - actual.length);
   const rows = [
-    ...actual.map((m) => ({
-      key: m.key,
-      cost: m.key === current ? projectedCost : m.usd * rate,
-      forecast: false,
-    })),
+    ...actual.map((m) => ({ key: m.key, cost: m.key === current ? projectedCost : m.usd * rate, forecast: false })),
     ...Array.from({ length: forecastMonths }, (_, i) => ({ key: addMonths(current, i + 1), cost: projectedCost, forecast: true })),
   ].map((r) => {
     const rv = revBy.get(r.key);
@@ -76,70 +83,121 @@ export default async function ProfitWidget({ costs }) {
   const past = rows.filter((r) => !r.forecast);
   const totalRev = past.reduce((s, r) => s + r.revenue, 0);
   const totalCost = past.reduce((s, r) => s + r.cost, 0);
-  const booked = revenue.filter((r) => r.month > current).reduce((s, r) => s + r.expectedPence, 0) / 100;
-  const max = Math.max(1, ...rows.flatMap((r) => [r.revenue, r.cost]));
-  const tone = (v) => (v > 0 ? "var(--neon-green)" : v < 0 ? "var(--neon-red)" : "var(--muted)");
+  const ahead = rows.filter((r) => r.forecast);
+  const bookedAhead = revenue.filter((r) => r.month > current).reduce((s, r) => s + r.expectedPence, 0) / 100;
+  const forecastProfit = ahead.reduce((s, r) => s + r.profit, 0);
 
-  const tiles = [
-    { label: `Revenue, ${shortMonth(current)}`, value: gbp(now.revenue), sub: !now.revenue ? "nothing due this month" : now.due ? `${gbp(now.paid)} received so far` : "all received" },
-    { label: `Costs, ${shortMonth(current)}`, value: gbp(now.cost), sub: "on pace for month end" },
-    { label: `Profit, ${shortMonth(current)}`, value: signed(now.profit), sub: "if everything due is paid", color: tone(now.profit) },
-    {
-      label: `Profit since ${startLabel}`,
-      value: signed(totalRev - totalCost),
-      sub: `${gbp(totalRev)} in, ${gbp(totalCost)} out`,
-      color: tone(totalRev - totalCost),
-    },
-  ];
+  const top = niceCeil(Math.max(...rows.flatMap((r) => [r.revenue, r.cost])));
+  const grid = [1, 0.5, 0].map((f) => top * f);
+  const pct = (v) => `${Math.max(0, (v / top) * 100)}%`;
+
+  const inProfit = now.profit >= 0;
+  const margin = now.revenue > 0 ? Math.round((now.profit / now.revenue) * 100) : null;
+  const daysPct = Math.min(1, costs.month.daysElapsed / costs.month.daysInMonth);
 
   return (
     <Widget {...props} sub="Campaign payments from the Advertising tab, against fleet spend">
-      <div className="dw-pl-tiles">
-        {tiles.map((t) => (
-          <div key={t.label}>
-            <div className="dw-pl-label">{t.label}</div>
-            <div className="dw-pl-value num" style={t.color ? { color: t.color } : undefined}>
-              {t.value}
-            </div>
-            <div className="dw-pl-sub">{t.sub}</div>
-          </div>
-        ))}
-      </div>
-
-      <div className="dw-pl-chart" role="table" aria-label="Revenue and costs by month">
-        {rows.map((r) => (
-          <div
-            key={r.key}
-            role="row"
-            className={`dw-pl-col${r.forecast ? " is-forecast" : ""}${r.key === current ? " is-now" : ""}`}
-            title={`${shortMonth(r.key)}: revenue ${gbp(r.revenue)}${r.due ? ` (${gbp(r.due)} not yet received)` : ""}, costs ${gbp(r.cost)}${r.forecast ? " (estimate)" : ""}, profit ${signed(r.profit)}`}
-          >
-            <div className="dw-pl-bars" aria-hidden="true">
-              <span className="dw-pl-bar dw-pl-rev" style={{ height: `${(r.revenue / max) * 100}%` }}>
-                {r.paid > 0 && <i style={{ height: `${(r.paid / r.revenue) * 100}%` }} />}
-              </span>
-              <span className="dw-pl-bar dw-pl-cost" style={{ height: `${(r.cost / max) * 100}%` }} />
-            </div>
-            <span role="cell" className="dw-pl-month">{shortMonth(r.key)}</span>
-            <span role="cell" className="dw-pl-profit num" style={{ color: tone(r.profit) }}>
-              {signed(Math.round(r.profit))}
+      <div className="pl">
+        {/* ---------------- the month in numbers */}
+        <div className="pl-side">
+          <div className="pl-hero">
+            <span className="pl-eyebrow">Profit, {monthName(current, "long")}</span>
+            <span className="pl-hero-value num">{signed(now.profit)}</span>
+            <span className={`pl-status ${inProfit ? "is-up" : "is-down"}`}>
+              <span aria-hidden="true">{inProfit ? "▲" : "▼"}</span>
+              {inProfit ? "In profit" : "Loss so far"}
+              {margin != null && ` · ${margin}% margin`}
             </span>
           </div>
-        ))}
-      </div>
 
-      <footer className="dw-foot">
-        <span className="dw-pl-key">
-          <span><i className="dw-sw" style={{ background: "var(--neon-green)" }} /> Revenue (solid received, faint due)</span>
-          <span><i className="dw-sw" style={{ background: "var(--neon-amber)" }} /> Costs</span>
-          <span>Last {forecastMonths} columns are a forecast</span>
-        </span>
-        {booked > 0 && (
-          <span>
-            <b className="num">{gbp(booked)}</b> booked for later months
-          </span>
-        )}
-      </footer>
+          <div className="pl-line">
+            <div className="pl-line-head">
+              <span><i className="pl-dot pl-rev" /> Revenue</span>
+              <b className="num">{gbp(now.revenue)}</b>
+            </div>
+            <div className="pl-meter" aria-hidden="true">
+              <span className="pl-rev" style={{ width: now.revenue ? `${(now.paid / now.revenue) * 100}%` : 0 }} />
+            </div>
+            <span className="pl-note">
+              {!now.revenue ? "Nothing due this month yet" : now.due ? `${gbp(now.paid)} received, ${gbp(now.due)} to come` : "All received"}
+            </span>
+          </div>
+
+          <div className="pl-line">
+            <div className="pl-line-head">
+              <span><i className="pl-dot pl-cost" /> Costs</span>
+              <b className="num">{gbp(now.cost)}</b>
+            </div>
+            <div className="pl-meter" aria-hidden="true">
+              <span className="pl-cost" style={{ width: `${daysPct * 100}%` }} />
+            </div>
+            <span className="pl-note">On pace for month end, {Math.round(daysPct * 100)}% of the month gone</span>
+          </div>
+
+          <div className="pl-mini">
+            <div>
+              <span className="pl-note">Booked ahead</span>
+              <b className="num">{gbp(bookedAhead)}</b>
+            </div>
+            <div>
+              <span className="pl-note">{past.length > 1 ? `Since ${startLabel}` : `Next ${ahead.length} months`}</span>
+              <b className="num">{signed(past.length > 1 ? totalRev - totalCost : forecastProfit)}</b>
+            </div>
+          </div>
+        </div>
+
+        {/* ---------------- month by month */}
+        <div className="pl-chart">
+          <div className="pl-legend">
+            <span><i className="pl-dot pl-rev" /> Revenue</span>
+            <span><i className="pl-dot pl-cost" /> Costs</span>
+            <span className="pl-note">Hover a month for the figures</span>
+          </div>
+          <div className="pl-plot" role="table" aria-label="Revenue and costs by month">
+            <div className="pl-grid" aria-hidden="true">
+              {grid.map((g) => (
+                <div key={g} style={{ bottom: pct(g) }}>
+                  <span>{axis(g)}</span>
+                </div>
+              ))}
+            </div>
+            <div className="pl-cols">
+              {rows.map((r, i) => (
+                <div
+                  key={r.key}
+                  role="row"
+                  tabIndex={0}
+                  className={`pl-col${r.forecast ? " is-forecast" : ""}${r.key === current ? " is-now" : ""}${i === past.length ? " is-first-forecast" : ""}`}
+                >
+                  {i === past.length && <span className="pl-forecast-tag" aria-hidden="true">Forecast</span>}
+                  <div className="pl-bars">
+                    <span className="pl-bar pl-rev-due" style={{ height: pct(r.revenue) }}>
+                      {r.paid > 0 && <i className="pl-rev" style={{ height: `${(r.paid / r.revenue) * 100}%` }} />}
+                    </span>
+                    <span className="pl-bar pl-cost" style={{ height: pct(r.cost) }} />
+                  </div>
+                  <span role="cell" className="pl-month">
+                    {monthName(r.key)}
+                    {r.forecast && <small>est.</small>}
+                  </span>
+                  <div className="pl-tip" role="cell">
+                    <strong>
+                      {monthName(r.key, "long")} {r.key.slice(0, 4)}
+                      {r.forecast ? " (forecast)" : ""}
+                    </strong>
+                    <span><i className="pl-dot pl-rev" /> Revenue <b className="num">{gbp(r.revenue)}</b></span>
+                    {r.due > 0 && r.paid > 0 && <span className="pl-tip-sub">{gbp(r.paid)} received</span>}
+                    <span><i className="pl-dot pl-cost" /> Costs <b className="num">{gbp(r.cost)}</b></span>
+                    <span className="pl-tip-total">
+                      Profit <b className="num">{signed(r.profit)}</b>
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
     </Widget>
   );
 }
