@@ -27,7 +27,12 @@ const nextConfig = {
   // The interview overlays read their model, fonts and logos from disk at
   // runtime, and onnxruntime-web loads its wasm by path, so file tracing
   // cannot see any of it. Listed here for every route that draws one.
-  outputFileTracingIncludes: Object.fromEntries(
+  outputFileTracingIncludes: {
+    // The campaign pages' artwork upload re-encodes banners with sharp, and
+    // sharp finds libvips by a relative path that tracing cannot follow (the
+    // 20 Aug 2026 failure again, on 3 Nov: every campaign page answered 500).
+    "/campaigns/**": ["./node_modules/@img/sharp-linux-x64/**/*", "./node_modules/@img/sharp-libvips-linux-x64/**/*"],
+    ...Object.fromEntries(
     // Keys are globs, so "[slug]" would read as a character class: hence "**".
     ["/api/overlay/**", "/api/cron/post-linkedin", "/api/cron/post-instagram"].map((route) => [
       route,
@@ -45,6 +50,7 @@ const nextConfig = {
       ],
     ])
   ),
+  },
 };
 
 export default nextConfig;
