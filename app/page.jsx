@@ -8,6 +8,7 @@ import BlackBookWidget from "./components/home/BlackBookWidget";
 import { SpendWidget, SpendByTitleWidget } from "./components/home/SpendWidgets";
 import AgentsWidget from "./components/home/AgentsWidget";
 import TrafficWidget from "./components/home/TrafficWidget";
+import ProfitWidget from "./components/home/ProfitWidget";
 import CalendarWidget from "./components/home/CalendarWidget";
 import TodoWidget from "./components/home/TodoWidget";
 import AssistantWidget from "./components/home/AssistantWidget";
@@ -129,6 +130,8 @@ export default async function Home() {
       <div className="dw-grid">
         <AssistantWidget canEdit={editable} />
         <TargetsWidget sites={sites} actuals={actuals} targets={targets} canEdit={editable} />
+        {/* Between targets and traffic (JB, 3 Nov 2026): is the incubator making money. */}
+        <ProfitWidget costs={costs} />
 
         <Suspense fallback={<Loading title="Fleet traffic" span={8} rows={4} />}>
           <TrafficWidget />

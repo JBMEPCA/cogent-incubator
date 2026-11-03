@@ -6699,3 +6699,51 @@ section.gc-panel {
    browser's grey button fill taken off, or the unpicked ones look disabled. */
 .camp-book .adv-type { font: inherit; font-size: 13px; cursor: pointer; }
 .camp-book .adv-type:not(.is-active) { background: transparent; }
+
+/* ---------- home: revenue, costs and profit */
+.dw-pl-tiles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+.dw-pl-label { font-size: 12px; color: var(--muted); }
+.dw-pl-value { font-size: 24px; font-weight: 600; margin: 2px 0; }
+.dw-pl-sub { font-size: 12px; color: var(--muted); }
+.dw-pl-chart {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 8px;
+  align-items: end;
+}
+.dw-pl-col { display: grid; gap: 4px; justify-items: center; min-width: 0; }
+.dw-pl-bars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 3px;
+  height: 120px;
+  width: 100%;
+}
+.dw-pl-bar {
+  position: relative;
+  display: block;
+  width: min(18px, 40%);
+  min-height: 2px;
+  border-radius: 3px 3px 0 0;
+  overflow: hidden;
+}
+.dw-pl-rev { background: rgba(63, 182, 139, 0.32); }
+.dw-pl-rev i { position: absolute; left: 0; right: 0; bottom: 0; background: var(--neon-green); }
+.dw-pl-cost { background: var(--neon-amber); }
+.dw-pl-col.is-forecast .dw-pl-bars { opacity: 0.45; }
+.dw-pl-col.is-forecast .dw-pl-month::after { content: " est."; }
+.dw-pl-month { font-size: 11.5px; color: var(--muted); white-space: nowrap; }
+.dw-pl-col.is-now .dw-pl-month { color: var(--text); font-weight: 600; }
+.dw-pl-profit { font-size: 11.5px; white-space: nowrap; }
+.dw-pl-key { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
+.dw-pl-key > span { display: inline-flex; align-items: center; gap: 6px; }
+@media (max-width: 720px) {
+  .dw-pl-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dw-pl-profit { display: none; }
+}
