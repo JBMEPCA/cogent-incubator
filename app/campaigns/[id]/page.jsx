@@ -8,6 +8,10 @@ import ConfirmSubmit from "@/app/components/ConfirmSubmit";
 import { prisma } from "@/lib/prisma";
 import { listSites } from "@/lib/site";
 import { shortTitle } from "@/lib/black-book-labels";
+import PlacementGrid from "@/app/components/PlacementGrid";
+import Placements from "./Placements";
+import { POSITIONS, positionInfo } from "@/lib/ad-positions";
+import { bookingsMap, outstanding } from "@/lib/ads";
 
 import {
   CAMPAIGN_STATUSES,
@@ -42,6 +46,8 @@ import {
   updateCampaign,
   updateDeliverable,
   updatePayment,
+  assignAsset,
+  fillTargetUrls,
 } from "@/lib/campaign-actions";
 
 export const dynamic = "force-dynamic";
@@ -51,6 +57,22 @@ const fmtDay = (d) =>
 const dateVal = (d) => (d ? ukDay(d) : "");
 const n = (v) => (v == null ? "—" : v.toLocaleString("en-GB"));
 const pounds = (pence) => (pence ? (pence / 100).toFixed(2) : "");
+// Never the bytes: those are served one at a time by /api/campaign-assets.
+const ASSET_FIELDS = {
+  id: true,
+  name: true,
+  url: true,
+  mimeType: true,
+  size: true,
+  width: true,
+  height: true,
+  uploadedBy: true,
+  createdAt: true,
+  deliverableId: true,
+  active: true,
+  webMime: true,
+  webSize: true,
+};
 
 export async function generateMetadata({ params }) {
   const { id } = await params;
@@ -60,22 +82,28 @@ export async function generateMetadata({ params }) {
 
 export default async function CampaignPage({ params }) {
   const { id } = await params;
-  const [c, sites] = await Promise.all([
+  const [c, sites, statRows, booked] = await Promise.all([
     prisma.campaign.findUnique({
       where: { id },
       include: {
         advertiser: { select: { company: true, domain: true, website: true } },
-        deliverables: { orderBy: [{ dueDate: "asc" }, { createdAt: "asc" }] },
+        deliverables: {
+          orderBy: [{ dueDate: "asc" }, { createdAt: "asc" }],
+          include: { assets: { select: ASSET_FIELDS, orderBy: { createdAt: "asc" } } },
+        },
         payments: { orderBy: { dueDate: "asc" } },
         results: { orderBy: { periodEnd: "desc" }, include: { deliverable: { select: { title: true } } } },
         // Never the bytes: those are served one at a time by /api/campaign-assets.
-        assets: {
-          orderBy: { createdAt: "desc" },
-          select: { id: true, name: true, url: true, mimeType: true, size: true, width: true, height: true, uploadedBy: true, createdAt: true, deliverableId: true },
-        },
+        assets: { orderBy: { createdAt: "desc" }, select: ASSET_FIELDS },
       },
     }),
     listSites(),
+    prisma.adStat.groupBy({
+      by: ["deliverableId"],
+      where: { deliverable: { campaignId: id } },
+      _sum: { served: true, views: true, clicks: true },
+    }),
+    bookingsMap({ from: new Date() }),
   ]);
   if (!c) notFound();
 
@@ -90,7 +118,20 @@ export default async function CampaignPage({ params }) {
   const done = live.filter((d) => d.status === "live" || d.status === "delivered").length;
   const paid = c.payments.filter((p) => p.status === "paid").reduce((s, p) => s + p.amountPence, 0);
   const scheduled = c.payments.reduce((s, p) => s + p.amountPence, 0);
-  const t = totals(c.results);
+  // Typed-in results plus what the sites and Mailchimp counted (AdStat).
+  const statsById = new Map(statRows.map((r) => [r.deliverableId, { served: r._sum.served || 0, views: r._sum.views || 0, clicks: r._sum.clicks || 0 }]));
+  const counted = [...statsById.values()].reduce((a, s) => ({ views: a.views + s.views, clicks: a.clicks + s.clicks }), { views: 0, clicks: 0 });
+  const typed = totals(c.results);
+  const t = { ...typed, impressions: typed.impressions + counted.views, clicks: typed.clicks + counted.clicks };
+
+  // The booking grid's view of who holds what, from this month on.
+  const taken = {};
+  for (const [k, holders] of booked) {
+    taken[k] = holders.map((h) => ({ advertiser: h.advertiser, mine: h.campaignId === c.id }));
+  }
+  const todo = outstanding(c, now);
+  const placed = c.deliverables.filter((d) => d.position);
+  const defaultYear = c.startDate ? Number(ukDay(c.startDate).slice(0, 4)) : now.getUTCFullYear();
 
   // A plain summary to paste into an email to the client. House style: no em dashes.
   const report = [
@@ -170,6 +211,75 @@ export default async function CampaignPage({ params }) {
             ))}
           </div>
           {c.specMd && <p className="bb-notes" style={{ whiteSpace: "pre-wrap", marginTop: 14 }}>{c.specMd}</p>}
+          <div className="bb-actions" style={{ marginTop: 14 }}>
+            <Link href={`/campaigns/${c.id}/report`} className="btn">
+              Client report →
+            </Link>
+            <Link href="/campaigns/availability" className="btn-ghost">
+              Availability
+            </Link>
+          </div>
+        </section>
+
+        {/* ---------------- what is still owed by the client */}
+        {todo.length > 0 && (
+          <section className="panel stagger adv-body">
+            <h2 style={{ margin: 0, fontSize: 16 }}>Outstanding from the client</h2>
+            <p className="micro" style={{ color: "var(--muted)", margin: 0 }}>
+              Worked out from the placements: missing or off-spec artwork, click-through URLs and email content. Due dates are the material-due date,
+              or five days before it runs.
+            </p>
+            <table className="adv-table">
+              <tbody>
+                {todo.map((x, i) => (
+                  <tr key={i}>
+                    <td style={{ whiteSpace: "nowrap" }}>
+                      <span className={`chip ${x.late ? "chip-monetise" : "chip-general"}`}>{x.due ? `${x.late ? "Late, was due" : "Due"} ${fmtDay(`${x.due}T12:00:00Z`)}` : "No date"}</span>
+                    </td>
+                    <td>
+                      <strong>{x.what}</strong>
+                      <span className="micro" style={{ color: "var(--muted)", display: "block" }}>
+                        {x.deliverable.title}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+        )}
+
+        {/* ---------------- on the sites */}
+        <section className="panel stagger adv-body">
+          <h2 style={{ margin: 0, fontSize: 16 }}>On the sites and in the inbox</h2>
+          <p className="micro" style={{ color: "var(--muted)", margin: 0 }}>
+            Banners are served by each title&apos;s ad plugin straight from here: set the click-through URL, upload the artwork against the placement,
+            and it goes live on its start date. Taking one down or swapping artwork reaches the site in seconds.
+          </p>
+          <details className="adv-panel" open={placed.length === 0}>
+            <summary>
+              <h2 style={{ fontSize: 14 }}>Book placements by month</h2>
+            </summary>
+            <PlacementGrid
+              campaignId={c.id}
+              sites={campaignSites}
+              positions={POSITIONS.map(({ key, label, size, served, email }) => ({ key, label, size, served: Boolean(served), email: Boolean(email) }))}
+              taken={taken}
+              defaultYear={defaultYear}
+              defaultUrl={placed.find((d) => d.targetUrl)?.targetUrl || ""}
+            />
+          </details>
+          {placed.some((d) => !d.targetUrl) && placed.some((d) => d.targetUrl) && (
+            <form action={fillTargetUrls.bind(null, c.id)} className="adv-inline">
+              <span className="micro">Use</span>
+              <input name="targetUrl" type="url" defaultValue={placed.find((d) => d.targetUrl)?.targetUrl || ""} style={{ flex: "2 1 280px" }} aria-label="Click-through URL" />
+              <span className="micro">for every placement without one</span>
+              <button type="submit" className="btn-ghost">
+                Apply
+              </button>
+            </form>
+          )}
+          <Placements deliverables={c.deliverables} sitesById={siteById} statsById={statsById} now={now} />
         </section>
 
         {/* ---------------- deliverables */}
@@ -435,6 +545,22 @@ export default async function CampaignPage({ params }) {
                         )}
                         <ConfirmSubmit action={deleteAsset.bind(null, a.id)} question={`Delete ${a.name}?`} label="Delete" />
                       </span>
+                      {!a.url && a.width && placed.length > 0 && (
+                        // Moving a file remakes its served copy for the new slot.
+                        <form action={assignAsset.bind(null, a.id)} className="camp-assign">
+                          <select name="deliverableId" defaultValue={a.deliverableId || ""} aria-label="Placement">
+                            <option value="">Not placed</option>
+                            {placed.map((d) => (
+                              <option key={d.id} value={d.id}>
+                                {d.title}
+                              </option>
+                            ))}
+                          </select>
+                          <button type="submit" className="btn-ghost">
+                            Place
+                          </button>
+                        </form>
+                      )}
                     </figcaption>
                   </figure>
                 );
@@ -443,7 +569,10 @@ export default async function CampaignPage({ params }) {
           ) : (
             <p className="micro" style={{ color: "var(--muted)", margin: 0 }}>Nothing uploaded yet.</p>
           )}
-          <CampaignAssetUpload campaignId={c.id} deliverables={c.deliverables.map((d) => ({ id: d.id, title: d.title }))} />
+          <CampaignAssetUpload
+            campaignId={c.id}
+            deliverables={c.deliverables.map((d) => ({ id: d.id, title: d.title, slot: positionInfo(d.position)?.size || null }))}
+          />
           <form action={addAssetLink.bind(null, c.id)} className="adv-inline">
             <input name="url" type="url" required placeholder="https:// link to a Drive folder, WeTransfer or video" style={{ flex: "2 1 260px" }} />
             <input name="name" placeholder="What it is" style={{ flex: "1 1 160px" }} />

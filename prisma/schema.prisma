@@ -1407,14 +1407,27 @@ model CampaignDeliverable {
   liveUrl     String?
   deliveredAt DateTime?
   notes       String?
+  // ---- served by the ad plugin (lib/ad-positions.js names the positions) ----
+  // billboard | leaderboard | mpu | mpu_lower | popup | newsletter_banner |
+  // solus | sponsored_article. Null for anything we deliver by hand.
+  position    String?
+  // Where a click goes. UTM tags are added when it is served, not stored, so
+  // editing the campaign name re-tags every link.
+  targetUrl   String?
+  // Taken down by hand. The dates still stand, so Resume puts it straight back.
+  paused      Boolean    @default(false)
+  // The Mailchimp campaign that carried it (solus, newsletter banner), for opens.
+  mailchimpCampaignId String?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
   results CampaignResult[]
   assets  CampaignAsset[]
+  stats   AdStat[]
 
   @@index([campaignId])
   @@index([dueDate])
+  @@index([siteId, position])
 }
 
 // One instalment. A booking paid monthly is one row per month.
@@ -1477,7 +1490,46 @@ model CampaignAsset {
   width         Int?
   height        Int?
   uploadedBy    String?
+  // The copy the sites actually serve: resized to the slot (at 2x for sharp
+  // screens) and re-encoded, so a 1200x1000 original does not ship to every
+  // reader. The original in data is kept untouched for the client's records.
+  webData       Bytes?
+  webMime       String?
+  webWidth      Int?
+  webHeight     Int?
+  webSize       Int?
+  // Off the rotation without deleting it: how a creative is swapped out.
+  active        Boolean              @default(true)
   createdAt     DateTime             @default(now())
 
+  stats AdStat[]
+
   @@index([campaignId])
+}
+
+// What the ad plugin counted on a title, per creative, per position, per day.
+// Pulled nightly from each site's /cogent/v1/ads/report (the sites count first
+// party, like Pulse, so the cookie banner does not hide them). Views are
+// viewable impressions: at least half the banner on screen for a second.
+model AdStat {
+  id            String              @id @default(cuid())
+  deliverable   CampaignDeliverable @relation(fields: [deliverableId], references: [id], onDelete: Cascade)
+  deliverableId String
+  asset         CampaignAsset?      @relation(fields: [assetId], references: [id], onDelete: SetNull)
+  assetId       String?
+  // The asset id, or "" for a row not tied to one. Postgres never treats two
+  // NULLs as equal, so a nullable column cannot be part of the unique key below.
+  assetKey      String              @default("")
+  siteId        String
+  position      String
+  day           DateTime            @db.Date
+  // email | site: a newsletter banner is clicked from an inbox, not a page.
+  channel       String              @default("site")
+  served        Int                 @default(0)
+  views         Int                 @default(0)
+  clicks        Int                 @default(0)
+  updatedAt     DateTime            @updatedAt
+
+  @@unique([deliverableId, assetKey, position, channel, day])
+  @@index([siteId, day])
 }

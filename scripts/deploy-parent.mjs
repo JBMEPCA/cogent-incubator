@@ -36,7 +36,10 @@ for (const f of [".env.local", ".env"]) {
 const arg = (k) => (process.argv.find((a) => a.startsWith(`--${k}=`)) || "").split("=")[1];
 const DRY = process.argv.includes("--dry-run");
 const ALL = process.argv.includes("--all");
-const PARENT_DIR = path.resolve(repo, "../cogent-base-theme/cogent-base");
+// --from= points at a parent checked out somewhere else, such as a worktree,
+// so a release can ship from the branch it was made on rather than whatever
+// the main checkout happens to have open.
+const PARENT_DIR = arg("from") ? path.resolve(arg("from")) : path.resolve(repo, "../cogent-base-theme/cogent-base");
 
 if (!fs.existsSync(path.join(PARENT_DIR, "style.css"))) {
   console.error(`No parent theme at ${PARENT_DIR}`);

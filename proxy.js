@@ -20,7 +20,9 @@ export const config = {
   // route not being deployed, and cost an hour of chasing a Vercel build that
   // had been fine all along. api/overlay is the interview social picture Make
   // downloads when it posts; it answers only addresses the posting job signed.
+  // api/ads is the feed and creatives the titles' ad plugins pull; every route
+  // under it answers 404 without the fleet token.
   matcher: [
-    "/((?!api/auth|api/cron|api/version|api/unsubscribe|api/brand|api/card|api/overlay|login|_next/static|_next/image|favicon.ico).*)",
+    "/((?!api/auth|api/ads|api/cron|api/version|api/unsubscribe|api/brand|api/card|api/overlay|login|_next/static|_next/image|favicon.ico).*)",
   ],
 };
