@@ -8,7 +8,7 @@ import { fleetAnalytics, summarise } from "@/lib/fleet-analytics";
 import PeriodFilter from "@/app/components/PeriodFilter";
 import { after } from "next/server";
 import { periodFrom, DEFAULT_PERIOD, PERIODS } from "@/lib/periods";
-import { fleetPulse, legacyComparison } from "@/lib/pulse";
+import { pulseForPeriod, legacyComparison } from "@/lib/pulse";
 import { domainRatingsForPanel } from "@/lib/domain-rating";
 import PulsePanel, { ComparePanel } from "./PulsePanel";
 import Scroller from "@/app/components/Scroller";
@@ -150,9 +150,16 @@ function BarFigure({ value, max, colour, children }) {
   );
 }
 
-function TitleTable({ rows, totals, colours, href, windowLabel }) {
-  const maxUsers = Math.max(0, ...rows.map((r) => r.ga4?.users || 0));
+// Visits are Pulse, counted on the sites themselves; search is Search Console.
+// GA4 is left out of this table on purpose: it sees only readers who accept
+// cookies (about a third), so its users column ranked titles by how willing
+// their readers were to press Accept.
+function TitleTable({ rows, totals, pulse, colours, href, windowLabel }) {
+  const visitsOf = (r) => pulse?.bySite?.[r.id];
+  rows = [...rows].sort((a, b) => (visitsOf(b)?.visits || 0) - (visitsOf(a)?.visits || 0));
+  const maxVisits = Math.max(0, ...rows.map((r) => visitsOf(r)?.visits || 0));
   const maxClicks = Math.max(0, ...rows.map((r) => r.gsc?.clicks || 0));
+  const visits = rows.reduce((n, r) => n + (visitsOf(r)?.visits || 0), 0);
   return (
     <div className="panel tt-panel">
       <Scroller>
@@ -161,9 +168,9 @@ function TitleTable({ rows, totals, colours, href, windowLabel }) {
             <tr>
               <th className="tt-rank">#</th>
               <th className="tt-left">Title</th>
-              <th>Users</th>
-              <th className="tt-spark-col">Users, {windowLabel}</th>
-              <th>Sessions</th>
+              <th>Visits</th>
+              <th className="tt-spark-col">Visits, {windowLabel}</th>
+              <th>From search</th>
               <th>Search clicks</th>
               <th>Impr.</th>
               <th>Position</th>
@@ -174,6 +181,7 @@ function TitleTable({ rows, totals, colours, href, windowLabel }) {
           <tbody>
             {rows.map((r, i) => {
               const dark = !r.ga4 && !r.gsc;
+              const p = visitsOf(r);
               return (
                 <tr key={r.id} className={dark ? "is-dark" : undefined}>
                   <td className="tt-rank num">{String(i + 1).padStart(2, "0")}</td>
@@ -187,19 +195,18 @@ function TitleTable({ rows, totals, colours, href, windowLabel }) {
                     </Link>
                   </td>
                   <td>
-                    {r.ga4 ? (
-                      <BarFigure value={r.ga4.users} max={maxUsers} colour={colours[r.slug]}>
-                        <strong>{int(r.ga4.users)}</strong>
+                    {p ? (
+                      <BarFigure value={p.visits} max={maxVisits} colour={colours[r.slug]}>
+                        <strong>{int(p.visits)}</strong>
                       </BarFigure>
                     ) : "—"}
                   </td>
                   <td className="tt-spark-col">
-                    {r.ga4 ? (
-                      <Sparkline points={r.ga4.trend.map((d) => ({ date: d.date, value: d.users }))}
-                        colour={colours[r.slug]} label={`${r.name} users per day`} />
+                    {p?.trend.length > 1 ? (
+                      <Sparkline points={p.trend} colour={colours[r.slug]} label={`${r.name} visits per day`} />
                     ) : null}
                   </td>
-                  <td className="num tt-muted">{r.ga4 ? int(r.ga4.sessions) : "—"}</td>
+                  <td className="num tt-muted">{p ? int(p.sources?.search) : "—"}</td>
                   <td>
                     {r.gsc ? (
                       <BarFigure value={r.gsc.clicks} max={maxClicks} colour="var(--neon-amber)">
@@ -219,9 +226,9 @@ function TitleTable({ rows, totals, colours, href, windowLabel }) {
             <tr>
               <td className="tt-rank" />
               <td className="tt-left">Fleet</td>
-              <td className="num">{int(totals.users)}</td>
+              <td className="num">{int(visits)}</td>
               <td className="tt-spark-col" />
-              <td className="num">{int(totals.sessions)}</td>
+              <td className="num">{int(rows.reduce((n, r) => n + (visitsOf(r)?.sources?.search || 0), 0))}</td>
               <td className="num">{int(totals.clicks)}</td>
               <td className="num">{int(totals.impressions)}</td>
               <td className="num">{pos(totals.position)}</td>
@@ -232,7 +239,8 @@ function TitleTable({ rows, totals, colours, href, windowLabel }) {
         </table>
       </Scroller>
       <p className="micro" style={{ margin: "12px 0 0" }}>
-        users, sessions and published over {windowLabel} · position is google&apos;s average · spend is this
+        visits and published over {windowLabel} · visits are counted on each site by Pulse, from search is the
+        share that arrived from any search engine · search clicks are Google only · position is google&apos;s average · spend is this
         calendar month, in USD —{" "}
         <Link href="/costs" className="nav-link" style={{ padding: 0, fontSize: 11 }}>
           the sterling breakdown is on group costs
@@ -262,11 +270,13 @@ export default async function GroupAnalyticsPage({ searchParams }) {
   const sp = (await searchParams) || {};
   const period = periodFrom(sp.period);
 
-  // Pulse is context beside the numbers, never the numbers, so it gets its own
-  // try: ten WordPress installs being unreachable must not take this page down.
+  // Pulse is the headline audience figure since Nov 2026 (visits counted on
+  // each site, no cookie), over the same period as everything else. It still
+  // gets its own try: ten WordPress installs being unreachable must not take
+  // the Google figures down with them.
   let pulse = null;
   try {
-    pulse = await fleetPulse();
+    pulse = await pulseForPeriod(period);
   } catch {
     pulse = null;
   }
@@ -325,6 +335,23 @@ export default async function GroupAnalyticsPage({ searchParams }) {
   // The fleet payload caps its lists at twelve; the full ranking is recomputed
   // here so the Content view can show more than the overview does.
   const ranked = focus ? { topPages, topQueries, topClicked, topImpressions } : summarise(allRows);
+
+  // Visits for whatever the page is showing: the fleet, or the one title.
+  const focusPulse = focus ? pulse?.bySite?.[focus.id] : null;
+  const visits = focus
+    ? focusPulse && { now: focusPulse.visits, prev: focusPulse.prev, trend: focusPulse.trend }
+    : pulse?.counting ? { now: pulse.visits, prev: pulse.prevVisits, trend: pulse.trend } : null;
+  const visitsOf = (r) => pulse?.bySite?.[r.id]?.visits;
+  const visitsKpi = (
+    <Kpi label="Visits" value={visits ? int(visits.now) : "—"} colour="var(--neon-green)"
+      delta={visits ? <Delta now={visits.now} before={visits.prev} /> : null}
+      foot={visits ? "counted on the sites" : "Pulse not reporting"} spark={visits?.trend} />
+  );
+  // Most read from Pulse's per-title top ten, which counts every reader; GA4's
+  // page list is kept only for when no title answered.
+  const pulseTop = rows
+    .flatMap((r) => (pulse?.bySite?.[r.id]?.top || []).map((t) => ({ ...t, site: r })))
+    .sort((a, b) => b.views - a.views);
 
   const href = (next) => {
     const q = new URLSearchParams();
@@ -402,13 +429,30 @@ export default async function GroupAnalyticsPage({ searchParams }) {
   const converters = ranked.topQueries.filter((q) => q.clicks > 0);
   const nearMisses = ranked.topQueries.filter((q) => q.clicks === 0).sort((a, b) => b.impressions - a.impressions);
 
+  const pulseItems = (list) => {
+    const max = Math.max(1, ...list.map((t) => t.views));
+    return list.map((t, i) => ({
+      key: `${t.site.slug}-${t.id}-${i}`,
+      primary: t.title,
+      meta: focus ? null : t.site.name,
+      colour: colours[t.site.slug],
+      value: int(t.views),
+      unit: "visits",
+      share: t.views / max,
+    }));
+  };
+
   const mostRead = (limit, withAction) => (
     <Card
       title={focus ? "Most read articles" : "Most read articles across the fleet"}
-      note={focus ? `page views over ${windowLabel} · articles only` : "every title's articles ranked together · home and site pages left out"}
-      action={withAction && ranked.topPages.length > limit ? <Link className="an-link" href={href({ view: "content" })}>See all →</Link> : null}
+      note={pulseTop.length
+        ? `visits over ${windowLabel} · counted on the sites${focus ? "" : " · every title's articles ranked together"}`
+        : focus ? `page views over ${windowLabel} · articles only` : "every title's articles ranked together · home and site pages left out"}
+      action={withAction && (pulseTop.length || ranked.topPages.length) > limit ? <Link className="an-link" href={href({ view: "content" })}>See all →</Link> : null}
     >
-      {ranked.topPages.length ? (
+      {pulseTop.length ? (
+        <RankedList items={pulseItems(pulseTop.slice(0, limit))} />
+      ) : ranked.topPages.length ? (
         <RankedList items={pageItems(ranked.topPages.slice(0, limit))} />
       ) : (
         <Empty>No article views recorded yet.</Empty>
@@ -555,8 +599,9 @@ export default async function GroupAnalyticsPage({ searchParams }) {
               </>
             ) : (
               <>
-                Every title, {windowLabel}. Audience figures cover the {connected.ga4} of{" "}
-                {connected.total} titles on Google Analytics, search the {connected.gsc} on Search Console.
+                Every title, {windowLabel}. Visits are counted on {pulse?.counting || 0} of {connected.total} sites
+                themselves, search on the {connected.gsc} on Search Console. Google Analytics sees only readers who
+                accept cookies, so it is kept for engagement, not for size.
               </>
             )}
           </p>
@@ -657,10 +702,7 @@ export default async function GroupAnalyticsPage({ searchParams }) {
       {view === "overview" && (
         <>
           <section className="an-kpis stagger">
-            <Kpi label="Users" value={int(totals.users)} colour="var(--neon-green)"
-              delta={<Delta now={totals.users} before={totals.prevUsers} />} spark={audienceSpark("users")} />
-            <Kpi label="Page views" value={int(totals.pageViews)} colour="var(--neon-cyan)"
-              delta={<Delta now={totals.pageViews} before={totals.prevPageViews} />} spark={audienceSpark("pageViews")} />
+            {visitsKpi}
             <Kpi label="Search clicks" value={int(totals.clicks)} colour="var(--neon-amber)"
               delta={<Delta now={totals.clicks} before={totals.prevClicks} />} spark={searchSpark("clicks")} />
             <Kpi label="Impressions" value={int(totals.impressions)} colour="var(--neon-violet)"
@@ -673,14 +715,13 @@ export default async function GroupAnalyticsPage({ searchParams }) {
 
           {!focus && (
             <section>
-              <SectionHead title="Every title" note="biggest audience first · click a title to filter" />
-              <TitleTable rows={rows} totals={totals} colours={colours} href={href} windowLabel={windowLabel} />
+              <SectionHead title="Every title" note="most visits first · click a title to filter" />
+              <TitleTable rows={rows} totals={totals} pulse={pulse} colours={colours} href={href} windowLabel={windowLabel} />
             </section>
           )}
 
-          {/* Fleet-wide and counted from a different start date, so it only
-              appears unfiltered — see PulsePanel for why it stands apart. */}
-          {!focus && <PulsePanel pulse={pulse} rows={rows} dr={dr} />}
+          {/* Where those visits came from, title by title. */}
+          {!focus && <PulsePanel pulse={pulse} rows={rows} dr={dr} windowLabel={windowLabel} />}
           {!focus && (
             <ComparePanel
               legacy={legacy}
@@ -698,15 +739,15 @@ export default async function GroupAnalyticsPage({ searchParams }) {
           )}
 
           <section style={grid(340)}>
-            {trendCard("Users per day", audienceSpark("users"), "var(--neon-green)", "users", "No sessions recorded yet.")}
+            {trendCard("Visits per day", visits?.trend || [], "var(--neon-green)", "visits", "No visits counted yet.")}
             {trendCard("Search clicks per day", searchSpark("clicks"), "var(--neon-amber)", "clicks", "No search clicks recorded yet.")}
           </section>
 
           {!focus && (
             <section style={grid(300)}>
-              <Card title="Readers, by title" note={`sessions over ${windowLabel}`}>
-                <SharePie slices={byTitle((r) => r.ga4?.sessions)} centre={int(totals.sessions)} centreLabel="sessions"
-                  ariaLabel="Share of fleet sessions by title" empty="No sessions recorded across the fleet yet." />
+              <Card title="Visits, by title" note={`counted on the sites over ${windowLabel}`}>
+                <SharePie slices={byTitle(visitsOf)} centre={int(visits?.now)} centreLabel="visits"
+                  ariaLabel="Share of fleet visits by title" empty="No visits counted across the fleet yet." />
               </Card>
               <Card title="Output, by title" note={`articles published over ${windowLabel}`}>
                 <SharePie slices={byTitle((r) => r.publishedWindow)} centre={int(totals.publishedWindow)} centreLabel="published"
@@ -731,35 +772,35 @@ export default async function GroupAnalyticsPage({ searchParams }) {
       {/* ── AUDIENCE ───────────────────────────────────────────────────── */}
       {view === "audience" && (
         <>
+          {/* Visits are the size. Everything after them is GA4, which sees only
+              the readers who accept cookies: right for how they behave, not for
+              how many there are. */}
           <section className="an-kpis stagger">
-            <Kpi label="Users" value={int(totals.users)} colour="var(--neon-green)"
-              delta={<Delta now={totals.users} before={totals.prevUsers} />} spark={audienceSpark("users")} />
-            <Kpi label="Sessions" value={int(totals.sessions)} colour="var(--brand-2)"
-              delta={<Delta now={totals.sessions} before={totals.prevSessions} />} />
-            <Kpi label="Page views" value={int(totals.pageViews)} colour="var(--neon-cyan)"
-              delta={<Delta now={totals.pageViews} before={totals.prevPageViews} />} spark={audienceSpark("pageViews")} />
+            {visitsKpi}
+            <Kpi label="GA4 users" value={int(totals.users)} colour="var(--brand-2)"
+              delta={<Delta now={totals.users} before={totals.prevUsers} />} foot="cookie-accepting readers only" />
             <Kpi label="Avg session" value={mmss(totals.avgDuration)} colour="var(--neon-violet)"
-              foot={focus ? null : "session-weighted"} />
+              foot={focus ? "GA4" : "GA4 · session-weighted"} />
             <Kpi label="Pages per session" value={totals.sessions ? (totals.pageViews / totals.sessions).toFixed(1) : "—"}
-              colour="var(--neon-amber)" />
+              colour="var(--neon-amber)" foot="GA4" />
           </section>
 
           <section style={grid(340)}>
-            {trendCard("Users per day", audienceSpark("users"), "var(--neon-green)", "users", "No sessions recorded yet.")}
-            {trendCard("Page views per day", audienceSpark("pageViews"), "var(--neon-cyan)", "page views", "No page views recorded yet.")}
+            {trendCard("Visits per day", visits?.trend || [], "var(--neon-green)", "visits", "No visits counted yet.")}
+            {trendCard("GA4 users per day", audienceSpark("users"), "var(--brand-2)", "users", "No sessions recorded yet.")}
           </section>
 
           <section style={grid(340)}>
-            <Card title="Where readers come from" note={focus ? "sessions by channel" : "sessions by channel, every title pooled"}>
+            <Card title="Where readers come from" note={focus ? "GA4 sessions by channel" : "GA4 sessions by channel, every title pooled"}>
               <SharePie
                 slices={channels.map((c) => ({ key: c.channel, label: c.channel, value: c.sessions, colour: channelColours[c.channel] }))}
                 centre={int(totals.sessions)} centreLabel="sessions"
                 ariaLabel="Share of sessions by acquisition channel" empty="No sessions to break down yet." />
             </Card>
             {!focus && (
-              <Card title="Readers, by title" note={`sessions over ${windowLabel}`}>
-                <SharePie slices={byTitle((r) => r.ga4?.sessions)} centre={int(totals.sessions)} centreLabel="sessions"
-                  ariaLabel="Share of fleet sessions by title" empty="No sessions recorded across the fleet yet." />
+              <Card title="Visits, by title" note={`counted on the sites over ${windowLabel}`}>
+                <SharePie slices={byTitle(visitsOf)} centre={int(visits?.now)} centreLabel="visits"
+                  ariaLabel="Share of fleet visits by title" empty="No visits counted across the fleet yet." />
               </Card>
             )}
           </section>
@@ -767,7 +808,7 @@ export default async function GroupAnalyticsPage({ searchParams }) {
           {!focus && (
             <Card
               title="Each title, day by day"
-              note="users per day · each line is scaled to its own peak, so compare shape, not size"
+              note="visits per day · each line is scaled to its own peak, so compare shape, not size"
             >
               <div style={{ display: "grid", gap: 12 }}>
                 {rows.map((r) => (
@@ -779,14 +820,14 @@ export default async function GroupAnalyticsPage({ searchParams }) {
                       <span className="an-dot" style={{ background: colours[r.slug] }} />
                       <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.name}</span>
                     </Link>
-                    {r.ga4 ? (
-                      <Sparkline points={r.ga4.trend.map((d) => ({ date: d.date, value: d.users }))} colour={colours[r.slug]}
-                        label={`${r.name} users per day`} />
+                    {pulse?.bySite?.[r.id]?.trend.length > 1 ? (
+                      <Sparkline points={pulse.bySite[r.id].trend} colour={colours[r.slug]}
+                        label={`${r.name} visits per day`} />
                     ) : (
-                      <span className="micro" style={{ opacity: 0.6 }}>google not connected</span>
+                      <span className="micro" style={{ opacity: 0.6 }}>not counting yet</span>
                     )}
                     <span className="num" style={{ textAlign: "right", fontSize: 13, color: "var(--muted)" }}>
-                      {r.ga4 ? `${int(r.ga4.users)} users` : "—"}
+                      {visitsOf(r) != null ? `${int(visitsOf(r))} visits` : "—"}
                     </span>
                   </div>
                 ))}
@@ -856,9 +897,9 @@ export default async function GroupAnalyticsPage({ searchParams }) {
             <Kpi label="Published" value={int(totals.publishedWindow)} colour="var(--brand-2)" foot={`over ${windowLabel}`} />
             <Kpi label="In pipeline" value={int(totals.pipeline)} colour="var(--neon-cyan)" />
             <Kpi label="Awaiting review" value={int(totals.awaiting)} colour="var(--neon-amber)" />
-            <Kpi label="Views per article" colour="var(--neon-green)"
-              value={totals.publishedWindow ? int(totals.pageViews / totals.publishedWindow) : "—"}
-              foot="page views ÷ published" />
+            <Kpi label="Visits per article" colour="var(--neon-green)"
+              value={visits && totals.publishedWindow ? int(visits.now / totals.publishedWindow) : "—"}
+              foot="visits ÷ published" />
           </section>
 
           <section className="an-pair">
@@ -872,9 +913,9 @@ export default async function GroupAnalyticsPage({ searchParams }) {
                 <SharePie slices={byTitle((r) => r.publishedWindow)} centre={int(totals.publishedWindow)} centreLabel="published"
                   ariaLabel="Share of articles published by title" empty="Nothing published in this window." />
               </Card>
-              <Card title="Page views, by title" note={`over ${windowLabel}`}>
-                <SharePie slices={byTitle((r) => r.ga4?.pageViews)} centre={int(totals.pageViews)} centreLabel="page views"
-                  ariaLabel="Share of page views by title" empty="No page views recorded yet." />
+              <Card title="Visits, by title" note={`counted on the sites over ${windowLabel}`}>
+                <SharePie slices={byTitle(visitsOf)} centre={int(visits?.now)} centreLabel="visits"
+                  ariaLabel="Share of visits by title" empty="No visits counted yet." />
               </Card>
             </section>
           )}

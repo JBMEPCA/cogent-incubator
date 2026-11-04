@@ -1,6 +1,9 @@
 // Visits the sites counted for themselves. "Readers" until Nov 2026, renamed
 // because a count of page visits is not a count of people.
 //
+// Since Nov 2026 the visits are the page's headline figure, over the page's
+// own period, and this panel is their source breakdown. History below:
+//
 // This began life as a column in the comparison table and had to come out.
 // Every other column there is a 28 day window; this one started counting on 2
 // October. Formatted identically and sitting one cell away from GA4's users,
@@ -151,7 +154,7 @@ function LegacyRows({ legacy, dr, max }) {
   );
 }
 
-export default function PulsePanel({ pulse, rows = [], dr = null }) {
+export default function PulsePanel({ pulse, rows = [], dr = null, windowLabel = null }) {
   if (!pulse || pulse.errors?.length && !pulse.counting) {
     return (
       <section className="panel" style={{ padding: 18, marginBottom: 24 }}>
@@ -180,20 +183,22 @@ export default function PulsePanel({ pulse, rows = [], dr = null }) {
 
   return (
     <section className="panel" style={{ padding: 18, marginBottom: 24 }}>
-      <h3 style={{ margin: "0 0 4px", fontSize: 14 }}>Visits, counted on the sites</h3>
+      <h3 style={{ margin: "0 0 4px", fontSize: 14 }}>Where visits came from</h3>
       <p style={{ margin: "0 0 4px", fontSize: 13, color: "var(--muted)", maxWidth: 820 }}>
         Counted by each site itself, with no cookie, so the consent banner cannot hide anyone. A visit counts once the
         page has been on screen for 3 seconds, which keeps out the mail scanners that open every newsletter link.{" "}
         {started ? (
           <>
-            Since <strong style={{ color: "var(--text)" }}>{started}</strong>, which is {days === 1 ? "today" : `${days} days`}.
+            {windowLabel ? `Over ${windowLabel}, the same window as the figures above. ` : ""}
+            Counting since <strong style={{ color: "var(--text)" }}>{started}</strong>, which is{" "}
+            {days === 1 ? "today" : `${days} days`}.
           </>
         ) : (
           "Nothing counted yet."
         )}
       </p>
       <p className="rising-note">
-        not comparable with the 28 day figures above · there is no history before the start date, because nothing recorded one · known crawlers counted separately
+        there is no history before {started || "the start date"}, because nothing recorded one, so a longer window holds only what has been counted · known crawlers counted separately
       </p>
       <p className="rising-note">
         {rules.count === 0
