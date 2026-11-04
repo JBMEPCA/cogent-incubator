@@ -87,9 +87,9 @@ export function ComparePanel({ legacy = [], dr = null, since = null }) {
       </h3>
       <p style={{ margin: "0 0 12px", fontSize: 13, color: "var(--muted)", maxWidth: 820 }}>
         Our three biggest new titles beside CIM&rsquo;s established ones, {since ? `since ${since}` : "same dates"}, on one
-        scale so a bar&rsquo;s length is its real size. Search is the best count we can read for each title: Search
-        Console&rsquo;s Google clicks or Pulse, whichever is higher, because GA4 on our titles only sees readers who
-        accept cookies. Every other channel is GA4 engaged visits, the one measure CIM&rsquo;s titles share with ours;
+        scale so a bar&rsquo;s length is its real size. Search on our titles is Pulse&rsquo;s count of visits from
+        any search engine, because GA4 there only sees readers who accept cookies; CIM&rsquo;s titles run no Pulse,
+        so theirs is Search Console&rsquo;s Google clicks or GA4, whichever is higher. Every other channel is GA4 engaged visits, the one measure CIM&rsquo;s titles share with ours;
         GA4 fixes its own rule (10 seconds, a second page, or an action) and it cannot be set to Pulse&rsquo;s 3 seconds.
       </p>
       <div className="pulse-list">

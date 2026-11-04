@@ -6,6 +6,7 @@ import TrendChart from "@/app/components/TrendChart";
 import { fetchAnalytics } from "@/lib/analytics";
 import { googleServiceAccountEmail } from "@/lib/google";
 import Scroller from "@/app/components/Scroller";
+import { pulseForPeriod } from "@/lib/pulse";
 
 export const dynamic = "force-dynamic";
 
@@ -150,6 +151,15 @@ export default async function AnalyticsPage({ params }) {
   const siteRef = { id: site.id, slug: site.slug };
 
   const { config, gsc, ga4, errors } = await fetchAnalytics(creds.google_analytics);
+  // Search arrivals are Pulse's, counted on the site from any search engine,
+  // over the same rolling 28 days. Search Console keeps impressions, position
+  // and the query and page lists, which only Google can give.
+  let pulse = null;
+  try {
+    pulse = (await pulseForPeriod({ days: 28 })).bySite[site.id] || null;
+  } catch {
+    pulse = null;
+  }
   const serviceAccount = googleServiceAccountEmail();
 
   const gscQuiet = gsc && gsc.impressions === 0 && gsc.clicks === 0;
@@ -236,18 +246,23 @@ export default async function AnalyticsPage({ params }) {
             <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 14 }}>
               <h2 style={{ margin: 0, fontSize: 17 }}>Search visibility</h2>
               <span className="micro">
-                {gsc.range.startDate} → {gsc.range.endDate} · google search console
+                from search: counted on the site by Pulse, last 28 days · the rest: google search console,{" "}
+                {gsc.range.startDate} → {gsc.range.endDate}
               </span>
             </div>
 
             <div className="stagger" style={tileGrid}>
-              <Tile label="Clicks" value={int(gsc.clicks)}>
-                <Delta {...cmp("clicks")} />
+              <Tile label="From search" value={pulse ? int(pulse.search) : "—"}>
+                {pulse ? (
+                  <Delta now={pulse.search} before={pulse.prevSearch} basis="prev 28d" />
+                ) : (
+                  <span className="micro" style={{ color: "var(--muted)" }}>Pulse not reporting</span>
+                )}
               </Tile>
               <Tile label="Impressions" value={int(gsc.impressions)}>
                 <Delta {...cmp("impressions")} />
               </Tile>
-              <Tile label="Click-through rate" value={pct(gsc.ctr)}>
+              <Tile label="Google click-through" value={pct(gsc.ctr)}>
                 <Delta {...cmp("ctr")} />
               </Tile>
               <Tile label="Average position" value={pos(gsc.position)}>
@@ -282,12 +297,14 @@ export default async function AnalyticsPage({ params }) {
                   />
                 </div>
                 <div className="panel" style={{ padding: 18 }}>
-                  <h3 style={{ margin: "0 0 12px", fontSize: 14 }}>Clicks per day</h3>
-                  <TrendChart
-                    points={gsc.trend.map((d) => ({ date: d.date, value: d.clicks }))}
-                    color="var(--neon-cyan)"
-                    label="clicks"
-                  />
+                  <h3 style={{ margin: "0 0 12px", fontSize: 14 }}>Visits from search per day</h3>
+                  {pulse?.searchTrend?.length ? (
+                    <TrendChart points={pulse.searchTrend} color="var(--neon-cyan)" label="visits from search" />
+                  ) : (
+                    <p style={{ margin: 0, color: "var(--muted)", fontSize: 13 }}>
+                      {pulse ? "The daily line starts once this site runs Pulse 1.3.1." : "Pulse not reporting."}
+                    </p>
+                  )}
                 </div>
               </div>
             )}
@@ -360,12 +377,6 @@ export default async function AnalyticsPage({ params }) {
             </div>
 
             <div className="stagger" style={tileGrid}>
-              <Tile label="From Google search" value={int(ga4.organic.sessions)}>
-                <div className="micro" style={{ marginBottom: 2 }}>
-                  {pct(ga4.organic.share)} of sessions
-                </div>
-                <Delta now={ga4.organic.now} before={ga4.organic.before} basis={ga4.compare.basis} />
-              </Tile>
               <Tile label="Direct" value={int(ga4.direct.sessions)}>
                 <div className="micro" style={{ marginBottom: 2 }}>
                   {pct(ga4.direct.share)} of sessions

@@ -150,7 +150,8 @@ function BarFigure({ value, max, colour, children }) {
   );
 }
 
-// Visits are Pulse, counted on the sites themselves; search is Search Console.
+// Visits and search are Pulse, counted on the sites themselves; impressions and
+// position are Search Console, the only source for them.
 // GA4 is left out of this table on purpose: it sees only readers who accept
 // cookies (about a third), so its users column ranked titles by how willing
 // their readers were to press Accept.
@@ -158,7 +159,7 @@ function TitleTable({ rows, totals, pulse, colours, href, windowLabel }) {
   const visitsOf = (r) => pulse?.bySite?.[r.id];
   rows = [...rows].sort((a, b) => (visitsOf(b)?.visits || 0) - (visitsOf(a)?.visits || 0));
   const maxVisits = Math.max(0, ...rows.map((r) => visitsOf(r)?.visits || 0));
-  const maxClicks = Math.max(0, ...rows.map((r) => r.gsc?.clicks || 0));
+  const maxSearch = Math.max(0, ...rows.map((r) => visitsOf(r)?.search || 0));
   const visits = rows.reduce((n, r) => n + (visitsOf(r)?.visits || 0), 0);
   return (
     <div className="panel tt-panel">
@@ -171,7 +172,6 @@ function TitleTable({ rows, totals, pulse, colours, href, windowLabel }) {
               <th>Visits</th>
               <th className="tt-spark-col">Visits, {windowLabel}</th>
               <th>From search</th>
-              <th>Search clicks</th>
               <th>Impr.</th>
               <th>Position</th>
               <th>Published</th>
@@ -206,11 +206,10 @@ function TitleTable({ rows, totals, pulse, colours, href, windowLabel }) {
                       <Sparkline points={p.trend} colour={colours[r.slug]} label={`${r.name} visits per day`} />
                     ) : null}
                   </td>
-                  <td className="num tt-muted">{p ? int(p.sources?.search) : "—"}</td>
                   <td>
-                    {r.gsc ? (
-                      <BarFigure value={r.gsc.clicks} max={maxClicks} colour="var(--neon-amber)">
-                        {int(r.gsc.clicks)}
+                    {p ? (
+                      <BarFigure value={p.search} max={maxSearch} colour="var(--neon-amber)">
+                        {int(p.search)}
                       </BarFigure>
                     ) : "—"}
                   </td>
@@ -228,8 +227,7 @@ function TitleTable({ rows, totals, pulse, colours, href, windowLabel }) {
               <td className="tt-left">Fleet</td>
               <td className="num">{int(visits)}</td>
               <td className="tt-spark-col" />
-              <td className="num">{int(rows.reduce((n, r) => n + (visitsOf(r)?.sources?.search || 0), 0))}</td>
-              <td className="num">{int(totals.clicks)}</td>
+              <td className="num">{int(rows.reduce((n, r) => n + (visitsOf(r)?.search || 0), 0))}</td>
               <td className="num">{int(totals.impressions)}</td>
               <td className="num">{pos(totals.position)}</td>
               <td className="num">{int(totals.publishedWindow)}</td>
@@ -240,7 +238,7 @@ function TitleTable({ rows, totals, pulse, colours, href, windowLabel }) {
       </Scroller>
       <p className="micro" style={{ margin: "12px 0 0" }}>
         visits and published over {windowLabel} · visits are counted on each site by Pulse, from search is the
-        share that arrived from any search engine · search clicks are Google only · position is google&apos;s average · spend is this
+        visits that arrived from any search engine · impressions and position are google&apos;s, from Search Console · spend is this
         calendar month, in USD —{" "}
         <Link href="/costs" className="nav-link" style={{ padding: 0, fontSize: 11 }}>
           the sterling breakdown is on group costs
@@ -342,6 +340,20 @@ export default async function GroupAnalyticsPage({ searchParams }) {
     ? focusPulse && { now: focusPulse.visits, prev: focusPulse.prev, trend: focusPulse.trend }
     : pulse?.counting ? { now: pulse.visits, prev: pulse.prevVisits, trend: pulse.trend } : null;
   const visitsOf = (r) => pulse?.bySite?.[r.id]?.visits;
+  // Search is Pulse too: visits from any search engine that stayed 3 seconds.
+  // Search Console stays the source for impressions, position and queries.
+  const search = focus
+    ? focusPulse && { now: focusPulse.search, prev: focusPulse.prevSearch, trend: focusPulse.searchTrend }
+    : pulse?.counting ? { now: pulse.search, prev: pulse.prevSearch, trend: pulse.searchTrend } : null;
+  const searchOf = (r) => pulse?.bySite?.[r.id]?.search;
+  const searchKpi = (label) => (
+    <Kpi label={label} value={search ? int(search.now) : "—"} colour="var(--neon-amber)"
+      delta={search ? <Delta now={search.now} before={search.prev} /> : null}
+      foot={search ? "any search engine · counted on the sites" : "Pulse not reporting"} spark={search?.trend} />
+  );
+  const searchTrendCard = (title) =>
+    trendCard(title, search?.trend || [], "var(--neon-amber)", "visits from search",
+      search && !search.trend ? "The daily line starts once every site runs Pulse 1.3.1." : "No visits from search counted yet.");
   const visitsKpi = (
     <Kpi label="Visits" value={visits ? int(visits.now) : "—"} colour="var(--neon-green)"
       delta={visits ? <Delta now={visits.now} before={visits.prev} /> : null}
@@ -599,9 +611,10 @@ export default async function GroupAnalyticsPage({ searchParams }) {
               </>
             ) : (
               <>
-                Every title, {windowLabel}. Visits are counted on {pulse?.counting || 0} of {connected.total} sites
-                themselves, search on the {connected.gsc} on Search Console. Google Analytics sees only readers who
-                accept cookies, so it is kept for engagement, not for size.
+                Every title, {windowLabel}. Visits and visits from search are counted on {pulse?.counting || 0} of{" "}
+                {connected.total} sites themselves; impressions, position and queries come from Search Console on{" "}
+                {connected.gsc}. Google Analytics sees only readers who accept cookies, so it is kept for engagement,
+                not for size.
               </>
             )}
           </p>
@@ -703,8 +716,7 @@ export default async function GroupAnalyticsPage({ searchParams }) {
         <>
           <section className="an-kpis stagger">
             {visitsKpi}
-            <Kpi label="Search clicks" value={int(totals.clicks)} colour="var(--neon-amber)"
-              delta={<Delta now={totals.clicks} before={totals.prevClicks} />} spark={searchSpark("clicks")} />
+            {searchKpi("From search")}
             <Kpi label="Impressions" value={int(totals.impressions)} colour="var(--neon-violet)"
               delta={<Delta now={totals.impressions} before={totals.prevImpressions} />} spark={searchSpark("impressions")} />
             <Kpi label="Published" value={int(totals.publishedWindow)} colour="var(--brand-2)"
@@ -740,7 +752,7 @@ export default async function GroupAnalyticsPage({ searchParams }) {
 
           <section style={grid(340)}>
             {trendCard("Visits per day", visits?.trend || [], "var(--neon-green)", "visits", "No visits counted yet.")}
-            {trendCard("Search clicks per day", searchSpark("clicks"), "var(--neon-amber)", "clicks", "No search clicks recorded yet.")}
+            {searchTrendCard("Visits from search per day")}
           </section>
 
           {!focus && (
@@ -841,19 +853,18 @@ export default async function GroupAnalyticsPage({ searchParams }) {
       {view === "search" && (
         <>
           <section className="an-kpis stagger">
-            <Kpi label="Clicks" value={int(totals.clicks)} colour="var(--neon-amber)"
-              delta={<Delta now={totals.clicks} before={totals.prevClicks} />} spark={searchSpark("clicks")} />
+            {searchKpi("From search")}
             <Kpi label="Impressions" value={int(totals.impressions)} colour="var(--neon-violet)"
               delta={<Delta now={totals.impressions} before={totals.prevImpressions} />} spark={searchSpark("impressions")} />
-            <Kpi label="Click-through rate" value={pct(totals.ctr)} colour="var(--neon-cyan)"
-              delta={<Delta now={totals.ctr} before={totals.prevCtr} />} />
+            <Kpi label="Google click-through" value={pct(totals.ctr)} colour="var(--neon-cyan)"
+              delta={<Delta now={totals.ctr} before={totals.prevCtr} />} foot="Search Console clicks ÷ impressions" />
             <Kpi label="Average position" value={pos(totals.position)} colour="var(--neon-green)"
               delta={<Delta now={totals.position} before={totals.prevPosition} lowerIsBetter />} foot="lower is better" />
           </section>
 
           <section style={grid(340)}>
             {trendCard("Impressions per day", searchSpark("impressions"), "var(--neon-violet)", "impressions", "No impressions recorded yet.")}
-            {trendCard("Clicks per day", searchSpark("clicks"), "var(--neon-amber)", "clicks", "No search clicks recorded yet.")}
+            {searchTrendCard("Visits from search per day")}
           </section>
 
           {topArticles(20)}
@@ -877,9 +888,9 @@ export default async function GroupAnalyticsPage({ searchParams }) {
 
           {!focus && (
             <section style={grid(340)}>
-              <Card title="Search clicks, by title" note={`google clicks over ${windowLabel}`}>
-                <SharePie slices={byTitle((r) => r.gsc?.clicks)} centre={int(totals.clicks)} centreLabel="clicks"
-                  ariaLabel="Share of search clicks by title" empty="No search clicks recorded yet." />
+              <Card title="From search, by title" note={`visits from any search engine over ${windowLabel}`}>
+                <SharePie slices={byTitle(searchOf)} centre={int(search?.now)} centreLabel="from search"
+                  ariaLabel="Share of visits from search by title" empty="No visits from search counted yet." />
               </Card>
               <Card title="Impressions, by title" note={`times a title appeared in google over ${windowLabel}`}>
                 <SharePie slices={byTitle((r) => r.gsc?.impressions)} centre={int(totals.impressions)} centreLabel="impressions"
