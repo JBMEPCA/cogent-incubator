@@ -7052,3 +7052,12 @@ section.gc-panel {
 .msave.is-dirty { border-color: #ecc883; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 0 0 3px rgba(236, 200, 131, 0.15); }
 .msave.is-dirty .btn, .msave.is-busy .btn { opacity: 1; }
 .msave.is-dirty .msave-msg { color: #ecc883; }
+/* A grouped placement's months: one chip per send or run. */
+.plc-months { display: flex; gap: 6px; flex-wrap: wrap; }
+.plc-month { display: inline-flex; gap: 6px; align-items: center; padding: 3px 4px 3px 10px; border-radius: 999px; border: 1px solid var(--line-bright); background: var(--surface-2); font-size: 12px; }
+.plc-month.is-live { border-color: rgba(63, 182, 139, 0.6); color: #8fd9bc; }
+.plc-month.is-ended { opacity: 0.5; }
+.plc-month.is-paused { border-color: #ecc883; }
+.plc-month input { width: 110px; padding: 2px 6px; font-size: 11px; }
+.plc-month-x { all: unset; cursor: pointer; color: var(--muted); padding: 0 6px; border-radius: 999px; }
+.plc-month-x:hover { color: #f08c8c; }

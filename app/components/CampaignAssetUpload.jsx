@@ -57,8 +57,10 @@ async function shrink(file, bmp, maxW) {
 // onDone: told after each upload, so a panel can re-read itself.
 // also: other placements of the same kind on the title, still without
 // artwork; ticked by default, the file goes on them too.
+// alsoAlways: also is every month of one grouped placement, so the file
+// always goes on all of them and there is no box to untick.
 // compact: one line, for the placement rows on the campaign page.
-export default function CampaignAssetUpload({ campaignId, deliverables, fixed = false, replace = false, onDone, also = [], alsoLabel = "", compact = false }) {
+export default function CampaignAssetUpload({ campaignId, deliverables, fixed = false, replace = false, onDone, also = [], alsoLabel = "", alsoAlways = false, compact = false }) {
   const [alsoOn, setAlsoOn] = useState(true);
   const [state, action, pending] = useActionState(uploadAssets.bind(null, campaignId), null);
   const [deliverableId, setDeliverableId] = useState(fixed ? deliverables[0]?.id || "" : "");
@@ -122,7 +124,7 @@ export default function CampaignAssetUpload({ campaignId, deliverables, fixed = 
     ready.forEach((f) => fd.append("files", f));
     if (deliverableId) fd.set("deliverableId", deliverableId);
     if (replace) fd.set("replace", "1");
-    if (alsoOn) also.forEach((id) => fd.append("alsoFor", id));
+    if (alsoOn || alsoAlways) also.forEach((id) => fd.append("alsoFor", id));
     startTransition(() => action(fd));
     form.reset();
   }
@@ -144,7 +146,7 @@ export default function CampaignAssetUpload({ campaignId, deliverables, fixed = 
         <button type="submit" className="btn-ghost" disabled={pending || busy}>
           {busy ? "Preparing…" : pending ? "Uploading…" : replace ? "Upload and replace" : "Upload"}
         </button>
-        {also.length > 0 && (
+        {also.length > 0 && !alsoAlways && (
           <label className="micro camp-also">
             <input type="checkbox" checked={alsoOn} onChange={(e) => setAlsoOn(e.target.checked)} /> {alsoLabel || `Also on the other ${also.length}`}
           </label>
