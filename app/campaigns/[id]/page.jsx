@@ -93,7 +93,43 @@ export default async function CampaignPage({ params }) {
   const siteById = new Map(sites.map((s) => [s.id, s]));
   const campaignSites = c.siteIds.length ? sites.filter((s) => c.siteIds.includes(s.id)) : sites;
   const st = campaignStatus(c.status);
-  const deliverableTitle = new Map(c.deliverables.map((d) => [d.id, d.title]));
+  const deliverableById = new Map(c.deliverables.map((d) => [d.id, d]));
+
+  // Material from the client: one card per file. A file uploaded to a
+  // placement that runs several months is stored once per month (each send
+  // and each month is tracked on its own), and listing every copy filled the
+  // section with twelve identical banners (JB, 4 Nov 2026).
+  const fileGroups = [];
+  const byFile = new Map();
+  for (const a of c.assets) {
+    const k = a.url ? `link|${a.url}|${a.deliverableId || ""}` : `${a.name}|${a.size}|${a.width}|${a.height}|${a.mimeType}`;
+    if (!byFile.has(k)) {
+      const g = { a, ids: [], deliverables: [] };
+      byFile.set(k, g);
+      fileGroups.push(g);
+    }
+    const g = byFile.get(k);
+    g.ids.push(a.id);
+    if (a.deliverableId && deliverableById.has(a.deliverableId)) g.deliverables.push(deliverableById.get(a.deliverableId));
+  }
+  for (const g of fileGroups) {
+    if (g.deliverables.length === 1) {
+      g.where = g.deliverables[0].title;
+    } else if (g.deliverables.length > 1) {
+      const places = [
+        ...new Set(g.deliverables.map((d) => `${positionInfo(d.position)?.label || d.title.split(",")[0]}, ${siteById.get(d.siteId)?.name || "no title"}`)),
+      ];
+      const months = g.deliverables
+        .map((d) => d.dueDate)
+        .filter(Boolean)
+        .sort((x, y) => x - y);
+      const span =
+        months.length > 1
+          ? `${new Date(months[0]).toLocaleDateString("en-GB", { month: "short", year: "numeric", timeZone: "UTC" })} to ${new Date(months.at(-1)).toLocaleDateString("en-GB", { month: "short", year: "numeric", timeZone: "UTC" })}`
+          : "";
+      g.where = `${places.join("; ")} · ${g.deliverables.length} placements${span ? `, ${span}` : ""}`;
+    }
+  }
 
   const paid = c.payments.filter((p) => p.status === "paid").reduce((s, p) => s + p.amountPence, 0);
   const scheduled = c.payments.reduce((s, p) => s + p.amountPence, 0);
@@ -365,9 +401,9 @@ export default async function CampaignPage({ params }) {
         {/* ---------------- assets */}
         <section className="panel stagger adv-body">
           <h2 style={{ margin: 0, fontSize: 16 }}>Material from the client</h2>
-          {c.assets.length > 0 ? (
+          {fileGroups.length > 0 ? (
             <div className="camp-assets">
-              {c.assets.map((a) => {
+              {fileGroups.map(({ a, ids, where }) => {
                 const href = a.url || `/api/campaign-assets/${a.id}`;
                 const img = !a.url && /^image\//.test(a.mimeType || "");
                 return (
@@ -384,10 +420,9 @@ export default async function CampaignPage({ params }) {
                     <figcaption className="micro">
                       <strong style={{ overflowWrap: "anywhere" }}>{a.name}</strong>
                       <span style={{ color: "var(--muted)", display: "block" }}>
-                        {[a.width && a.height ? `${a.width}×${a.height}` : null, fmtBytes(a.size), a.deliverableId ? deliverableTitle.get(a.deliverableId) : null]
-                          .filter(Boolean)
-                          .join(" · ")}
+                        {[a.width && a.height ? `${a.width}×${a.height}` : null, fmtBytes(a.size)].filter(Boolean).join(" · ")}
                       </span>
+                      {where && <span style={{ display: "block" }}>{where}</span>}
                       <span style={{ color: "var(--muted)", display: "block" }}>
                         {fmtDay(a.createdAt)}
                         {a.uploadedBy ? ` · ${a.uploadedBy}` : ""}
@@ -398,9 +433,14 @@ export default async function CampaignPage({ params }) {
                             Download
                           </a>
                         )}
-                        <ConfirmSubmit action={deleteAsset.bind(null, a.id)} question={`Delete ${a.name}?`} label="Delete" />
+                        <ConfirmSubmit
+                          action={deleteAsset.bind(null, ids)}
+                          question={ids.length > 1 ? `Delete ${a.name} from all ${ids.length} placements it runs on?` : `Delete ${a.name}?`}
+                          label="Delete"
+                        />
                       </span>
-                      {!a.url && a.width && placed.length > 0 && (
+                      {/* Moving is for a single file; a file on several months is changed on its placement card. */}
+                      {ids.length === 1 && !a.url && a.width && placed.length > 0 && (
                         // Moving a file remakes its served copy for the new slot.
                         <form action={assignAsset.bind(null, a.id)} className="camp-assign">
                           <select name="deliverableId" defaultValue={a.deliverableId || ""} aria-label="Placement">
