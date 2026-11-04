@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { listSites } from "@/lib/site";
 import { LIVE_LABEL, liveState, runDays } from "@/lib/ads";
-import { checkCreative, positionInfo } from "@/lib/ad-positions";
+import { POSITIONS, checkCreative, positionInfo } from "@/lib/ad-positions";
 
 // Everything the placement panel on the Campaigns list shows for one
 // campaign: each placement's artwork, link, state and numbers. Behind the
@@ -85,13 +85,54 @@ export async function GET(_req, { params }) {
     };
   });
 
+  // One entry per position on a title, as on the campaign page: twelve
+  // newsletter banners are one thing with one link and one artwork. The
+  // months stay separate rows (each send has its own Mailchimp campaign), so
+  // the entry carries every id, and each creative the ids of its copies.
+  const groups = new Map();
+  for (const p of placements) {
+    const k = `${p.site?.domain || ""}|${p.position}`;
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(p);
+  }
+  const grouped = [...groups.values()].map((members) => {
+    const lead = members.find((m) => m.state !== "ended") || members.at(-1);
+    const state = members.some((m) => m.state === "live") ? "live" : members.some((m) => m.state === "paused") ? "paused" : lead.state;
+    const runs = members.map((m) => m.run).filter(Boolean);
+    return {
+      ...lead,
+      ids: members.map((m) => m.id),
+      months: members.map((m) => ({ id: m.id, run: m.run, state: m.state })),
+      run: runs.length ? { start: runs[0].start, end: runs.at(-1).end } : null,
+      state,
+      stateLabel: LIVE_LABEL[state].label,
+      stateChip: LIVE_LABEL[state].chip,
+      stats: members.reduce(
+        (a, m) => ({ served: a.served + m.stats.served, views: a.views + m.stats.views, clicks: a.clicks + m.stats.clicks }),
+        { served: 0, views: 0, clicks: 0 }
+      ),
+      days: lead.days.map((d, i) => ({
+        day: d.day,
+        views: members.reduce((n, m) => n + m.days[i].views, 0),
+        clicks: members.reduce((n, m) => n + m.days[i].clicks, 0),
+      })),
+      creatives: lead.creatives.map((cr) => ({
+        ...cr,
+        copies: members.flatMap((m) => m.creatives.filter((o) => o.name === cr.name && o.width === cr.width && o.height === cr.height).map((o) => o.id)),
+      })),
+    };
+  });
+
+  const order = new Map(POSITIONS.map((p, i) => [p.key, i]));
+  grouped.sort((a, b) => (a.site?.name || "~").localeCompare(b.site?.name || "~") || order.get(a.position) - order.get(b.position));
+
   return Response.json(
     {
       id: c.id,
       name: c.name,
       advertiser: c.advertiser.company,
       lastCounted: last._max.updatedAt,
-      placements,
+      placements: grouped,
     },
     { headers: { "Cache-Control": "no-store" } }
   );

@@ -10,13 +10,16 @@ import { deleteAsset, refreshCampaignStats, setAssetActive, setPaused, updatePla
 // with its artwork, link, on/off and numbers, so the everyday jobs (swap a
 // banner, fix a link, take one down, read the clicks) happen without leaving
 // the list. It reads /api/campaigns/[id]/placements and changes things
-// through the same server actions as the campaign page.
+// through the same server actions as the campaign page. One section per
+// position on a title, however many months it runs (p.ids holds them all),
+// so link, artwork and take-down act on every month at once.
 
 const n = (v) => (v || 0).toLocaleString("en-GB");
 const ctr = (c, v) => (v ? `${((c / v) * 100).toFixed(2)}%` : "—");
 const kb = (b) => (b ? `${Math.round(b / 1024)} KB` : "");
 const day = (s) =>
   s ? new Date(`${s}T12:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }) : "—";
+const month = (s) => new Date(`${s}T12:00:00Z`).toLocaleDateString("en-GB", { month: "short", year: "numeric", timeZone: "UTC" });
 const when = (iso) =>
   iso
     ? new Date(iso).toLocaleString("en-GB", { timeZone: "Europe/London", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })
@@ -110,12 +113,22 @@ export default function CampaignPanel({ campaignId, onClose }) {
                         {p.site ? `, ${p.site.name}` : ""}
                       </strong>
                       <span className="micro" style={{ color: "var(--muted)", display: "block" }}>
+                        {p.ids.length > 1 ? `${p.ids.length} ${p.email ? "sends" : "runs"}, ` : ""}
                         {p.run ? `${day(p.run.start)} to ${day(p.run.end)}` : "No dates"}
                         {p.size ? ` · ${p.size[0]}×${p.size[1]}` : ""}
                       </span>
                     </div>
                     <span className={`chip ${p.stateChip}`}>{p.stateLabel}</span>
                   </header>
+                  {p.months.length > 1 && (
+                    <div className="plc-months">
+                      {p.months.map((m) => (
+                        <span key={m.id} className={`plc-month is-${m.state}`} style={{ paddingRight: 10 }}>
+                          {m.run ? (p.served && m.run.start.slice(0, 7) !== m.run.end.slice(0, 7) ? `${month(m.run.start)} to ${month(m.run.end)}` : month(m.run.start)) : "No date"}
+                        </span>
+                      ))}
+                    </div>
+                  )}
 
                   {/* Numbers first: it is the question asked most. */}
                   {p.email ? (
@@ -184,7 +197,7 @@ export default function CampaignPanel({ campaignId, onClose }) {
                             </span>
                             {!c.ok && <span style={{ color: "var(--neon-amber)" }}>⚠ {c.problems.join("; ")}</span>}
                             <span className="cpl-cr-acts">
-                              <button type="button" className="btn-ghost" disabled={busy} onClick={() => act(() => setAssetActive(c.id, !c.active), c.active ? "Taken out of rotation." : "Back in rotation.")}>
+                              <button type="button" className="btn-ghost" disabled={busy} onClick={() => act(() => setAssetActive(c.copies, !c.active), c.active ? "Taken out of rotation." : "Back in rotation.")}>
                                 {c.active ? "Stop showing" : "Show again"}
                               </button>
                               <button
@@ -192,7 +205,7 @@ export default function CampaignPanel({ campaignId, onClose }) {
                                 className="btn-ghost"
                                 disabled={busy}
                                 onClick={() => {
-                                  if (window.confirm(`Delete ${c.name} for good?`)) act(() => deleteAsset(c.id), "Deleted.");
+                                  if (window.confirm(`Delete ${c.name}${p.ids.length > 1 ? ` from all ${p.ids.length} months` : ""} for good?`)) act(() => deleteAsset(c.copies), "Deleted.");
                                 }}
                               >
                                 Delete
@@ -207,6 +220,8 @@ export default function CampaignPanel({ campaignId, onClose }) {
                           campaignId={data.id}
                           deliverables={[{ id: p.id, title: p.title, slot: p.size }]}
                           fixed
+                          also={p.ids.filter((id) => id !== p.id)}
+                          alsoAlways
                           replace
                           onDone={() => {
                             load();
@@ -221,7 +236,11 @@ export default function CampaignPanel({ campaignId, onClose }) {
                   {(p.served || p.position === "newsletter_banner") && (
                     <form
                       className="cpl-link"
-                      action={(fd) => act(() => updatePlacement(p.id, fd), "Link saved. The site has it within seconds.")}
+                      action={(fd) =>
+                        act(async () => {
+                          for (const id of p.ids) await updatePlacement(id, fd);
+                        }, p.ids.length > 1 ? `Link saved on all ${p.ids.length}. The site has it within seconds.` : "Link saved. The site has it within seconds.")
+                      }
                     >
                       <label className="micro" htmlFor={`url-${p.id}`}>
                         Click-through link
@@ -249,14 +268,14 @@ export default function CampaignPanel({ campaignId, onClose }) {
                           className="btn-ghost cpl-danger"
                           disabled={busy}
                           onClick={() => {
-                            if (window.confirm(`Take ${p.label} down from ${p.site?.name || "the site"} now?`)) act(() => setPaused(p.id, true), "Taken down. Off the site within seconds.");
+                            if (window.confirm(`Take ${p.label} down from ${p.site?.name || "the site"} now?`)) act(() => setPaused(p.ids, true), "Taken down. Off the site within seconds.");
                           }}
                         >
                           Take down
                         </button>
                       )}
                       {p.state === "paused" && (
-                        <button type="button" className="btn" disabled={busy} onClick={() => act(() => setPaused(p.id, false), "Back up on the site.")}>
+                        <button type="button" className="btn" disabled={busy} onClick={() => act(() => setPaused(p.ids, false), "Back up on the site.")}>
                           Put back up
                         </button>
                       )}
