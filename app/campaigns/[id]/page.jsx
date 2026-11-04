@@ -9,22 +9,20 @@ import { prisma } from "@/lib/prisma";
 import { listSites } from "@/lib/site";
 import { shortTitle } from "@/lib/black-book-labels";
 import PlacementGrid from "@/app/components/PlacementGrid";
+import OrderLine from "@/app/components/OrderLine";
 import Placements from "./Placements";
-import { POSITIONS, positionInfo } from "@/lib/ad-positions";
+import MasterSave from "./MasterSave";
+import NewOrderLines from "./NewOrderLines";
+import { SAVE_FORM } from "./save-form";
+import { POSITIONS, orderBook, positionInfo, slotLabel, unitWord } from "@/lib/ad-positions";
 import { bookingsMap, outstanding } from "@/lib/ads";
 
 import {
   CAMPAIGN_STATUSES,
-  DELIVERABLE_STATUSES,
-  ELEMENT_TYPES,
   PAYMENT_STATUSES,
-  RESULT_SOURCES,
-  STATE_CHIP,
   campaignStatus,
   ctr,
-  deliverableState,
   deliverableStatusLabel,
-  elementLabel,
   fmtBytes,
   money,
   paymentLate,
@@ -32,23 +30,7 @@ import {
   totals,
   ukDay,
 } from "@/lib/campaigns";
-import {
-  addAssetLink,
-  addDeliverable,
-  addPayment,
-  addResult,
-  deleteAsset,
-  deleteCampaign,
-  deleteDeliverable,
-  deletePayment,
-  deleteResult,
-  schedulePayments,
-  updateCampaign,
-  updateDeliverable,
-  updatePayment,
-  assignAsset,
-  fillTargetUrls,
-} from "@/lib/campaign-actions";
+import { addAssetLink, addPayment, assignAsset, deleteAsset, deleteCampaign, deleteDeliverable, deletePayment, fillTargetUrls, schedulePayments } from "@/lib/campaign-actions";
 
 export const dynamic = "force-dynamic";
 
@@ -111,11 +93,8 @@ export default async function CampaignPage({ params }) {
   const siteById = new Map(sites.map((s) => [s.id, s]));
   const campaignSites = c.siteIds.length ? sites.filter((s) => c.siteIds.includes(s.id)) : sites;
   const st = campaignStatus(c.status);
-  const titleName = (sid) => (sid && siteById.get(sid) ? shortTitle(siteById.get(sid).name) : null);
   const deliverableTitle = new Map(c.deliverables.map((d) => [d.id, d.title]));
 
-  const live = c.deliverables.filter((d) => d.status !== "cancelled");
-  const done = live.filter((d) => d.status === "live" || d.status === "delivered").length;
   const paid = c.payments.filter((p) => p.status === "paid").reduce((s, p) => s + p.amountPence, 0);
   const scheduled = c.payments.reduce((s, p) => s + p.amountPence, 0);
   // Typed-in results plus what the sites and Mailchimp counted (AdStat).
@@ -129,34 +108,56 @@ export default async function CampaignPage({ params }) {
   for (const [k, holders] of booked) {
     taken[k] = holders.map((h) => ({ advertiser: h.advertiser, mine: h.campaignId === c.id }));
   }
-  const todo = outstanding(c, now);
   const placed = c.deliverables.filter((d) => d.position);
-  const defaultYear = c.startDate ? Number(ukDay(c.startDate).slice(0, 4)) : now.getUTCFullYear();
+  // Order lines: what was bought, before it is in a month. Anything without a
+  // position that predates them (typed in by hand) is shown the same way.
+  const book = orderBook(c.deliverables);
+  const posOrder = new Map(POSITIONS.map((p, i) => [p.key, i]));
+  const orders = c.deliverables
+    .filter((d) => !d.position)
+    .sort(
+      (a, b) =>
+        (siteById.get(a.siteId)?.name || "~").localeCompare(siteById.get(b.siteId)?.name || "~") ||
+        (posOrder.get(a.slot) ?? 99) - (posOrder.get(b.slot) ?? 99)
+    );
+  const defaultYear = placed[0]?.dueDate
+    ? Number(ukDay(placed.reduce((a, d) => (d.dueDate && d.dueDate < a ? d.dueDate : a), placed[0].dueDate)).slice(0, 4))
+    : c.startDate
+      ? Number(ukDay(c.startDate).slice(0, 4))
+      : now.getUTCFullYear();
 
-  // A plain summary to paste into an email to the client. House style: no em dashes.
-  const report = [
-    `${c.advertiser.company}: ${c.name}`,
-    `${fmtDay(c.startDate)} to ${fmtDay(c.endDate)}`,
-    "",
-    ...live.map((d) => {
-      const tn = titleName(d.siteId);
-      const out = d.deliveredAt ? `${d.title}, ${d.status === "live" ? "live" : "delivered"} ${fmtDay(d.deliveredAt)}` : `${d.title}, ${deliverableStatusLabel(d.status).toLowerCase()}`;
-      return `- ${tn ? `${tn.label}: ` : ""}${out}${d.liveUrl ? ` (${d.liveUrl})` : ""}`;
-    }),
-    "",
-    t.impressions ? `Impressions: ${t.impressions.toLocaleString("en-GB")}` : null,
-    t.clicks ? `Clicks: ${t.clicks.toLocaleString("en-GB")}${t.impressions ? ` (CTR ${ctr(t.clicks, t.impressions)})` : ""}` : null,
-    t.recipients ? `Sent to: ${t.recipients.toLocaleString("en-GB")}` : null,
-    t.opens ? `Opens: ${t.opens.toLocaleString("en-GB")}${t.recipients ? ` (${((t.opens / t.recipients) * 100).toFixed(1)}%)` : ""}` : null,
-  ]
-    .filter((l) => l !== null)
-    .join("\n");
+  // The grid's rows: per title, each position bought there (or already
+  // booked there without an order line), in the order positions are sold.
+  const rowsBySite = {};
+  for (const [k, v] of book) {
+    const [sid, key] = k.split("|");
+    const p = positionInfo(key);
+    if (!sid || !p) continue;
+    (rowsBySite[sid] ||= []).push({ key, label: p.label, size: p.size, served: Boolean(p.served), email: Boolean(p.email), ...v });
+  }
+  Object.values(rowsBySite).forEach((r) => r.sort((a, b) => posOrder.get(a.key) - posOrder.get(b.key)));
+  const gridSites = sites.filter((s) => rowsBySite[s.id]).sort((a, b) => a.name.localeCompare(b.name));
+  const toPlace = [...book.entries()]
+    .filter(([, v]) => v.ordered != null && v.ordered > v.booked)
+    .map(([k, v]) => {
+      const [sid, key] = k.split("|");
+      return { sid, key, left: v.ordered - v.booked };
+    });
+
+  const todo = [
+    ...toPlace.map((x) => ({
+      what: `${x.left} ${slotLabel(x.key).toLowerCase()} ${unitWord(x.key, x.left)} not in a month yet`,
+      deliverable: { title: siteById.get(x.sid)?.name || "No title" },
+      due: null,
+      late: false,
+    })),
+    ...outstanding(c, now),
+  ];
 
   const summary = [
     { label: "Value", value: money(c.valuePence) },
     { label: "Paid", value: money(paid) },
     { label: "Outstanding", value: money(Math.max(0, c.valuePence - paid)) },
-    { label: "Delivered", value: live.length ? `${done} of ${live.length}` : "—" },
     { label: "Impressions", value: n(t.impressions || null) },
     { label: "Clicks", value: n(t.clicks || null) },
     { label: "CTR", value: ctr(t.clicks, t.impressions) || "—" },
@@ -249,207 +250,62 @@ export default async function CampaignPage({ params }) {
           </section>
         )}
 
+        {/* ---------------- what they bought */}
+        <section className="panel stagger adv-body">
+          <h2 style={{ margin: 0, fontSize: 16 }}>What they bought</h2>
+          <p className="micro" style={{ color: "var(--muted)", margin: 0 }}>
+            One line per placement and title, with how many. Leave Starts empty until it has a slot and put it in months below; set it and the line
+            is booked from that month. The spec comes from the placement.
+          </p>
+          {orders.map((d) => {
+            const sn = d.siteId ? siteById.get(d.siteId)?.name : null;
+            const name = d.title.replace(/^\d+ × /, "").replace(sn ? `, ${sn}` : /$^/, "");
+            return (
+              <OrderLine
+                key={d.id}
+                prefix={`o:${d.id}:`}
+                form={SAVE_FORM}
+                sites={campaignSites}
+                d={{
+                  slot: d.slot || (d.quantity == null ? "other" : ""),
+                  siteId: d.siteId || "",
+                  quantity: d.quantity ?? 1,
+                  assetsDue: dateVal(d.assetsDue),
+                  dueDate: dateVal(d.dueDate),
+                  name,
+                }}
+                booked={d.slot && d.slot !== "other" ? book.get(`${d.siteId || ""}|${d.slot}`) : undefined}
+                actions={
+                  <span key="acts" style={{ marginLeft: "auto", display: "inline-flex", gap: 10, alignItems: "center" }}>
+                    {d.quantity == null && <span key="was" style={{ color: "var(--muted)" }}>Was “{d.title}” ({deliverableStatusLabel(d.status)})</span>}
+                    <ConfirmSubmit key="del" action={deleteDeliverable.bind(null, d.id)} question={`Delete "${d.title}"? Months already booked for it stay booked.`} label="Delete" className="btn-ghost ol-x" />
+                  </span>
+                }
+              />
+            );
+          })}
+          <NewOrderLines sites={campaignSites} each={campaignSites.length > 1} />
+        </section>
+
         {/* ---------------- on the sites */}
         <section className="panel stagger adv-body">
           <h2 style={{ margin: 0, fontSize: 16 }}>On the sites and in the inbox</h2>
           <p className="micro" style={{ color: "var(--muted)", margin: 0 }}>
-            Banners are served by each title&apos;s ad plugin straight from here: set the click-through URL, upload the artwork against the placement,
-            and it goes live on its start date. Taking one down or swapping artwork reaches the site in seconds.
+            Put what they bought into months, then give each placement its link and artwork on its line. Banners are served by each title&apos;s ad
+            plugin straight from here and go live on their start date; taking one down or swapping artwork reaches the site in seconds.
           </p>
-          <details className="adv-panel" open={placed.length === 0}>
-            <summary>
-              <h2 style={{ fontSize: 14 }}>Book placements by month</h2>
-            </summary>
-            <PlacementGrid
-              campaignId={c.id}
-              sites={campaignSites}
-              positions={POSITIONS.map(({ key, label, size, served, email }) => ({ key, label, size, served: Boolean(served), email: Boolean(email) }))}
-              taken={taken}
-              defaultYear={defaultYear}
-              defaultUrl={placed.find((d) => d.targetUrl)?.targetUrl || ""}
-            />
-          </details>
+          <PlacementGrid campaignId={c.id} sites={gridSites} rowsBySite={rowsBySite} taken={taken} defaultYear={defaultYear} />
           {placed.some((d) => !d.targetUrl) && placed.some((d) => d.targetUrl) && (
             <form action={fillTargetUrls.bind(null, c.id)} className="adv-inline">
               <span className="micro">Use</span>
               <input name="targetUrl" type="url" defaultValue={placed.find((d) => d.targetUrl)?.targetUrl || ""} style={{ flex: "2 1 280px" }} aria-label="Click-through URL" />
-              <span className="micro">for every placement without one</span>
+              <span className="micro">for every placement without a link</span>
               <button type="submit" className="btn-ghost">
                 Apply
               </button>
             </form>
           )}
-          <Placements deliverables={c.deliverables} sitesById={siteById} statsById={statsById} now={now} />
-        </section>
-
-        {/* ---------------- deliverables */}
-        <section className="panel stagger adv-body">
-          <h2 style={{ margin: 0, fontSize: 16 }}>What they bought</h2>
-          <p className="micro" style={{ color: "var(--muted)", margin: 0 }}>
-            One element per banner, e-shot, newsletter slot or piece. Material due is the client&apos;s deadline; Due is ours.
-          </p>
-          {c.deliverables.length > 0 && (
-            <div className="adv-list">
-              <div className="camp-del adv-sum-head micro" aria-hidden="true">
-                <span>Element</span>
-                <span>Title</span>
-                <span>Material due</span>
-                <span>Due</span>
-                <span>Status</span>
-              </div>
-              {c.deliverables.map((d) => {
-                const ds = deliverableState(d, now);
-                const tn = titleName(d.siteId);
-                return (
-                  <details key={d.id} className="adv-row">
-                    <summary className="camp-del">
-                      <span className="adv-brand">
-                        <strong>{d.title}</strong>
-                        <span className="micro" style={{ color: "var(--muted)" }}>
-                          {[d.product && elementLabel(d.product), d.spec].filter(Boolean).join(" · ")}
-                        </span>
-                      </span>
-                      <span className="micro">{tn ? `${tn.emoji} ${tn.label}` : "—"}</span>
-                      <span className="micro">{fmtDay(d.assetsDue)}</span>
-                      <span className="micro">
-                        {fmtDay(d.dueDate)}
-                        {d.runUntil && <span style={{ display: "block", color: "var(--muted)" }}>runs to {fmtDay(d.runUntil)}</span>}
-                      </span>
-                      <span>
-                        <span className={`chip ${STATE_CHIP[ds.level]}`}>{ds.label}</span>
-                      </span>
-                    </summary>
-                    <div className="adv-body">
-                      {d.liveUrl && (
-                        <a href={d.liveUrl} target="_blank" rel="noreferrer" className="micro" style={{ color: "var(--neon-cyan)" }}>
-                          {d.liveUrl} ↗
-                        </a>
-                      )}
-                      <form action={updateDeliverable.bind(null, d.id)} className="bb-form">
-                        <DeliverableFields d={d} sites={campaignSites} />
-                        <label className="field">
-                          <span className="micro">Status</span>
-                          <select name="status" defaultValue={d.status}>
-                            {DELIVERABLE_STATUSES.map((s) => (
-                              <option key={s.value} value={s.value}>{s.label}</option>
-                            ))}
-                          </select>
-                        </label>
-                        <label className="field field-wide">
-                          <span className="micro">Live link, proof or report URL</span>
-                          <input name="liveUrl" type="url" defaultValue={d.liveUrl || ""} placeholder="https://" />
-                        </label>
-                        <div className="field-wide bb-actions">
-                          <button type="submit" className="btn">Save</button>
-                          {d.deliveredAt && <span className="micro" style={{ color: "var(--muted)" }}>Went out {fmtDay(d.deliveredAt)}</span>}
-                        </div>
-                      </form>
-                      <div>
-                        <ConfirmSubmit action={deleteDeliverable.bind(null, d.id)} question={`Delete "${d.title}"?`} label="Delete element" />
-                      </div>
-                    </div>
-                  </details>
-                );
-              })}
-            </div>
-          )}
-          <details className="adv-panel">
-            <summary>
-              <h2 style={{ fontSize: 14 }}>Add element</h2>
-            </summary>
-            <form action={addDeliverable.bind(null, c.id)} className="bb-form">
-              <DeliverableFields sites={campaignSites} />
-              <div className="field-wide bb-actions">
-                <button type="submit" className="btn">Add element</button>
-              </div>
-            </form>
-          </details>
-        </section>
-
-        {/* ---------------- results */}
-        <section className="panel stagger adv-body">
-          <h2 style={{ margin: 0, fontSize: 16 }}>Results</h2>
-          {c.results.length > 0 ? (
-            <table className="adv-table">
-              <thead className="micro" style={{ color: "var(--muted)", textAlign: "left" }}>
-                <tr>
-                  <th>Period</th>
-                  <th>For</th>
-                  <th>Impressions</th>
-                  <th>Clicks</th>
-                  <th>CTR</th>
-                  <th>Sent</th>
-                  <th>Opens</th>
-                  <th>Source</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {c.results.map((r) => (
-                  <tr key={r.id}>
-                    <td className="micro">
-                      {r.periodStart ? `${fmtDay(r.periodStart)} to ` : "To "}
-                      {fmtDay(r.periodEnd)}
-                    </td>
-                    <td className="micro">{r.deliverable?.title || "Whole campaign"}</td>
-                    <td>{n(r.impressions)}</td>
-                    <td>{n(r.clicks)}</td>
-                    <td className="micro">{ctr(r.clicks, r.impressions)}</td>
-                    <td>{n(r.recipients)}</td>
-                    <td>{n(r.opens)}</td>
-                    <td className="micro" title={r.notes || undefined}>
-                      {RESULT_SOURCES.find((s) => s.value === r.source)?.label || r.source}
-                    </td>
-                    <td style={{ textAlign: "right" }}>
-                      <ConfirmSubmit action={deleteResult.bind(null, r.id)} question="Delete these numbers?" label="✕" />
-                    </td>
-                  </tr>
-                ))}
-                <tr>
-                  <td colSpan={2}><strong>Total</strong></td>
-                  <td><strong>{n(t.impressions || null)}</strong></td>
-                  <td><strong>{n(t.clicks || null)}</strong></td>
-                  <td className="micro">{ctr(t.clicks, t.impressions)}</td>
-                  <td><strong>{n(t.recipients || null)}</strong></td>
-                  <td><strong>{n(t.opens || null)}</strong></td>
-                  <td colSpan={2} />
-                </tr>
-              </tbody>
-            </table>
-          ) : (
-            <p className="micro" style={{ color: "var(--muted)", margin: 0 }}>No numbers yet. Add them as each period closes.</p>
-          )}
-          <form action={addResult.bind(null, c.id)} className="adv-inline">
-            <input name="periodStart" type="date" aria-label="From" title="From" />
-            <input name="periodEnd" type="date" required aria-label="To" title="To" defaultValue={ukDay(now)} />
-            {c.deliverables.length > 0 && (
-              <select name="deliverableId" defaultValue="" aria-label="For deliverable">
-                <option value="">Whole campaign</option>
-                {c.deliverables.map((d) => (
-                  <option key={d.id} value={d.id}>{d.title}</option>
-                ))}
-              </select>
-            )}
-            <input name="impressions" inputMode="numeric" placeholder="Impressions" style={{ width: 110 }} />
-            <input name="clicks" inputMode="numeric" placeholder="Clicks" style={{ width: 80 }} />
-            <input name="recipients" inputMode="numeric" placeholder="Sent to" style={{ width: 90 }} />
-            <input name="opens" inputMode="numeric" placeholder="Opens" style={{ width: 80 }} />
-            <select name="source" defaultValue="manual" aria-label="Source">
-              {RESULT_SOURCES.map((s) => (
-                <option key={s.value} value={s.value}>{s.label}</option>
-              ))}
-            </select>
-            <input name="notes" placeholder="Note" style={{ flex: "1 1 140px" }} />
-            <button type="submit" className="btn-ghost">Add numbers</button>
-          </form>
-          <details className="adv-panel">
-            <summary>
-              <h2 style={{ fontSize: 14 }}>Report for the client</h2>
-            </summary>
-            {/* Keyed on the text: defaultValue is only read on mount, so without
-                this the box kept the report from before the latest numbers. */}
-            <textarea key={report} readOnly rows={Math.min(18, report.split("\n").length + 1)} defaultValue={report} style={{ width: "100%", fontFamily: "inherit" }} />
-          </details>
+          <Placements campaignId={c.id} deliverables={c.deliverables} sitesById={siteById} statsById={statsById} now={now} />
         </section>
 
         {/* ---------------- payments */}
@@ -465,18 +321,17 @@ export default async function CampaignPage({ params }) {
                 {c.payments.map((p) => (
                   <tr key={p.id}>
                     <td colSpan={2}>
-                      <form action={updatePayment.bind(null, p.id)} className="adv-inline" style={{ margin: 0 }}>
-                        <input name="amount" inputMode="decimal" defaultValue={pounds(p.amountPence)} aria-label="Amount £" style={{ width: 100 }} />
-                        <input name="dueDate" type="date" defaultValue={dateVal(p.dueDate)} aria-label="Due" title="Due" />
-                        <select name="status" defaultValue={p.status} aria-label="Status">
+                      <div className="adv-inline" style={{ margin: 0 }}>
+                        <input form={SAVE_FORM} name={`pay:${p.id}:amount`} inputMode="decimal" defaultValue={pounds(p.amountPence)} aria-label="Amount £" style={{ width: 100 }} />
+                        <input form={SAVE_FORM} name={`pay:${p.id}:dueDate`} type="date" defaultValue={dateVal(p.dueDate)} aria-label="Due" title="Due" />
+                        <select form={SAVE_FORM} name={`pay:${p.id}:status`} defaultValue={p.status} aria-label="Status">
                           {PAYMENT_STATUSES.map((s) => (
                             <option key={s.value} value={s.value}>{s.label}</option>
                           ))}
                         </select>
-                        <input name="paidAt" type="date" defaultValue={dateVal(p.paidAt)} aria-label="Paid on" title="Paid on" />
-                        <input name="invoiceRef" defaultValue={p.invoiceRef || ""} placeholder="Invoice no." style={{ width: 110 }} />
-                        <button type="submit" className="btn-ghost">Save</button>
-                      </form>
+                        <input form={SAVE_FORM} name={`pay:${p.id}:paidAt`} type="date" defaultValue={dateVal(p.paidAt)} aria-label="Paid on" title="Paid on" />
+                        <input form={SAVE_FORM} name={`pay:${p.id}:invoiceRef`} defaultValue={p.invoiceRef || ""} placeholder="Invoice no." style={{ width: 110 }} />
+                      </div>
                     </td>
                     <td style={{ whiteSpace: "nowrap", textAlign: "right" }}>
                       <span className={`chip ${p.status === "paid" ? "chip-audience" : paymentLate(p, now) ? "chip-monetise" : "chip-general"}`} style={{ marginRight: 8 }}>
@@ -593,14 +448,15 @@ export default async function CampaignPage({ params }) {
           <summary>
             <h2>Campaign details</h2>
           </summary>
-          <form action={updateCampaign.bind(null, c.id)} className="bb-form">
+          {/* Saved with the page's one Save, like every other field. */}
+          <div className="bb-form">
             <label className="field">
               <span className="micro">Name</span>
-              <input name="name" required defaultValue={c.name} />
+              <input form={SAVE_FORM} name="c:name" required defaultValue={c.name} />
             </label>
             <label className="field">
               <span className="micro">Status</span>
-              <select name="status" defaultValue={c.status}>
+              <select form={SAVE_FORM} name="c:status" defaultValue={c.status}>
                 {CAMPAIGN_STATUSES.map((s) => (
                   <option key={s.value} value={s.value}>{s.label}</option>
                 ))}
@@ -608,47 +464,44 @@ export default async function CampaignPage({ params }) {
             </label>
             <label className="field">
               <span className="micro">Value, £ ex VAT</span>
-              <input name="value" inputMode="decimal" defaultValue={pounds(c.valuePence)} />
+              <input form={SAVE_FORM} name="c:value" inputMode="decimal" defaultValue={pounds(c.valuePence)} />
             </label>
             <label className="field">
               <span className="micro">Starts</span>
-              <input name="startDate" type="date" defaultValue={dateVal(c.startDate)} />
+              <input form={SAVE_FORM} name="c:startDate" type="date" defaultValue={dateVal(c.startDate)} />
             </label>
             <label className="field">
               <span className="micro">Ends</span>
-              <input name="endDate" type="date" defaultValue={dateVal(c.endDate)} />
+              <input form={SAVE_FORM} name="c:endDate" type="date" defaultValue={dateVal(c.endDate)} />
             </label>
             <label className="field">
               <span className="micro">Booked by</span>
-              <input name="bookedBy" defaultValue={c.bookedBy || ""} />
+              <input form={SAVE_FORM} name="c:bookedBy" defaultValue={c.bookedBy || ""} />
             </label>
             <label className="field">
               <span className="micro">Client contact</span>
-              <input name="clientContact" defaultValue={c.clientContact || ""} />
+              <input form={SAVE_FORM} name="c:clientContact" defaultValue={c.clientContact || ""} />
             </label>
             <label className="field field-wide">
               <span className="micro">What was sold</span>
-              <textarea name="specMd" rows={4} defaultValue={c.specMd || ""} />
+              <textarea form={SAVE_FORM} name="c:specMd" rows={4} defaultValue={c.specMd || ""} />
             </label>
             <label className="field field-wide">
               <span className="micro">Notes</span>
-              <textarea name="notes" rows={2} defaultValue={c.notes || ""} />
+              <textarea form={SAVE_FORM} name="c:notes" rows={2} defaultValue={c.notes || ""} />
             </label>
-            <BlackBookTitlePills sites={sites} selected={c.siteIds} />
-            <div className="field-wide bb-actions">
-              <button type="submit" className="btn">Save details</button>
-            </div>
-          </form>
-          {/* Outside the details form: a form inside a form is invalid HTML. */}
+            <BlackBookTitlePills sites={sites} selected={c.siteIds} form={SAVE_FORM} prefix="c:" />
+          </div>
           <div style={{ marginTop: 12 }}>
             <ConfirmSubmit
               action={deleteCampaign.bind(null, c.id)}
-              question={`Delete ${c.name} with its deliverables, payments, results and files? Cancelling it keeps the record.`}
+              question={`Delete ${c.name} with its placements, payments and files? Cancelling it keeps the record.`}
               label="Delete campaign"
             />
           </div>
         </details>
       </div>
+      <MasterSave campaignId={c.id} />
     </main>
   );
 }
@@ -657,55 +510,4 @@ function monthsBetween(a, b) {
   const [ya, ma] = ukDay(a).split("-").map(Number);
   const [yb, mb] = ukDay(b).split("-").map(Number);
   return (yb - ya) * 12 + (mb - ma) + 1;
-}
-
-// The fields a deliverable is added and edited with.
-function DeliverableFields({ d, sites }) {
-  return (
-    <>
-      <label className="field">
-        <span className="micro">Type</span>
-        <select name="product" required defaultValue={d?.product || ""}>
-          {!d?.product && <option value="">Pick one…</option>}
-          {ELEMENT_TYPES.map((p) => (
-            <option key={p.value} value={p.value}>{p.label}</option>
-          ))}
-          {d?.product === "multiple" && <option value="multiple">Multiple</option>}
-        </select>
-      </label>
-      <label className="field">
-        <span className="micro">Placement or name</span>
-        <input name="title" defaultValue={d?.title || ""} placeholder="Left blank, named from type and title" />
-      </label>
-      <label className="field">
-        <span className="micro">Title</span>
-        <select name="siteId" defaultValue={d?.siteId || ""}>
-          <option value="">Several or all</option>
-          {sites.map((s) => (
-            <option key={s.id} value={s.id}>{s.name}</option>
-          ))}
-        </select>
-      </label>
-      <label className="field">
-        <span className="micro">Material due from client</span>
-        <input name="assetsDue" type="date" defaultValue={dateVal(d?.assetsDue)} />
-      </label>
-      <label className="field">
-        <span className="micro">Due live / delivered</span>
-        <input name="dueDate" type="date" defaultValue={dateVal(d?.dueDate)} />
-      </label>
-      <label className="field">
-        <span className="micro">Runs until</span>
-        <input name="runUntil" type="date" defaultValue={dateVal(d?.runUntil)} />
-      </label>
-      <label className="field field-wide">
-        <span className="micro">Specification</span>
-        <textarea name="spec" rows={2} defaultValue={d?.spec || ""} placeholder="Sizes (300×250, 728×90), file type, word count, link and UTM, placement" />
-      </label>
-      <label className="field field-wide">
-        <span className="micro">Notes</span>
-        <input name="notes" defaultValue={d?.notes || ""} />
-      </label>
-    </>
-  );
 }

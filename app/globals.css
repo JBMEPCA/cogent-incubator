@@ -2787,7 +2787,7 @@ th {
   }
 }
 
-.bb-titles:has(input[name="allTitles"]:checked) .bb-site {
+.bb-titles:has(.bb-all input:checked) .bb-site {
   opacity: 0.4;
   pointer-events: none;
 }
@@ -7007,3 +7007,48 @@ section.gc-panel {
   .cpanel { padding: 16px; }
   .cpl-cr { grid-template-columns: 1fr; }
 }
+
+/* ---------- campaign page: order lines, placements by title, one Save (Nov 2026) */
+.ol { display: grid; grid-template-columns: minmax(150px, 1.2fr) minmax(170px, 1.4fr) 130px minmax(130px, 1fr) minmax(130px, 1fr); gap: 10px; align-items: end; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.ol .field { min-width: 0; }
+.ol select, .ol input { width: 100%; }
+.ol-qty-in { display: flex; gap: 6px; align-items: center; }
+.ol-qty-in input { width: 64px; flex: none; }
+.ol-name { grid-column: span 2; }
+.ol-foot { grid-column: 1 / -1; display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+.ol-left { color: #ecc883; }
+.ol-full { color: #8fd9bc; }
+.ol-x { padding: 2px 8px; }
+.ol-new .ol { border: 1px dashed var(--line-bright); border-radius: 10px; padding: 12px; margin: 8px 0; }
+@media (max-width: 900px) { .ol { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .ol-name { grid-column: 1 / -1; } }
+
+.plg { display: grid; gap: 10px; }
+.plg + .plg { margin-top: 10px; }
+.plg-h { margin: 0; font-size: 15px; display: flex; gap: 10px; align-items: baseline; padding-bottom: 6px; border-bottom: 1px solid var(--line-bright); }
+.plg-h .micro { color: var(--muted); font-weight: 400; }
+.plc-num { color: var(--muted); }
+.plc-num b { color: var(--text); font-weight: 600; }
+.plc-fields { display: flex; gap: 10px; flex-wrap: wrap; align-items: end; }
+.plc-fields .field { flex: 0 1 160px; min-width: 0; }
+.plc-fields .plc-url { flex: 3 1 300px; }
+.plc-fields input { width: 100%; }
+.plc-art { display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-start; }
+.plc-up { flex: 1 1 320px; display: grid; gap: 4px; min-width: 0; }
+.plc-up .adv-inline { margin: 0; }
+.plc-foot { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding-top: 8px; border-top: 1px solid var(--line); }
+.plc-mini { padding: 3px 9px; font-size: 12px; }
+.plc-foot form:last-child { margin-left: auto; }
+.plc-del { color: var(--muted); }
+.camp-also { display: inline-flex; gap: 6px; align-items: center; }
+
+.pg-todo { display: inline-block; margin-left: 6px; min-width: 18px; padding: 0 5px; border-radius: 9px; background: #ecc883; color: #1b1406; font-size: 11px; font-weight: 700; text-align: center; }
+.pg-full { color: #8fd9bc; }
+.pg-cell.is-locked { opacity: 0.3; }
+
+/* The one Save: floats at the bottom of the window, lights up with changes. */
+.msave-form { position: sticky; bottom: 16px; z-index: 50; display: flex; justify-content: center; margin-top: 22px; pointer-events: none; }
+.msave { pointer-events: auto; display: flex; gap: 16px; align-items: center; padding: 10px 12px 10px 18px; border-radius: 14px; border: 1px solid var(--line-bright); background: rgba(22, 28, 41, 0.92); backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); transition: border-color 0.2s, box-shadow 0.2s; }
+.msave .btn { opacity: 0.55; }
+.msave.is-dirty { border-color: #ecc883; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 0 0 3px rgba(236, 200, 131, 0.15); }
+.msave.is-dirty .btn, .msave.is-busy .btn { opacity: 1; }
+.msave.is-dirty .msave-msg { color: #ecc883; }

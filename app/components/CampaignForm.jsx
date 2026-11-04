@@ -2,17 +2,17 @@
 
 import { useActionState, useEffect, useState } from "react";
 import { createCampaign } from "@/lib/campaign-actions";
-import { ELEMENT_TYPES, monthlySchedule, money, toPence, ukDay } from "@/lib/campaigns";
+import { monthlySchedule, money, toPence, ukDay } from "@/lib/campaigns";
 import BlackBookTitlePills from "./BlackBookTitlePills";
+import OrderLine from "./OrderLine";
 
-// Book a campaign in one go: the brand, the elements it bought (each a banner,
-// e-shot, newsletter slot and so on) and how the money comes in. The
+// Book a campaign in one go: the brand, the elements it bought (a line per
+// placement with its Qty/Duration, see OrderLine) and how the money comes in. The
 // advertiser is picked by type-ahead because the list runs to thousands of
 // brands; `preset` is the brand when arriving from its row on the Advertisers
 // tab.
 
 let nextKey = 1;
-const blankElement = () => ({ key: nextKey++, product: "", siteId: "", title: "", assetsDue: "", dueDate: "", runUntil: "", spec: "" });
 
 /** Whole months from one date input to another, counting both ends. */
 function monthsBetween(a, b) {
@@ -56,8 +56,6 @@ export default function CampaignForm({ sites, preset }) {
   // box is nearly empty, there is nothing to suggest.
   const shown = picked || q.trim().length < 2 ? [] : hits;
 
-  const setEl = (key, patch) => setElements((els) => els.map((e) => (e.key === key ? { ...e, ...patch } : e)));
-  const addEl = (product) => setElements((els) => [...els, { ...blankElement(), product }]);
 
   const totalPence = toPence(value) || 0;
   const monthCount = Number(months) || monthsBetween(startDate, endDate) || 12;
@@ -134,77 +132,29 @@ export default function CampaignForm({ sites, preset }) {
       <h3 className="camp-book-h">What they bought</h3>
       {elements.length === 0 && (
         <p className="micro" style={{ color: "var(--muted)", margin: 0 }}>
-          Add each banner, e-shot, newsletter slot or piece as its own element, so each gets its own deadline and results.
+          A line per placement with how many, e.g. 12 months of leaderboard, 4 e-shots. Pick Each title for the same on every title above. Leave
+          Starts empty to put them in months on the campaign page.
         </p>
       )}
-      {elements.map((el, i) => (
-        <fieldset key={el.key} className="camp-el">
-          <legend className="micro">Element {i + 1}</legend>
-          <div className="camp-el-types" role="radiogroup" aria-label="Type">
-            {ELEMENT_TYPES.map((t) => (
-              <button
-                key={t.value}
-                type="button"
-                role="radio"
-                aria-checked={el.product === t.value}
-                className={`adv-type${el.product === t.value ? " is-active" : ""}`}
-                onClick={() => setEl(el.key, { product: t.value })}
-              >
-                {t.label}
+      {elements.map((k) => (
+        <div key={k} className="ol-new">
+          <OrderLine
+            prefix={`new:${k}:`}
+            sites={sites}
+            each
+            actions={
+              <button type="button" className="btn-ghost ol-x" onClick={() => setElements((els) => els.filter((e) => e !== k))}>
+                Remove
               </button>
-            ))}
-          </div>
-          <div className="bb-form">
-            <label className="field">
-              <span className="micro">Title</span>
-              <select value={el.siteId} onChange={(e) => setEl(el.key, { siteId: e.target.value })}>
-                <option value="">Several or all</option>
-                {sites.map((s) => (
-                  <option key={s.id} value={s.id}>{s.name}</option>
-                ))}
-              </select>
-            </label>
-            <label className="field">
-              <span className="micro">Placement or name</span>
-              <input value={el.title} onChange={(e) => setEl(el.key, { title: e.target.value })} placeholder="e.g. Homepage MPU" />
-            </label>
-            <label className="field">
-              <span className="micro">Material due from client</span>
-              <input type="date" value={el.assetsDue} onChange={(e) => setEl(el.key, { assetsDue: e.target.value })} />
-            </label>
-            <label className="field">
-              <span className="micro">{el.product === "banner" ? "Goes live" : "Goes out"}</span>
-              <input type="date" value={el.dueDate} onChange={(e) => setEl(el.key, { dueDate: e.target.value })} />
-            </label>
-            {el.product === "banner" && (
-              <label className="field">
-                <span className="micro">Runs until</span>
-                <input type="date" value={el.runUntil} onChange={(e) => setEl(el.key, { runUntil: e.target.value })} />
-              </label>
-            )}
-            <label className="field field-wide">
-              <span className="micro">Specification</span>
-              <input
-                value={el.spec}
-                onChange={(e) => setEl(el.key, { spec: e.target.value })}
-                placeholder={ELEMENT_TYPES.find((t) => t.value === el.product)?.specHint || "Sizes, file type, word count, link and UTM"}
-              />
-            </label>
-          </div>
-          <button type="button" className="btn-ghost camp-el-remove" onClick={() => setElements((els) => els.filter((e) => e.key !== el.key))}>
-            Remove element
-          </button>
-        </fieldset>
+            }
+          />
+        </div>
       ))}
-      <div className="adv-inline">
-        <span className="micro">Add element:</span>
-        {ELEMENT_TYPES.map((t) => (
-          <button key={t.value} type="button" className="btn-ghost" onClick={() => addEl(t.value)}>
-            + {t.label}
-          </button>
-        ))}
+      <div>
+        <button type="button" className="btn-ghost" onClick={() => setElements((els) => [...els, nextKey++])}>
+          + Add element
+        </button>
       </div>
-      <input type="hidden" name="elements" value={JSON.stringify(elements.map(({ key: _key, ...e }) => e))} />
 
       {/* ---------------- payments */}
       <h3 className="camp-book-h">How it&apos;s paid</h3>

@@ -1418,6 +1418,14 @@ model CampaignDeliverable {
   paused      Boolean    @default(false)
   // The Mailchimp campaign that carried it (solus, newsletter banner), for opens.
   mailchimpCampaignId String?
+  // ---- an order line: what was bought, before it is put in a month ----
+  // Set together, with position left null so nothing serves it. slot is the
+  // position bought (lib/ad-positions.js, or "other"), quantity how many:
+  // months for a served position, sends for email, pieces otherwise. The
+  // month grid books placements against it (Nov 2026: Miele bought 4 e-shots,
+  // 2 pop-ups, 12 newsletter banners and 12 months of leaderboard per title).
+  slot        String?
+  quantity    Int?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 

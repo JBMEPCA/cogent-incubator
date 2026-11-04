@@ -55,7 +55,11 @@ async function shrink(file, bmp, maxW) {
 // fixed: the one placement given, no picker (the Campaigns list panel).
 // replace: the new artwork takes over from what is running in that placement.
 // onDone: told after each upload, so a panel can re-read itself.
-export default function CampaignAssetUpload({ campaignId, deliverables, fixed = false, replace = false, onDone }) {
+// also: other placements of the same kind on the title, still without
+// artwork; ticked by default, the file goes on them too.
+// compact: one line, for the placement rows on the campaign page.
+export default function CampaignAssetUpload({ campaignId, deliverables, fixed = false, replace = false, onDone, also = [], alsoLabel = "", compact = false }) {
+  const [alsoOn, setAlsoOn] = useState(true);
   const [state, action, pending] = useActionState(uploadAssets.bind(null, campaignId), null);
   const [deliverableId, setDeliverableId] = useState(fixed ? deliverables[0]?.id || "" : "");
   const seen = useRef(state);
@@ -118,6 +122,7 @@ export default function CampaignAssetUpload({ campaignId, deliverables, fixed = 
     ready.forEach((f) => fd.append("files", f));
     if (deliverableId) fd.set("deliverableId", deliverableId);
     if (replace) fd.set("replace", "1");
+    if (alsoOn) also.forEach((id) => fd.append("alsoFor", id));
     startTransition(() => action(fd));
     form.reset();
   }
@@ -139,12 +144,19 @@ export default function CampaignAssetUpload({ campaignId, deliverables, fixed = 
         <button type="submit" className="btn-ghost" disabled={pending || busy}>
           {busy ? "Preparing…" : pending ? "Uploading…" : replace ? "Upload and replace" : "Upload"}
         </button>
-        <span className="micro" style={{ color: state ? (state.ok ? "var(--neon-green)" : "var(--neon-amber)") : "var(--muted)" }}>
-          {state?.message ||
-            (replace
-              ? "The new artwork replaces what is running here. PDFs become PNGs; oversized images are scaled."
-              : "PDFs become PNGs, oversized images are scaled. Pick the placement so artwork is sized to its slot.")}
-        </span>
+        {also.length > 0 && (
+          <label className="micro camp-also">
+            <input type="checkbox" checked={alsoOn} onChange={(e) => setAlsoOn(e.target.checked)} /> {alsoLabel || `Also on the other ${also.length}`}
+          </label>
+        )}
+        {(state?.message || !compact) && (
+          <span className="micro" style={{ color: state ? (state.ok ? "var(--neon-green)" : "var(--neon-amber)") : "var(--muted)" }}>
+            {state?.message ||
+              (replace
+                ? "The new artwork replaces what is running here. PDFs become PNGs; oversized images are scaled."
+                : "PDFs become PNGs, oversized images are scaled. Pick the placement so artwork is sized to its slot.")}
+          </span>
+        )}
       </form>
       {notes.length > 0 && (
         <ul className="micro camp-upload-notes">

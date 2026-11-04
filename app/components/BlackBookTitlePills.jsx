@@ -6,14 +6,16 @@ import { shortTitle } from "@/lib/black-book-labels";
 // label lights up when checked (CSS :has). When All titles is on the
 // individual pills grey out, and the server ignores them. `selected` is the
 // contact's stored siteIds, where an empty list means all titles.
-export default function BlackBookTitlePills({ sites, selected }) {
+// form and prefix put the inputs on a form elsewhere on the page (the
+// campaign page's one Save names its fields "c:siteIds").
+export default function BlackBookTitlePills({ sites, selected, form, prefix = "" }) {
   const all = Array.isArray(selected) && selected.length === 0;
   const picked = new Set(selected || []);
   return (
     <fieldset className="field field-wide bb-titles">
       <legend className="micro">Relevant to</legend>
       <label className="bb-check bb-all">
-        <input type="checkbox" name="allTitles" defaultChecked={all} />
+        <input type="checkbox" name={`${prefix}allTitles`} form={form} defaultChecked={all} />
         <span aria-hidden="true">🌍</span> All titles
       </label>
       {sites.map((s) => {
@@ -22,7 +24,8 @@ export default function BlackBookTitlePills({ sites, selected }) {
           <label key={s.id} className="bb-check bb-site" title={s.name}>
             <input
               type="checkbox"
-              name="siteIds"
+              name={`${prefix}siteIds`}
+              form={form}
               value={s.id}
               aria-label={s.name}
               defaultChecked={picked.has(s.id)}
