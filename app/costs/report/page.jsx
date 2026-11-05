@@ -276,10 +276,15 @@ const CSS = `
 
 @page { size: A4; margin: 0; }
 @media print {
-  html, body { background: #fff !important; }
-  .rp-shell { padding: 0; background: #fff; min-height: 0; }
-  .rp-toolbar { display: none; }
-  .rp-page { box-shadow: none; border-radius: 0; width: 210mm; min-height: 297mm; }
+  html, body { background: #fff !important; margin: 0 !important; padding: 0 !important; }
+  /* Only the page itself prints: not the title rail, banners or toolbar, and
+     never hidden by another screen's print rule. Pinned to the top-left so
+     nothing laid out around it can push it on to a second sheet. */
+  body > *:not(:has(.rp-shell)):not(.rp-shell) { display: none !important; }
+  .rail, .rp-toolbar { display: none !important; }
+  .rp-shell { position: absolute; inset: 0 auto auto 0; width: 210mm; padding: 0; background: #fff; min-height: 0; }
+  .rp-shell, .rp-shell * { visibility: visible !important; }
+  .rp-page { box-shadow: none; border-radius: 0; width: 210mm; min-height: 0; height: 296mm; overflow: hidden; margin: 0; }
 }
 @media screen and (max-width: 820px) {
   .rp-page { padding: 24px 18px; min-height: 0; }

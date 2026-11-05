@@ -6945,7 +6945,9 @@ section.gc-panel {
 @media (max-width: 640px) { .rep-page { padding: 26px 18px; } .rep-head h1 { font-size: 26px; } }
 @media print {
   @page { margin: 14mm; }
-  body * { visibility: hidden; }
+  /* Scoped to pages holding a campaign report: unscoped, this blanked every
+     other page's print, the director's cost report included (5 Nov 2026). */
+  body:has(.rep-page) * { visibility: hidden; }
   .rep-page, .rep-page * { visibility: visible; }
   .rep-page { position: absolute; inset: 0 auto auto 0; width: 100%; max-width: none; box-shadow: none; padding: 0; }
   .rep-page section, .rep-table tr { break-inside: avoid; }
