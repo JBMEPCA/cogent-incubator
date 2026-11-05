@@ -12,7 +12,9 @@ export const maxDuration = 300;
  * Driven by the Cloudflare worker at 14:00 UK on Mondays.
  *
  * ?dry=1 chooses the stories and renders the email without touching Mailchimp.
- * ?site=<slug> limits the run to one title.
+ * ?site=<slug> limits the run to one title, which is how the worker fans the
+ *   fleet out into one request each.
+ * ?due=1 lists the titles that would be attempted, and touches nothing.
  * ?test=a@b.com,c@d.com sends a proof to those addresses only, then deletes
  *   the draft. Never reaches the list.
  */
@@ -23,6 +25,18 @@ export async function GET(request) {
   const url = new URL(request.url);
   const dryRun = Boolean(url.searchParams.get("dry"));
   const only = url.searchParams.get("site");
+
+  // Same cheap listing as the Thursday route. Monday has not lost a title yet,
+  // but it is the same ten titles through the same 300s limit, so it is the
+  // same accident waiting for the lists to grow a little more.
+  if (url.searchParams.get("due")) {
+    const due = [];
+    await forEachSite(async ({ site, creds }) => {
+      if (site.newsletterEnabled && isNewsletterConfigured(creds.mailchimp)) due.push(site.slug);
+      return {};
+    });
+    return Response.json({ due });
+  }
   const testEmails = (url.searchParams.get("test") || "")
     .split(",")
     .map((s) => s.trim())

@@ -226,6 +226,33 @@ async function expandDrip(env, path) {
   }
 }
 
+/**
+ * One request per title for the two newsletter routes, same as the drip.
+ *
+ * Ten titles in one invocation outgrew the 300s limit and it always killed the
+ * one that sorted last: Senior Living 22 October, Dental 29 October, Dental
+ * again 5 November. Each time nine issues went out, the tenth did not, and
+ * nothing said so until somebody counted. On 5 November it died before
+ * Mailchimp was called, so there was not even a draft left behind to send.
+ *
+ * Falling back to the fleet-wide path when the listing fails is deliberate:
+ * nine issues out of ten beats none, and that is the behaviour we already had.
+ */
+async function expandPerTitle(env, path) {
+  const [base] = path.split("?");
+  try {
+    const res = await fetch(`${baseUrl(env)}${base}?due=1`, {
+      headers: { Authorization: `Bearer ${env.CRON_SECRET}` },
+    });
+    if (!res.ok) return [path];
+    const { due } = await res.json();
+    if (!Array.isArray(due) || !due.length) return [path];
+    return due.map((slug) => `${base}?site=${encodeURIComponent(slug)}`);
+  } catch {
+    return [path];
+  }
+}
+
 async function runAll(env, now = new Date(), steps = null) {
   const planned = steps || [...STEPS, ...scheduledExtras(now)];
 
@@ -233,6 +260,8 @@ async function runAll(env, now = new Date(), steps = null) {
   for (const path of planned) {
     if (path.startsWith("/api/cron/subscriber-drip?mode=import")) {
       plan.push(...(await expandDrip(env, path)));
+    } else if (path === "/api/cron/newsletter" || path === "/api/cron/briefing") {
+      plan.push(...(await expandPerTitle(env, path)));
     } else {
       plan.push(path);
     }
