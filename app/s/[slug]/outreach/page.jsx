@@ -187,6 +187,11 @@ export default async function OutreachPage({ params }) {
                             added by hand
                           </span>
                         )}
+                        {r.source === "reply" && (
+                          <span className="micro" style={{ color: "var(--muted)", marginLeft: 8 }}>
+                            from their reply
+                          </span>
+                        )}
                       </td>
                       <td style={{ padding: "8px 10px", color: "var(--muted)" }}>{fmtDate(r.firstSeenAt)}</td>
                       <td style={{ padding: "8px 10px", color: "var(--muted)" }}>{r.landingPage || "—"}</td>

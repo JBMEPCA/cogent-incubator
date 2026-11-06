@@ -189,11 +189,12 @@ model ReferringDomain {
   // "which article won the link" — the Data API has no referring-URL dimension,
   // so the exact linking page still has to be found by hand.
   landingPage String?
-  // The page the link is actually on. Only ever set by hand, because no source
-  // we have can supply it, and never overwritten by a sweep for the same
-  // reason: GA4 would only ever replace a known URL with nothing.
+  // The page the link is actually on. Set by hand or by the reply reader, and
+  // never overwritten by the GA4 sweep, which would only ever replace a known
+  // URL with nothing.
   linkUrl String?
-  // "ga4" when traffic found it, "manual" when it was typed in. Kept because a
+  // "ga4" when traffic found it, "manual" when it was typed in, "reply" when a
+  // press desk sender told us and we found the href ourselves. Kept because a
   // manually recorded link is a claim and a measured one is evidence, and the
   // two should not be silently mixed in the same count.
   source String @default("ga4")
