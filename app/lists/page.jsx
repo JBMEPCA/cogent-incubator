@@ -2,6 +2,7 @@ import Link from "next/link";
 import FleetNav from "../components/FleetNav";
 import SubTabs, { FLEET_ANALYTICS_TABS } from "@/app/components/SubTabs";
 import ListImport from "../components/ListImport";
+import ListCapCell from "../components/ListCapCell";
 import Scroller from "../components/Scroller";
 import { listSizes } from "@/lib/prospect-import";
 import {
@@ -60,9 +61,14 @@ export default async function ListsPage() {
   const sendError = sends.__error || null;
   const latestError = latest.__error || null;
 
+  const sum = (f) => rows.reduce((s, r) => s + (f(r) ?? 0), 0);
   const totals = rows && {
-    members: rows.reduce((s, r) => s + (r.members ?? 0), 0),
-    queued: rows.reduce((s, r) => s + r.queued, 0),
+    members: sum((r) => r.members),
+    queued: sum((r) => r.queued),
+    cap: sum((r) => r.cap),
+    uncapped: rows.filter((r) => r.cap == null).map((r) => r.name),
+    weekly: sum((r) => (r.dripOn ? r.weeklyTarget : 0)),
+    thisWeek: sum((r) => (r.dripOn ? r.importedThisWeek : 0)),
   };
 
   return (
@@ -93,6 +99,7 @@ export default async function ListsPage() {
                   <th>Title</th>
                   <th className="num">Subscribers</th>
                   <th className="num">Queued</th>
+                  <th className="num">Cap</th>
                   <th className="num">Per week</th>
                   <th className="num">This week</th>
                   <th>Runs out</th>
@@ -102,7 +109,11 @@ export default async function ListsPage() {
               </thead>
               <tbody>
                 {rows.map((r) => {
-                  const low = r.dripOn && r.weeksRemaining != null && r.weeksRemaining < LOW_WEEKS;
+                  const atCap = r.cap != null && r.room === 0;
+                  // A title the cap is about to stop needs no top-up, so it is
+                  // never amber however short its queue.
+                  const low =
+                    r.dripOn && !r.capBinds && !atCap && r.weeksRemaining != null && r.weeksRemaining < LOW_WEEKS;
                   return (
                     <tr key={r.slug}>
                       <td>
@@ -113,14 +124,21 @@ export default async function ListsPage() {
                       </td>
                       <td className="num">{n(r.members)}</td>
                       <td className={`num${low ? " is-low" : ""}`}>{n(r.queued)}</td>
+                      <td className="num">
+                        <ListCapCell slug={r.slug} cap={r.cap} editable={editable} atCap={atCap} />
+                      </td>
                       <td className="num">{r.dripOn ? n(r.weeklyTarget) : "off"}</td>
                       <td className="num">{r.dripOn ? n(r.importedThisWeek) : "–"}</td>
                       <td className={low ? "is-low" : undefined}>
                         {!r.dripOn
                           ? "Drip not connected"
-                          : r.queued === 0
-                            ? "Empty now"
-                            : `${runsOut(r.weeksRemaining)} (${r.weeksRemaining} wk${r.weeksRemaining === 1 ? "" : "s"})`}
+                          : atCap
+                            ? "At cap"
+                            : r.capBinds
+                              ? `Cap by ${runsOut(r.weeksToStop)} (${r.weeksToStop} wk${r.weeksToStop === 1 ? "" : "s"})`
+                              : r.queued === 0
+                                ? "Empty now"
+                                : `${runsOut(r.weeksRemaining)} (${r.weeksRemaining} wk${r.weeksRemaining === 1 ? "" : "s"})`}
                       </td>
                       <td>{day(r.lastImport)}</td>
                       <td>
@@ -132,10 +150,31 @@ export default async function ListsPage() {
                   );
                 })}
               </tbody>
+              <tfoot>
+                <tr className="lists-total">
+                  <td>Total</td>
+                  <td className="num">{n(totals.members)}</td>
+                  <td className="num">{n(totals.queued)}</td>
+                  <td
+                    className="num"
+                    title={totals.uncapped.length ? `Not counting ${totals.uncapped.join(", ")} (no cap)` : undefined}
+                  >
+                    {n(totals.cap)}
+                    {totals.uncapped.length ? "*" : ""}
+                  </td>
+                  <td className="num">{n(totals.weekly)}</td>
+                  <td className="num">{n(totals.thisWeek)}</td>
+                  <td colSpan={3} />
+                </tr>
+              </tfoot>
             </table>
           </Scroller>
           <p className="lists-note" style={{ marginTop: 10 }}>
-            Amber means less than {LOW_WEEKS} weeks of queue left at the title&rsquo;s weekly rate.
+            {`Amber means less than ${LOW_WEEKS} weeks of queue left at the title’s weekly rate. `}Cap is the most
+            subscribers a list may hold: the drip stops putting anyone up once Mailchimp&rsquo;s count reaches it, and
+            never takes a list past it. {editable && "Click a cap to change it; leave it empty for no cap. "}
+            {totals.uncapped.length > 0 &&
+              `*The cap total leaves out ${totals.uncapped.join(", ")}, which ${totals.uncapped.length === 1 ? "has" : "have"} no cap.`}
           </p>
         </section>
       )}

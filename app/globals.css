@@ -5517,6 +5517,52 @@ button.hub-ag { cursor: pointer; }
   flex: none;
 }
 
+.lists-total td {
+  border-top: 2px solid var(--line);
+  font-weight: 700;
+  color: var(--text);
+}
+
+.lists-cap {
+  background: none;
+  border: 0;
+  border-bottom: 1px dashed var(--muted);
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.lists-cap:hover {
+  color: var(--neon-cyan);
+  border-bottom-color: var(--neon-cyan);
+}
+
+.lists-atcap {
+  color: var(--neon-cyan);
+  font-weight: 600;
+}
+
+.lists-cap-edit input {
+  width: 84px;
+  text-align: right;
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--neon-cyan);
+  border-radius: 6px;
+  padding: 3px 6px;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+.lists-cap-error {
+  display: block;
+  font-size: 11px;
+  color: var(--neon-red);
+  white-space: normal;
+}
+
 .lists-file {
   max-width: 220px;
   overflow: hidden;
