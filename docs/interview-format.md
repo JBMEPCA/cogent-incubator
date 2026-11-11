@@ -18,6 +18,7 @@ not fit, and say so when you do.
 | SEO title | The same line as plain text, set on `_yoast_wpseo_title`, so no markup reaches a search result or a browser tab. |
 | Standfirst | Two sentences. What they won or did, then what a reader gets out of it. |
 | Lead image | Supplied by the subject. Never scraped, never stock. |
+| Pictures | Three or more and they run as strips of three above the headings, built with `lib/gallery.js`. See `docs/article-galleries.md`. |
 | Company card | `.interview-company`, the first thing in the body. |
 | Body | Short intro paragraph, then alternating quote and context under `<h2>` sections. |
 | Quotes | `<blockquote class="wp-block-quote interview-quote">`. |
