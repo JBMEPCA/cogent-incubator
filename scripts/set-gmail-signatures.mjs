@@ -21,13 +21,15 @@ const LOGO_BASE = "https://cogent-incubator.vercel.app/api/brand/logo";
 const NAME = "James Burke";
 
 const TITLES = {
-  "jb@smartsme.co.uk": { slug: "smart-sme", name: "Smart SME", domain: "smartsme.co.uk", accent: "#2E3EEE", logoHeight: 30 },
+  "jb@smartsme.co.uk": { slug: "smart-sme", name: "Smart SME", domain: "smartsme.co.uk", accent: "#2E3EEE", logoHeight: 24, ver: "a1" },
   "jb@thefleetmagazine.co.uk": { slug: "fleet-magazine", name: "The Fleet Magazine", domain: "thefleetmagazine.co.uk", accent: "#1D5FAA", logoHeight: 20 },
   "jb@golfresortmagazine.com": { slug: "golf-resort-magazine", name: "Golf Resort Magazine", domain: "golfresortmagazine.com", accent: "#15694A", logoHeight: 28 },
   "jb@barberingbusiness.com": { slug: "barbering-business", name: "Barbering Business", domain: "barberingbusiness.com", accent: "#6E2B2B", logoHeight: 22 },
   "jb@airportbusinessmagazine.com": { slug: "airport-business-magazine", name: "Airport Business Magazine", domain: "airportbusinessmagazine.com", accent: "#123B66", logoHeight: 26 },
 };
 
+// ver busts Gmail's image proxy when a mark is redrawn under the same URL
+// (Smart SME option A, 16 Nov 2026).
 // Heights differ because the marks differ: a long one-line mark at the height
 // of a compact two-line lockup would run half the width of the email.
 function signature(t) {
@@ -38,7 +40,7 @@ function signature(t) {
     `<a href="https://${t.domain}" style="color:${t.accent};text-decoration:none">${t.domain}</a>` +
     `</div>` +
     `<div style="margin-top:10px">` +
-    `<a href="https://${t.domain}"><img src="${LOGO_BASE}/${t.slug}" alt="${t.name}" height="${t.logoHeight}" style="height:${t.logoHeight}px;width:auto;border:0"></a>` +
+    `<a href="https://${t.domain}"><img src="${LOGO_BASE}/${t.slug}${t.ver ? `?v=${t.ver}` : ""}" alt="${t.name}" height="${t.logoHeight}" style="height:${t.logoHeight}px;width:auto;border:0"></a>` +
     `</div>`
   );
 }
