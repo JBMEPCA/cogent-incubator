@@ -48,6 +48,8 @@ export async function GET(request) {
       status: { in: ["review", "approved"] },
       qaPassed: true,
       body: { not: null },
+      // NOT_AN_INTERVIEW: never give an interview piece a publishing slot.
+      interviewTargets: { none: {} },
       // A missed slot has to make the article available again, not strand it.
       // An article usually misses its slot waiting for a picture, and once the
       // time passes it fell outside both branches below: publish-due would not

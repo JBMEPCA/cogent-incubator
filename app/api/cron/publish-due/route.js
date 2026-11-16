@@ -26,6 +26,12 @@ export async function GET(request) {
       qaPassed: true,
       scheduledFor: { lte: new Date() },
       body: { not: null },
+      // NOT_AN_INTERVIEW. draftInterviewArticle says it "deliberately stops at
+      // draft" because publishing an unread piece about a named real person is
+      // the one step here that cannot be taken back. That was only ever true
+      // of the drafter itself: anything that set qaPassed on an interview row
+      // handed it straight to this queue. A person publishes interviews.
+      interviewTargets: { none: {} },
     },
     orderBy: { scheduledFor: "asc" },
     // Ten candidates, two publishes. This was take: 2, and the two oldest due
