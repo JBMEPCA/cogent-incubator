@@ -3,7 +3,7 @@ import FleetNav from "@/app/components/FleetNav";
 import SubTabs, { FLEET_ANALYTICS_TABS } from "@/app/components/SubTabs";
 import SiteMark from "@/app/components/SiteMark";
 import { prisma, fleetRead } from "@/lib/prisma";
-import { WINDOW_HOURS, parseNews, TREND_COST_CAP_USD, TREND_PASS_ESTIMATE_USD, autoCommissionOn } from "@/lib/trending";
+import { WINDOW_HOURS, parseNews, TREND_COST_CAP_USD, TREND_PASS_ESTIMATE_USD, autoCommissionOn, feedStatus } from "@/lib/trending";
 import TrendCard from "./TrendCard";
 import RefreshButton from "./RefreshButton";
 import AutoToggle from "./AutoToggle";
@@ -133,6 +133,7 @@ export default async function TrendingPage({ searchParams }) {
     orderBy: { name: "asc" },
   });
 
+  const feed = await feedStatus();
   const [topics, commissioned, latest, hidden, rising] = await Promise.all([
     prisma.trendingTopic.findMany({
       // Google Trends and stories trending on a title's own wire. Search
@@ -334,6 +335,18 @@ export default async function TrendingPage({ searchParams }) {
               <span className="micro">
                 last checked {latest ? `${ago(latest.lastSeenAt)} (${ukTime(latest.lastSeenAt)})` : "never"} · refreshes every 30 min
               </span>
+              {/* Where the trends came from on the last refresh. Amber when the
+                  feed is down to Google's RSS top ten, which is how the full
+                  feed broke unnoticed for a week in November 2026. */}
+              {(() => {
+                const f = feed?.feed?.GB || Object.values(feed?.feed || {})[0];
+                if (!f) return null;
+                return (
+                  <span className="micro" style={{ color: feed.degraded ? "var(--neon-amber)" : undefined }}>
+                    {feed.degraded ? "⚠ " : ""}source: {f.source} · {f.count} trends
+                  </span>
+                );
+              })()}
               <Link href={showAll ? "/trending" : "/trending?all=1"} className="micro">
                 {showAll ? "Show only matched topics" : `Show everything trending (${hidden} not matched to a title)`}
               </Link>

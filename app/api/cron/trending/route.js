@@ -18,7 +18,11 @@ export async function GET(request) {
     // Then take commissioned pieces as far as they will go: written, pictured,
     // published and on LinkedIn, inside this run's budget (maxDuration below).
     const advanced = await advanceTrending({ deadline: started + 280000 }).catch((e) => ({ error: e.message }));
-    return Response.json({ ...refreshed, advanced });
+    // 503 when the trend feed has fallen back to the RSS ten (or failed), so
+    // the worker's failure alert emails about it, deduplicated there. Every
+    // step above has still run; this only makes the fall back loud. Google's
+    // page endpoint broke around 9 Nov 2026 and nothing said so for a week.
+    return Response.json({ ...refreshed, advanced }, { status: refreshed.degraded ? 503 : 200 });
   } catch (e) {
     return Response.json({ error: e.message }, { status: 500 });
   }
