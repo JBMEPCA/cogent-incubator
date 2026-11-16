@@ -69,6 +69,7 @@ export default async function ListsPage() {
     uncapped: rows.filter((r) => r.cap == null).map((r) => r.name),
     weekly: sum((r) => (r.dripOn ? r.weeklyTarget : 0)),
     thisWeek: sum((r) => (r.dripOn ? r.importedThisWeek : 0)),
+    lastWeek: sum((r) => (r.dripOn ? r.importedLastWeek : 0)),
   };
 
   return (
@@ -102,6 +103,7 @@ export default async function ListsPage() {
                   <th className="num">Cap</th>
                   <th className="num">Per week</th>
                   <th className="num">This week</th>
+                  <th className="num">Last week</th>
                   <th>Runs out</th>
                   <th>Last drip</th>
                   <th>Last top-up</th>
@@ -129,6 +131,7 @@ export default async function ListsPage() {
                       </td>
                       <td className="num">{r.dripOn ? n(r.weeklyTarget) : "off"}</td>
                       <td className="num">{r.dripOn ? n(r.importedThisWeek) : "–"}</td>
+                      <td className="num">{r.dripOn ? n(r.importedLastWeek) : "–"}</td>
                       <td className={low ? "is-low" : undefined}>
                         {!r.dripOn
                           ? "Drip not connected"
@@ -164,6 +167,7 @@ export default async function ListsPage() {
                   </td>
                   <td className="num">{n(totals.weekly)}</td>
                   <td className="num">{n(totals.thisWeek)}</td>
+                  <td className="num">{n(totals.lastWeek)}</td>
                   <td colSpan={3} />
                 </tr>
               </tfoot>
