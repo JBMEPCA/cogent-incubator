@@ -1,0 +1,1631 @@
+{
+ "site": "fleet-magazine",
+ "posts": 263,
+ "suppliers": 78,
+ "taggedArticles": 142,
+ "aboutLinks": 119,
+ "mentionLinks": 94,
+ "perSupplier": [
+  {
+   "name": "Webfleet",
+   "about": 4,
+   "mentions": 10
+  },
+  {
+   "name": "DAF Trucks",
+   "about": 2,
+   "mentions": 8
+  },
+  {
+   "name": "Ford",
+   "about": 1,
+   "mentions": 7
+  },
+  {
+   "name": "Vauxhall",
+   "about": 3,
+   "mentions": 5
+  },
+  {
+   "name": "FleetCheck",
+   "about": 2,
+   "mentions": 4
+  },
+  {
+   "name": "Geotab",
+   "about": 1,
+   "mentions": 5
+  },
+  {
+   "name": "InstaVolt",
+   "about": 4,
+   "mentions": 2
+  },
+  {
+   "name": "Quartix",
+   "about": 3,
+   "mentions": 3
+  },
+  {
+   "name": "Tusker",
+   "about": 3,
+   "mentions": 3
+  },
+  {
+   "name": "GRIDSERVE",
+   "about": 3,
+   "mentions": 2
+  },
+  {
+   "name": "Peugeot",
+   "about": 2,
+   "mentions": 3
+  },
+  {
+   "name": "Stellantis",
+   "about": 4,
+   "mentions": 1
+  },
+  {
+   "name": "Ayvens",
+   "about": 3,
+   "mentions": 1
+  },
+  {
+   "name": "Citroën",
+   "about": 2,
+   "mentions": 2
+  },
+  {
+   "name": "Dawsongroup",
+   "about": 1,
+   "mentions": 3
+  },
+  {
+   "name": "Dealer Auction",
+   "about": 4,
+   "mentions": 0
+  },
+  {
+   "name": "Fleet Alliance",
+   "about": 4,
+   "mentions": 0
+  },
+  {
+   "name": "Fleet Service GB",
+   "about": 4,
+   "mentions": 0
+  },
+  {
+   "name": "Fuuse",
+   "about": 2,
+   "mentions": 2
+  },
+  {
+   "name": "Microlise",
+   "about": 2,
+   "mentions": 2
+  },
+  {
+   "name": "The AA",
+   "about": 1,
+   "mentions": 3
+  },
+  {
+   "name": "Cap HPI",
+   "about": 2,
+   "mentions": 1
+  },
+  {
+   "name": "Fleetio",
+   "about": 2,
+   "mentions": 1
+  },
+  {
+   "name": "Leapmotor",
+   "about": 3,
+   "mentions": 0
+  },
+  {
+   "name": "Nissan",
+   "about": 1,
+   "mentions": 2
+  },
+  {
+   "name": "Scania",
+   "about": 1,
+   "mentions": 2
+  },
+  {
+   "name": "Tesla",
+   "about": 1,
+   "mentions": 2
+  },
+  {
+   "name": "Toyota",
+   "about": 3,
+   "mentions": 0
+  },
+  {
+   "name": "Adrian Flux",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "AXA",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "BYD",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Don-Bur",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "DriveStable",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Europcar",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Farizon",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Fellten",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Fleet Assist",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Fleetclear",
+   "about": 2,
+   "mentions": 0
+  },
+  {
+   "name": "FleetDue",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Isotrak",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Isuzu",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "IVECO",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Leasys",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Odigo Verve",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Paua",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "VDO",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "VisionTrack",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Whip Around",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Zapmap",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Alpine",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Arnold Clark",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "AX",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Black Horse",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "bp pulse",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Changan",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Dan Ryan Truck Rental",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Echoes",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Electra Commercial Vehicles",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "FMG",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Gophr",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "HTC Group",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Humax",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Jeep",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "KEYper Systems",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Lex Autolease",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "MAN Truck & Bus",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "NVIDIA",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "OnPoint Systems",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Optimo Energy",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Renault Trucks",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Rivetway",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Stagecoach",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Transparent Laden",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Trents",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Trimble",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Venson",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Voltloader",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Wayve",
+   "about": 1,
+   "mentions": 0
+  }
+ ],
+ "registryWithNoAboutArticle": [],
+ "articles": [
+  {
+   "id": 1852,
+   "title": "Dealer Auction Q3 2026: premium SUV margins hit £4,654",
+   "about": [
+    "Dealer Auction"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1849,
+   "title": "AX orders 614 BMW cars including 88 EVs for replacement fleet",
+   "about": [
+    "AX"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1844,
+   "title": "Ford Fleet Vehicles Return to Japan via Export Distributor",
+   "about": [
+    "Ford"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1843,
+   "title": "DPD adds 381 electric vans ahead of Black Friday peak",
+   "about": [],
+   "mentions": [
+    "Ford"
+   ]
+  },
+  {
+   "id": 1838,
+   "title": "German app Transparent Laden launches in UK app stores",
+   "about": [
+    "Transparent Laden"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1836,
+   "title": "Renault Trucks unveils E-Tech T 780, 410-mile electric HGV",
+   "about": [
+    "Renault Trucks"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1832,
+   "title": "Depot Charging Scheme reopens with £38m, support cut to 60%",
+   "about": [],
+   "mentions": [
+    "Odigo Verve"
+   ]
+  },
+  {
+   "id": 1825,
+   "title": "Stellantis names 21 suppliers of the year, including Michelin",
+   "about": [
+    "Stellantis"
+   ],
+   "mentions": [
+    "Vauxhall"
+   ]
+  },
+  {
+   "id": 1818,
+   "title": "Fleet Assist Passes £2bn SMR Spend Across 9,300 Garages",
+   "about": [
+    "Fleet Assist"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1793,
+   "title": "Arnold Clark Links Solera Cap HPI Data Across Five Profiles",
+   "about": [
+    "Arnold Clark",
+    "Cap HPI"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1779,
+   "title": "Leasys UK holds 9th place in Fleet News FN50 for 2026",
+   "about": [
+    "Leasys"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1774,
+   "title": "Albion Fine Foods Cuts Claims Costs 74% With Telematics",
+   "about": [],
+   "mentions": [
+    "Webfleet"
+   ]
+  },
+  {
+   "id": 1772,
+   "title": "Vauxhall passes 102,852 UK EV sales, Grandland marks milestone",
+   "about": [
+    "Vauxhall"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1767,
+   "title": "Bretts Targets 3% Fleet Efficiency With Microlise Tech",
+   "about": [
+    "Microlise"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1764,
+   "title": "Public EV Charging VAT Stays at 20%, Fleets Pay 7x Home Cost",
+   "about": [
+    "Fleet Service GB"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1756,
+   "title": "Budget 2026 Fleet Tax: BiK Hits 10%, eVED Confirmed at 3p",
+   "about": [
+    "Fleet Alliance"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1744,
+   "title": "DriveStable seeks five fleets to pilot new platform",
+   "about": [
+    "DriveStable"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1730,
+   "title": "Traka Automotive rebrands to KEYper Systems in the UK",
+   "about": [
+    "KEYper Systems"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1725,
+   "title": "Peugeot: 43% of UK van drivers call their van a 'quiet space'",
+   "about": [
+    "Peugeot"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1721,
+   "title": "The Hidden Hours Between the Cab and the Transport Office",
+   "about": [],
+   "mentions": [
+    "DriveStable"
+   ]
+  },
+  {
+   "id": 1717,
+   "title": "Albion Fine Foods Cuts Claims Costs 74% With Telematics",
+   "about": [
+    "Webfleet"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1711,
+   "title": "Odigo Verve launches as independent EV advisory in UK",
+   "about": [
+    "Odigo Verve"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1698,
+   "title": "Echoes launches Fleet Agent linking OEM data to leases",
+   "about": [
+    "Echoes"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1696,
+   "title": "Royal Mail Cuts Fleet by 526 Trucks Ahead of Peak Season",
+   "about": [],
+   "mentions": [
+    "Don-Bur"
+   ]
+  },
+  {
+   "id": 1686,
+   "title": "New £20 Cap on Parking Fines, But Fleets Pay £35",
+   "about": [
+    "Fleet Service GB"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1684,
+   "title": "Used AFV age drops to 4.7 years as share hits 10%",
+   "about": [
+    "Dealer Auction"
+   ],
+   "mentions": [
+    "Nissan",
+    "Tesla"
+   ]
+  },
+  {
+   "id": 1682,
+   "title": "SEE Services Picks Optimo Energy for 700 LAS Chargers",
+   "about": [
+    "Optimo Energy"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1670,
+   "title": "Royal Mail Orders 261 Don-Bur Trailers, 160 Lifting Decks",
+   "about": [
+    "Don-Bur"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1662,
+   "title": "Stellantis, Wayve, NVIDIA Join France Autonomous Vehicle Push",
+   "about": [
+    "NVIDIA",
+    "Stellantis",
+    "Wayve"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1658,
+   "title": "Fuuse to migrate 1,000 bp pulse fleet depot chargers",
+   "about": [
+    "bp pulse",
+    "Fuuse"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1648,
+   "title": "Stellantis and Leapmotor pass 2 million EU30 sales in 2026",
+   "about": [
+    "Leapmotor",
+    "Stellantis"
+   ],
+   "mentions": [
+    "Citroën"
+   ]
+  },
+  {
+   "id": 1633,
+   "title": "Andy Burnham caps parking fines at £100: new rules for fleets",
+   "about": [],
+   "mentions": [
+    "The AA"
+   ]
+  },
+  {
+   "id": 1631,
+   "title": "Fleet Alliance Drives Changan Deepal S05: BiK Costs for 2026/27",
+   "about": [
+    "Changan",
+    "Fleet Alliance"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1610,
+   "title": "Ayvens Adds Fellten's Charge Qube for Fleets Stuck on Grid",
+   "about": [
+    "Ayvens",
+    "Fellten"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1606,
+   "title": "Ayvens Offers Mobile Battery Charging to Beat Grid Delays",
+   "about": [
+    "Ayvens"
+   ],
+   "mentions": [
+    "Fellten"
+   ]
+  },
+  {
+   "id": 1603,
+   "title": "InstaVolt Peterborough Hub Opens With 16 Chargers",
+   "about": [
+    "InstaVolt"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1599,
+   "title": "Used Car Sales Jump 10% in September, Dealer Auction Finds",
+   "about": [
+    "Dealer Auction"
+   ],
+   "mentions": [
+    "Vauxhall"
+   ]
+  },
+  {
+   "id": 1591,
+   "title": "Nella Cutlery Fits Webfleet Telematics at 125-Year Mark",
+   "about": [
+    "Webfleet"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1589,
+   "title": "Lloyds Merges Lex Autolease, Black Horse, Tusker Into One",
+   "about": [
+    "Black Horse",
+    "Lex Autolease",
+    "Tusker"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1581,
+   "title": "AFP Passes 2,000 Members, Warns on eVED EV Tax Plan",
+   "about": [],
+   "mentions": [
+    "FleetCheck"
+   ]
+  },
+  {
+   "id": 1577,
+   "title": "GXO: 63% Cite Fuel Costs, Only 38% Run Alt-Fuel Fleets",
+   "about": [],
+   "mentions": [
+    "Isotrak"
+   ]
+  },
+  {
+   "id": 1483,
+   "title": "How Much Does a Lorry Cost in the UK? New and Used HGV Prices",
+   "about": [],
+   "mentions": [
+    "DAF Trucks",
+    "Dawsongroup"
+   ]
+  },
+  {
+   "id": 1476,
+   "title": "Jeep to Field Six European Models by 2030, Renegade Returns",
+   "about": [
+    "Jeep"
+   ],
+   "mentions": [
+    "Peugeot"
+   ]
+  },
+  {
+   "id": 1473,
+   "title": "Citroën shows electric 2CV Fourgonnette van concept",
+   "about": [
+    "Citroën"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1471,
+   "title": "Wilson James Adds 26-Tonne Electric DAF at Heathrow",
+   "about": [
+    "DAF Trucks"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1469,
+   "title": "Isuzu D-Max Wins Diesel Pickup Award: 3.5-Tonne Tow Rating",
+   "about": [
+    "Isuzu"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1466,
+   "title": "Tech Beats Pay Rise for Transport Managers' Mental Health",
+   "about": [
+    "Microlise"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1464,
+   "title": "Evolve Waste Fits Fleetclear Cameras Across RCV Fleet",
+   "about": [
+    "Fleetclear"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1460,
+   "title": "Pall-Ex Takes First IVECO S-eWay Truck: 250-Mile Range",
+   "about": [
+    "IVECO"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1455,
+   "title": "Google Maps fuel prices go live: find cheapest fuel near you",
+   "about": [],
+   "mentions": [
+    "The AA"
+   ]
+  },
+  {
+   "id": 1453,
+   "title": "Glasgow Haulier John G Russell Trials Scania Hydrogen Trucks",
+   "about": [
+    "Scania"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1450,
+   "title": "Openreach trials Geotab telematics with volunteer engineers",
+   "about": [
+    "Geotab"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1441,
+   "title": "HTC Group Taps Gophr for One-Hour CV Parts Cover",
+   "about": [
+    "Gophr",
+    "HTC Group"
+   ],
+   "mentions": [
+    "DAF Trucks"
+   ]
+  },
+  {
+   "id": 1439,
+   "title": "Electric vehicle sales near 100,000: fleet buyers up 9.6%",
+   "about": [],
+   "mentions": [
+    "BYD",
+    "Tesla"
+   ]
+  },
+  {
+   "id": 1435,
+   "title": "Peugeot Partner tops compact van sales with 12,230 units",
+   "about": [
+    "Peugeot"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1431,
+   "title": "Citroën UK sales up 41% to 40,216 in year to Q3 2026",
+   "about": [
+    "Citroën"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1429,
+   "title": "Vauxhall posts 7% Q3 rise as Corsa and Frontera lead",
+   "about": [
+    "Vauxhall"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1427,
+   "title": "Leapmotor UK registrations hit record 3,943 in September",
+   "about": [
+    "Leapmotor"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1423,
+   "title": "InstaVolt Opens 12-Bay Rapid Charging Hub Near M4 Reading",
+   "about": [
+    "InstaVolt"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1421,
+   "title": "FedEx Orders 131 DAF Trucks for UK, France and Dutch Fleets",
+   "about": [
+    "DAF Trucks"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1419,
+   "title": "Kent HGV Driver Launches Rivetway Fleet Compliance Tool",
+   "about": [
+    "Rivetway"
+   ],
+   "mentions": [
+    "FleetDue",
+    "Fleetio"
+   ]
+  },
+  {
+   "id": 1418,
+   "title": "Isotrak: AI Dash Cameras Need a Six-Point Policy",
+   "about": [
+    "Isotrak"
+   ],
+   "mentions": [
+    "VisionTrack"
+   ]
+  },
+  {
+   "id": 1413,
+   "title": "Venson Flags Five Hidden Costs in Fleet Procurement",
+   "about": [
+    "Venson"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1411,
+   "title": "Cloned Plates Warning: Fleets Face £1,000 Fines, FSGB Says",
+   "about": [
+    "Fleet Service GB"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1406,
+   "title": "Record Diesel Prices Hit Forecourts: Fleets Face £5,180 Fuel Bill",
+   "about": [
+    "Fleet Service GB"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1404,
+   "title": "Truck Maintenance Contracts Compared by Manufacturer in 2026",
+   "about": [],
+   "mentions": [
+    "DAF Trucks",
+    "IVECO",
+    "Scania"
+   ]
+  },
+  {
+   "id": 1402,
+   "title": "Cap HPI Publishes LCV Residual Value Forecast to 2030",
+   "about": [
+    "Cap HPI"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1400,
+   "title": "Leapmotor 12-volt Battery Dropped From New EV Platform",
+   "about": [
+    "Leapmotor"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1398,
+   "title": "Used Tesla Model Y Sets Record: Sold in Just 21 Days",
+   "about": [
+    "Dealer Auction",
+    "Tesla"
+   ],
+   "mentions": [
+    "Nissan"
+   ]
+  },
+  {
+   "id": 1218,
+   "title": "Tusker Alpine A390 Company Car Tax Set at 4% for 2026/27",
+   "about": [
+    "Alpine",
+    "Tusker"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1214,
+   "title": "Adrian Flux Launches One-Day Van Insurance, 24-Hour Cover",
+   "about": [
+    "Adrian Flux"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1211,
+   "title": "Trimble AI Tackles Smaller Haulier Admin and Loads",
+   "about": [
+    "Trimble"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1209,
+   "title": "Public Charge Point Rules: Fuuse Flags 99% Uptime Target",
+   "about": [
+    "Fuuse"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1195,
+   "title": "GRIDSERVE Opens 24-Bay Charging Hub at Cobham Services",
+   "about": [
+    "GRIDSERVE"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1193,
+   "title": "FleetDue Launches Dashboard to Track MOT and Tax Dates",
+   "about": [
+    "FleetDue"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1191,
+   "title": "Fleetio Guide Tackles Van Upfitting Strategy Choices",
+   "about": [
+    "Fleetio"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1186,
+   "title": "Fleetio Links Telematics Alerts to Maintenance Workflows",
+   "about": [
+    "Fleetio"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1184,
+   "title": "Whip Around: 71% of Fleets Cite Data Integration Risk",
+   "about": [
+    "Whip Around"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1175,
+   "title": "Fleet Alliance: Outsourcing Car Fleet Management Cuts Costs 11%",
+   "about": [
+    "Fleet Alliance"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1171,
+   "title": "Royal Mail, AA, Trents in Three-Way Recycled Parts Deal",
+   "about": [
+    "Trents"
+   ],
+   "mentions": [
+    "The AA"
+   ]
+  },
+  {
+   "id": 1166,
+   "title": "Dawsongroup Dan Ryan Deal Reshapes Irish Truck Rental",
+   "about": [
+    "Dan Ryan Truck Rental",
+    "Dawsongroup"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1126,
+   "title": "Lease Purchase for Vans and Trucks: What It Costs UK Fleets",
+   "about": [],
+   "mentions": [
+    "DAF Trucks"
+   ]
+  },
+  {
+   "id": 1112,
+   "title": "Loomis UK Adds VisionTrack AI Cameras to 500 Vehicles",
+   "about": [
+    "VisionTrack"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1098,
+   "title": "SMMT Hails Nissan Boost, Backing Thousands of Sunderland Jobs",
+   "about": [
+    "Nissan"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1066,
+   "title": "Toyota Targets 200,000 LCV Sales by 2030, BEV Share Hits 22%",
+   "about": [
+    "Toyota"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1064,
+   "title": "Do Vans Need Tachographs? The UK Rules Fleets Must Know",
+   "about": [],
+   "mentions": [
+    "VDO"
+   ]
+  },
+  {
+   "id": 1051,
+   "title": "GRIDSERVE and Voltloader Add Six eHGV Charging Hubs",
+   "about": [
+    "GRIDSERVE",
+    "Voltloader"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1030,
+   "title": "DfT Updates Zero Emission Van, Truck Grant Rules: 15 September",
+   "about": [],
+   "mentions": [
+    "Tusker",
+    "Vauxhall"
+   ]
+  },
+  {
+   "id": 965,
+   "title": "HGV Leasing UK 2026: What Truck Contract Hire Costs",
+   "about": [],
+   "mentions": [
+    "DAF Trucks",
+    "Dawsongroup",
+    "Scania"
+   ]
+  },
+  {
+   "id": 944,
+   "title": "Quartix Launches Free Route Planner for Fleets, Up to 50 Stops",
+   "about": [
+    "Quartix"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 929,
+   "title": "Fleetclear Launches StreetVision AI for Fleet Camera Footage",
+   "about": [
+    "Fleetclear"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 926,
+   "title": "Stellantis Pro One at IAA: What UK Van Fleets Actually Get",
+   "about": [
+    "Stellantis"
+   ],
+   "mentions": [
+    "Citroën",
+    "Peugeot"
+   ]
+  },
+  {
+   "id": 925,
+   "title": "Depot Charging Costs 2026: What Fleets Actually Pay",
+   "about": [],
+   "mentions": [
+    "Fuuse"
+   ]
+  },
+  {
+   "id": 911,
+   "title": "DfT Eases EV Chargepoint Planning Rules: Two Changes Coming",
+   "about": [],
+   "mentions": [
+    "InstaVolt"
+   ]
+  },
+  {
+   "id": 899,
+   "title": "Salary Sacrifice Van Scheme UK: What It Costs Employers",
+   "about": [],
+   "mentions": [
+    "Tusker"
+   ]
+  },
+  {
+   "id": 897,
+   "title": "FleetCheck Flags New AI Model That Predicts 85% of Collisions Before They Happen",
+   "about": [
+    "FleetCheck"
+   ],
+   "mentions": [
+    "Webfleet"
+   ]
+  },
+  {
+   "id": 860,
+   "title": "DVSA Earned Recognition Adds OnPoint Systems, Third New Provider Named in 2026",
+   "about": [
+    "OnPoint Systems"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 858,
+   "title": "Quartix Quantifies Engine Idling Costs: One 50-Vehicle Fleet Could Waste Almost 14 Tonnes of CO2 a Year",
+   "about": [
+    "Quartix"
+   ],
+   "mentions": [
+    "Webfleet"
+   ]
+  },
+  {
+   "id": 844,
+   "title": "Ayvens Renews FMG Incident Management Deal After Twenty Years",
+   "about": [
+    "Ayvens",
+    "FMG"
+   ],
+   "mentions": [
+    "Webfleet"
+   ]
+  },
+  {
+   "id": 839,
+   "title": "MAN Wins Innovation Award for a Standard Emergency Vehicle Spec",
+   "about": [
+    "MAN Truck & Bus"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 837,
+   "title": "What the AA Changed When It Let Patrols Spec the Recovery Trucks",
+   "about": [
+    "The AA"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 835,
+   "title": "Megawatt Charging Reaches the UK, and the Number That Matters Is 45",
+   "about": [],
+   "mentions": [
+    "GRIDSERVE"
+   ]
+  },
+  {
+   "id": 834,
+   "title": "Best Electric HGV Charging Networks for UK Truck Fleets in 2026",
+   "about": [],
+   "mentions": [
+    "GRIDSERVE",
+    "InstaVolt"
+   ]
+  },
+  {
+   "id": 832,
+   "title": "InstaVolt Joins Shell Card Network, Adding 4,250 Chargers Across 1,200 Sites for Fleet Drivers",
+   "about": [
+    "InstaVolt"
+   ],
+   "mentions": [
+    "Zapmap"
+   ]
+  },
+  {
+   "id": 803,
+   "title": "Outright Purchase for HGV and Truck Fleets: When It Beats Leasing on Tax",
+   "about": [],
+   "mentions": [
+    "DAF Trucks"
+   ]
+  },
+  {
+   "id": 737,
+   "title": "Tusker Adds Vauxhall Frontera Electric to Salary Sacrifice Lineup, With £1,500 Grant Cutting Costs",
+   "about": [
+    "Tusker",
+    "Vauxhall"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 733,
+   "title": "London Trucks Score 27 of 100 for Urban Freight Efficiency",
+   "about": [],
+   "mentions": [
+    "Geotab"
+   ]
+  },
+  {
+   "id": 731,
+   "title": "Driver CPC Periodic Training Requirements UK: What Fleets Must Track and When Cards Expire",
+   "about": [],
+   "mentions": [
+    "FleetCheck"
+   ]
+  },
+  {
+   "id": 698,
+   "title": "Guinness Trailer Theft: What the Runcorn Depot Case Tells UK Fleets",
+   "about": [],
+   "mentions": [
+    "Geotab"
+   ]
+  },
+  {
+   "id": 591,
+   "title": "Toyota Yaris Cross Update Brings Hybrid-Only Range and Prices From £27,445",
+   "about": [
+    "Toyota"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 589,
+   "title": "Diesel vs Electric Van Running Costs 2026: The Real UK Comparison",
+   "about": [],
+   "mentions": [
+    "Ford"
+   ]
+  },
+  {
+   "id": 576,
+   "title": "FleetCheck and VDO Launch Digital Tachograph Infringement Tool for Fleet Software",
+   "about": [
+    "FleetCheck",
+    "VDO"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 551,
+   "title": "InstaVolt Extends Zapmap Deal: One App Now Pays for 2,500 Chargers",
+   "about": [
+    "InstaVolt",
+    "Zapmap"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 492,
+   "title": "Leasing Goes to Checkout: What Online Vehicle Ordering Means for Fleet Buyers",
+   "about": [],
+   "mentions": [
+    "Leasys",
+    "Stellantis"
+   ]
+  },
+  {
+   "id": 457,
+   "title": "Van Payload Weight Limits Explained for UK Fleets",
+   "about": [],
+   "mentions": [
+    "Ford",
+    "Vauxhall"
+   ]
+  },
+  {
+   "id": 455,
+   "title": "Leased Vans and Capital Allowances: What the Budget Update Changes for Fleets",
+   "about": [],
+   "mentions": [
+    "Ford"
+   ]
+  },
+  {
+   "id": 411,
+   "title": "Webfleet ASCO Rollout Cuts Fleet Safety Incidents, Forecasts £194k Savings Across 383 Vans, Trucks and Trailers",
+   "about": [
+    "Webfleet"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 360,
+   "title": "Euro 7 Emissions Standard: What It Means for Van and Truck Fleets From 2026",
+   "about": [
+    "Fleet Alliance"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 352,
+   "title": "GRIDSERVE Sends Electric HGVs to 5 Charging Hubs in Five-Day Mythbusters Rally",
+   "about": [
+    "GRIDSERVE"
+   ],
+   "mentions": [
+    "DAF Trucks"
+   ]
+  },
+  {
+   "id": 324,
+   "title": "Electric Van Fleet Insurance Premiums: Why They Run High in the UK and How to Bring Them Down",
+   "about": [],
+   "mentions": [
+    "Adrian Flux",
+    "Ford"
+   ]
+  },
+  {
+   "id": 305,
+   "title": "HGV Road User Levy 2026: Rates, Who Pays and How It's Calculated",
+   "about": [],
+   "mentions": [
+    "FleetCheck",
+    "Microlise"
+   ]
+  },
+  {
+   "id": 287,
+   "title": "Best Truck Leasing Companies for UK HGV Operators in 2026",
+   "about": [],
+   "mentions": [
+    "DAF Trucks",
+    "Dawsongroup"
+   ]
+  },
+  {
+   "id": 282,
+   "title": "Best Fleet Maintenance Software for Cutting Van and Truck Downtime in 2026",
+   "about": [],
+   "mentions": [
+    "Webfleet",
+    "Whip Around"
+   ]
+  },
+  {
+   "id": 280,
+   "title": "Best Fleet Dash Cam Telematics for UK Insurance Discounts in 2026",
+   "about": [],
+   "mentions": [
+    "AXA",
+    "Quartix",
+    "Webfleet"
+   ]
+  },
+  {
+   "id": 105,
+   "title": "Best Electric Vans for UK Fleets in 2026: A Buyer's Shortlist",
+   "about": [],
+   "mentions": [
+    "Farizon",
+    "Ford",
+    "Peugeot",
+    "Vauxhall"
+   ]
+  },
+  {
+   "id": 103,
+   "title": "UK Clean Air Zone and Congestion Charges 2026: What Fleet Vehicles Actually Pay",
+   "about": [],
+   "mentions": [
+    "Quartix"
+   ]
+  },
+  {
+   "id": 97,
+   "title": "Best Route Optimisation Software for UK Van Fleets in 2026: A Practical Shortlist",
+   "about": [],
+   "mentions": [
+    "Webfleet"
+   ]
+  },
+  {
+   "id": 87,
+   "title": "Electra Converts 20 Diesel Refuse Trucks and Builds 6 New for Sussex Councils, Plus an Electric Hotbox Launch",
+   "about": [
+    "Electra Commercial Vehicles"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 81,
+   "title": "DfT Confirms RTFO Fuel Data for 17 September 2026: What Diesel Fleets Should Watch For",
+   "about": [],
+   "mentions": [
+    "Webfleet"
+   ]
+  },
+  {
+   "id": 79,
+   "title": "Europcar Reportedly Named to Run Farizon SV Van Replacement Fleet: What Operators Should Verify",
+   "about": [
+    "Europcar",
+    "Farizon"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 69,
+   "title": "Toyota Hilux Two-Seat Conversion: What It Means for Business Pickup Fleets",
+   "about": [
+    "Toyota"
+   ],
+   "mentions": [
+    "Ford",
+    "Isuzu"
+   ]
+  },
+  {
+   "id": 67,
+   "title": "Stagecoach Opens Depot Charging to Other Fleets: What It Costs and Who Else to Shortlist",
+   "about": [
+    "Stagecoach"
+   ],
+   "mentions": [
+    "Fuuse",
+    "Paua"
+   ]
+  },
+  {
+   "id": 63,
+   "title": "Quartix Makes the Case for Live Vehicle Tracking on Reliability, Not Price",
+   "about": [
+    "Quartix"
+   ],
+   "mentions": [
+    "Webfleet"
+   ]
+  },
+  {
+   "id": 62,
+   "title": "BYD Sealion 7 Company Car Tax: What Fleets Pay in BiK for 2026/27",
+   "about": [
+    "BYD"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 55,
+   "title": "Webfleet: Fuel and Energy Costs Top UK Fleet Budget Pressures, Research Reveals",
+   "about": [
+    "Webfleet"
+   ],
+   "mentions": [
+    "FleetCheck",
+    "Geotab"
+   ]
+  },
+  {
+   "id": 52,
+   "title": "Logistics UK and AXA Partner on Fleet Risk, and the Announcement Names No Numbers",
+   "about": [
+    "AXA"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 50,
+   "title": "How AI Telematics Helps Fleets Fight Fuel Price Volatility",
+   "about": [],
+   "mentions": [
+    "Geotab",
+    "Microlise",
+    "Quartix",
+    "Webfleet"
+   ]
+  },
+  {
+   "id": 47,
+   "title": "EV Battery Degradation and Residual Values: What Fleet Data Means for Leasing Decisions",
+   "about": [],
+   "mentions": [
+    "Cap HPI",
+    "Geotab"
+   ]
+  },
+  {
+   "id": 46,
+   "title": "Humax and Paua Team Up on Depot EV Charging as the ZEV Mandate Reaches 28% for 2026",
+   "about": [
+    "Humax",
+    "Paua"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 43,
+   "title": "Four Remarketing Names Set the Tone on 2026 Residual Values, and Your Defleet Timing Follows Theirs",
+   "about": [],
+   "mentions": [
+    "Fleet Assist"
+   ]
+  },
+  {
+   "id": 25,
+   "title": "Grey Fleet: The Duty of Care Employers Keep Ignoring",
+   "about": [],
+   "mentions": [
+    "Europcar"
+   ]
+  },
+  {
+   "id": 9,
+   "title": "EV Salary Sacrifice Explained: How the Numbers Work in 2026/27",
+   "about": [],
+   "mentions": [
+    "Ayvens",
+    "Tusker"
+   ]
+  }
+ ]
+}
