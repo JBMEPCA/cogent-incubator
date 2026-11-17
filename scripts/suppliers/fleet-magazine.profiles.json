@@ -1,0 +1,404 @@
+{
+  "_readme": "Supplier page details for The Fleet Magazine, gathered 17 Nov 2026 from each company's own website (title, meta description, header logo). Where the site gave no usable logo, the logo is from the company's Wikimedia Commons file. dark:true means the logo is white and is shown on a dark tile. An empty website or logo means we could not confirm one: leave it empty rather than guess. Sector drives the filter on the hub.",
+  "suppliers": {
+    "Adrian Flux": {
+      "website": "https://www.adrianflux.co.uk/",
+      "sector": "Insurance and accident management",
+      "dark": true,
+      "line": "Specialist insurance broker covering vans, commercial vehicles, cars and homes."
+    },
+    "Alpine": {
+      "website": "https://www.alpine-cars.co.uk/",
+      "sector": "Vehicle makers",
+      "dark": true,
+      "line": "Renault Group's electric sports car brand."
+    },
+    "Arnold Clark": {
+      "website": "https://www.arnoldclark.com/",
+      "sector": "Vehicle sales and remarketing",
+      "line": "UK motor retailer selling new and used cars and vans."
+    },
+    "AX": {
+      "website": "https://www.ax-uk.com/",
+      "sector": "Insurance and accident management",
+      "line": "Credit hire, fleet management and day rate insurance, keeping drivers on the road after an accident."
+    },
+    "AXA": {
+      "website": "https://www.axa.co.uk/",
+      "sector": "Insurance and accident management",
+      "line": "Insurer offering commercial vehicle, fleet and business cover."
+    },
+    "Ayvens": {
+      "website": "https://www.ayvens.com/en-gb/",
+      "sector": "Leasing and rental",
+      "line": "Car and van leasing and fleet management, part of Societe Generale."
+    },
+    "Black Horse": {
+      "website": "https://www.blackhorse.co.uk/",
+      "sector": "Leasing and rental",
+      "line": "Motor finance provider working through a network of more than 4,500 UK dealers."
+    },
+    "bp pulse": {
+      "website": "https://www.bppulse.com/en-gb/",
+      "sector": "EV charging",
+      "line": "bp's electric vehicle charging network and fleet charging business."
+    },
+    "BYD": {
+      "website": "https://www.byd.com/uk",
+      "sector": "Vehicle makers",
+      "line": "Electric and plug-in hybrid vehicle maker, and developer of the Blade battery."
+    },
+    "Cap HPI": {
+      "website": "https://www.cap-hpi.com/",
+      "sector": "Vehicle sales and remarketing",
+      "dark": true,
+      "line": "Vehicle valuation and data provider, part of Solera."
+    },
+    "Changan": {
+      "website": "",
+      "sector": "Vehicle makers",
+      "line": "Chinese car maker selling electric SUVs in the UK under the Deepal name."
+    },
+    "Citroën": {
+      "website": "https://www.citroen.co.uk/",
+      "sector": "Vehicle makers",
+      "line": "Car and van maker, part of Stellantis."
+    },
+    "DAF Trucks": {
+      "website": "https://www.daf.co.uk/en-gb",
+      "sector": "Vehicle makers",
+      "line": "Truck maker, building the XG, XF, XD and XB ranges."
+    },
+    "Dan Ryan Truck Rental": {
+      "website": "https://www.danryantruckrental.ie/",
+      "sector": "Leasing and rental",
+      "line": "Truck and van rental, contract leasing and ex-fleet sales, Ireland's first truck rental company."
+    },
+    "Dawsongroup": {
+      "website": "https://dawsongroup.co.uk/",
+      "sector": "Leasing and rental",
+      "line": "Supplies and maintains trucks, trailers, vans and other assets on rental and contract hire."
+    },
+    "Dealer Auction": {
+      "website": "https://www.dealerauction.co.uk/",
+      "sector": "Vehicle sales and remarketing",
+      "line": "Trade to trade online auction for used vehicles."
+    },
+    "Don-Bur": {
+      "website": "https://donbur.co.uk/",
+      "sector": "Bodywork, parts and servicing",
+      "line": "UK manufacturer of commercial vehicle trailers and rigid bodywork."
+    },
+    "DriveStable": {
+      "website": "https://www.drivestable.co.uk/",
+      "sector": "Fleet software",
+      "line": "Vehicle passport platform for car owners, builds and fleets."
+    },
+    "Echoes": {
+      "website": "https://echoes.solutions/",
+      "sector": "Fleet software",
+      "line": "Fleet management platform that runs on manufacturers' own vehicle data, with no hardware to fit."
+    },
+    "Electra Commercial Vehicles": {
+      "website": "https://electracv.com/",
+      "sector": "Vehicle makers",
+      "line": "UK builder of electric refuse trucks and specialist commercial vehicles."
+    },
+    "Europcar": {
+      "website": "https://www.europcar.co.uk/en-gb",
+      "sector": "Leasing and rental",
+      "line": "Car and van hire in the UK and worldwide."
+    },
+    "Farizon": {
+      "website": "https://farizonauto.co.uk/",
+      "sector": "Vehicle makers",
+      "dark": true,
+      "line": "Geely's electric van brand."
+    },
+    "Fellten": {
+      "website": "https://www.fellten.com/",
+      "sector": "EV charging",
+      "line": "Designs and builds modular energy storage and battery packs, including the Charge Qube."
+    },
+    "Fleet Alliance": {
+      "website": "https://www.fleetalliance.co.uk/",
+      "sector": "Leasing and rental",
+      "line": "Fleet management and leasing company managing more than 70,000 vehicles."
+    },
+    "Fleet Assist": {
+      "website": "https://www.fleetassist.co.uk/",
+      "sector": "Bodywork, parts and servicing",
+      "line": "Independent supply chain management and consultancy for the fleet industry."
+    },
+    "Fleet Service GB": {
+      "website": "https://fleetservicegb.co.uk/",
+      "sector": "Fleet software",
+      "line": "Integrated driver and vehicle fleet management with UK-based 24/7 support."
+    },
+    "FleetCheck": {
+      "website": "https://www.fleetcheck.co.uk/",
+      "sector": "Fleet software",
+      "line": "Fleet management software used by more than 2,500 UK fleets."
+    },
+    "Fleetclear": {
+      "website": "https://www.fleetclear.com/",
+      "sector": "Telematics and cameras",
+      "line": "Fleet safety, tracking, telematics and camera systems, including DVS and FORS kit."
+    },
+    "FleetDue": {
+      "website": "https://www.fleetdue.co.uk/",
+      "sector": "Fleet software",
+      "line": "Vehicle checks, defects, maintenance and MOT and tax reminders in one UK fleet workspace."
+    },
+    "Fleetio": {
+      "website": "https://www.fleetio.com/",
+      "sector": "Fleet software",
+      "line": "Fleet maintenance and management software."
+    },
+    "FMG": {
+      "website": "https://www.fmg.co.uk/",
+      "sector": "Insurance and accident management",
+      "dark": true,
+      "line": "Incident and accident management for fleets and insurers."
+    },
+    "Ford": {
+      "website": "https://www.ford.co.uk/",
+      "sector": "Vehicle makers",
+      "line": "Car, van and pickup maker, selling to business through Ford Pro."
+    },
+    "Fuuse": {
+      "website": "https://fuuse.io/",
+      "sector": "EV charging",
+      "line": "Charge point management software for fleets, workplaces and public networks."
+    },
+    "Geotab": {
+      "website": "https://www.geotab.com/uk/",
+      "sector": "Telematics and cameras",
+      "line": "Fleet telematics and vehicle tracking."
+    },
+    "Gophr": {
+      "website": "https://uk.gophr.com/",
+      "sector": "Bodywork, parts and servicing",
+      "line": "Same day courier service, from bikes to vans."
+    },
+    "GRIDSERVE": {
+      "website": "https://www.gridserve.com/",
+      "sector": "EV charging",
+      "line": "Nationwide electric vehicle charging network."
+    },
+    "HTC Group": {
+      "website": "",
+      "sector": "Bodywork, parts and servicing",
+      "line": "DAF dealer and commercial vehicle services provider in the south of England."
+    },
+    "Humax": {
+      "website": "",
+      "sector": "EV charging",
+      "line": "Charging hardware maker, working with Paua on depot EV charging for fleets."
+    },
+    "InstaVolt": {
+      "website": "https://instavolt.co.uk/",
+      "sector": "EV charging",
+      "line": "Public ultra-rapid electric vehicle charging network."
+    },
+    "Isotrak": {
+      "website": "",
+      "sector": "Telematics and cameras",
+      "line": "Telematics provider covering vehicle tracking and AI dash cameras."
+    },
+    "Isuzu": {
+      "website": "https://www.isuzu.co.uk/",
+      "sector": "Vehicle makers",
+      "line": "Maker of the D-Max pickup, in diesel and electric."
+    },
+    "IVECO": {
+      "website": "https://www.iveco.com/uk/",
+      "sector": "Vehicle makers",
+      "line": "Truck and van maker, building the Daily, Eurocargo and S-Way ranges."
+    },
+    "Jeep": {
+      "website": "https://www.jeep.co.uk/",
+      "sector": "Vehicle makers",
+      "dark": true,
+      "line": "4x4 and SUV maker, part of Stellantis."
+    },
+    "KEYper Systems": {
+      "website": "https://www.keypersystems.com/uk/en",
+      "sector": "Bodywork, parts and servicing",
+      "line": "Key management and asset control systems, formerly Traka Automotive in the UK."
+    },
+    "Leapmotor": {
+      "website": "https://www.leapmotor.net/en-gb",
+      "sector": "Vehicle makers",
+      "line": "Electric car and SUV maker, sold in Europe through Leapmotor International."
+    },
+    "Leasys": {
+      "website": "https://www.leasys.com/uk/english",
+      "sector": "Leasing and rental",
+      "line": "Car and van contract hire, rental and fleet services."
+    },
+    "Lex Autolease": {
+      "website": "https://www.lexautolease.co.uk/",
+      "sector": "Leasing and rental",
+      "line": "One of the UK's largest vehicle leasing companies."
+    },
+    "MAN Truck & Bus": {
+      "website": "https://www.man.eu/uk/en/homepage.html",
+      "sector": "Vehicle makers",
+      "line": "Truck, bus and van maker."
+    },
+    "Microlise": {
+      "website": "https://www.microlise.com/",
+      "sector": "Telematics and cameras",
+      "line": "Telematics and transport technology for fleet operators."
+    },
+    "Nissan": {
+      "website": "https://www.nissan.co.uk/",
+      "sector": "Vehicle makers",
+      "line": "Car and van maker, building cars in Sunderland."
+    },
+    "NVIDIA": {
+      "website": "https://www.nvidia.com/en-gb/",
+      "sector": "Driving technology",
+      "line": "Maker of AI computing chips and platforms, including for autonomous vehicles."
+    },
+    "Odigo Verve": {
+      "website": "https://odigoverve.com/",
+      "sector": "Fleet software",
+      "line": "Independent mobility and EV advisers."
+    },
+    "OnPoint Systems": {
+      "website": "",
+      "sector": "Telematics and cameras",
+      "line": "Compliance software on the DVSA Earned Recognition approved list."
+    },
+    "Optimo Energy": {
+      "website": "https://www.optimoenergy.io/",
+      "sector": "EV charging",
+      "line": "Charging and energy management software for electric fleets and depots."
+    },
+    "Paua": {
+      "website": "https://www.paua.com/",
+      "sector": "EV charging",
+      "line": "EV charging payment and management platform for fleets and businesses."
+    },
+    "Peugeot": {
+      "website": "https://www.peugeot.co.uk/",
+      "sector": "Vehicle makers",
+      "dark": true,
+      "line": "Car and van maker, part of Stellantis."
+    },
+    "Quartix": {
+      "website": "https://www.quartix.com/en-gb/",
+      "sector": "Telematics and cameras",
+      "line": "Vehicle tracking for commercial fleets."
+    },
+    "Renault Trucks": {
+      "website": "https://www.renault-trucks.co.uk/",
+      "sector": "Vehicle makers",
+      "line": "Truck and light commercial vehicle maker."
+    },
+    "Rivetway": {
+      "website": "https://www.rivetway.com/",
+      "sector": "Fleet software",
+      "line": "Transport and fleet management software for job management, walkaround checks and compliance."
+    },
+    "Scania": {
+      "website": "https://www.scania.com/uk/en/home.html",
+      "sector": "Vehicle makers",
+      "line": "Truck and bus maker."
+    },
+    "Stagecoach": {
+      "website": "https://www.stagecoachbus.com/",
+      "sector": "EV charging",
+      "line": "Bus operator that has opened its depot charging to other fleets."
+    },
+    "Stellantis": {
+      "website": "https://www.stellantis.com/en",
+      "sector": "Vehicle makers",
+      "line": "Car and van group behind Citroen, Fiat, Jeep, Peugeot and Vauxhall."
+    },
+    "Tesla": {
+      "website": "https://www.tesla.com/en_gb",
+      "sector": "Vehicle makers",
+      "line": "Electric car maker."
+    },
+    "The AA": {
+      "website": "https://www.theaa.com/",
+      "sector": "Bodywork, parts and servicing",
+      "line": "Breakdown cover and roadside assistance, with insurance and driver services."
+    },
+    "Toyota": {
+      "website": "https://www.toyota.co.uk/",
+      "sector": "Vehicle makers",
+      "line": "Car, van and pickup maker."
+    },
+    "Transparent Laden": {
+      "website": "https://transparent-laden.de/",
+      "sector": "EV charging",
+      "line": "App that compares nearby EV charging prices before you plug in."
+    },
+    "Trents": {
+      "website": "https://www.trents.co.uk/",
+      "sector": "Bodywork, parts and servicing",
+      "line": "Vehicle recycler and supplier of used parts, trading for more than 90 years."
+    },
+    "Trimble": {
+      "website": "https://transportation.trimble.com/en",
+      "sector": "Fleet software",
+      "dark": true,
+      "line": "Fleet, transport and logistics management software."
+    },
+    "Tusker": {
+      "website": "https://tuskercars.com/",
+      "sector": "Leasing and rental",
+      "line": "Car salary sacrifice provider."
+    },
+    "Vauxhall": {
+      "website": "https://www.vauxhall.co.uk/",
+      "sector": "Vehicle makers",
+      "line": "Car and van maker, part of Stellantis."
+    },
+    "VDO": {
+      "website": "https://www.fleet.vdo.com/",
+      "sector": "Telematics and cameras",
+      "line": "Tachograph and fleet services brand, part of Continental."
+    },
+    "Venson": {
+      "website": "https://www.venson.com/",
+      "sector": "Leasing and rental",
+      "line": "Fleet management covering acquisition, funding, maintenance and duty of care."
+    },
+    "VisionTrack": {
+      "website": "https://visiontrack.com/",
+      "sector": "Telematics and cameras",
+      "line": "AI video telematics and connected cameras for fleets."
+    },
+    "Voltloader": {
+      "website": "https://voltloader.com/",
+      "sector": "EV charging",
+      "dark": true,
+      "line": "Electric HGVs and charging for operators moving bulk products."
+    },
+    "Wayve": {
+      "website": "https://wayve.ai/",
+      "sector": "Driving technology",
+      "line": "Developer of AI for assisted and automated driving."
+    },
+    "Webfleet": {
+      "website": "https://www.webfleet.com/en_gb/webfleet/",
+      "sector": "Telematics and cameras",
+      "line": "Fleet management and telematics, part of Bridgestone."
+    },
+    "Whip Around": {
+      "website": "https://whiparound.com/",
+      "sector": "Fleet software",
+      "line": "Fleet inspection and maintenance software."
+    },
+    "Zapmap": {
+      "website": "https://www.zapmap.com/",
+      "sector": "EV charging",
+      "line": "App to find and pay for EV charging across the UK."
+    }
+  }
+}
