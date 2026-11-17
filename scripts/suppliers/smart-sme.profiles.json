@@ -1,0 +1,615 @@
+{
+  "_readme": "Supplier page details for Smart SME, gathered 17 Nov 2026 from each company's own website (title, meta description, header logo). Where the site gave no usable logo, the logo is from the company's Wikimedia Commons file. dark:true means the logo is white and is shown on a dark tile. An empty website or logo means we could not confirm one: leave it empty rather than guess. Sector drives the filter on the hub.",
+  "suppliers": {
+    "20i": {
+      "website": "https://www.20i.com/",
+      "sector": "IT, hosting and devices",
+      "line": "Web hosting for agencies, ecommerce sites and small businesses, with 24x7 support."
+    },
+    "Activepieces": {
+      "website": "https://www.activepieces.com/",
+      "sector": "AI and productivity tools",
+      "line": "Open source workspace for AI agents, automated flows and app connections."
+    },
+    "Actionstep": {
+      "website": "https://www.actionstep.com/",
+      "sector": "Accounting and finance software",
+      "line": "Practice management software for law firms."
+    },
+    "Admiral": {
+      "website": "https://www.admiral.com/",
+      "sector": "Insurance and professional services",
+      "line": "Insurer offering car, van, home and travel insurance."
+    },
+    "Adzuna": {
+      "website": "https://www.adzuna.co.uk/",
+      "sector": "HR, payroll and people",
+      "line": "Job search engine that gathers vacancies from thousands of UK job sites."
+    },
+    "Agorapulse": {
+      "website": "https://www.agorapulse.com/",
+      "sector": "Marketing, sales and CRM",
+      "line": "Social media management software for publishing, inbox, reporting and monitoring."
+    },
+    "Ahrefs": {
+      "website": "https://ahrefs.com/",
+      "sector": "Marketing, sales and CRM",
+      "line": "Marketing platform for SEO, AI search visibility, content and social."
+    },
+    "Airbnb": {
+      "website": "https://www.airbnb.co.uk/",
+      "sector": "Ecommerce, delivery and operations",
+      "line": "Online marketplace for holiday rentals and experiences, used by short-let hosts."
+    },
+    "Allica Bank": {
+      "website": "https://www.allica.bank/",
+      "sector": "Banking, lending and payments",
+      "line": "Business bank for established small and medium-sized businesses."
+    },
+    "Amazon": {
+      "website": "https://sell.amazon.co.uk/",
+      "sector": "Ecommerce, delivery and operations",
+      "line": "Online marketplace and advertising platform for UK sellers."
+    },
+    "ANNA Money": {
+      "website": "https://anna.money/",
+      "sector": "Banking, lending and payments",
+      "line": "Business account for sole traders and small firms that handles bookkeeping and tax filing."
+    },
+    "Anthropic": {
+      "website": "https://www.anthropic.com/",
+      "sector": "AI and productivity tools",
+      "line": "AI safety and research company that makes the Claude models."
+    },
+    "Apple": {
+      "website": "https://www.apple.com/uk/",
+      "sector": "IT, hosting and devices",
+      "line": "Maker of the iPhone, iPad, Mac and related devices and services."
+    },
+    "Arctic Wolf": {
+      "website": "https://arcticwolf.com/",
+      "sector": "Cybersecurity",
+      "line": "Managed security operations combining AI agents with human security experts."
+    },
+    "ARK ICT": {
+      "website": "https://www.ark.me.uk/",
+      "sector": "IT, hosting and devices",
+      "line": "IT support for education and business customers, based in Spalding, Lincolnshire."
+    },
+    "Barclays": {
+      "website": "https://www.barclays.co.uk/",
+      "sector": "Banking, lending and payments",
+      "line": "UK bank offering personal and business accounts, loans, cards and savings."
+    },
+    "Barracuda": {
+      "website": "https://www.barracuda.com/",
+      "sector": "Cybersecurity",
+      "line": "Email, application, network and data protection from Barracuda Networks."
+    },
+    "Birdeye": {
+      "website": "https://birdeye.com/uk/",
+      "sector": "Marketing, sales and CRM",
+      "line": "Reviews, listings and AI tools for multi-location brands."
+    },
+    "Breathe HR": {
+      "website": "https://www.breathehr.com/en-gb/",
+      "sector": "HR, payroll and people",
+      "line": "Cloud HR software for small and growing businesses."
+    },
+    "BrightHR": {
+      "website": "https://www.brighthr.com/",
+      "sector": "HR, payroll and people",
+      "line": "HR, payroll and health and safety software for UK businesses."
+    },
+    "Brightpearl": {
+      "website": "https://www.brightpearl.com/",
+      "sector": "Ecommerce, delivery and operations",
+      "line": "Retail ERP from Sage for multichannel retailers, covering inventory, orders and finance."
+    },
+    "BrowsAble": {
+      "website": "",
+      "sector": "AI and productivity tools",
+      "line": "Altrincham startup developing AI that rearranges website content for people who find sites hard to use."
+    },
+    "BT": {
+      "website": "https://business.bt.com/",
+      "sector": "Broadband, telecoms and energy",
+      "line": "Business broadband, phone and connectivity from BT Business."
+    },
+    "Buffer": {
+      "website": "https://buffer.com/",
+      "sector": "Marketing, sales and CRM",
+      "line": "Social media scheduling and management tool with a free plan."
+    },
+    "Celerant": {
+      "website": "https://www.celerant.com/",
+      "sector": "Ecommerce, delivery and operations",
+      "line": "Retail management software for omnichannel retailers, now including the former Saledock platform."
+    },
+    "CHAS": {
+      "website": "https://www.chas.co.uk/",
+      "sector": "Insurance and professional services",
+      "line": "Compliance and risk management accreditation for contractors and their supply chains."
+    },
+    "Chaser": {
+      "website": "https://www.chaserhq.com/",
+      "sector": "Accounting and finance software",
+      "line": "Accounts receivable software that automates invoice reminders and credit control."
+    },
+    "Check Point": {
+      "website": "https://www.checkpoint.com/",
+      "sector": "Cybersecurity",
+      "line": "Cyber security products for businesses and governments from Check Point Software."
+    },
+    "Ciphr": {
+      "website": "https://www.ciphr.com/",
+      "sector": "HR, payroll and people",
+      "line": "HR, payroll, recruitment, learning and benefits software for UK organisations."
+    },
+    "Citrus HR": {
+      "website": "https://www.safe-hr.com/",
+      "sector": "HR, payroll and people",
+      "line": "HR software and support for small businesses, now trading as SafeHR."
+    },
+    "Cloudflare": {
+      "website": "https://www.cloudflare.com/en-gb/",
+      "sector": "IT, hosting and devices",
+      "line": "Network, security and website performance services for businesses."
+    },
+    "Countingup": {
+      "website": "https://countingup.com/",
+      "sector": "Banking, lending and payments",
+      "line": "Business current account with built-in accounting and tax tools."
+    },
+    "CreatePay": {
+      "website": "https://www.createpay.com/",
+      "sector": "Banking, lending and payments",
+      "line": "Card machines and online payment services for businesses, based in Milton Keynes."
+    },
+    "Croner": {
+      "website": "https://croner.co.uk/",
+      "sector": "HR, payroll and people",
+      "line": "Employment law, HR and health and safety advice, software and insurance.",
+      "dark": true
+    },
+    "Crystal Ball": {
+      "website": "https://www.crystalball.tv/",
+      "sector": "Ecommerce, delivery and operations",
+      "line": "Fleet management solutions including vehicle tracking and in-cab cameras."
+    },
+    "D-ID": {
+      "website": "https://www.d-id.com/",
+      "sector": "AI and productivity tools",
+      "line": "Platform for creating AI-generated video and digital avatars.",
+      "dark": true
+    },
+    "Dark Horse": {
+      "website": "https://darkhorse.co/",
+      "sector": "Marketing, sales and CRM",
+      "line": "Manchester digital marketing agency offering SEO, PPC and paid social.",
+      "dark": true
+    },
+    "Dell": {
+      "website": "https://www.dell.com/en-gb",
+      "sector": "IT, hosting and devices",
+      "line": "Supplier of laptops, desktops, servers, storage and IT services."
+    },
+    "Deputy": {
+      "website": "https://www.deputy.com/",
+      "sector": "HR, payroll and people",
+      "line": "Employee scheduling, HR and payroll software."
+    },
+    "Dropbox": {
+      "website": "https://www.dropbox.com/",
+      "sector": "AI and productivity tools",
+      "line": "Cloud storage, file sharing and e-signature tools."
+    },
+    "EDF": {
+      "website": "https://www.edfenergy.com/",
+      "sector": "Broadband, telecoms and energy",
+      "line": "Electricity and gas supplier to UK homes and businesses."
+    },
+    "Egress": {
+      "website": "https://www.egress.com/",
+      "sector": "Cybersecurity",
+      "line": "Email security and anti-phishing software, part of KnowBe4."
+    },
+    "EngageBay": {
+      "website": "https://www.engagebay.com/",
+      "sector": "Marketing, sales and CRM",
+      "line": "CRM covering marketing, sales and customer service for small businesses."
+    },
+    "Factorial": {
+      "website": "https://factorial.com/uk",
+      "sector": "HR, payroll and people",
+      "line": "Software connecting HR, finance and IT in one system."
+    },
+    "Fairhurst Accountants": {
+      "website": "https://www.fairhurstaccountants.com/",
+      "sector": "Insurance and professional services",
+      "line": "Firm of accountants and business advisers."
+    },
+    "Fasthosts": {
+      "website": "https://www.fasthosts.co.uk/",
+      "sector": "IT, hosting and devices",
+      "line": "Domains, web hosting, servers and email for UK businesses."
+    },
+    "Flagstone": {
+      "website": "https://www.flagstoneim.com/",
+      "sector": "Banking, lending and payments",
+      "line": "Cash deposit platform giving access to savings accounts from many banks.",
+      "dark": true
+    },
+    "FreeAgent": {
+      "website": "https://www.freeagent.com/",
+      "sector": "Accounting and finance software",
+      "line": "Accounting software for small businesses, freelancers and accountants."
+    },
+    "Funding Circle": {
+      "website": "https://www.fundingcircle.com/uk/",
+      "sector": "Banking, lending and payments",
+      "line": "Lending platform offering small business loans and finance."
+    },
+    "Fussnegger": {
+      "website": "",
+      "sector": "Insurance and professional services",
+      "line": "Bakery consultancy that has opened a test bakery to back its advice."
+    },
+    "GoCardless": {
+      "website": "https://gocardless.com/",
+      "sector": "Banking, lending and payments",
+      "line": "Online payment processing for collecting recurring and one-off payments by bank."
+    },
+    "Google": {
+      "website": "https://www.google.co.uk/",
+      "sector": "AI and productivity tools",
+      "line": "Search, advertising, Workspace and Gemini AI tools."
+    },
+    "GoTo": {
+      "website": "https://www.goto.com/",
+      "sector": "Broadband, telecoms and energy",
+      "line": "Business phone systems, contact centre and IT support software."
+    },
+    "Griffin": {
+      "website": "https://griffin.com/",
+      "sector": "Banking, lending and payments",
+      "dark": true,
+      "line": "UK bank providing banking infrastructure for financial products and services."
+    },
+    "Heliotec": {
+      "website": "https://www.heliotec.energy/",
+      "sector": "Broadband, telecoms and energy",
+      "line": "Energy management software for UK multi-site operators, with no hardware needed."
+    },
+    "Hootsuite": {
+      "website": "https://www.hootsuite.com/",
+      "sector": "Marketing, sales and CRM",
+      "line": "Social media management tool for scheduling, content, analytics and listening."
+    },
+    "Hostinger": {
+      "website": "https://www.hostinger.com/uk",
+      "sector": "IT, hosting and devices",
+      "line": "Web hosting, domains, VPS and cloud plans."
+    },
+    "HubSpot": {
+      "website": "https://www.hubspot.com/",
+      "sector": "Marketing, sales and CRM",
+      "line": "Customer platform with marketing, sales, service and CRM software."
+    },
+    "impact.com": {
+      "website": "https://impact.com/",
+      "sector": "Marketing, sales and CRM",
+      "line": "Partnership management platform for affiliate, influencer and referral programmes."
+    },
+    "inFlow": {
+      "website": "https://www.inflowinventory.com/",
+      "sector": "Ecommerce, delivery and operations",
+      "line": "Inventory management software for stock control and order tracking."
+    },
+    "Inntelo AI": {
+      "website": "https://www.inntelo.com/",
+      "sector": "AI and productivity tools",
+      "line": "AI platform for hospitality operations, linking guest, team and data systems."
+    },
+    "Instantly": {
+      "website": "https://instantly.ai/",
+      "sector": "Marketing, sales and CRM",
+      "line": "Sales engagement tool with automated outreach, a B2B lead database and a CRM.",
+      "dark": true
+    },
+    "Intel": {
+      "website": "https://www.intel.co.uk/",
+      "sector": "IT, hosting and devices",
+      "line": "Maker of processors and other hardware and software for computers and data centres."
+    },
+    "JumpCloud": {
+      "website": "https://jumpcloud.com/",
+      "sector": "IT, hosting and devices",
+      "line": "Identity, access and device management platform for IT teams."
+    },
+    "Kaspersky": {
+      "website": "https://www.kaspersky.co.uk/",
+      "sector": "Cybersecurity",
+      "line": "Cyber security software and services for homes and businesses."
+    },
+    "Kingsbridge": {
+      "website": "https://www.kingsbridge.co.uk/",
+      "sector": "Insurance and professional services",
+      "line": "Insurance for contractors and freelancers."
+    },
+    "KnowBe4": {
+      "website": "https://www.knowbe4.com/",
+      "sector": "Cybersecurity",
+      "line": "Security awareness training, email security and AI agent security platform."
+    },
+    "Later": {
+      "website": "https://later.com/",
+      "sector": "Marketing, sales and CRM",
+      "line": "Influencer marketing and social media management platform."
+    },
+    "Leyton UK": {
+      "website": "https://leyton.com/uk/",
+      "sector": "Insurance and professional services",
+      "line": "Consultancy helping businesses claim R&D tax credits and other incentives."
+    },
+    "Lloyds Banking Group": {
+      "website": "https://www.lloydsbankinggroup.com/",
+      "sector": "Banking, lending and payments",
+      "line": "UK financial services group behind Lloyds Bank, Halifax and Bank of Scotland."
+    },
+    "Malwarebytes": {
+      "website": "https://www.malwarebytes.com/",
+      "sector": "Cybersecurity",
+      "line": "Antivirus, VPN and scam protection software."
+    },
+    "Meta": {
+      "website": "https://www.meta.com/",
+      "sector": "Marketing, sales and CRM",
+      "line": "Owner of Facebook, Instagram and WhatsApp, with advertising and AI tools for businesses."
+    },
+    "Metricool": {
+      "website": "https://metricool.com/",
+      "sector": "Marketing, sales and CRM",
+      "line": "Tool for scheduling, analysing and managing social media and ad content."
+    },
+    "Metro Bank": {
+      "website": "https://www.metrobankonline.co.uk/",
+      "sector": "Banking, lending and payments",
+      "line": "UK bank offering personal and business accounts, loans and savings."
+    },
+    "Microsoft": {
+      "website": "https://www.microsoft.com/en-gb",
+      "sector": "AI and productivity tools",
+      "line": "Maker of Microsoft 365, Copilot, Teams, Windows and Azure."
+    },
+    "Mistral AI": {
+      "website": "https://mistral.ai/",
+      "sector": "AI and productivity tools",
+      "line": "Developer of open-weight AI models that businesses can run in their own cloud or on premises."
+    },
+    "MoneySuperMarket": {
+      "website": "https://www.moneysupermarket.com/",
+      "sector": "Banking, lending and payments",
+      "line": "Price comparison site for insurance, credit cards, loans and energy."
+    },
+    "MYOB": {
+      "website": "https://www.myob.com/au",
+      "sector": "Accounting and finance software",
+      "line": "Australian business management and accounting software."
+    },
+    "n8n": {
+      "website": "https://n8n.io/",
+      "sector": "AI and productivity tools",
+      "line": "Workflow automation platform combining AI with business process automation."
+    },
+    "Nationwide": {
+      "website": "https://www.nationwide.co.uk/",
+      "sector": "Banking, lending and payments",
+      "line": "Building society offering mortgages, savings, current accounts and credit cards."
+    },
+    "NinjaOne": {
+      "website": "https://www.ninjaone.com/",
+      "sector": "IT, hosting and devices",
+      "line": "IT operations platform for endpoint management, patching, backup and remote access."
+    },
+    "Nomi": {
+      "website": "https://www.nomi.co.uk/",
+      "sector": "Accounting and finance software",
+      "line": "Cloud accounting software for UK accountants and bookkeepers."
+    },
+    "Nutshell": {
+      "website": "https://www.nutshell.com/",
+      "sector": "Marketing, sales and CRM",
+      "line": "CRM and email marketing software for sales teams."
+    },
+    "Octopus Energy": {
+      "website": "https://octopus.energy/",
+      "sector": "Broadband, telecoms and energy",
+      "line": "UK energy supplier to homes and businesses."
+    },
+    "OGI Networks": {
+      "website": "https://ogi.wales/",
+      "sector": "Broadband, telecoms and energy",
+      "line": "Full fibre broadband provider in Wales, trading as Ogi.",
+      "dark": true
+    },
+    "Openreach": {
+      "website": "https://www.openreach.com/",
+      "sector": "Broadband, telecoms and energy",
+      "line": "Builds and runs the UK's full fibre broadband network."
+    },
+    "Osome": {
+      "website": "https://osome.com/uk/",
+      "sector": "Accounting and finance software",
+      "line": "Online company formation and accounting for UK entrepreneurs."
+    },
+    "Peninsula Business Services": {
+      "website": "https://www.peninsulagrouplimited.com/",
+      "sector": "HR, payroll and people",
+      "line": "HR, employment law and health and safety consultancy for employers."
+    },
+    "Pictory": {
+      "website": "https://pictory.ai/",
+      "sector": "AI and productivity tools",
+      "line": "AI video creation tool that turns scripts, links and slides into videos."
+    },
+    "Pleo": {
+      "website": "https://www.pleo.io/en",
+      "sector": "Accounting and finance software",
+      "line": "Business expenses and company card software."
+    },
+    "Proton": {
+      "website": "https://proton.me/",
+      "sector": "Cybersecurity",
+      "line": "Privacy-focused email, VPN and online security services."
+    },
+    "RAC": {
+      "website": "https://www.rac.co.uk/",
+      "sector": "Insurance and professional services",
+      "line": "Breakdown cover, car insurance and vehicle servicing."
+    },
+    "Recognise Bank": {
+      "website": "https://recognisebank.co.uk/",
+      "sector": "Banking, lending and payments",
+      "line": "UK bank offering business loans and savings accounts."
+    },
+    "Redsquid": {
+      "website": "https://redsquid.co.uk/",
+      "sector": "IT, hosting and devices",
+      "line": "UK managed IT services and cybersecurity provider."
+    },
+    "Royal Mail": {
+      "website": "https://www.royalmail.com/",
+      "sector": "Ecommerce, delivery and operations",
+      "line": "UK postal service for sending letters and parcels."
+    },
+    "Salesforce": {
+      "website": "https://www.salesforce.com/uk/",
+      "sector": "Marketing, sales and CRM",
+      "line": "CRM software uniting customer data, apps and AI agents."
+    },
+    "Semrush": {
+      "website": "https://www.semrush.com/",
+      "sector": "Marketing, sales and CRM",
+      "line": "Platform for measuring and growing visibility across search, AI search, PPC and social."
+    },
+    "Sendible": {
+      "website": "https://www.sendible.com/",
+      "sector": "Marketing, sales and CRM",
+      "line": "Social media management tool for agencies and multi-location brands."
+    },
+    "ServiceM8": {
+      "website": "https://www.servicem8.com/uk",
+      "sector": "Ecommerce, delivery and operations",
+      "line": "Job management and CRM software for trade and service businesses."
+    },
+    "Simply Business": {
+      "website": "https://www.simplybusiness.co.uk/",
+      "sector": "Insurance and professional services",
+      "line": "Online business insurance for small businesses and landlords."
+    },
+    "Sinch": {
+      "website": "https://sinch.com/",
+      "sector": "Broadband, telecoms and energy",
+      "line": "SMS, voice, email and verification APIs for business messaging."
+    },
+    "Starling Bank": {
+      "website": "https://www.starlingbank.com/",
+      "sector": "Banking, lending and payments",
+      "line": "UK bank offering personal and business accounts."
+    },
+    "Stuart": {
+      "website": "https://stuart.com/",
+      "sector": "Ecommerce, delivery and operations",
+      "line": "Last-mile delivery platform for businesses."
+    },
+    "Swoop Funding": {
+      "website": "https://swoopfunding.com/uk/",
+      "sector": "Banking, lending and payments",
+      "line": "Platform matching businesses with loans, equity finance and grants."
+    },
+    "TalkTalk": {
+      "website": "https://www.talktalk.co.uk/",
+      "sector": "Broadband, telecoms and energy",
+      "line": "Full fibre broadband provider."
+    },
+    "TikTok": {
+      "website": "https://www.tiktok.com/",
+      "sector": "Marketing, sales and CRM",
+      "line": "Short video platform with TikTok Shop for selling to its users."
+    },
+    "Time Finance": {
+      "website": "https://timefinance.com/",
+      "sector": "Banking, lending and payments",
+      "line": "Business finance including asset finance, invoice finance and loans."
+    },
+    "Ultimate Finance": {
+      "website": "https://ultimatefinance.co.uk/",
+      "sector": "Banking, lending and payments",
+      "line": "Asset based lending and other funding for UK businesses."
+    },
+    "Veeam": {
+      "website": "https://www.veeam.com/",
+      "sector": "IT, hosting and devices",
+      "line": "Data backup, recovery and resilience software."
+    },
+    "Vestd": {
+      "website": "https://www.vestd.com/",
+      "sector": "Accounting and finance software",
+      "line": "Platform for share schemes and equity management."
+    },
+    "Vista Social": {
+      "website": "https://vistasocial.com/",
+      "sector": "Marketing, sales and CRM",
+      "line": "Social media management tool with AI agents.",
+      "dark": true
+    },
+    "Westfield Health": {
+      "website": "https://www.westfieldhealth.com/",
+      "sector": "HR, payroll and people",
+      "line": "Health insurance and wellbeing services for individuals and businesses."
+    },
+    "Wisdom Wellbeing": {
+      "website": "https://www.wisdomwellbeing.com/",
+      "sector": "HR, payroll and people",
+      "line": "Employee assistance programme with round-the-clock counselling, formerly Health Assured."
+    },
+    "Wix": {
+      "website": "https://www.wix.com/",
+      "sector": "IT, hosting and devices",
+      "line": "Website builder with hosting, domains and business tools."
+    },
+    "WooCommerce": {
+      "website": "https://woocommerce.com/",
+      "sector": "Ecommerce, delivery and operations",
+      "line": "Open source ecommerce platform for WordPress."
+    },
+    "WordPress.com": {
+      "website": "https://wordpress.com/",
+      "sector": "IT, hosting and devices",
+      "line": "Website builder with built-in WordPress hosting."
+    },
+    "Writer": {
+      "website": "https://writer.com/",
+      "sector": "AI and productivity tools",
+      "line": "Enterprise AI platform.",
+      "dark": true
+    },
+    "Xero": {
+      "website": "https://www.xero.com/uk/",
+      "sector": "Accounting and finance software",
+      "line": "Cloud accounting software for small businesses and their advisers."
+    },
+    "Zapier": {
+      "website": "https://zapier.com/",
+      "sector": "AI and productivity tools",
+      "line": "Automation platform connecting thousands of apps with AI workflows and agents.",
+      "dark": true
+    },
+    "Zoho": {
+      "website": "https://www.zoho.com/uk/",
+      "sector": "Marketing, sales and CRM",
+      "line": "Suite of cloud business software, including CRM, e-signature and expenses."
+    }
+  }
+}

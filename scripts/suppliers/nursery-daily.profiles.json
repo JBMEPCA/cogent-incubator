@@ -1,0 +1,81 @@
+{
+  "_readme": "Supplier page details for Nursery Daily, gathered 17 Nov 2026 from each company's own website (title, meta description, header logo). Where the site gave no usable logo, the logo is from the company's Wikimedia Commons file. dark:true means the logo is white and is shown on a dark tile. An empty website or logo means we could not confirm one: leave it empty rather than guess. Sector drives the filter on the hub.",
+  "suppliers": {
+    "Amplify Goods": {
+      "website": "https://www.amplifygoods.org/",
+      "sector": "Cleaning and hygiene supplies",
+      "line": "Social enterprise making soap and hygiene products."
+    },
+    "Babymore": {
+      "website": "https://babymore.co.uk/",
+      "sector": "Equipment and furniture",
+      "line": "Cots, cot beds, nursery furniture and pushchairs."
+    },
+    "Britax Römer": {
+      "website": "https://www.britax-romer.co.uk/",
+      "sector": "Equipment and furniture",
+      "line": "Car seats, pushchairs and bike seats."
+    },
+    "Christie & Co": {
+      "website": "https://www.christie.com/",
+      "sector": "Brokers and valuers",
+      "line": "Specialist business and property adviser that buys, sells and values businesses, including nurseries."
+    },
+    "Eclipse Corporate Finance": {
+      "website": "https://www.eclipsecf.com/",
+      "sector": "Brokers and valuers",
+      "dark": true,
+      "line": "Mergers and acquisitions adviser focused on the healthcare sector."
+    },
+    "Famly": {
+      "website": "https://www.famly.co/",
+      "sector": "Nursery software",
+      "line": "All-in-one nursery app for early years settings in the UK and Ireland."
+    },
+    "Kinderly": {
+      "website": "https://kinderly.co.uk/",
+      "sector": "Nursery software",
+      "line": "Early years management software and accredited CPD."
+    },
+    "Lester Aldridge": {
+      "website": "https://www.lesteraldridge.com/",
+      "sector": "Legal and professional services",
+      "line": "Law firm advising businesses and individuals."
+    },
+    "Monkey Puzzle Day Nurseries": {
+      "website": "https://monkeypuzzledaynurseries.com/",
+      "sector": "Franchises",
+      "line": "Day nursery and preschool brand for children aged 3 months to 5 years."
+    },
+    "Ovivio": {
+      "website": "https://ovivio.com/uk/",
+      "sector": "Nursery software",
+      "line": "Nursery management software, formerly Blossom Educational."
+    },
+    "Owen Froebel": {
+      "website": "https://owenfroebel.co.uk/",
+      "sector": "Brokers and valuers",
+      "line": "Day nursery valuers and brokers."
+    },
+    "Petite Amélie": {
+      "website": "https://www.petiteamelie.co.uk/",
+      "sector": "Equipment and furniture",
+      "line": "Nursery room furniture, decor, bedding and wooden toys."
+    },
+    "Shakespeare Martineau": {
+      "website": "https://www.shma.co.uk/",
+      "sector": "Legal and professional services",
+      "line": "Law firm advising on corporate, property and family matters."
+    },
+    "Tapestry": {
+      "website": "https://tapestry.info/",
+      "sector": "Nursery software",
+      "line": "Education platform for early years and Key Stage 1 and 2."
+    },
+    "The Nursery Business": {
+      "website": "https://nurserybusiness.co.uk/",
+      "sector": "Business support",
+      "line": "Commercial and operational support for nursery owners in England."
+    }
+  }
+}

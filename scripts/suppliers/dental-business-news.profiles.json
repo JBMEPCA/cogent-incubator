@@ -1,0 +1,98 @@
+{
+  "_readme": "Supplier page details for Dental Business News, gathered 17 Nov 2026 from each company's own website (title, meta description, header logo). Where the site gave no usable logo, the logo is from the company's Wikimedia Commons file. dark:true means the logo is white and is shown on a dark tile. An empty website or logo means we could not confirm one: leave it empty rather than guess. Sector drives the filter on the hub.",
+  "suppliers": {
+    "Anglian Dental": {
+      "website": "https://angliandental.co.uk/",
+      "sector": "Equipment and fit-out",
+      "line": "Supplies dental chairs, designs and builds practices, and services and maintains surgery equipment."
+    },
+    "Aura Infection Control": {
+      "website": "https://www.aiconline.co.uk/",
+      "sector": "Supplies and infection control",
+      "line": "Supplies infection control products and decontamination services to dental practices."
+    },
+    "Blake Morgan": {
+      "website": "https://www.blakemorgan.co.uk/",
+      "sector": "Legal and accountancy",
+      "line": "Full service UK law firm advising businesses on employment, property and commercial law."
+    },
+    "Carestream Dental": {
+      "website": "https://www.carestreamdental.com/en-gb/",
+      "sector": "Software and imaging",
+      "line": "Makes dental imaging systems and practice software, from intraoral X-ray to CBCT."
+    },
+    "Christie & Co": {
+      "website": "https://www.christie.com/",
+      "sector": "Practice sales and valuation",
+      "line": "Business property adviser that buys, sells and values specialist businesses, including dental practices."
+    },
+    "Dental Directory": {
+      "website": "https://www.ddgroup.com/",
+      "sector": "Supplies and infection control",
+      "line": "Supplies dental and aesthetic products and services to UK dental practices."
+    },
+    "Dental Elite": {
+      "website": "https://dentalelite.co.uk/",
+      "sector": "Practice sales and valuation",
+      "line": "Dental consultancy offering practice valuations, sales, recruitment and practice finance."
+    },
+    "Dental Protection": {
+      "website": "https://www.dentalprotection.org/uk",
+      "sector": "Indemnity, insurance and finance",
+      "line": "Dental protection organisation, part of the Medical Protection Society, supporting members with indemnity and advice."
+    },
+    "HuFriedyGroup": {
+      "website": "https://www.hufriedygroup.com/en",
+      "sector": "Equipment and fit-out",
+      "line": "Manufacturer of dental instruments and equipment, trading since 1908."
+    },
+    "Locus": {
+      "website": "https://www.locusintel.io/",
+      "sector": "Software and imaging",
+      "line": "Location intelligence and site selection software for researching local markets before and after opening.",
+      "dark": true
+    },
+    "Mectron": {
+      "website": "https://mectron.com/",
+      "sector": "Equipment and fit-out",
+      "line": "Dental equipment maker whose dental unit HuFriedyGroup has bought."
+    },
+    "Medenta": {
+      "website": "https://www.medenta.com/",
+      "sector": "Dental plans and patient finance",
+      "line": "Provides patient finance and payment plans that dental practices offer for treatment.",
+      "dark": true
+    },
+    "NSK": {
+      "website": "https://www.nsk-dental.com/",
+      "sector": "Equipment and fit-out",
+      "line": "Japanese manufacturer of dental handpieces and other dental equipment."
+    },
+    "PFM Dental": {
+      "website": "https://pfmdental.co.uk/",
+      "sector": "Practice sales and valuation",
+      "line": "Dental agency and consultancy handling practice sales, valuations and advice for buyers."
+    },
+    "Practice Plan": {
+      "website": "https://www.practiceplan.co.uk/",
+      "sector": "Dental plans and patient finance",
+      "line": "Provides practice-branded dental membership plans for practices moving away from NHS dentistry."
+    },
+    "Scott Bailey": {
+      "website": "https://www.scottbailey.co.uk/",
+      "sector": "Legal and accountancy",
+      "line": "Firm of solicitors based in Lymington, Hampshire."
+    },
+    "Simplyhealth": {
+      "website": "https://www.simplyhealth.co.uk/",
+      "sector": "Dental plans and patient finance",
+      "line": "Health plan provider offering dental plans and health cover to individuals and employers."
+    },
+    "Wesleyan": {
+      "website": "https://www.wesleyan.co.uk/",
+      "sector": "Indemnity, insurance and finance",
+      "line": "Financial advice, pensions, savings and investments for doctors, dentists and teachers.",
+      "dark": true
+    }
+  }
+}

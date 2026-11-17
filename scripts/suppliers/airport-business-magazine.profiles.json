@@ -1,0 +1,238 @@
+{
+  "_readme": "Supplier page details for Airport Business Magazine, gathered 17 Nov 2026 from each company's own website (title, meta description, header logo). Where the site gave no usable logo, the logo is from the company's Wikimedia Commons file. dark:true means the logo is white and is shown on a dark tile. An empty website or logo means we could not confirm one: leave it empty rather than guess. Sector drives the filter on the hub.",
+  "suppliers": {
+    "ADB Safegate": {
+      "website": "https://adbsafegate.com/",
+      "sector": "Airfield systems and air traffic",
+      "dark": true,
+      "line": "Airfield and airside technology supplier to airports."
+    },
+    "Adobe": {
+      "website": "https://www.adobe.com/uk/",
+      "sector": "Airport IT and software",
+      "line": "Software for creative work, marketing and document management."
+    },
+    "Amadeus": {
+      "website": "https://amadeus.com/en",
+      "sector": "Airport IT and software",
+      "line": "Travel technology used by airlines, travel agencies, hotels and others."
+    },
+    "Analogic": {
+      "website": "https://www.analogic.com/",
+      "sector": "Security and biometrics",
+      "line": "Develops computed tomography and imaging technology, including for security screening."
+    },
+    "Assaia": {
+      "website": "https://www.assaia.com/",
+      "sector": "Airport IT and software",
+      "line": "AI and computer vision for managing aircraft turnarounds."
+    },
+    "ATG Airports": {
+      "website": "https://www.atgairports.com/",
+      "sector": "Airfield systems and air traffic",
+      "line": "Airfield lighting and airfield control systems supplier."
+    },
+    "Atlantic Aviation": {
+      "website": "https://www.atlanticaviation.com/",
+      "sector": "Ground handling and cargo",
+      "line": "FBO network in North America providing fuelling, hangars and support for aircraft operators.",
+      "dark": true
+    },
+    "Avolta": {
+      "website": "https://www.avoltaworld.com/en",
+      "sector": "Travel retail and food",
+      "line": "Global travel retailer with operations in 70 countries."
+    },
+    "Boldyn Networks": {
+      "website": "https://www.boldyn.com/",
+      "sector": "Airport IT and software",
+      "line": "Network provider whose work includes private 5G networks at airports."
+    },
+    "Canteen": {
+      "website": "https://www.canteen.com/",
+      "sector": "Travel retail and food",
+      "line": "Food service provider covering vending, markets, coffee and dining."
+    },
+    "Collins Aerospace": {
+      "website": "https://www.rtx.com/collinsaerospace/",
+      "sector": "Airport IT and software",
+      "line": "Aerospace systems supplier, part of RTX."
+    },
+    "CQC Aeronautics": {
+      "website": "https://cqc.aero/",
+      "sector": "Airport IT and software",
+      "dark": true,
+      "line": "Aviation data platform and engineering tools for airports and airlines."
+    },
+    "dnata": {
+      "website": "https://www.dnata.com/en/",
+      "sector": "Ground handling and cargo",
+      "line": "Air services group covering ground handling, cargo, travel and flight catering."
+    },
+    "DOLL": {
+      "website": "https://www.doll.eu/en/home.html",
+      "sector": "Ground support equipment",
+      "line": "Maker of special vehicles, including electric highloaders for airports."
+    },
+    "Draxon": {
+      "website": "https://draxon.com/",
+      "sector": "Training and consultancy",
+      "line": "IATA-certified virtual reality training for ground handling teams."
+    },
+    "Evolvending": {
+      "website": "https://evolvending.com/",
+      "sector": "Travel retail and food",
+      "line": "Hot food vending kiosks for airports."
+    },
+    "Frequentis": {
+      "website": "https://www.frequentis.com/",
+      "sector": "Airfield systems and air traffic",
+      "line": "Safety-critical communication and information systems, including for air traffic control."
+    },
+    "Gebr. Heinemann": {
+      "website": "https://www.gebr-heinemann.com/heu/en",
+      "sector": "Travel retail and food",
+      "line": "Travel retail and duty free operator."
+    },
+    "HID": {
+      "website": "",
+      "sector": "Security and biometrics",
+      "line": "Identity technology company whose products include face matching."
+    },
+    "HiSERV": {
+      "website": "https://www.hiserv.aero/",
+      "sector": "Ground support equipment",
+      "line": "Ground support equipment leasing, maintenance and fleet services."
+    },
+    "Hudson": {
+      "website": "https://www.hudsongroup.com/",
+      "sector": "Travel retail and food",
+      "line": "Travel retailer running duty free and convenience stores at airports."
+    },
+    "Hyundai Duty Free": {
+      "website": "https://en.hddfs.com/",
+      "sector": "Travel retail and food",
+      "line": "Korean duty free retailer with airport concessions including Incheon."
+    },
+    "IBS Software": {
+      "website": "https://www.ibsplc.com/",
+      "sector": "Airport IT and software",
+      "line": "Software for airlines, cargo, loyalty and hospitality.",
+      "dark": true
+    },
+    "IDEMIA": {
+      "website": "https://www.idemia.com/",
+      "sector": "Security and biometrics",
+      "line": "Biometrics and cryptography technology.",
+      "dark": true
+    },
+    "Kalmar": {
+      "website": "https://kalmarmotor.com/en/start/",
+      "sector": "Ground support equipment",
+      "line": "Kalmar Motor AB, Swedish maker of aircraft tow tractors."
+    },
+    "Lagardère Travel Retail": {
+      "website": "https://www.lagardere-tr.com/en/",
+      "sector": "Travel retail and food",
+      "line": "Travel retail division of the Lagardère group."
+    },
+    "Leidos": {
+      "website": "https://www.leidos.com/",
+      "sector": "Security and biometrics",
+      "line": "Technology company working across national security, health and infrastructure, including airport screening."
+    },
+    "Mace": {
+      "website": "",
+      "sector": "Construction and engineering",
+      "line": "Construction and consultancy group."
+    },
+    "Menzies Aviation": {
+      "website": "https://menziesaviation.com/",
+      "sector": "Ground handling and cargo",
+      "line": "Aviation services company providing ground handling, cargo and lounge services.",
+      "dark": true
+    },
+    "MultiPoint Engineering": {
+      "website": "https://multipointengineering.com/",
+      "sector": "Construction and engineering",
+      "line": "MEP, fire protection, technology and commissioning engineering, including aviation projects."
+    },
+    "Overdrive IoT": {
+      "website": "https://overdriveiot.com/",
+      "sector": "Airport IT and software",
+      "line": "IoT platform for tracking workers and improving safety inside buildings."
+    },
+    "SITA": {
+      "website": "https://www.sita.aero/",
+      "sector": "Airport IT and software",
+      "line": "Air transport IT and communications provider."
+    },
+    "SSP Group": {
+      "website": "https://www.foodtravelexperts.com/",
+      "sector": "Travel retail and food",
+      "line": "Food and beverage operator in travel locations.",
+      "dark": true
+    },
+    "Swissport": {
+      "website": "https://www.swissport.com/",
+      "sector": "Ground handling and cargo",
+      "line": "Airport ground services and air cargo handling."
+    },
+    "Synaptic Aviation": {
+      "website": "https://www.synapticaviation.com/",
+      "sector": "Airport IT and software",
+      "line": "AI object detection that monitors each stage of an aircraft turnaround.",
+      "dark": true
+    },
+    "Textron": {
+      "website": "https://textrongse.txtsv.com/",
+      "sector": "Ground support equipment",
+      "line": "Textron GSE, ground support equipment brands including TUG tractors."
+    },
+    "TLD Group": {
+      "website": "https://www.tld-group.com/",
+      "sector": "Ground support equipment",
+      "line": "Ground support equipment manufacturer."
+    },
+    "Travel Retail Norway": {
+      "website": "https://www.tax-free.no/en/",
+      "sector": "Travel retail and food",
+      "line": "Norwegian company that runs Tax Free stores at airports in Norway."
+    },
+    "UNEX Aviation Services": {
+      "website": "",
+      "sector": "Ground handling and cargo",
+      "line": "Jakarta air cargo warehousing and ground handling company."
+    },
+    "Veovo": {
+      "website": "https://veovo.com/",
+      "sector": "Airport IT and software",
+      "line": "Software to plan, predict and run airport operations and passenger flows."
+    },
+    "VMD": {
+      "website": "https://vmdcorp.com/",
+      "sector": "Security and biometrics",
+      "line": "Aviation security services provider, part of Xcelerate Solutions."
+    },
+    "Welcome Brain Consulting": {
+      "website": "https://www.welcomebrain.com/",
+      "sector": "Training and consultancy",
+      "line": "Neurodiversity consulting, training and accreditation for organisations and venues."
+    },
+    "WFS": {
+      "website": "https://www.wfs.aero/",
+      "sector": "Ground handling and cargo",
+      "line": "Air cargo, passenger and ground handling services."
+    },
+    "WHSmith": {
+      "website": "https://www.whsmithplc.co.uk/",
+      "sector": "Travel retail and food",
+      "line": "Retailer of news, books and convenience, including at airports."
+    },
+    "XenomatiX": {
+      "website": "https://xenomatix.com/",
+      "sector": "Airfield systems and air traffic",
+      "line": "Solid state lidar technology, used for scanning pavements."
+    }
+  }
+}

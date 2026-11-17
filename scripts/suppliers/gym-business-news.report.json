@@ -1,0 +1,753 @@
+{
+ "site": "gym-business-news",
+ "posts": 150,
+ "suppliers": 35,
+ "taggedArticles": 67,
+ "aboutLinks": 68,
+ "mentionLinks": 19,
+ "perSupplier": [
+  {
+   "name": "Glofox",
+   "about": 9,
+   "mentions": 3
+  },
+  {
+   "name": "HYROX",
+   "about": 7,
+   "mentions": 0
+  },
+  {
+   "name": "ABC Fitness",
+   "about": 6,
+   "mentions": 0
+  },
+  {
+   "name": "Zen Planner",
+   "about": 4,
+   "mentions": 2
+  },
+  {
+   "name": "Daxko",
+   "about": 1,
+   "mentions": 3
+  },
+  {
+   "name": "Simply Business",
+   "about": 4,
+   "mentions": 0
+  },
+  {
+   "name": "ClubWise",
+   "about": 1,
+   "mentions": 2
+  },
+  {
+   "name": "Mariana Tek",
+   "about": 1,
+   "mentions": 2
+  },
+  {
+   "name": "Pulse Fitness",
+   "about": 3,
+   "mentions": 0
+  },
+  {
+   "name": "Xponential Fitness",
+   "about": 1,
+   "mentions": 2
+  },
+  {
+   "name": "Centr",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "CoverMe",
+   "about": 2,
+   "mentions": 0
+  },
+  {
+   "name": "Hussle",
+   "about": 2,
+   "mentions": 0
+  },
+  {
+   "name": "Oura",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Resamania",
+   "about": 2,
+   "mentions": 0
+  },
+  {
+   "name": "RockSalt Pilates",
+   "about": 2,
+   "mentions": 0
+  },
+  {
+   "name": "The Picklr",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "The PT Development Center",
+   "about": 2,
+   "mentions": 0
+  },
+  {
+   "name": "Trainerize",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Wattbike",
+   "about": 2,
+   "mentions": 0
+  },
+  {
+   "name": "Xplor",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Aescape",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "FITBENCH",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Future Fit",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Legend",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Matrix Fitness",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Output Sports",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Peloton",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Playlist",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "RunX",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Strong Pilates",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Sweatpals",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Torque Fitness",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Training Mate",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "VersaClimber",
+   "about": 1,
+   "mentions": 0
+  }
+ ],
+ "registryWithNoAboutArticle": [],
+ "articles": [
+  {
+   "id": 500,
+   "title": "Future Fit launches postnatal PT course: 8-10 hours online",
+   "about": [
+    "Future Fit"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 496,
+   "title": "Matrix Fitness launches Onyx: 5-machine luxury cardio line",
+   "about": [
+    "Matrix Fitness"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 490,
+   "title": "ABC Fitness vs Mindbody: the multi-site decision explained",
+   "about": [
+    "ABC Fitness"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 482,
+   "title": "Glofox's 30-day launch plan sets studio sign-up goal at 20 a week",
+   "about": [
+    "Glofox"
+   ],
+   "mentions": [
+    "Mariana Tek"
+   ]
+  },
+  {
+   "id": 474,
+   "title": "Glofox lists AI tools for yoga studios: 16 churn inputs",
+   "about": [
+    "Glofox"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 472,
+   "title": "Club Pilates owner Xponential sales fall 21% amid buyout talk",
+   "about": [
+    "Xponential Fitness"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 462,
+   "title": "Nuffield Health adds HYROX training, set for 70 clubs",
+   "about": [
+    "HYROX"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 458,
+   "title": "Gym membership rules change 1 January: £300,000 fines loom",
+   "about": [
+    "Resamania"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 456,
+   "title": "Planet Fitness, Peloton earnings beat: 2 brands eye comeback",
+   "about": [
+    "Peloton"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 439,
+   "title": "VersaClimber execs take majority stake after 45 years",
+   "about": [
+    "VersaClimber"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 437,
+   "title": "HYROX training equipment cost for gyms: sleds, rigs and turf",
+   "about": [
+    "HYROX"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 432,
+   "title": "Strong Pilates UK targets 20 new studios for 2027",
+   "about": [
+    "Strong Pilates"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 419,
+   "title": "Torque Fitness launches Omnistack, a 10-station modular rig",
+   "about": [
+    "Torque Fitness"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 405,
+   "title": "Investor eyes bid for Club Pilates owner at 87% premium",
+   "about": [],
+   "mentions": [
+    "Xponential Fitness"
+   ]
+  },
+  {
+   "id": 398,
+   "title": "RockSalt hires COO as Pilates franchise plots 50 studios",
+   "about": [
+    "RockSalt Pilates"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 381,
+   "title": "Glofox adds on-demand reformer booking: 4 ways to sell it",
+   "about": [
+    "Glofox"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 376,
+   "title": "Burn Boot Camp launches AI app My Plan for 160,000 members",
+   "about": [],
+   "mentions": [
+    "Oura"
+   ]
+  },
+  {
+   "id": 354,
+   "title": "Big-box gym chains add Pilates and Hyrox to steal share",
+   "about": [
+    "HYROX"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 352,
+   "title": "ABC Fitness links Glofox to Trainerize, cites 33% growth",
+   "about": [
+    "ABC Fitness",
+    "Glofox",
+    "Trainerize"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 346,
+   "title": "Mariana Tek: churn signals surface 8 months early",
+   "about": [
+    "Mariana Tek"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 342,
+   "title": "PT Development Center sets 16 March 2026 book launch",
+   "about": [
+    "The PT Development Center"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 332,
+   "title": "HMRC auto-enrols PTs earning £50k into Making Tax Digital",
+   "about": [
+    "Simply Business"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 328,
+   "title": "ABC Fitness launches cash advance for gyms: serves 40% of US clubs",
+   "about": [
+    "ABC Fitness"
+   ],
+   "mentions": [
+    "Glofox"
+   ]
+  },
+  {
+   "id": 324,
+   "title": "Wattbike's winter prep guide: bikes stress-tested to 120kg",
+   "about": [
+    "Wattbike"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 307,
+   "title": "Oura adds cardio effort score with five fitness tiers",
+   "about": [
+    "Oura"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 305,
+   "title": "Glofox publishes 3-way Pilates software comparison",
+   "about": [
+    "Glofox"
+   ],
+   "mentions": [
+    "Mariana Tek"
+   ]
+  },
+  {
+   "id": 286,
+   "title": "Output Sports and Centr bring HYROX testing to gyms",
+   "about": [
+    "Centr",
+    "HYROX",
+    "Output Sports"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 285,
+   "title": "ABC Fitness: new gym joins down 9%, sell to today's member",
+   "about": [
+    "ABC Fitness"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 278,
+   "title": "Aescape launches Tom Brady massage protocol at $39 a session",
+   "about": [
+    "Aescape"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 272,
+   "title": "Glofox guide: fix failed gym payments before members churn",
+   "about": [
+    "Glofox"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 270,
+   "title": "Glofox confirms ABC Fitness ownership, cites $12bn payments",
+   "about": [
+    "ABC Fitness",
+    "Glofox"
+   ],
+   "mentions": [
+    "Trainerize"
+   ]
+  },
+  {
+   "id": 264,
+   "title": "Three Employment Rights Act changes land this October",
+   "about": [
+    "Simply Business"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 252,
+   "title": "Hyrox demand up 138%, pickleball cools: Venmo data signal",
+   "about": [
+    "HYROX"
+   ],
+   "mentions": [
+    "The Picklr"
+   ]
+  },
+  {
+   "id": 248,
+   "title": "Autumn Budget 2026: what it means for gym and studio owners",
+   "about": [
+    "Simply Business"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 246,
+   "title": "Resamania: 74% of operators grow without new sites",
+   "about": [
+    "Resamania"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 227,
+   "title": "Pulse Fitness targets $134m in US push with inclusive kit line",
+   "about": [
+    "Pulse Fitness"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 225,
+   "title": "Glofox publishes PushPress comparison: plans run $0 to $329",
+   "about": [
+    "Glofox"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 216,
+   "title": "Hyrox, Sweatpals announce partnership across 20,000 gyms",
+   "about": [
+    "HYROX",
+    "Sweatpals"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 190,
+   "title": "Pickleball franchisor The Picklr files Chapter 11: lease lesson",
+   "about": [
+    "The Picklr"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 186,
+   "title": "Gym member communication software comparison for UK gyms",
+   "about": [],
+   "mentions": [
+    "Daxko",
+    "Zen Planner"
+   ]
+  },
+  {
+   "id": 184,
+   "title": "Direct debit collection software for gyms: UK options",
+   "about": [],
+   "mentions": [
+    "ClubWise",
+    "Glofox"
+   ]
+  },
+  {
+   "id": 175,
+   "title": "Zen Planner: automated billing cuts churn within 48 hours",
+   "about": [
+    "Zen Planner"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 155,
+   "title": "Pulse Fitness £100m target: Chaudry lifts stake to 80%",
+   "about": [
+    "Pulse Fitness"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 154,
+   "title": "ClubWise guide: 4 ways gyms can build a referral scheme",
+   "about": [
+    "ClubWise"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 152,
+   "title": "Pulse Fitness £100m target: Chaudry lifts stake to 80%",
+   "about": [
+    "Pulse Fitness"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 137,
+   "title": "PT Development Center's 5 Reps hits 65,000 readers: sell outcomes not workouts",
+   "about": [
+    "The PT Development Center"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 132,
+   "title": "ABC Fitness: US gym running costs hit 75-85% of revenue",
+   "about": [
+    "ABC Fitness"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 124,
+   "title": "FITBENCH opens German base after 60% international growth",
+   "about": [
+    "FITBENCH"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 123,
+   "title": "Zen Planner merges 7 martial arts tools into one dashboard",
+   "about": [
+    "Zen Planner"
+   ],
+   "mentions": [
+    "Daxko"
+   ]
+  },
+  {
+   "id": 119,
+   "title": "Village Hotels builds instructor Subs Bench with CoverMe",
+   "about": [
+    "CoverMe"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 112,
+   "title": "Training Mate hires Walden Media Group for 51/49 franchise push",
+   "about": [
+    "Training Mate"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 108,
+   "title": "Pure Barre adds $99 student memberships at US studios",
+   "about": [],
+   "mentions": [
+    "Daxko",
+    "Xponential Fitness",
+    "Zen Planner"
+   ]
+  },
+  {
+   "id": 106,
+   "title": "Hussle flags health signposting risk, cites 9-minute cancer stat",
+   "about": [
+    "Hussle"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 104,
+   "title": "Simply Business names 7 documents for new tenants: what it means for gym leases",
+   "about": [
+    "Simply Business"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 100,
+   "title": "RockSalt Pilates names COO as 84 franchise units join pipeline",
+   "about": [
+    "RockSalt Pilates"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 98,
+   "title": "RunX launches club finder as 300 gyms sign up",
+   "about": [
+    "RunX"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 92,
+   "title": "Daxko Zen Planner case studies show how to catch lapsing members",
+   "about": [
+    "Daxko",
+    "Zen Planner"
+   ],
+   "mentions": [
+    "Glofox"
+   ]
+  },
+  {
+   "id": 90,
+   "title": "Zen Planner names 9 features for martial arts billing: what it means for family studios",
+   "about": [
+    "Zen Planner"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 64,
+   "title": "HFA and HYROX join forces for 2027 show, 100 tickets: what it means for UK gyms",
+   "about": [
+    "HYROX"
+   ],
+   "mentions": [
+    "Centr"
+   ]
+  },
+  {
+   "id": 51,
+   "title": "Glofox ranks four AI tools for single-location studios",
+   "about": [
+    "Glofox"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 49,
+   "title": "Legend: 106-operator survey shows 78% of UK gyms growing",
+   "about": [
+    "Legend"
+   ],
+   "mentions": [
+    "Xplor"
+   ]
+  },
+  {
+   "id": 45,
+   "title": "Xplor's AI adoption framework: start with one gym problem",
+   "about": [
+    "Xplor"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 43,
+   "title": "Nottingham University sticks with Wattbike after 8 years: what it tells other gym operators",
+   "about": [
+    "Wattbike"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 41,
+   "title": "EGYM Hussle Movelia deal adds massage to corporate gyms",
+   "about": [
+    "Hussle"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 23,
+   "title": "Playlist launches AI Insights to flag gym member churn early",
+   "about": [
+    "Playlist"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 29,
+   "title": "ISS cuts instructor cover time using CoverMe platform",
+   "about": [
+    "CoverMe"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 18,
+   "title": "How Much Does It Cost to Open a Gym in the UK?",
+   "about": [],
+   "mentions": [
+    "ClubWise"
+   ]
+  }
+ ]
+}

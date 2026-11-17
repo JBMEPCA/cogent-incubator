@@ -1,0 +1,856 @@
+{
+ "site": "airport-business-magazine",
+ "posts": 227,
+ "suppliers": 45,
+ "taggedArticles": 74,
+ "aboutLinks": 65,
+ "mentionLinks": 30,
+ "perSupplier": [
+  {
+   "name": "Lagardère Travel Retail",
+   "about": 3,
+   "mentions": 3
+  },
+  {
+   "name": "Avolta",
+   "about": 1,
+   "mentions": 4
+  },
+  {
+   "name": "Menzies Aviation",
+   "about": 5,
+   "mentions": 0
+  },
+  {
+   "name": "Amadeus",
+   "about": 2,
+   "mentions": 2
+  },
+  {
+   "name": "Assaia",
+   "about": 2,
+   "mentions": 2
+  },
+  {
+   "name": "dnata",
+   "about": 2,
+   "mentions": 2
+  },
+  {
+   "name": "Gebr. Heinemann",
+   "about": 2,
+   "mentions": 2
+  },
+  {
+   "name": "IDEMIA",
+   "about": 2,
+   "mentions": 2
+  },
+  {
+   "name": "SITA",
+   "about": 2,
+   "mentions": 2
+  },
+  {
+   "name": "Collins Aerospace",
+   "about": 1,
+   "mentions": 2
+  },
+  {
+   "name": "Frequentis",
+   "about": 2,
+   "mentions": 1
+  },
+  {
+   "name": "SSP Group",
+   "about": 3,
+   "mentions": 0
+  },
+  {
+   "name": "Textron",
+   "about": 1,
+   "mentions": 2
+  },
+  {
+   "name": "Veovo",
+   "about": 2,
+   "mentions": 1
+  },
+  {
+   "name": "IBS Software",
+   "about": 2,
+   "mentions": 0
+  },
+  {
+   "name": "Kalmar",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Leidos",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Swissport",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Synaptic Aviation",
+   "about": 2,
+   "mentions": 0
+  },
+  {
+   "name": "TLD Group",
+   "about": 2,
+   "mentions": 0
+  },
+  {
+   "name": "Welcome Brain Consulting",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "WFS",
+   "about": 2,
+   "mentions": 0
+  },
+  {
+   "name": "WHSmith",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "ADB Safegate",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Adobe",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Analogic",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "ATG Airports",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Atlantic Aviation",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Boldyn Networks",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Canteen",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "CQC Aeronautics",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "DOLL",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Draxon",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Evolvending",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "HID",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "HiSERV",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Hudson",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Hyundai Duty Free",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Mace",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "MultiPoint Engineering",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Overdrive IoT",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Travel Retail Norway",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "UNEX Aviation Services",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "VMD",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "XenomatiX",
+   "about": 1,
+   "mentions": 0
+  }
+ ],
+ "registryWithNoAboutArticle": [],
+ "articles": [
+  {
+   "id": 1533,
+   "title": "Avianca Cargo Renews IBS iCargo Deal, GOLLOG Joins",
+   "about": [
+    "IBS Software"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1523,
+   "title": "Brisbane Airport Future BNE Adds 12+ New Retailers by 2029",
+   "about": [],
+   "mentions": [
+    "Lagardère Travel Retail"
+   ]
+  },
+  {
+   "id": 1516,
+   "title": "ATG Airports Wins Cardiff AGL Contract, Moves to Ethernet Control",
+   "about": [
+    "ATG Airports"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1511,
+   "title": "ADB Safegate Buys Synaptic Aviation to Speed Up Turnarounds",
+   "about": [
+    "ADB Safegate",
+    "Synaptic Aviation"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1505,
+   "title": "FAA Activates First Digital Air Traffic Control Towers at 2 Sites",
+   "about": [],
+   "mentions": [
+    "Frequentis"
+   ]
+  },
+  {
+   "id": 1478,
+   "title": "HiSERV Opens 650 Sqm GSE Workshop at Copenhagen Airport",
+   "about": [
+    "HiSERV"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1467,
+   "title": "FAA Grants First Digital Tower Approval to Frequentis",
+   "about": [
+    "Frequentis"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1454,
+   "title": "WFS Renews American Airlines Cargo Deal, 8 Countries, 5 Years",
+   "about": [
+    "WFS"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1443,
+   "title": "London City Airport Launches Neurodivergent Travel Survey",
+   "about": [],
+   "mentions": [
+    "Welcome Brain Consulting"
+   ]
+  },
+  {
+   "id": 1436,
+   "title": "Lagardère Wins Bristol Airport Concession, Five Stores, 750 Sqm",
+   "about": [
+    "Lagardère Travel Retail"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1431,
+   "title": "Frequentis Leads 14-Partner EU Air Traffic Control Project",
+   "about": [
+    "Frequentis"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1428,
+   "title": "Heinemann Extends Bari Airport Contract, Books 1,000sqm Store",
+   "about": [
+    "Gebr. Heinemann"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1425,
+   "title": "Menzies Wins SIA Deal at Western Sydney, 200,000t Cargo Hub",
+   "about": [
+    "Menzies Aviation"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1423,
+   "title": "dnata Adds 4 Electric Buses at Fiumicino, Fleet 60% Electric",
+   "about": [
+    "dnata"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1409,
+   "title": "PROS and IBS Software Pair Offer and Order Tech for Airlines",
+   "about": [
+    "IBS Software"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1402,
+   "title": "London City Airport to Pilot Neuroinclusive Benchmark",
+   "about": [
+    "Welcome Brain Consulting"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1391,
+   "title": "Travel Retail Norway Keeps Avinor Deal, Oslo Shop at 7,300sqm",
+   "about": [
+    "Travel Retail Norway"
+   ],
+   "mentions": [
+    "Gebr. Heinemann"
+   ]
+  },
+  {
+   "id": 1378,
+   "title": "London City Airport Taps Amadeus Tech, Eyes 9m Passenger Cap",
+   "about": [
+    "Amadeus"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1376,
+   "title": "Avolta Q3 Organic Growth Hits 4.6%, Up From 2.9% in Q2",
+   "about": [
+    "Avolta"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1372,
+   "title": "TLD Parent Alvest Hits SBTi Milestone, Targets 27% Cut by 2031",
+   "about": [
+    "TLD Group"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1370,
+   "title": "Electrical Cutovers in Terminal Projects: Price the Transition Early",
+   "about": [
+    "MultiPoint Engineering"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1355,
+   "title": "Small Turnaround Delays Compound Into $44bn Annual Cost",
+   "about": [
+    "Assaia"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1351,
+   "title": "Calgary Airports Runs Assaia ApronAI on Cargo Apron From Nov 10",
+   "about": [
+    "Assaia"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1338,
+   "title": " Airside with Christiaan Hen on where turnarounds really go wrong",
+   "about": [],
+   "mentions": [
+    "Assaia"
+   ]
+  },
+  {
+   "id": 1323,
+   "title": "Menzies Aviation Wins Seven-Year Portugal Handling Licence",
+   "about": [
+    "Menzies Aviation"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1280,
+   "title": "dnata Invests AED 175m ($47.6m) to Add 340 GSE Units",
+   "about": [
+    "dnata"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1270,
+   "title": "Draxon Launches VR De-Icing Training for Ground Handlers",
+   "about": [
+    "Draxon"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1261,
+   "title": "Lagardère Travel Retail Hits Record €1.76bn Q3, Asia Falls 22%",
+   "about": [
+    "Lagardère Travel Retail"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1239,
+   "title": "Menzies Aviation CEO El-Houry Streams Talk on 3 Platforms",
+   "about": [
+    "Menzies Aviation"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1233,
+   "title": "SSP America Sets 8 Dining Concepts for Phoenix Sky Harbor",
+   "about": [
+    "SSP Group"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1211,
+   "title": "SITA Acquires Collins Aerospace Airport Unit, Closing H1 2027",
+   "about": [
+    "Collins Aerospace",
+    "SITA"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1199,
+   "title": "HID: First-Attempt Face Match, Not Lab Accuracy, Is Real Test",
+   "about": [
+    "HID"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1180,
+   "title": "Turnarounds Run 11 Minutes Over Plan, AI Cuts Gap 36%",
+   "about": [],
+   "mentions": [
+    "Assaia"
+   ]
+  },
+  {
+   "id": 1178,
+   "title": "ACI Europe: EES Delays Will Persist Beyond First Year",
+   "about": [],
+   "mentions": [
+    "IDEMIA"
+   ]
+  },
+  {
+   "id": 1170,
+   "title": "DOLL: Electric Highloaders Cost Up to 2x Diesel Models",
+   "about": [
+    "DOLL"
+   ],
+   "mentions": [
+    "Kalmar",
+    "Textron"
+   ]
+  },
+  {
+   "id": 1112,
+   "title": "Heathrow Adobe AI Partnership Rebuilds Website for Chatbots",
+   "about": [
+    "Adobe"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1102,
+   "title": "Kalmar's FB150 Electric Tow Tractor Hits 100kN, Cuts Price",
+   "about": [
+    "Kalmar"
+   ],
+   "mentions": [
+    "Textron"
+   ]
+  },
+  {
+   "id": 1097,
+   "title": "Idemia Launches MFACE Gen2 Face Scanner, Builds on 3,000 Units",
+   "about": [
+    "IDEMIA"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1089,
+   "title": "Leidos, Altaris Close JV, Unite Two Screening Units as Analogic",
+   "about": [
+    "Analogic",
+    "Leidos"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1087,
+   "title": "Hudson Wins 20-Year Seattle Airport Duty-Free Deal, 2,800 sqm",
+   "about": [
+    "Hudson"
+   ],
+   "mentions": [
+    "Avolta"
+   ]
+  },
+  {
+   "id": 1085,
+   "title": "Menzies Aviation Adds Passenger Handling at KUL After Licence Win",
+   "about": [
+    "Menzies Aviation"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1079,
+   "title": "MSP Airport Taps Evolvending, Canteen for 30 F&B Sites",
+   "about": [
+    "Canteen",
+    "Evolvending"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1073,
+   "title": "WFS Opens 25,400m² Cargo Hub at Lyon Airport, Backs 300 Jobs",
+   "about": [
+    "WFS"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1069,
+   "title": "UK DfT Updates Approved LEDS List, Adds Agilent, Kumahira Units",
+   "about": [],
+   "mentions": [
+    "Leidos"
+   ]
+  },
+  {
+   "id": 1067,
+   "title": "IDEMIA, IATA Lead Five-Firm Coalition for EU Biometric Rules",
+   "about": [
+    "IDEMIA"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1065,
+   "title": "SSP Opens Eight F&B Outlets at Vilnius Airport, Adds 60 Jobs",
+   "about": [
+    "SSP Group"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1063,
+   "title": "Swissport Enters Indonesia via UNEX Joint Venture Deal",
+   "about": [
+    "Swissport",
+    "UNEX Aviation Services"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1061,
+   "title": "Emirates A380 Diverts to Frankfurt on EK31 After Medical Emergency",
+   "about": [],
+   "mentions": [
+    "Veovo"
+   ]
+  },
+  {
+   "id": 914,
+   "title": "Marathon Weekends Lift New York Air Travel 45%, Chicago 13%",
+   "about": [],
+   "mentions": [
+    "Amadeus"
+   ]
+  },
+  {
+   "id": 910,
+   "title": "Veovo, Overdrive IoT Link Two Platforms for Airport Ops",
+   "about": [
+    "Overdrive IoT",
+    "Veovo"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 901,
+   "title": "Textron's TUG MX4 Electric Tractor Tows 20,000lbs at GSE Expo",
+   "about": [
+    "Textron"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 899,
+   "title": "Ontario Airport Taps Boldyn Networks for Private 5G Security Net",
+   "about": [
+    "Boldyn Networks"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 897,
+   "title": "UK Airport Maps 120km of Pavement With XenomatiX 6D Scanning",
+   "about": [
+    "XenomatiX"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 889,
+   "title": "Synaptic Aviation Joins Five-Firm FTE Global Smart Apron Panel",
+   "about": [
+    "Synaptic Aviation"
+   ],
+   "mentions": [
+    "dnata"
+   ]
+  },
+  {
+   "id": 879,
+   "title": "WHSmith FY26 Profit Falls to £75m ($100.4m) on Airport Mix Shift",
+   "about": [
+    "WHSmith"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 823,
+   "title": "Amadeus Data: India Oktoberfest Air Bookings to Munich Up 60%",
+   "about": [
+    "Amadeus"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 761,
+   "title": "Mace Consult Joins Sydney Airport Capital Programme, $4.2bn Scope",
+   "about": [
+    "Mace"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 737,
+   "title": "CQC Aeronautics launches AERefinery airport planning platform",
+   "about": [
+    "CQC Aeronautics"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 735,
+   "title": "Montréal-Trudeau Deploys Veovo Airport Operations Platform",
+   "about": [
+    "Veovo"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 730,
+   "title": "SITA Launches Border Flow Lane, Clears Travellers Pre-Departure",
+   "about": [
+    "SITA"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 709,
+   "title": "Lagardère Opens Two Madinah Restaurants, Saudi Count Hits 20",
+   "about": [
+    "Lagardère Travel Retail"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 707,
+   "title": "Schiphol Ground Handling Tender Heads to Court, Ruling 23 Sept",
+   "about": [],
+   "mentions": [
+    "dnata",
+    "Swissport"
+   ]
+  },
+  {
+   "id": 703,
+   "title": "TLD Hits 50% Electric GSE Production With Remote A350 Pushback",
+   "about": [
+    "TLD Group"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 529,
+   "title": "SSP Group Names Preyash Thakrar Strategy Chief, Ends Mark Rainbow's 20-Year Run",
+   "about": [
+    "SSP Group"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 276,
+   "title": "VMD Wins Place on TSA's $5bn Screening Partnership Program Contract",
+   "about": [
+    "VMD"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 186,
+   "title": "Gebr. Heinemann Extends Berlin Brandenburg Airport Deal, Plans 3,800 sq m Retail Expansion",
+   "about": [
+    "Gebr. Heinemann"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 169,
+   "title": "Menzies Pearl Lounge Opens Third Hurghada Site, Egypt Network Hits 24",
+   "about": [
+    "Menzies Aviation"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 136,
+   "title": "Hyundai Duty Free Posts KRW7.5bn Q2 Profit Jump on Incheon Airport DF2 Concession",
+   "about": [
+    "Hyundai Duty Free"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 129,
+   "title": "Atlantic Aviation Breaks Ground on Second Nashville FBO, Adding 16,258m² of Ramp Space",
+   "about": [
+    "Atlantic Aviation"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 74,
+   "title": "Airport Travel Retail Concession Operators Compared: Scale, Category and Contract Model",
+   "about": [],
+   "mentions": [
+    "Avolta",
+    "Gebr. Heinemann",
+    "Lagardère Travel Retail",
+    "WHSmith"
+   ]
+  },
+  {
+   "id": 64,
+   "title": "Airport Common Use Passenger Processing System Comparison: CUPPS Vendors and Costs",
+   "about": [],
+   "mentions": [
+    "Amadeus",
+    "Collins Aerospace",
+    "SITA"
+   ]
+  },
+  {
+   "id": 26,
+   "title": "Biometric Boarding System Airport Vendors Compared: Costs and Capabilities",
+   "about": [],
+   "mentions": [
+    "Collins Aerospace",
+    "IDEMIA",
+    "SITA"
+   ]
+  },
+  {
+   "id": 13,
+   "title": "How Airports Make Money: Aeronautical and Non-Aero Revenue",
+   "about": [],
+   "mentions": [
+    "Avolta",
+    "Lagardère Travel Retail"
+   ]
+  },
+  {
+   "id": 10,
+   "title": "Non-Aeronautical Revenue Benchmarks: What Airports Earn Per Passenger",
+   "about": [],
+   "mentions": [
+    "Avolta"
+   ]
+  }
+ ]
+}

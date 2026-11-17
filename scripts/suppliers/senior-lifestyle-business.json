@@ -1,0 +1,16 @@
+{
+  "_readme": "Companies Senior Lifestyle Business has published articles ABOUT, curated by hand from headlines, feed sources and subject fields on 17 Nov 2026. A name here only becomes a page if the backfill finds at least one article about it. aliases are other exact names the company goes by. mentions:false means the name is too short or too common to trust in body text, so only a headline, feed source or subject match counts. Government bodies, regulators, trade bodies, charities, trade press, market data bodies, and retirement operators, developers, REITs and investors reported as subjects are deliberately left out.",
+  "suppliers": [
+    { "name": "Conran and Partners" },
+    { "name": "DLR Group" },
+    { "name": "Healthsperien" },
+    { "name": "Jim's Gym" },
+    { "name": "LifeLoop" },
+    { "name": "Percussion Play" },
+    { "name": "Silverchain" },
+    { "name": "SLIB", "aliases": ["Senior Living Investment Brokerage"], "mentions": false },
+    { "name": "Tarkett" },
+    { "name": "Tunstall Healthcare", "aliases": ["Tunstall"] },
+    { "name": "Walker & Dunlop" }
+  ]
+}

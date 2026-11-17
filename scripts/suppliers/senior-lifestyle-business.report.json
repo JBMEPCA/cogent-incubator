@@ -1,0 +1,165 @@
+{
+ "site": "senior-lifestyle-business",
+ "posts": 131,
+ "suppliers": 11,
+ "taggedArticles": 12,
+ "aboutLinks": 12,
+ "mentionLinks": 1,
+ "perSupplier": [
+  {
+   "name": "Tunstall Healthcare",
+   "about": 2,
+   "mentions": 0
+  },
+  {
+   "name": "Walker & Dunlop",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Conran and Partners",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "DLR Group",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Healthsperien",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Jim's Gym",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "LifeLoop",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Percussion Play",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Silverchain",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "SLIB",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Tarkett",
+   "about": 1,
+   "mentions": 0
+  }
+ ],
+ "registryWithNoAboutArticle": [],
+ "articles": [
+  {
+   "id": 591,
+   "title": "Tarkett's Third Design Retreat Names 4 Senior Living Priorities",
+   "about": [
+    "Tarkett"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 535,
+   "title": "Keyton Taps Silverchain for Care Across 66 Villages",
+   "about": [
+    "Silverchain"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 471,
+   "title": "NIC, Healthsperien Launch Resident Health Outcomes Study: Capstone Due Autumn 2027",
+   "about": [
+    "Healthsperien"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 431,
+   "title": "Argentum, LifeLoop Launch Social Wellness Hub, Cite $340 Savings",
+   "about": [
+    "LifeLoop"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 248,
+   "title": "Study: outdoor music instruments boost senior care engagement",
+   "about": [
+    "Percussion Play"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 246,
+   "title": "Tunstall launches ILOS platform for Alarm Receiving Centres",
+   "about": [
+    "Tunstall Healthcare"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 228,
+   "title": "DST, LIHTC and ALP: US Senior Housing Deal Terms Explained",
+   "about": [],
+   "mentions": [
+    "Walker & Dunlop"
+   ]
+  },
+  {
+   "id": 180,
+   "title": "Conran and Partners merger with DLR Group adds 75 owners",
+   "about": [
+    "Conran and Partners",
+    "DLR Group"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 159,
+   "title": "Walker & Dunlop arranges $30m financing for 260-unit Texas scheme",
+   "about": [
+    "Walker & Dunlop"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 146,
+   "title": "SLIB sells 205-bed Hilton, NY assisted living/ALP asset",
+   "about": [
+    "SLIB"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 134,
+   "title": "Anchor Jim's Gym deal brings online fitness to six villages",
+   "about": [
+    "Jim's Gym"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 120,
+   "title": "Blackpool's digital switchover telecare migration: a template for councils",
+   "about": [
+    "Tunstall Healthcare"
+   ],
+   "mentions": []
+  }
+ ]
+}

@@ -1,0 +1,193 @@
+{
+  "_readme": "Supplier page details for Golf Resort Magazine, gathered 17 Nov 2026 from each company's own website (title, meta description, header logo). Where the site gave no usable logo, the logo is from the company's Wikimedia Commons file. dark:true means the logo is white and is shown on a dark tile. An empty website or logo means we could not confirm one: leave it empty rather than guess. Sector drives the filter on the hub.",
+  "suppliers": {
+    "Acushnet": {
+      "website": "https://www.acushnetholdingscorp.com/",
+      "sector": "Golf equipment and retail",
+      "line": "Golf products company whose brands include Titleist and FootJoy."
+    },
+    "Akkustation": {
+      "website": "",
+      "sector": "Course equipment and machinery",
+      "line": "Battery charging for golf carts, aimed at cutting fire risk."
+    },
+    "Avison Young": {
+      "website": "https://www.avisonyoung.co.uk/",
+      "sector": "Consultancy and advisory",
+      "line": "Commercial real estate adviser offering property services across the UK."
+    },
+    "Callaway": {
+      "website": "https://www.callawaygolf.com/",
+      "sector": "Golf equipment and retail",
+      "line": "Maker of golf clubs, golf balls and golf equipment."
+    },
+    "Canary Technologies": {
+      "website": "https://www.canarytechnologies.com/",
+      "sector": "Hospitality technology",
+      "line": "Hospitality software for guest experience, hotel operations and revenue."
+    },
+    "Christie & Co": {
+      "website": "https://www.christie.com/",
+      "sector": "Consultancy and advisory",
+      "line": "Specialist business and property adviser that buys, sells and values businesses, including hotels."
+    },
+    "Club Car": {
+      "website": "https://www.clubcar.com/en",
+      "sector": "Course equipment and machinery",
+      "line": "Maker of golf carts, utility vehicles and low-speed vehicles."
+    },
+    "Club Champion": {
+      "website": "https://clubchampion.com/",
+      "sector": "Golf equipment and retail",
+      "line": "Custom golf club fitting studios working across brands of heads, shafts and grips."
+    },
+    "CourseRev.ai": {
+      "website": "https://courserev.ai/",
+      "sector": "Booking and club software",
+      "line": "AI tools for golf courses that automate tee time booking and customer service."
+    },
+    "DETAILS": {
+      "website": "https://details.net/en/",
+      "sector": "Management companies",
+      "line": "Portuguese hospitality management platform that runs a golf portfolio and resorts.",
+      "dark": true
+    },
+    "Elevate Golf": {
+      "website": "https://elevategolf.net/",
+      "sector": "Marketing, PR and events",
+      "line": "Golf tourism event that sets up appointments between golf destinations and tour operators."
+    },
+    "Foremost Golf": {
+      "website": "https://www.foremostgolf.com/",
+      "sector": "Golf equipment and retail",
+      "line": "Retail tools, technology and support for golf professionals."
+    },
+    "Full Swing": {
+      "website": "https://fullswingsports.eu/",
+      "sector": "Simulators and range technology",
+      "dark": true,
+      "line": "Golf simulators and launch monitors."
+    },
+    "Golf District": {
+      "website": "https://golfdistrict.com/",
+      "sector": "Booking and club software",
+      "line": "Tee time platform with a tool that lets golfers bid on sold-out tee times."
+    },
+    "Husqvarna": {
+      "website": "https://www.husqvarna.com/uk/",
+      "sector": "Course equipment and machinery",
+      "line": "Maker of mowers, robotic mowers and outdoor power tools for professionals and homeowners."
+    },
+    "Indigo Sports": {
+      "website": "",
+      "sector": "Management companies",
+      "line": "Troon division that manages municipal and lower-priced golf facilities."
+    },
+    "ISEKI": {
+      "website": "https://www.iseki.co.uk/",
+      "sector": "Course equipment and machinery",
+      "line": "Compact tractors and mowers, supplied by ISEKI UK and Ireland."
+    },
+    "Jonas Club Software": {
+      "website": "https://www.jonasclub.com/",
+      "sector": "Booking and club software",
+      "line": "Software, applications and services for private clubs."
+    },
+    "LANDMARK": {
+      "website": "",
+      "sector": "Marketing, PR and events",
+      "line": "PR and brand marketing agency for golf courses, resorts and members' clubs."
+    },
+    "Landscapes Golf Management": {
+      "website": "https://landscapesgolf.com/",
+      "sector": "Management companies",
+      "line": "Golf course management company."
+    },
+    "Lightspeed Golf": {
+      "website": "https://www.lightspeedhq.com/uk/golf/",
+      "sector": "Booking and club software",
+      "line": "Point of sale and management system for golf businesses."
+    },
+    "Motocaddy": {
+      "website": "https://www.motocaddy.com/",
+      "sector": "Golf equipment and retail",
+      "line": "Electric and push golf trolleys, golf bags and accessories."
+    },
+    "Paterson Golf": {
+      "website": "https://www.patersongolf.com/",
+      "sector": "Golf equipment and retail",
+      "line": "Customises and supplies caps, bags, towels, accessories and gifts to golf venues."
+    },
+    "Pin Vision": {
+      "website": "https://pinvision.app/",
+      "sector": "Booking and club software",
+      "line": "Mobile platform for managing pin placements, pace of play and daily operations at golf clubs."
+    },
+    "PowaKaddy": {
+      "website": "https://www.powakaddy.com/",
+      "sector": "Golf equipment and retail",
+      "line": "Maker of electric golf trolleys."
+    },
+    "PSYenz": {
+      "website": "",
+      "sector": "Consultancy and advisory",
+      "line": "Golf venue experience research arm of Sport Psychology Ltd."
+    },
+    "Rain Bird": {
+      "website": "https://www.rainbird.com/",
+      "sector": "Turf, irrigation and agronomy",
+      "line": "Manufacturer of irrigation products and services.",
+      "dark": true
+    },
+    "Shiji": {
+      "website": "https://www.shijigroup.com/",
+      "sector": "Hospitality technology",
+      "line": "Hospitality technology for hotel operations, distribution, payments and guest engagement.",
+      "dark": true
+    },
+    "Sunday Swagger": {
+      "website": "https://sundayswagger.com/",
+      "sector": "Golf equipment and retail",
+      "line": "Performance golf polo shirts.",
+      "dark": true
+    },
+    "Syngenta": {
+      "website": "https://www.syngenta.com/",
+      "sector": "Turf, irrigation and agronomy",
+      "line": "Agricultural science company whose products include turf insecticides."
+    },
+    "TenFore Golf": {
+      "website": "https://www.tenfore.golf/",
+      "sector": "Booking and club software",
+      "line": "All-in-one golf management software.",
+      "dark": true
+    },
+    "TGI Golf": {
+      "website": "https://www.tgigolf.com/",
+      "sector": "Golf equipment and retail",
+      "line": "Retail services group supporting the businesses of PGA Professionals.",
+      "dark": true
+    },
+    "The Azalea Group": {
+      "website": "https://theazaleagroup.com/",
+      "sector": "Marketing, PR and events",
+      "line": "PR and marketing agency working across golf, travel and lifestyle."
+    },
+    "Toptracer": {
+      "website": "https://toptracer.com/",
+      "sector": "Simulators and range technology",
+      "line": "Ball tracking technology for driving ranges."
+    },
+    "TrackMan": {
+      "website": "https://www.trackman.com/",
+      "sector": "Simulators and range technology",
+      "line": "Launch monitors and golf simulators.",
+      "dark": true
+    },
+    "Troon": {
+      "website": "https://troon.com/",
+      "sector": "Management companies",
+      "line": "Golf management company operating courses and clubs around the world."
+    }
+  }
+}

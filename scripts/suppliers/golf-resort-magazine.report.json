@@ -1,0 +1,747 @@
+{
+ "site": "golf-resort-magazine",
+ "posts": 261,
+ "suppliers": 36,
+ "taggedArticles": 68,
+ "aboutLinks": 58,
+ "mentionLinks": 20,
+ "perSupplier": [
+  {
+   "name": "Troon",
+   "about": 9,
+   "mentions": 0
+  },
+  {
+   "name": "Lightspeed Golf",
+   "about": 3,
+   "mentions": 4
+  },
+  {
+   "name": "Jonas Club Software",
+   "about": 2,
+   "mentions": 4
+  },
+  {
+   "name": "TrackMan",
+   "about": 1,
+   "mentions": 5
+  },
+  {
+   "name": "Elevate Golf",
+   "about": 4,
+   "mentions": 0
+  },
+  {
+   "name": "Husqvarna",
+   "about": 1,
+   "mentions": 3
+  },
+  {
+   "name": "Rain Bird",
+   "about": 2,
+   "mentions": 2
+  },
+  {
+   "name": "The Azalea Group",
+   "about": 4,
+   "mentions": 0
+  },
+  {
+   "name": "Callaway",
+   "about": 2,
+   "mentions": 1
+  },
+  {
+   "name": "CourseRev.ai",
+   "about": 2,
+   "mentions": 0
+  },
+  {
+   "name": "DETAILS",
+   "about": 2,
+   "mentions": 0
+  },
+  {
+   "name": "TGI Golf",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Toptracer",
+   "about": 2,
+   "mentions": 0
+  },
+  {
+   "name": "Acushnet",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Akkustation",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Avison Young",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Canary Technologies",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Christie & Co",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Club Car",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Club Champion",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Foremost Golf",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Full Swing",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Golf District",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Indigo Sports",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "ISEKI",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "LANDMARK",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Landscapes Golf Management",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Motocaddy",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Paterson Golf",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Pin Vision",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "PowaKaddy",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "PSYenz",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Shiji",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Sunday Swagger",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Syngenta",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "TenFore Golf",
+   "about": 1,
+   "mentions": 0
+  }
+ ],
+ "registryWithNoAboutArticle": [],
+ "articles": [
+  {
+   "id": 1613,
+   "title": "Golf Club Event Software Adds Pre-Order and Dietary Tools",
+   "about": [],
+   "mentions": [
+    "Jonas Club Software"
+   ]
+  },
+  {
+   "id": 1605,
+   "title": "Elevate Golf 2027 Registrations Close, Turnberry and St Andrews Set",
+   "about": [
+    "Elevate Golf",
+    "The Azalea Group"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1600,
+   "title": "PowaKaddy Changes Hands After 40 Years, CEO Named for 2027",
+   "about": [
+    "PowaKaddy"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1588,
+   "title": "Troon En-Joie Golf Deal Puts Village Club Under New Manager",
+   "about": [
+    "Troon"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1505,
+   "title": "Aphrodite Hills Wins Best Cyprus Course, Sixth Time Since 2014",
+   "about": [],
+   "mentions": [
+    "TrackMan"
+   ]
+  },
+  {
+   "id": 1466,
+   "title": "Troon to Manage En-Joie Golf Club in Endicott From 2027",
+   "about": [
+    "Troon"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1458,
+   "title": "DETAILS Wins Six World Golf Awards, Including Tourism Honour",
+   "about": [
+    "DETAILS"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1441,
+   "title": "Shiji's Q3 2026 Benchmark Finds Ratings Up, Guest Scores Down",
+   "about": [
+    "Shiji"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1437,
+   "title": "DETAILS Reopens Sicily's Costa Ragusa, Two Courses by 2027",
+   "about": [
+    "DETAILS"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1428,
+   "title": "Motocaddy Sold to US Firm Corbel After Revenue Doubles",
+   "about": [
+    "Motocaddy"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1423,
+   "title": "Mauna Lani Adds $4m Toptracer Range and Putting Course",
+   "about": [
+    "Toptracer"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1399,
+   "title": "Sterling Grove Goes Fully Private After Five Years, 300 Members",
+   "about": [
+    "Troon"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1397,
+   "title": "Club Champion Becomes Troon's Newest Preferred Partner",
+   "about": [
+    "Club Champion",
+    "Troon"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1392,
+   "title": "Sunday Swagger Guinness Relaunch Tests Pro Shop Margins",
+   "about": [
+    "Sunday Swagger"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1390,
+   "title": "Elevate Golf Delivers 9,430 Appointments at Fairmont St Andrews",
+   "about": [
+    "Elevate Golf"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1371,
+   "title": "Aphrodite Hills Deploys 9 Robotic Mowers in Cyprus First",
+   "about": [],
+   "mentions": [
+    "Husqvarna"
+   ]
+  },
+  {
+   "id": 1359,
+   "title": "Camiral Named Callaway High Performance Partner in Spain",
+   "about": [
+    "Callaway"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1344,
+   "title": "Aphrodite Hills Adds 9 Robotic Mowers to Cyprus Course",
+   "about": [],
+   "mentions": [
+    "Husqvarna"
+   ]
+  },
+  {
+   "id": 1340,
+   "title": "Tróia Golf Reopens Spring 2027 After 12-Month Rebuild",
+   "about": [
+    "The Azalea Group"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1318,
+   "title": "E-Mower Emissions Cut Over 50% in Course Field Test",
+   "about": [],
+   "mentions": [
+    "Husqvarna"
+   ]
+  },
+  {
+   "id": 1307,
+   "title": "Hotel Covington Boosts F&B Spend 15% With Canary App",
+   "about": [
+    "Canary Technologies"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1291,
+   "title": "Syngenta's Atexzo Insecticide Registered for Use in New York",
+   "about": [
+    "Syngenta"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1284,
+   "title": "Troon White Plains Deal Hands Golf Ops to Indigo Sports",
+   "about": [
+    "Indigo Sports",
+    "Troon"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1278,
+   "title": "Trump Turnberry Sells £499 Winter Golf Academy Package",
+   "about": [],
+   "mentions": [
+    "TrackMan"
+   ]
+  },
+  {
+   "id": 1274,
+   "title": "UK Operator Hires Neuroscientist to Review Golf Club Experience",
+   "about": [
+    "PSYenz"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1240,
+   "title": "Club Car Marks 30 Years as Ryder Cup Vehicle Supplier",
+   "about": [
+    "Club Car"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1221,
+   "title": "Troon and Full Swing Launch KIT at Select Resort Venues",
+   "about": [
+    "Full Swing",
+    "Troon"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1157,
+   "title": "ISEKI Launches Electric AllTrec 7510F Mower at SALTEX 2026",
+   "about": [
+    "ISEKI"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1153,
+   "title": "Foremost Golf: Set Daily Targets, Pay for Training Time",
+   "about": [
+    "Foremost Golf"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1145,
+   "title": "SunRidge Canyon Reopens With Resurfaced Greens, New Kitchen",
+   "about": [],
+   "mentions": [
+    "TrackMan"
+   ]
+  },
+  {
+   "id": 1143,
+   "title": "Troon Named Adviser as Angkor Golf Resort Preps Reopening",
+   "about": [
+    "Troon"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1137,
+   "title": "Trump Turnberry Launches Trump's Twelve With £1.47m Challenge",
+   "about": [],
+   "mentions": [
+    "TrackMan"
+   ]
+  },
+  {
+   "id": 1135,
+   "title": "Foxhills Irrigation Investment Hits £3m Across Two Courses",
+   "about": [],
+   "mentions": [
+    "Rain Bird"
+   ]
+  },
+  {
+   "id": 1130,
+   "title": "Plantation Course Lands 2027 LOTTE Championship Kapalua Date",
+   "about": [
+    "Troon"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1108,
+   "title": "Akkustation Cuts Golf Cart Fire Risk With Free Charging",
+   "about": [
+    "Akkustation"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1092,
+   "title": "Alcanada Hosts HotelPlanner Tour Grand Final for Fifth Year",
+   "about": [
+    "The Azalea Group"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1087,
+   "title": "Rain Bird Bluebot Mini Fits Cottages, Not Fairways",
+   "about": [
+    "Rain Bird"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 923,
+   "title": "Titleist Presidents Cup Bags Dominate Acushnet Tour Report",
+   "about": [
+    "Acushnet"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 919,
+   "title": "LANDMARK Agency Goes 100% Employee-Owned Via EOT",
+   "about": [
+    "LANDMARK"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 917,
+   "title": "CourseRev.ai, TenFore Golf Launch 24/7 AI Booking Tool",
+   "about": [
+    "CourseRev.ai",
+    "TenFore Golf"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 913,
+   "title": "Catalonia Elevate Golf Deal Pitches 40 Courses for 2031",
+   "about": [
+    "Elevate Golf"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 907,
+   "title": "Aphrodite Hills Opens 28-Bay TrackMan Golf Academy",
+   "about": [
+    "TrackMan"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 899,
+   "title": "Pin Vision US Launch Pairs GPS Mapping With CourseRev.ai",
+   "about": [
+    "CourseRev.ai",
+    "Pin Vision"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 897,
+   "title": "Kinloch Manor & Villas Hires Azalea for Overseas Push",
+   "about": [
+    "The Azalea Group"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 845,
+   "title": "Toptracer Names COO, Promotes VP After 23-Year Callaway Run",
+   "about": [
+    "Callaway",
+    "Toptracer"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 812,
+   "title": "Golf Simulator and Launch Monitor Providers Compared",
+   "about": [],
+   "mentions": [
+    "TrackMan"
+   ]
+  },
+  {
+   "id": 790,
+   "title": "1 Golf Launches Clubhouse AI Golf Assistant Inside Its Platform",
+   "about": [],
+   "mentions": [
+    "Lightspeed Golf"
+   ]
+  },
+  {
+   "id": 788,
+   "title": "Golf Course Food and Beverage Ordering Apps: 6 Compared",
+   "about": [],
+   "mentions": [
+    "Jonas Club Software",
+    "Lightspeed Golf"
+   ]
+  },
+  {
+   "id": 770,
+   "title": "Golf Resort Staff Uniform Suppliers Compared on UK Price",
+   "about": [],
+   "mentions": [
+    "Callaway"
+   ]
+  },
+  {
+   "id": 765,
+   "title": "Banquet and Event Booking Software for Golf Clubhouses",
+   "about": [],
+   "mentions": [
+    "Jonas Club Software"
+   ]
+  },
+  {
+   "id": 735,
+   "title": "Golf Course Food and Beverage POS System Comparison",
+   "about": [],
+   "mentions": [
+    "Jonas Club Software",
+    "Lightspeed Golf",
+    "TGI Golf"
+   ]
+  },
+  {
+   "id": 699,
+   "title": "Lightspeed Adds On Deck Waitlist, 48-Hour Tee Reminders",
+   "about": [
+    "Lightspeed Golf"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 697,
+   "title": "Troon Takes Over Achasta Golf Club, Legacy's Fourth Course",
+   "about": [
+    "Troon"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 683,
+   "title": "East Lothian Named Elevate Golf 2028 Host, Ayrshire Runs 2027",
+   "about": [
+    "Elevate Golf"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 655,
+   "title": "Landscapes Golf Management Raises $65,000 Through Solstice Charity Push",
+   "about": [
+    "Landscapes Golf Management"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 613,
+   "title": "TGI Golf Partners Report 38.18% Average Margin, Up From Below 30% Before 2026",
+   "about": [
+    "TGI Golf"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 611,
+   "title": "Lightspeed Golf Maps 5-Step Path to Private Label Merchandise for Pro Shops, Flags Minimum Order Risk",
+   "about": [
+    "Lightspeed Golf"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 551,
+   "title": " Golf Resort Leader: Fraser Wilson on Taking Paterson Golf Into a Second Generation",
+   "about": [
+    "Paterson Golf"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 532,
+   "title": "UK Golf Club Buyer Demand Holds Firm, Christie & Co Flags 7 Priorities for 2026 Deals",
+   "about": [
+    "Christie & Co"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 408,
+   "title": "Drought Images Expose the Scale of Water Stress on UK Golf Courses",
+   "about": [],
+   "mentions": [
+    "Rain Bird"
+   ]
+  },
+  {
+   "id": 396,
+   "title": "Jonas Club Software Compares Club App Tiers, Cuts Premium Pricing 50% for Year One",
+   "about": [
+    "Jonas Club Software"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 199,
+   "title": "Lightspeed Golf Flags 8 Bottlenecks Behind Slow Pro Shop Checkout, Payment Reconciliation Among Them",
+   "about": [
+    "Lightspeed Golf"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 193,
+   "title": "Golf District's Pricepoint Lets Golfers Bid on Sold-Out Tee Times, With a 10-Minute First Right to Accept for Operators",
+   "about": [
+    "Golf District"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 173,
+   "title": "Rain Bird's Homeowner Water-Saving Guide Has a Golf Course Reading Between the Lines",
+   "about": [
+    "Rain Bird"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 44,
+   "title": "Avison Young Recapitalisation Cuts Debt Nearly 70% Before October 2026 Close",
+   "about": [
+    "Avison Young"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 34,
+   "title": "Robotic Mowers Take On 2026 British Masters Prep as Husqvarna Automation Deal Confirmed",
+   "about": [
+    "Husqvarna"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 28,
+   "title": "Addison Reserve Country Club Consolidates Onto One Platform With Jonas Club Software",
+   "about": [
+    "Jonas Club Software"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 16,
+   "title": "Golf Course Management Software for Resorts: A Buyer's Guide",
+   "about": [],
+   "mentions": [
+    "Lightspeed Golf"
+   ]
+  }
+ ]
+}

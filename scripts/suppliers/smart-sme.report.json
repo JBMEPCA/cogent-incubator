@@ -1,0 +1,2553 @@
+{
+ "site": "smart-sme",
+ "posts": 352,
+ "suppliers": 120,
+ "taggedArticles": 219,
+ "aboutLinks": 193,
+ "mentionLinks": 176,
+ "perSupplier": [
+  {
+   "name": "Google",
+   "about": 9,
+   "mentions": 27
+  },
+  {
+   "name": "Xero",
+   "about": 4,
+   "mentions": 25
+  },
+  {
+   "name": "Microsoft",
+   "about": 6,
+   "mentions": 21
+  },
+  {
+   "name": "FreeAgent",
+   "about": 2,
+   "mentions": 21
+  },
+  {
+   "name": "Anthropic",
+   "about": 2,
+   "mentions": 10
+  },
+  {
+   "name": "Malwarebytes",
+   "about": 8,
+   "mentions": 2
+  },
+  {
+   "name": "KnowBe4",
+   "about": 8,
+   "mentions": 0
+  },
+  {
+   "name": "Hootsuite",
+   "about": 3,
+   "mentions": 4
+  },
+  {
+   "name": "Metricool",
+   "about": 5,
+   "mentions": 2
+  },
+  {
+   "name": "Zoho",
+   "about": 3,
+   "mentions": 4
+  },
+  {
+   "name": "Amazon",
+   "about": 3,
+   "mentions": 3
+  },
+  {
+   "name": "Egress",
+   "about": 6,
+   "mentions": 0
+  },
+  {
+   "name": "GoCardless",
+   "about": 1,
+   "mentions": 5
+  },
+  {
+   "name": "WooCommerce",
+   "about": 3,
+   "mentions": 3
+  },
+  {
+   "name": "Allica Bank",
+   "about": 3,
+   "mentions": 2
+  },
+  {
+   "name": "HubSpot",
+   "about": 3,
+   "mentions": 2
+  },
+  {
+   "name": "Salesforce",
+   "about": 4,
+   "mentions": 1
+  },
+  {
+   "name": "Semrush",
+   "about": 2,
+   "mentions": 3
+  },
+  {
+   "name": "Starling Bank",
+   "about": 3,
+   "mentions": 2
+  },
+  {
+   "name": "Zapier",
+   "about": 1,
+   "mentions": 4
+  },
+  {
+   "name": "TikTok",
+   "about": 1,
+   "mentions": 3
+  },
+  {
+   "name": "Vista Social",
+   "about": 1,
+   "mentions": 3
+  },
+  {
+   "name": "ANNA Money",
+   "about": 1,
+   "mentions": 2
+  },
+  {
+   "name": "Arctic Wolf",
+   "about": 2,
+   "mentions": 1
+  },
+  {
+   "name": "Barclays",
+   "about": 1,
+   "mentions": 2
+  },
+  {
+   "name": "Barracuda",
+   "about": 2,
+   "mentions": 1
+  },
+  {
+   "name": "BrightHR",
+   "about": 1,
+   "mentions": 2
+  },
+  {
+   "name": "Funding Circle",
+   "about": 1,
+   "mentions": 2
+  },
+  {
+   "name": "impact.com",
+   "about": 2,
+   "mentions": 1
+  },
+  {
+   "name": "inFlow",
+   "about": 3,
+   "mentions": 0
+  },
+  {
+   "name": "JumpCloud",
+   "about": 1,
+   "mentions": 2
+  },
+  {
+   "name": "Meta",
+   "about": 3,
+   "mentions": 0
+  },
+  {
+   "name": "NinjaOne",
+   "about": 1,
+   "mentions": 2
+  },
+  {
+   "name": "Pleo",
+   "about": 2,
+   "mentions": 1
+  },
+  {
+   "name": "Vestd",
+   "about": 3,
+   "mentions": 0
+  },
+  {
+   "name": "Ahrefs",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Breathe HR",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Celerant",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Check Point",
+   "about": 2,
+   "mentions": 0
+  },
+  {
+   "name": "Ciphr",
+   "about": 2,
+   "mentions": 0
+  },
+  {
+   "name": "Cloudflare",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "EngageBay",
+   "about": 2,
+   "mentions": 0
+  },
+  {
+   "name": "Fasthosts",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Kaspersky",
+   "about": 2,
+   "mentions": 0
+  },
+  {
+   "name": "Metro Bank",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Openreach",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Pictory",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Royal Mail",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Simply Business",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Swoop Funding",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "TalkTalk",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Time Finance",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "20i",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Actionstep",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Activepieces",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Admiral",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Adzuna",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Agorapulse",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Airbnb",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Apple",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "ARK ICT",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Birdeye",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Brightpearl",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "BrowsAble",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "BT",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Buffer",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "CHAS",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Chaser",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Citrus HR",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Countingup",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "CreatePay",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Croner",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Crystal Ball",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "D-ID",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Dark Horse",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Dell",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Deputy",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Dropbox",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "EDF",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Factorial",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Fairhurst Accountants",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Flagstone",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Fussnegger",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "GoTo",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Griffin",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Heliotec",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Hostinger",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Inntelo AI",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Instantly",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Intel",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Kingsbridge",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Later",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Leyton UK",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Lloyds Banking Group",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Mistral AI",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "MoneySuperMarket",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "MYOB",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "n8n",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Nationwide",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Nomi",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Nutshell",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Octopus Energy",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "OGI Networks",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Osome",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Peninsula Business Services",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Proton",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "RAC",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Recognise Bank",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Redsquid",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Sendible",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "ServiceM8",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Sinch",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Stuart",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Ultimate Finance",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Veeam",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Westfield Health",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Wisdom Wellbeing",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Wix",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "WordPress.com",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Writer",
+   "about": 1,
+   "mentions": 0
+  }
+ ],
+ "registryWithNoAboutArticle": [],
+ "articles": [
+  {
+   "id": 2401,
+   "title": "GoTo's AI receptionist now answers WhatsApp and texts",
+   "about": [
+    "GoTo"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2386,
+   "title": "Binance hack fuels 130% jump in crypto phishing scams",
+   "about": [
+    "Egress",
+    "KnowBe4"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2384,
+   "title": "Microsoft productivity suite outage: 430m users hit, fix now",
+   "about": [
+    "Microsoft"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2378,
+   "title": "Starling Bank CEO Raman Bhatia to step down at year end",
+   "about": [
+    "Starling Bank"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2367,
+   "title": "Google launches Gemini 4 Hydrogen: biggest Search upgrade yet",
+   "about": [
+    "Google"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2358,
+   "title": "Google rolls out Gemini 4 Hydrogen: tasks run 2.5x faster",
+   "about": [
+    "Google"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2351,
+   "title": "Stuart acquired by Quiver, targets profit by 2027",
+   "about": [
+    "Stuart"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2347,
+   "title": "Instantly guide builds AI sales call agent for $140",
+   "about": [
+    "Instantly"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2344,
+   "title": "Microsoft 365 outage: two days down, and still no full answer",
+   "about": [
+    "Microsoft"
+   ],
+   "mentions": [
+    "Google",
+    "Zoho"
+   ]
+  },
+  {
+   "id": 2337,
+   "title": "Starling Bank lets customers pay by voice, invoice photo soon",
+   "about": [
+    "Starling Bank"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2335,
+   "title": "Third-party harassment law hits employers from 30 October",
+   "about": [
+    "Ciphr"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2298,
+   "title": "Two-thirds of UK CFOs more upbeat on investment for 2027",
+   "about": [
+    "Pleo"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2306,
+   "title": "EMI2 share scheme limit doubles to £120,000 from April 2027",
+   "about": [
+    "Vestd"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2296,
+   "title": "Benefits in Kind payroll shake-up hits five perks in 2027",
+   "about": [
+    "Citrus HR"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2291,
+   "title": "Instagram AI disclosure: label AI photos, video, audio now",
+   "about": [
+    "Hootsuite"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2283,
+   "title": "Starling Bank launches business credit card with 1% cashback",
+   "about": [
+    "Starling Bank"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2248,
+   "title": "Agorapulse links social data to Claude, saves 80 minutes",
+   "about": [
+    "Agorapulse"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2241,
+   "title": "Metricool Launches Claude LinkedIn Connector: 6 Apps Linked",
+   "about": [
+    "Metricool"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2214,
+   "title": "Osome Flags Five Budget 2026 Changes for SMEs",
+   "about": [
+    "Osome"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2204,
+   "title": "Google launches Gemini 4 Carbon AI: 88.2% bug detection",
+   "about": [
+    "Google"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2202,
+   "title": "BrowsAble lands £300k to simplify websites with AI",
+   "about": [
+    "BrowsAble"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2199,
+   "title": "Landline switch-off: 100 days to migrate, Openreach warns",
+   "about": [
+    "Openreach"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2191,
+   "title": "Allica Bank pays £100m+ in savings interest to SMEs",
+   "about": [
+    "Allica Bank"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2189,
+   "title": "CAS Version 6: 26,000 Firms Face New Checks From 1 Nov",
+   "about": [
+    "CHAS"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2185,
+   "title": "Lloyds Banking Group discontinues Halifax app: 31 Oct cutoff",
+   "about": [
+    "Lloyds Banking Group"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2150,
+   "title": "Banks Block AI Agents From Customer Accounts: What It Means",
+   "about": [
+    "Malwarebytes"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2127,
+   "title": "Metricool: 83% of Marketers Edit AI Content Before Posting",
+   "about": [
+    "Metricool"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2103,
+   "title": "Microsoft Teams Chat Abused in 400+ Attacks: What to Do",
+   "about": [
+    "Arctic Wolf",
+    "Microsoft"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2099,
+   "title": "Budget 2026: fuel duty and mileage boost for tradespeople",
+   "about": [
+    "Kingsbridge"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2097,
+   "title": "Budget Rates Relief Leaves Bigger Hospitality Firms Exposed",
+   "about": [
+    "Allica Bank"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2093,
+   "title": "Westfield Health: small firms face staff health cost squeeze",
+   "about": [
+    "Westfield Health"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2091,
+   "title": "Croner: Budget rates relief helps few small firms",
+   "about": [
+    "Croner"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2083,
+   "title": "Apple MacBook Pro M6 Launch: What It Means for SMEs",
+   "about": [
+    "Apple"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2076,
+   "title": "PHP Security Vulnerability: Check Who Patches Your Server",
+   "about": [
+    "Fasthosts"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2061,
+   "title": "When is the Budget 2026? Set for 28 October, SMEs told",
+   "about": [],
+   "mentions": [
+    "Amazon"
+   ]
+  },
+  {
+   "id": 2034,
+   "title": "Direct Workwear Cuts Manual Orders 98% With Stock Software",
+   "about": [
+    "inFlow"
+   ],
+   "mentions": [
+    "Xero"
+   ]
+  },
+  {
+   "id": 2022,
+   "title": "Barclays job cuts AI: 5,000 roles to go by year end",
+   "about": [
+    "Barclays"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2018,
+   "title": "Only 47.5% of Staff Know Wellbeing Support Exists",
+   "about": [
+    "Wisdom Wellbeing"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2011,
+   "title": "OGI Networks data breach: 3,300 people's data exposed",
+   "about": [
+    "OGI Networks"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2009,
+   "title": "Nomi's 7-Step Automation List Cuts Month-End Close Hours",
+   "about": [
+    "Nomi"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 2002,
+   "title": "Nvidia's Huang Warns UK on AI, Backs $1.16bn Investment",
+   "about": [],
+   "mentions": [
+    "Anthropic"
+   ]
+  },
+  {
+   "id": 1999,
+   "title": "Facebook Feed Control Lets Users Build 2 Interest Lists",
+   "about": [
+    "Meta",
+    "Metricool"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1987,
+   "title": "Xero Adds Google Gemini, Drawing on 20 Years of Data",
+   "about": [
+    "Google",
+    "Xero"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1974,
+   "title": "BrightHR Launches Tool as Fair Work Agency Fines Hit £7m",
+   "about": [
+    "BrightHR"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1972,
+   "title": "Breathe HR vs HiBob: £24 Plan Beats 12-Month Lock-In",
+   "about": [
+    "Breathe HR"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1970,
+   "title": "Meta Study: 76% of Small Firms Say AI Boosts Productivity",
+   "about": [
+    "Meta"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1968,
+   "title": "WordPress Agent AI Builds Sites in 4 Minutes on Paid Plans",
+   "about": [
+    "WordPress.com"
+   ],
+   "mentions": [
+    "Google",
+    "Hootsuite"
+   ]
+  },
+  {
+   "id": 1966,
+   "title": "Brightpearl Shares 7-Step Stocktake Plan to Cut Disruption",
+   "about": [
+    "Brightpearl"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1964,
+   "title": "Salesforce HMRC Deal: £2bn Tax Tech Shift Explained",
+   "about": [
+    "Salesforce"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1962,
+   "title": "Ciphr Publishes Payroll Comparison, Staffology From £43",
+   "about": [
+    "Ciphr"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1960,
+   "title": "Metricool's 2026 Guide Compares Social Media Ad Costs",
+   "about": [
+    "Metricool"
+   ],
+   "mentions": [
+    "TikTok"
+   ]
+  },
+  {
+   "id": 1952,
+   "title": "67% of Leaders Fear AI Data Breach, Writer Finds",
+   "about": [
+    "Writer"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1950,
+   "title": "Anthropic Warns AI Worms Could Spread Across 15 Devices",
+   "about": [
+    "Anthropic",
+    "Malwarebytes"
+   ],
+   "mentions": [
+    "Google"
+   ]
+  },
+  {
+   "id": 1948,
+   "title": "HubSpot Adds AI Spend Caps, Letting Firms Set Hard Limits",
+   "about": [
+    "HubSpot"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1932,
+   "title": "Best AI Meeting Assistant for Accounting Firms in 2026",
+   "about": [],
+   "mentions": [
+    "FreeAgent",
+    "Microsoft",
+    "Xero"
+   ]
+  },
+  {
+   "id": 1927,
+   "title": "NinjaOne's Katana AI Debuts With 3 Safety Controls for IT Teams",
+   "about": [
+    "NinjaOne"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1911,
+   "title": "1 in 5 Local Listings Vanish From AI Search, Birdeye Finds",
+   "about": [
+    "Birdeye"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1909,
+   "title": "Veeam: Small IT Teams Need Two Numbers Before Backup",
+   "about": [
+    "Veeam"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1893,
+   "title": "Ransomware Gangs Skip Encryption, Steal Data Instead",
+   "about": [
+    "Kaspersky"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1890,
+   "title": "Rejecting Dragons' Den Offer Beats Taking One, Study Finds",
+   "about": [
+    "Dark Horse"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1883,
+   "title": "Cyberattacks Jump 48% in a Year, Check Point Warns",
+   "about": [
+    "Check Point"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1881,
+   "title": "Meta AI Agent Now Answers Customer Chats Free on WhatsApp",
+   "about": [
+    "Meta",
+    "Metricool"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1857,
+   "title": "PM Targets Non-Compete Clauses, Budget Detail Due 28 October",
+   "about": [
+    "Peninsula Business Services"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1855,
+   "title": "Hill House Home's Affiliate Sales Hit 7 Figures, AOV Up 31%",
+   "about": [
+    "impact.com"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1850,
+   "title": "Leyton UK Opens Belfast Hub, Creating 12 Jobs With £66k Aid",
+   "about": [
+    "Leyton UK"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1848,
+   "title": "Claude Opus 5.5 Launches 40% Cheaper, Links to Activepieces",
+   "about": [
+    "Activepieces"
+   ],
+   "mentions": [
+    "Anthropic"
+   ]
+  },
+  {
+   "id": 1846,
+   "title": "Hootsuite Links Claude to Let Owners Publish In-Chat",
+   "about": [
+    "Hootsuite"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1841,
+   "title": "Royal Mail cuts 2,500 jobs as letter deliveries slide 70%",
+   "about": [
+    "Royal Mail"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1834,
+   "title": "Amazon Prime Day: 48-hour sale and what it means for small shops",
+   "about": [
+    "Amazon"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1832,
+   "title": "Google Workspace Adds Voice Tools, Links Gemini to 11 Apps",
+   "about": [
+    "Google"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1819,
+   "title": "Greg Jackson: Octopus runs 13,000 staff with no HR or bonuses",
+   "about": [
+    "Octopus Energy"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1815,
+   "title": "BT's £400m TalkTalk Rescue: What It Means for Your Broadband",
+   "about": [
+    "BT",
+    "TalkTalk"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1809,
+   "title": "AI Meeting Assistant for Bookkeeping Firms: 6 Tools Compared",
+   "about": [],
+   "mentions": [
+    "FreeAgent",
+    "Google",
+    "Microsoft",
+    "Xero",
+    "Zapier"
+   ]
+  },
+  {
+   "id": 1806,
+   "title": "AI Overviews Now Appear on 83% of Branded Searches",
+   "about": [
+    "Ahrefs"
+   ],
+   "mentions": [
+    "Google"
+   ]
+  },
+  {
+   "id": 1799,
+   "title": "Inntelo AI Partners HFTP to Serve Hospitality in 50 Languages",
+   "about": [
+    "Inntelo AI"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1793,
+   "title": "41% of CISOs Report Deepfake Social Engineering, Gartner Finds",
+   "about": [
+    "Egress",
+    "KnowBe4"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1782,
+   "title": "KnowBe4 Launches Agent Risk Manager to Govern Claude AI Use",
+   "about": [
+    "Egress",
+    "KnowBe4"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1780,
+   "title": "Cloudflare's Turnstile Spin Fixes Security, 65,000 Widgets",
+   "about": [
+    "Cloudflare"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1553,
+   "title": "FreeAgent Publishes 7-Point Accounting Software Checklist",
+   "about": [
+    "FreeAgent"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1549,
+   "title": "CreatePay wins Allica Orange Hat Plaque in Milton Keynes",
+   "about": [
+    "Allica Bank",
+    "CreatePay"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1532,
+   "title": "Fake Claude Max Giveaway Scam Steals Google Logins: 10,000 Slots",
+   "about": [
+    "Google",
+    "Malwarebytes"
+   ],
+   "mentions": [
+    "Anthropic"
+   ]
+  },
+  {
+   "id": 1526,
+   "title": "AI Shopping Agents Now Handle Search and Checkout, MYOB Warns",
+   "about": [
+    "impact.com",
+    "MYOB"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1521,
+   "title": "Kaspersky: 86% of Small Firms Hit by Cyberattack in a Year",
+   "about": [
+    "Kaspersky"
+   ],
+   "mentions": [
+    "Arctic Wolf"
+   ]
+  },
+  {
+   "id": 1517,
+   "title": "Malwarebytes Finds 100+ Fake AI Sites Selling $2,000 Plans",
+   "about": [
+    "Malwarebytes"
+   ],
+   "mentions": [
+    "Google"
+   ]
+  },
+  {
+   "id": 1492,
+   "title": "inFlow Lists 9 Signs You've Outgrown Spreadsheets for Inventory",
+   "about": [
+    "inFlow"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1460,
+   "title": "Semrush Shares 16 AI Prompts for Claude and ChatGPT Users",
+   "about": [
+    "Semrush"
+   ],
+   "mentions": [
+    "Xero"
+   ]
+  },
+  {
+   "id": 1458,
+   "title": "ServiceM8 15 Launches: What Trade Firms Should Check First",
+   "about": [
+    "ServiceM8"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1456,
+   "title": "RatHat Android Malware Uses AI to Steal PINs via 6-Digit Code",
+   "about": [
+    "Malwarebytes"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1442,
+   "title": "Pleo Launches MCP AI Connector for Claude, ChatGPT, Copilot",
+   "about": [
+    "Pleo"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1438,
+   "title": "Claude Overtakes Copilot as UK's Top AI Skill, Up 925%",
+   "about": [
+    "Adzuna"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1436,
+   "title": "Firefox's New AI Assistant Runs on Mistral in 2 Markets",
+   "about": [
+    "Mistral AI"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1407,
+   "title": "RAC Warns Diesel Prices to Hit New High as Oil Nears $108",
+   "about": [
+    "RAC"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1401,
+   "title": "Amazon Raises UK Minimum Pay to £31,408: What SMEs Do Next",
+   "about": [
+    "Amazon"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1370,
+   "title": "Southern Electric Saves 30 Hours a Month Switching to inFlow",
+   "about": [
+    "inFlow"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1364,
+   "title": "Xero Links Live Books to Claude and ChatGPT for 5 Million Users",
+   "about": [
+    "Xero"
+   ],
+   "mentions": [
+    "Anthropic"
+   ]
+  },
+  {
+   "id": 1362,
+   "title": "Microsoft 365 Phishing Flaw Lets Emails Skip Sender Checks",
+   "about": [
+    "Egress",
+    "KnowBe4",
+    "Microsoft"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1329,
+   "title": "Sendible: Threads Posts Google Now Indexes Drive Free Traffic",
+   "about": [
+    "Google",
+    "Sendible"
+   ],
+   "mentions": [
+    "TikTok"
+   ]
+  },
+  {
+   "id": 1327,
+   "title": "Salesforce Launches Seven Job-Ready AI Agents Inside Agentforce",
+   "about": [
+    "Salesforce"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1317,
+   "title": "Fake Voicemail Emails Target 7,800 Firms, Check Point Warns",
+   "about": [
+    "Check Point"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1293,
+   "title": "Dropbox Launches ChatGPT Integration for Business Files",
+   "about": [
+    "Dropbox"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1291,
+   "title": "Arctic Wolf: AI Cyber Risk Now Tops Ransomware for UK Firms",
+   "about": [
+    "Arctic Wolf"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1287,
+   "title": "FBI Issues OAuth Phishing Warning as Messaging Accounts Hijacked",
+   "about": [
+    "Egress",
+    "KnowBe4"
+   ],
+   "mentions": [
+    "Barracuda"
+   ]
+  },
+  {
+   "id": 1271,
+   "title": "Salesforce Completes Fin Acquisition: What UK SMEs Should Check",
+   "about": [
+    "Salesforce"
+   ],
+   "mentions": [
+    "Celerant"
+   ]
+  },
+  {
+   "id": 1238,
+   "title": "Later Mavely Affiliate Network Merges Into One Platform: What It Means for UK SMEs",
+   "about": [
+    "Later"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1222,
+   "title": "Simply Business Finds Economic Worry Triples to 48% as SMEs Absorb Rising Costs",
+   "about": [
+    "Simply Business"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1220,
+   "title": "MessageMedia Becomes Sinch Engage: 5 Things UK Business SMS Users Must Update",
+   "about": [
+    "Sinch"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1217,
+   "title": "Saledock Becomes Celerant ONE: What Retailers Using the Platform Should Check Now",
+   "about": [
+    "Celerant"
+   ],
+   "mentions": [
+    "Xero"
+   ]
+  },
+  {
+   "id": 1215,
+   "title": "AI Social Media Tools for Small Businesses: Posting, Replying and Reporting Without a Team",
+   "about": [],
+   "mentions": [
+    "Hootsuite",
+    "Metricool",
+    "Vista Social"
+   ]
+  },
+  {
+   "id": 1196,
+   "title": "Best Business Broadband for UK Small Firms in 2026: Nine Providers Compared",
+   "about": [],
+   "mentions": [
+    "Openreach",
+    "TalkTalk"
+   ]
+  },
+  {
+   "id": 1177,
+   "title": "HubSpot vs SharpSpring Compared: What EngageBay's 2026 Test Means for SME Buyers",
+   "about": [
+    "EngageBay",
+    "HubSpot"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1154,
+   "title": "AI for Small Business Marketing: The Tools That Actually Save a Small Team Time",
+   "about": [],
+   "mentions": [
+    "Google",
+    "Hootsuite",
+    "Semrush",
+    "Vista Social"
+   ]
+  },
+  {
+   "id": 1152,
+   "title": "Best AI Tools for Small Business in 2026: 6 Jobs, Real UK Prices and What to Buy First",
+   "about": [],
+   "mentions": [
+    "FreeAgent",
+    "Google",
+    "Microsoft",
+    "Xero"
+   ]
+  },
+  {
+   "id": 1150,
+   "title": "Zoho Sign Adds EU Qualified E-Signatures via SIGN8: What UK Firms Signing Six-Figure Contracts Need to Check",
+   "about": [
+    "Zoho"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1133,
+   "title": "How to Use AI in Your Small Business: A Plain-English Starter Guide for 2026",
+   "about": [],
+   "mentions": [
+    "FreeAgent",
+    "Pictory"
+   ]
+  },
+  {
+   "id": 1112,
+   "title": "What business software really costs in 2026: 188 vendor price lists checked",
+   "about": [],
+   "mentions": [
+    "Zoho"
+   ]
+  },
+  {
+   "id": 1110,
+   "title": "Card Surcharging Banned in the UK Since 2018: What SMEs Need to Know Instead",
+   "about": [],
+   "mentions": [
+    "GoCardless",
+    "Xero"
+   ]
+  },
+  {
+   "id": 1092,
+   "title": "24 Billion Stolen Logins Found in One Database: Barracuda Warns the Browser Is Now Cybercrime's Favourite Target",
+   "about": [
+    "Barracuda"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1090,
+   "title": "HubSpot vs Zoho CRM Comparison Flags a £1,000-a-Month Price Jump: What It Means for UK SMEs Choosing a CRM",
+   "about": [
+    "EngageBay",
+    "HubSpot",
+    "Zoho"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1076,
+   "title": "BCC Warns Employment Rights Bill Will Raise Costs for Small Employers",
+   "about": [],
+   "mentions": [
+    "Breathe HR",
+    "Xero"
+   ]
+  },
+  {
+   "id": 1074,
+   "title": "Semrush Maps 4 Routes to AI Search Visibility for Small Businesses",
+   "about": [
+    "Semrush"
+   ],
+   "mentions": [
+    "Google"
+   ]
+  },
+  {
+   "id": 1052,
+   "title": "Katana Connects Manufacturing Platform to Claude, ChatGPT and Gemini: 6 Jobs SME Makers Can Now Run by Chat",
+   "about": [],
+   "mentions": [
+    "Google"
+   ]
+  },
+  {
+   "id": 1050,
+   "title": "D-ID Guide: AI Customer Avatars Need Four Systems Working Together in Under One Second",
+   "about": [
+    "D-ID"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1033,
+   "title": "FreeAgent VAT Functionality Update: 7 Changes for MTD Filing",
+   "about": [
+    "FreeAgent"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 975,
+   "title": "Nutshell Launches Smart Sequences: One Email Workflow Replaces Four Separate Automations",
+   "about": [
+    "Nutshell"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 949,
+   "title": "Factorial Splits ISO 27001 Software Into Two Layers: 6 Tools UK Small Businesses Should Shortlist",
+   "about": [
+    "Factorial"
+   ],
+   "mentions": [
+    "Microsoft",
+    "NinjaOne"
+   ]
+  },
+  {
+   "id": 947,
+   "title": "Hostinger Wins Two US Patents for AI and Server Tech: What It Means for Small Business Websites",
+   "about": [
+    "Hostinger"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 919,
+   "title": "Deputy Named Global Payroll Solution of the Year as Processing Time Falls 83%",
+   "about": [
+    "Deputy"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 917,
+   "title": "Pictory Guide Shows SMEs How to Make 20 AI UGC Ads in an Afternoon, With One Legal Catch",
+   "about": [
+    "Pictory"
+   ],
+   "mentions": [
+    "Vista Social"
+   ]
+  },
+  {
+   "id": 895,
+   "title": "Voice Phishing Doubles and Device Code Attacks Surge 15-Fold, KnowBe4 Warns SMEs",
+   "about": [
+    "KnowBe4"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 893,
+   "title": "Buffer Data Shows Hootsuite Can Cost 12 Times More for a Small Social Media Team",
+   "about": [
+    "Buffer",
+    "Hootsuite"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 891,
+   "title": "Vista Social Lists Six Questions to Get Social Media Tools Past AI Security Review",
+   "about": [
+    "Vista Social"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 889,
+   "title": "Salesforce and Anthropic Launch Claudeforce, Putting 37 AI Sales Skills Inside One Chat Window",
+   "about": [
+    "Anthropic",
+    "Salesforce"
+   ],
+   "mentions": [
+    "JumpCloud"
+   ]
+  },
+  {
+   "id": 883,
+   "title": "AI Agent Access Runs Wild at 83% of Firms, JumpCloud Warns",
+   "about": [
+    "JumpCloud"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 863,
+   "title": "Chaser Ranks 14 Order-to-Cash Platforms for 2026: What SMEs Should Take From It",
+   "about": [
+    "Chaser"
+   ],
+   "mentions": [
+    "Time Finance"
+   ]
+  },
+  {
+   "id": 843,
+   "title": "Intel Survey: 6 in 10 Leaders Plan Robot Fleets, Only 4 in 10 Have a Strategy",
+   "about": [
+    "Intel"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 517,
+   "title": "Law Firm's Two-Minute Lead Response Powered by Zapier Saves 66 Hours a Month",
+   "about": [
+    "Zapier"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 513,
+   "title": "Best Email Marketing Platforms for Deliverability in 2026: What Actually Lands in the Inbox",
+   "about": [],
+   "mentions": [
+    "Google"
+   ]
+  },
+  {
+   "id": 511,
+   "title": "Vibe Coding Security Risk: 20i Finds 1 in 5 Firms Already Breached",
+   "about": [
+    "20i"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 507,
+   "title": "Inflation Business Lending Squeeze: 4 Steps Swoop Funding Says SMEs Should Take Now",
+   "about": [
+    "Swoop Funding"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 496,
+   "title": "n8n Compares 6 Workato Alternatives as Per-Task Billing Pushes Teams to Shop Around",
+   "about": [
+    "n8n"
+   ],
+   "mentions": [
+    "Microsoft"
+   ]
+  },
+  {
+   "id": 494,
+   "title": "Vestd Launches MCP Server for Claude and ChatGPT: What UK Startups Need to Know",
+   "about": [
+    "Vestd"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 488,
+   "title": "Redsquid Buys ARK ICT to Grow IT Support Across Two Markets: What It Means for SMEs Using a Managed Provider",
+   "about": [
+    "ARK ICT",
+    "Redsquid"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 486,
+   "title": "The Gentlemen Ransomware Gang: What Small Businesses Need to Know",
+   "about": [
+    "Barracuda"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 485,
+   "title": "How to Write an AI Usage Policy for Your Small Business: A Practical UK Guide",
+   "about": [],
+   "mentions": [
+    "Anthropic",
+    "Microsoft"
+   ]
+  },
+  {
+   "id": 469,
+   "title": "Time Finance Agrees £55m Takeover by Ultimate Finance Parent: What It Means for SMEs Using Asset and Invoice Finance",
+   "about": [
+    "Time Finance",
+    "Ultimate Finance"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 467,
+   "title": "Claude Watermarks Its Output: What UK Small Businesses Publishing AI Content Need to Know",
+   "about": [],
+   "mentions": [
+    "Anthropic",
+    "Google",
+    "Microsoft"
+   ]
+  },
+  {
+   "id": 465,
+   "title": "Flagstone Adds US Dollar and Euro SME Savings Accounts: What It Means for Firms Holding Foreign Currency",
+   "about": [
+    "Flagstone"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 452,
+   "title": "Actionstep Launches AI Built for Law Firms: What Small UK Practices Should Weigh Up",
+   "about": [
+    "Actionstep"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 450,
+   "title": "Zoho Expense MCP: How Conversational Expense Workflows Cut Admin for Small Teams",
+   "about": [
+    "Zoho"
+   ],
+   "mentions": [
+    "Pleo"
+   ]
+  },
+  {
+   "id": 442,
+   "title": "The Small Business Plan One Year On: What Fairhurst Accountants Found and What It Means for SMEs",
+   "about": [
+    "Fairhurst Accountants"
+   ],
+   "mentions": [
+    "FreeAgent",
+    "Funding Circle",
+    "Xero"
+   ]
+  },
+  {
+   "id": 440,
+   "title": "Dell Study: UK SME AI Front-Runners Save the Most Time, Here's What They Do Differently",
+   "about": [
+    "Dell"
+   ],
+   "mentions": [
+    "Anthropic",
+    "Google",
+    "Microsoft",
+    "Zapier"
+   ]
+  },
+  {
+   "id": 438,
+   "title": "Countingup and Griffin Now Power MoneySuperMarket Business Banking: What SMEs Should Know",
+   "about": [
+    "Countingup",
+    "Griffin",
+    "MoneySuperMarket"
+   ],
+   "mentions": [
+    "ANNA Money",
+    "FreeAgent",
+    "Starling Bank",
+    "Xero"
+   ]
+  },
+  {
+   "id": 437,
+   "title": "Recognise Bank Launches Five-Year Fixed Commercial Mortgage: What It Means for SMEs Buying Premises",
+   "about": [
+    "Recognise Bank"
+   ],
+   "mentions": [
+    "Allica Bank"
+   ]
+  },
+  {
+   "id": 435,
+   "title": "Government Dodgy Shop Crackdown: What Legitimate Retailers Should Do Now",
+   "about": [],
+   "mentions": [
+    "FreeAgent",
+    "Xero"
+   ]
+  },
+  {
+   "id": 433,
+   "title": "How to Close a Business Bank Account in the UK: Steps, Timing and What to Check First",
+   "about": [],
+   "mentions": [
+    "ANNA Money",
+    "Metro Bank"
+   ]
+  },
+  {
+   "id": 431,
+   "title": "6 Best All-In-One IT Management Platforms for Remote Teams",
+   "about": [],
+   "mentions": [
+    "JumpCloud",
+    "Microsoft",
+    "NinjaOne"
+   ]
+  },
+  {
+   "id": 429,
+   "title": "Xero Research: AI Adoption Doubled Profitability at Top UK Accounting Firms",
+   "about": [
+    "Xero"
+   ],
+   "mentions": [
+    "FreeAgent"
+   ]
+  },
+  {
+   "id": 428,
+   "title": "Xero's New Auto Bank Reconciliation: What Changes for Small Business Bookkeeping",
+   "about": [
+    "Xero"
+   ],
+   "mentions": [
+    "FreeAgent"
+   ]
+  },
+  {
+   "id": 427,
+   "title": "'Chaotic' Jobs Reform Could Cost Firms £3bn: What the Zero-Hours Crackdown Means for Small Employers",
+   "about": [],
+   "mentions": [
+    "BrightHR"
+   ]
+  },
+  {
+   "id": 425,
+   "title": "ChatGPT Launches Small Business Agent With Free In-Person Training: What UK SMEs Actually Get",
+   "about": [],
+   "mentions": [
+    "Anthropic",
+    "Google",
+    "Microsoft",
+    "Zapier"
+   ]
+  },
+  {
+   "id": 423,
+   "title": "The Real Cost of a Failed Card Payment: What UK Small Businesses Can Do to Cut Losses",
+   "about": [],
+   "mentions": [
+    "GoCardless"
+   ]
+  },
+  {
+   "id": 421,
+   "title": "Business Rates Reform: What the Shift From Small Shops to Big Retailers Would Mean for Your High Street Business",
+   "about": [],
+   "mentions": [
+    "FreeAgent",
+    "Xero"
+   ]
+  },
+  {
+   "id": 419,
+   "title": "Staff Think They Can Spot Scams, the Data Says Otherwise: What the Egress (KnowBe4) Report Found",
+   "about": [
+    "Egress",
+    "KnowBe4"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 417,
+   "title": "How to Refinance a Commercial Property: A Practical Guide for UK Small Businesses",
+   "about": [],
+   "mentions": [
+    "Allica Bank"
+   ]
+  },
+  {
+   "id": 415,
+   "title": "Year One of MTD for Income Tax: What Sole Traders and Landlords Must Do Now",
+   "about": [],
+   "mentions": [
+    "FreeAgent"
+   ]
+  },
+  {
+   "id": 412,
+   "title": "Bakery Consultancy Fussnegger Backs Its Advice With a £35,000 Test Bakery",
+   "about": [
+    "Fussnegger"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 404,
+   "title": "Proton: An Autonomous AI Hacked a Small Business, Here's How to Protect Yours",
+   "about": [
+    "Proton"
+   ],
+   "mentions": [
+    "Anthropic",
+    "Google"
+   ]
+  },
+  {
+   "id": 400,
+   "title": "Late Payment: Why the UK's Biggest Firms Are the Worst Payers and How Small Businesses Can Push Back",
+   "about": [],
+   "mentions": [
+    "FreeAgent",
+    "GoCardless",
+    "Xero"
+   ]
+  },
+  {
+   "id": 394,
+   "title": "How to Start an Online Clothing Store in the UK in 2026: Print-on-Demand Platforms Compared",
+   "about": [],
+   "mentions": [
+    "TikTok",
+    "WooCommerce"
+   ]
+  },
+  {
+   "id": 390,
+   "title": "How Much Do UK Small Business Owners Actually Make? Real Numbers for 2026",
+   "about": [],
+   "mentions": [
+    "FreeAgent",
+    "Xero"
+   ]
+  },
+  {
+   "id": 388,
+   "title": "EDF and Heliotec Launch Solar Partnership to Cut Small Business Energy Bills",
+   "about": [
+    "EDF",
+    "Heliotec"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 386,
+   "title": "Best Payroll Software for UK Small Businesses in 2026: Compared and Costed",
+   "about": [],
+   "mentions": [
+    "FreeAgent",
+    "Xero"
+   ]
+  },
+  {
+   "id": 384,
+   "title": "Crystal Ball Tops a UK Fleet Platform List: 4 Rivals Trades With Vehicles Should Still Compare",
+   "about": [
+    "Crystal Ball"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 382,
+   "title": "Funding Circle Lands £500m From Castlelake to Fund More SME Loans",
+   "about": [
+    "Funding Circle"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 378,
+   "title": "ACCA Warns on HMRC Self-Assessment Changes: What Sole Traders Need to Watch",
+   "about": [],
+   "mentions": [
+    "FreeAgent",
+    "Google",
+    "Xero"
+   ]
+  },
+  {
+   "id": 376,
+   "title": "The Cheapest UK Domain Registrars Compared for Small Business in 2026",
+   "about": [],
+   "mentions": [
+    "Cloudflare",
+    "Fasthosts"
+   ]
+  },
+  {
+   "id": 372,
+   "title": "Airbnb Reports Record Host Earnings: Lessons for UK Short-Let Owners",
+   "about": [
+    "Airbnb"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 370,
+   "title": "Shadow AI: The Hidden Risk When Staff Use AI Tools You Never Approved",
+   "about": [],
+   "mentions": [
+    "Google",
+    "Microsoft"
+   ]
+  },
+  {
+   "id": 359,
+   "title": "UK Cyber Security Breaches Survey 2026: The Threats Hitting Small Businesses Hardest",
+   "about": [],
+   "mentions": [
+    "Malwarebytes",
+    "Microsoft"
+   ]
+  },
+  {
+   "id": 357,
+   "title": "Proposed National Insurance Cut for Under-25s: How It Could Change Your Hiring Plans",
+   "about": [],
+   "mentions": [
+    "Xero"
+   ]
+  },
+  {
+   "id": 355,
+   "title": "How Amazon Ads Is Using AI to Help Small Businesses Advertise for Less",
+   "about": [
+    "Amazon"
+   ],
+   "mentions": [
+    "Google",
+    "Microsoft"
+   ]
+  },
+  {
+   "id": 351,
+   "title": "UK Small Business Software: The Tools Every Owner Should Consider in 2026",
+   "about": [],
+   "mentions": [
+    "FreeAgent",
+    "GoCardless",
+    "HubSpot",
+    "Malwarebytes",
+    "Xero"
+   ]
+  },
+  {
+   "id": 349,
+   "title": "What's New in WooCommerce 11.0: Faster Product Pages and Analytics Updates for UK Store Owners",
+   "about": [
+    "WooCommerce"
+   ],
+   "mentions": [
+    "Google"
+   ]
+  },
+  {
+   "id": 347,
+   "title": "Metro Bank Grows Small Business Lending: What It Means for SMEs Seeking Finance",
+   "about": [
+    "Metro Bank"
+   ],
+   "mentions": [
+    "Barclays",
+    "Funding Circle",
+    "Starling Bank"
+   ]
+  },
+  {
+   "id": 343,
+   "title": "TikTok Shop Is Booming Among UK Small Business Sellers: What Retailers Should Do Now",
+   "about": [
+    "TikTok"
+   ],
+   "mentions": [
+    "Amazon"
+   ]
+  },
+  {
+   "id": 340,
+   "title": "Nationwide Becomes Sole Banking Partner for the Women-Led Rise to Scale Programme",
+   "about": [
+    "Nationwide"
+   ],
+   "mentions": [
+    "Barclays"
+   ]
+  },
+  {
+   "id": 338,
+   "title": "ANNA Money and Admiral Bring Business Insurance Into Everyday SME Admin",
+   "about": [
+    "Admiral",
+    "ANNA Money"
+   ],
+   "mentions": [
+    "Simply Business"
+   ]
+  },
+  {
+   "id": 336,
+   "title": "Labour Fraud in Construction: What HMRC Wants Contractors and Subcontractors to Check",
+   "about": [],
+   "mentions": [
+    "FreeAgent",
+    "Xero"
+   ]
+  },
+  {
+   "id": 333,
+   "title": "Vestd: Are Exit-Only Share Option Schemes Still Working for Founders?",
+   "about": [
+    "Vestd"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 331,
+   "title": "Innovate UK Backs 100 Women Founders: How Your Small Business Can Apply for Support",
+   "about": [],
+   "mentions": [
+    "FreeAgent",
+    "Xero"
+   ]
+  },
+  {
+   "id": 251,
+   "title": "How a Leeds Fitness Studio Grew Its Membership: Lessons for Small Businesses",
+   "about": [],
+   "mentions": [
+    "FreeAgent",
+    "Google",
+    "Xero"
+   ]
+  },
+  {
+   "id": 250,
+   "title": "AI Is Reshaping Product Discovery, But Trust Still Drives Sales for Small Marketers",
+   "about": [],
+   "mentions": [
+    "Google",
+    "impact.com",
+    "Microsoft"
+   ]
+  },
+  {
+   "id": 248,
+   "title": "How to Use Trending Audio on Instagram Reels to Get More Reach for a Small Business",
+   "about": [],
+   "mentions": [
+    "Metricool"
+   ]
+  },
+  {
+   "id": 246,
+   "title": "New EU Shipping Rules: What UK Online Sellers Must Change Now",
+   "about": [],
+   "mentions": [
+    "Amazon",
+    "Royal Mail",
+    "WooCommerce"
+   ]
+  },
+  {
+   "id": 244,
+   "title": "Asset Finance Explained: Funding Vehicles, Diggers and Equipment for UK Trades",
+   "about": [],
+   "mentions": [
+    "Swoop Funding"
+   ]
+  },
+  {
+   "id": 241,
+   "title": "Best Email Marketing Platforms for UK Small Businesses in 2026",
+   "about": [],
+   "mentions": [
+    "WooCommerce"
+   ]
+  },
+  {
+   "id": 240,
+   "title": "How to Improve Your Small Business Marketing With AI Tools in 2026",
+   "about": [],
+   "mentions": [
+    "Google",
+    "Hootsuite",
+    "Microsoft",
+    "Semrush"
+   ]
+  },
+  {
+   "id": 234,
+   "title": "How to Get Your Small Business Found in AI Search: Tools and Tactics for 2026",
+   "about": [],
+   "mentions": [
+    "Ahrefs",
+    "Google",
+    "Semrush"
+   ]
+  },
+  {
+   "id": 232,
+   "title": "Securing AI Agents: KnowBe4 Says SMEs Must Protect Both People and Machines",
+   "about": [
+    "KnowBe4"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 230,
+   "title": "Day-One Employment Rights: What UK Small Employers Must Change Now",
+   "about": [],
+   "mentions": [
+    "BrightHR",
+    "Xero"
+   ]
+  },
+  {
+   "id": 222,
+   "title": "Malwarebytes Lands on the Microsoft Store, Why That's Good News for SME Security",
+   "about": [
+    "Malwarebytes",
+    "Microsoft"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 198,
+   "title": "Starting an AI Services Business in the UK: Services and Pricing",
+   "about": [],
+   "mentions": [
+    "Google"
+   ]
+  },
+  {
+   "id": 188,
+   "title": "The Hims & Hers Lawsuit: What It Teaches SMEs About Privacy Promises",
+   "about": [
+    "Malwarebytes"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 146,
+   "title": "Agentic Commerce: What AI Shopping Agents Mean for Small Retailers",
+   "about": [
+    "GoCardless"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 142,
+   "title": "Online Store Security: A Simple Routine to Catch Problems Early",
+   "about": [
+    "WooCommerce"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 140,
+   "title": "Shopify vs WooCommerce vs Squarespace: UK Online Store 2026",
+   "about": [
+    "WooCommerce"
+   ],
+   "mentions": [
+    "Google"
+   ]
+  },
+  {
+   "id": 137,
+   "title": "Cash Flow Forecasting for Small Business: The 13-Week Method",
+   "about": [],
+   "mentions": [
+    "Xero"
+   ]
+  },
+  {
+   "id": 138,
+   "title": "Local SEO for Small Business: How to Win Google's Map Pack",
+   "about": [
+    "Google"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 132,
+   "title": "Using ChatGPT and Copilot at Work Without Breaking UK GDPR",
+   "about": [],
+   "mentions": [
+    "Microsoft"
+   ]
+  },
+  {
+   "id": 128,
+   "title": "Best CRM for Small Business UK 2026: Compared, Costed and Ranked",
+   "about": [],
+   "mentions": [
+    "HubSpot",
+    "Salesforce",
+    "Zoho"
+   ]
+  },
+  {
+   "id": 51,
+   "title": "Claude, ChatGPT or Copilot: Which AI Assistant Fits Your Firm?",
+   "about": [],
+   "mentions": [
+    "Google",
+    "Microsoft"
+   ]
+  },
+  {
+   "id": 35,
+   "title": "Why Your Website's “Hidden Blueprint” Could Be Costing You Customers",
+   "about": [
+    "Wix"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 31,
+   "title": "Invoice Automation UK: A Beginner's Guide to Automating Invoices and Payments",
+   "about": [],
+   "mentions": [
+    "FreeAgent",
+    "GoCardless",
+    "Xero"
+   ]
+  },
+  {
+   "id": 32,
+   "title": "How to Build a Business Workflow Automation Without Coding",
+   "about": [],
+   "mentions": [
+    "Microsoft",
+    "Zapier",
+    "Zoho"
+   ]
+  },
+  {
+   "id": 34,
+   "title": "The Copilot 'AI Worm': Why This Hidden Word Document Threat Should Worry SMEs",
+   "about": [
+    "Malwarebytes"
+   ],
+   "mentions": [
+    "Microsoft"
+   ]
+  },
+  {
+   "id": 28,
+   "title": "Best AI Accounting Tools for UK Small Businesses in 2026",
+   "about": [],
+   "mentions": [
+    "FreeAgent",
+    "Xero"
+   ]
+  },
+  {
+   "id": 29,
+   "title": "Microsoft Copilot vs Google Gemini: Which AI Assistant Is Right for Your Business?",
+   "about": [
+    "Google",
+    "Microsoft"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 22,
+   "title": "How UK Small Businesses Can Start Using AI in 2026 (Without a Tech Team)",
+   "about": [],
+   "mentions": [
+    "Anthropic",
+    "Google",
+    "Microsoft"
+   ]
+  },
+  {
+   "id": 16,
+   "title": "Smart SME: Practical AI Guidance for UK Small Businesses",
+   "about": [],
+   "mentions": [
+    "Microsoft"
+   ]
+  }
+ ]
+}

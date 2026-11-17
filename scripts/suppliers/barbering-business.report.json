@@ -1,0 +1,1006 @@
+{
+ "site": "barbering-business",
+ "posts": 197,
+ "suppliers": 32,
+ "taggedArticles": 99,
+ "aboutLinks": 79,
+ "mentionLinks": 50,
+ "perSupplier": [
+  {
+   "name": "Phorest",
+   "about": 8,
+   "mentions": 13
+  },
+  {
+   "name": "Treatwell",
+   "about": 4,
+   "mentions": 8
+  },
+  {
+   "name": "Fresha",
+   "about": 1,
+   "mentions": 10
+  },
+  {
+   "name": "Reuzel",
+   "about": 7,
+   "mentions": 2
+  },
+  {
+   "name": "Simply Business",
+   "about": 8,
+   "mentions": 0
+  },
+  {
+   "name": "The Bluebeards Revenge",
+   "about": 6,
+   "mentions": 2
+  },
+  {
+   "name": "Wahl",
+   "about": 4,
+   "mentions": 4
+  },
+  {
+   "name": "Uppercut Deluxe",
+   "about": 6,
+   "mentions": 0
+  },
+  {
+   "name": "Booksy",
+   "about": 1,
+   "mentions": 4
+  },
+  {
+   "name": "Mentored By Menspire",
+   "about": 3,
+   "mentions": 1
+  },
+  {
+   "name": "Morgan's Pomade",
+   "about": 4,
+   "mentions": 0
+  },
+  {
+   "name": "Novo Cabelo",
+   "about": 2,
+   "mentions": 2
+  },
+  {
+   "name": "StyleCraft",
+   "about": 1,
+   "mentions": 2
+  },
+  {
+   "name": "TiPJAR",
+   "about": 3,
+   "mentions": 0
+  },
+  {
+   "name": "Andis",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Captain Fawcett",
+   "about": 2,
+   "mentions": 0
+  },
+  {
+   "name": "Hair Gain",
+   "about": 2,
+   "mentions": 0
+  },
+  {
+   "name": "Leaf Scissors",
+   "about": 2,
+   "mentions": 0
+  },
+  {
+   "name": "OSMO",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Aveda",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Barber Temple",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Baxter of California",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Beauty Works",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "BetterDays",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Church California Pro",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "COCCO",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Enki Towels",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "GAMMA+",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "GLOWWA",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "HUSH Pro",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Intuit",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Kleek",
+   "about": 1,
+   "mentions": 0
+  }
+ ],
+ "registryWithNoAboutArticle": [],
+ "articles": [
+  {
+   "id": 1342,
+   "title": "Reuzel's Scalp Serum Guide Tells Barbers When to Stock It",
+   "about": [
+    "Reuzel"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1338,
+   "title": "Treatwell's Christmas Countdown Tells Clients When to Book",
+   "about": [
+    "Treatwell"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1332,
+   "title": "Bluebeards Revenge Guide Pushes Exfoliation as a 3-a-Week Upsell",
+   "about": [
+    "The Bluebeards Revenge"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1328,
+   "title": "Captain Fawcett Spoofs Bond With 6-Piece Secret Agent Kit",
+   "about": [
+    "Captain Fawcett"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1326,
+   "title": "Maryland Barber Wins $25,000 in Wahl Benevolent Beards Contest",
+   "about": [
+    "Wahl"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1318,
+   "title": "Mustache Searches Up 5,000% This Movember: Stock the Upsell",
+   "about": [],
+   "mentions": [
+    "The Bluebeards Revenge"
+   ]
+  },
+  {
+   "id": 1309,
+   "title": "BCC and Intuit Launch Free AI Tour, Cite 10% GDP Boost",
+   "about": [
+    "Intuit"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1293,
+   "title": "Uppercut Deluxe Pomade Gets Two New Scents for 2026",
+   "about": [
+    "Uppercut Deluxe"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1283,
+   "title": "Reuzel's Gift Guide Names 6 Things Barbers Actually Use",
+   "about": [
+    "Reuzel"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1271,
+   "title": "JJ Savani's Blueprint Partners With COCCO, Intake Opens 16 Nov",
+   "about": [
+    "COCCO"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1265,
+   "title": "Leaf Scissors Launches Rooted In Films Aimed at Junior Barbers",
+   "about": [
+    "Leaf Scissors"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1263,
+   "title": "Captain Fawcett's 2-Step Growth Ritual Lands With 5 Barber Tips",
+   "about": [
+    "Captain Fawcett"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1245,
+   "title": "Andis Launches Talon Clipper and Trimmer With 2-Speed Motors",
+   "about": [
+    "Andis"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1228,
+   "title": "Bluebeards Revenge Pushes Men's Conditioner as a 2-Minute Upsell",
+   "about": [
+    "The Bluebeards Revenge"
+   ],
+   "mentions": [
+    "Reuzel"
+   ]
+  },
+  {
+   "id": 1223,
+   "title": "HMRC Auto-Enrols Self-Employed Barbers Earning £50k Into MTD",
+   "about": [
+    "Simply Business"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1221,
+   "title": "Church California Pro Ran 7-8 Classes in Its First Year",
+   "about": [
+    "Church California Pro"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1219,
+   "title": "Storm Austen barbershop checklist: what to check before Friday",
+   "about": [
+    "Simply Business"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1216,
+   "title": "Phorest Wins B2B Customer Experience Award, Cites 61% Fix",
+   "about": [
+    "Phorest"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1213,
+   "title": "Aveda's Christmas 2026 Gift Sets Lead With Ritual Bloom",
+   "about": [
+    "Aveda"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1207,
+   "title": "Beauty Works Launches First Straighteners, Signs Attwood",
+   "about": [
+    "Beauty Works"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1205,
+   "title": "Hair Gain's 2026 Christmas Range: 5 Sets From £15 to £49.50",
+   "about": [
+    "Hair Gain"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1201,
+   "title": "Novo Cabelo's Rob Wood Launches The Root of It All Podcast",
+   "about": [
+    "Novo Cabelo"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1199,
+   "title": "Right to Rent Checks Change: £5,000 Fines for Landlords",
+   "about": [
+    "Simply Business"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1197,
+   "title": "Morgan's Pomade Adds £12 Vegan Hair Cream to Range",
+   "about": [
+    "Morgan's Pomade"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1173,
+   "title": "Baxter of California Guide Names 5 Clay Pomade Styles to Sell",
+   "about": [
+    "Baxter of California"
+   ],
+   "mentions": [
+    "The Bluebeards Revenge"
+   ]
+  },
+  {
+   "id": 1171,
+   "title": "Barber Makes Haircuts Sensory-Friendly for 80% Child Clients",
+   "about": [],
+   "mentions": [
+    "StyleCraft"
+   ]
+  },
+  {
+   "id": 1167,
+   "title": "Phorest Launches AI Features to Cut Barbershop Admin Time",
+   "about": [
+    "Phorest"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1163,
+   "title": "Booksy Signs 3 Barber Ambassadors in US Marketing Push",
+   "about": [
+    "Booksy"
+   ],
+   "mentions": [
+    "Phorest"
+   ]
+  },
+  {
+   "id": 1161,
+   "title": "Reuzel's Beard Guide Admits No Growth, Sells the Itch Fix",
+   "about": [
+    "Reuzel"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1159,
+   "title": "Best Referral and Win-Back Marketing Tools for UK Barbershops",
+   "about": [],
+   "mentions": [
+    "Fresha",
+    "Phorest",
+    "Treatwell"
+   ]
+  },
+  {
+   "id": 1157,
+   "title": "Tronc guide shows barbershops how one client saved £40,000",
+   "about": [
+    "TiPJAR"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1154,
+   "title": "AI Search Shift Hits Barbershop Bookings: 3 Things to Check",
+   "about": [],
+   "mentions": [
+    "Phorest"
+   ]
+  },
+  {
+   "id": 1147,
+   "title": "Reuzel's Hair Wax Guide Ranks 7 Formats, Sets a 3-Step Wash",
+   "about": [
+    "Reuzel"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1143,
+   "title": "GAMMA+ Launches Xceed Hair Dryer With 12 Settings at $299.95",
+   "about": [
+    "GAMMA+"
+   ],
+   "mentions": [
+    "StyleCraft"
+   ]
+  },
+  {
+   "id": 1141,
+   "title": "Phorest: shop teams lose 45 hours a month to payment chaos",
+   "about": [
+    "Phorest"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1139,
+   "title": "Tribunal claim deadline doubles to 6 months from 1 October",
+   "about": [
+    "Simply Business"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1137,
+   "title": "In the Chair: Bobby Gordon on Canterbury barbershop's award run",
+   "about": [],
+   "mentions": [
+    "Phorest"
+   ]
+  },
+  {
+   "id": 1135,
+   "title": "Phorest Warns Marketplace Apps Cost Shops 67% in Repeat Spend",
+   "about": [
+    "Phorest"
+   ],
+   "mentions": [
+    "Booksy",
+    "Fresha",
+    "Treatwell"
+   ]
+  },
+  {
+   "id": 1109,
+   "title": "Bluebeards Revenge Hair-Wash Guide Sells Its Own Shampoo Fix",
+   "about": [
+    "The Bluebeards Revenge"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1104,
+   "title": "BarberEVO's 7 Tips to Build a Profile That Pays",
+   "about": [
+    "Mentored By Menspire"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1102,
+   "title": "Salon International 2026: Wahl Stages 20 Free Cutting Demos",
+   "about": [
+    "Wahl"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1100,
+   "title": "Kleek Opens Leeds Academy: 150 Places for Apprentices",
+   "about": [
+    "Kleek"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1098,
+   "title": "Letting the flat above your shop? Get landlord insurance sorted",
+   "about": [
+    "Simply Business"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1095,
+   "title": "VicBlends Launches BetterDays Grooming Line With $7m Backing",
+   "about": [
+    "BetterDays"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1087,
+   "title": "Bluebeards Revenge Razor Burn Guide Sells a 2-Product Fix",
+   "about": [
+    "The Bluebeards Revenge"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1085,
+   "title": "Korean comma hair bookings surge 400% as Fresha maps 2026 cuts",
+   "about": [
+    "Fresha"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1076,
+   "title": "Uppercut Deluxe Guide Backs the UK Rocker Cut With $22 Powder",
+   "about": [
+    "Uppercut Deluxe"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1074,
+   "title": "Barbershop Membership Subscription Billing Software Compared",
+   "about": [],
+   "mentions": [
+    "Fresha",
+    "Phorest",
+    "Treatwell"
+   ]
+  },
+  {
+   "id": 1068,
+   "title": "Treatwell Top Rated Badge Runs on Reviews, Not Fees",
+   "about": [
+    "Treatwell"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1050,
+   "title": "87% of Clients Want Booking Confirmations, Phorest Finds",
+   "about": [
+    "Phorest"
+   ],
+   "mentions": [
+    "Treatwell"
+   ]
+  },
+  {
+   "id": 1048,
+   "title": "Guaranteed tips can leave other barbers 7.5x worse off",
+   "about": [
+    "TiPJAR"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1041,
+   "title": "Barber Temple Compares Dual-Speed Clippers: 6,000 to 9,000 RPM",
+   "about": [
+    "Barber Temple"
+   ],
+   "mentions": [
+    "Wahl"
+   ]
+  },
+  {
+   "id": 1034,
+   "title": "Treatwell Flags Dermaplaning Add-On, Prices to £280 for Shops",
+   "about": [
+    "Treatwell"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 1032,
+   "title": "Uppercut Deluxe Pairs Kuroda Story With $22 Pomade",
+   "about": [
+    "Uppercut Deluxe"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 870,
+   "title": "Morgan's Pomade Shampoo Launches at £7.50 for Barbershop Shelves",
+   "about": [
+    "Morgan's Pomade"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 868,
+   "title": "Chris Foster: Barbers Should Shoot Collections on Any Budget",
+   "about": [
+    "Mentored By Menspire"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 866,
+   "title": "Morgan's Pomade Launches £9.60 Travel Styling Fibre for Shops",
+   "about": [
+    "Morgan's Pomade"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 864,
+   "title": "Reuzel's Styling Cream Guide Doubles as a Retail Script",
+   "about": [
+    "Reuzel"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 861,
+   "title": "Five Things to Know About Creating Men's Hair Imagery",
+   "about": [],
+   "mentions": [
+    "Mentored By Menspire"
+   ]
+  },
+  {
+   "id": 856,
+   "title": "Uppercut Deluxe Runs Shindig 2026: 17-Year-Old Steals Manchester Show",
+   "about": [
+    "Uppercut Deluxe"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 848,
+   "title": "Barbershop Check-In Kiosks Compared: What They Cost to Run",
+   "about": [],
+   "mentions": [
+    "Fresha"
+   ]
+  },
+  {
+   "id": 846,
+   "title": "Sustainable Barbershop Checklist: 6 Changes That Cost Nothing",
+   "about": [
+    "Enki Towels"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 828,
+   "title": "Morgan's Pomade Launches £10.20 Beard Wax for Shop Shelves",
+   "about": [
+    "Morgan's Pomade"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 820,
+   "title": "DBT Confirms No Import Licence Needed for Clippers or Shears",
+   "about": [],
+   "mentions": [
+    "Wahl"
+   ]
+  },
+  {
+   "id": 818,
+   "title": "GDPR SMS Marketing Rules for Small Businesses: What You Can Send",
+   "about": [],
+   "mentions": [
+    "Phorest"
+   ]
+  },
+  {
+   "id": 795,
+   "title": "Reuzel's Sea Salt Spray Guide Splits Advice by 5 Hair Types",
+   "about": [
+    "Reuzel"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 793,
+   "title": "Uppercut Deluxe Ties New Textured Crop Guide to $22 Powder Launch",
+   "about": [
+    "Uppercut Deluxe"
+   ],
+   "mentions": [
+    "Reuzel"
+   ]
+  },
+  {
+   "id": 772,
+   "title": "Uppercut Deluxe Pushes Punk Point Cut With £17 Styling Powder",
+   "about": [
+    "Uppercut Deluxe"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 751,
+   "title": "Bluebeards Revenge's Ingrown Hair Guide: Turn Aftercare Into Sales",
+   "about": [
+    "The Bluebeards Revenge"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 730,
+   "title": "Gas Safety Rules for Barbershop Landlords: What £6,000 Fines Mean",
+   "about": [
+    "Simply Business"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 728,
+   "title": "Phorest Launches No-Show Automation for Barbershops",
+   "about": [
+    "Phorest"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 689,
+   "title": "Treatwell Prices Indian Head Massage at £25 to £65 for Shops",
+   "about": [
+    "Treatwell"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 665,
+   "title": "Use Booking Data to Cut Idle Chair Time in Your Barbershop",
+   "about": [],
+   "mentions": [
+    "Phorest"
+   ]
+  },
+  {
+   "id": 662,
+   "title": " 🪑 In the Chair: Rob Wood on the posts that fill chairs",
+   "about": [],
+   "mentions": [
+    "Novo Cabelo"
+   ]
+  },
+  {
+   "id": 596,
+   "title": "AI Adoption Small Business Owners Can't Avoid: What the Simply Business Numbers Mean for Your Shop",
+   "about": [
+    "Simply Business"
+   ],
+   "mentions": [
+    "Phorest"
+   ]
+  },
+  {
+   "id": 562,
+   "title": "Best Barbershop Loyalty App: Loyalty and Referral Tools Compared for UK Owners",
+   "about": [],
+   "mentions": [
+    "Fresha",
+    "Phorest",
+    "Treatwell"
+   ]
+  },
+  {
+   "id": 531,
+   "title": "Hair Loss Awareness Month: GLOWWA Tells Stylists to Back Every Cut With a 12-Week Supplement Plan",
+   "about": [
+    "GLOWWA"
+   ],
+   "mentions": [
+    "Novo Cabelo",
+    "OSMO"
+   ]
+  },
+  {
+   "id": 508,
+   "title": "Best Google Review Management Tools for UK Barbershops",
+   "about": [],
+   "mentions": [
+    "Fresha",
+    "Phorest",
+    "Treatwell"
+   ]
+  },
+  {
+   "id": 501,
+   "title": "Does Clipper RPM Matter? StyleCraft Says Its 11,500rpm Instinct Motor Proves It",
+   "about": [
+    "StyleCraft"
+   ],
+   "mentions": [
+    "Wahl"
+   ]
+  },
+  {
+   "id": 469,
+   "title": "Barbering Kit Roundup, September 2026: What's Worth Your Money This Month",
+   "about": [],
+   "mentions": [
+    "Andis",
+    "Wahl"
+   ]
+  },
+  {
+   "id": 454,
+   "title": "Card Machines and Payment Systems for Barbershops: Dojo, Tyl, SumUp, Square and Zettle Compared",
+   "about": [],
+   "mentions": [
+    "Fresha",
+    "Phorest"
+   ]
+  },
+  {
+   "id": 364,
+   "title": "Wahl Vapor Switch Clipper: What the Dual-Speed Motor Means for Your Chair",
+   "about": [
+    "Wahl"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 351,
+   "title": "The Bluebeards Revenge Pushes Bar Soap Back Onto Barbershop Shelves With 175g Bars",
+   "about": [
+    "The Bluebeards Revenge"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 330,
+   "title": "Wahl's New Head Shaver Puts a Home Alternative to the Weekly Head Shave Slot",
+   "about": [
+    "Wahl"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 315,
+   "title": "Phorest Summit 2027 Moves to Killarney: What Owners Get for Early Bird Pricing",
+   "about": [
+    "Phorest"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 299,
+   "title": "Reuzel Splits Its Hair Clay Range by Mineral Base: What Kaolin vs Bentonite Means for Your Shelf",
+   "about": [
+    "Reuzel"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 273,
+   "title": "Barbers Left Off Simply Business's 20-Trade Pay League as Builders Top £113,462",
+   "about": [
+    "Simply Business"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 243,
+   "title": "Barbershop Local SEO: How UK Owners Can Win Google Maps Rankings",
+   "about": [],
+   "mentions": [
+    "Booksy",
+    "Fresha",
+    "Treatwell"
+   ]
+  },
+  {
+   "id": 204,
+   "title": "Hair Gain's Five-Set Christmas 2026 Collection: What £15 to £49.50 Gift Range Means for Barbershop Retail",
+   "about": [
+    "Hair Gain"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 183,
+   "title": "Barber Shop Fit Out Cost UK: Realistic Budgets by Chair Count and Tier",
+   "about": [],
+   "mentions": [
+    "Phorest"
+   ]
+  },
+  {
+   "id": 151,
+   "title": "Phorest Publishes Operational Control Guide for Clinics: Six Features Multi-Location Barbershops Should Recognise",
+   "about": [
+    "Phorest"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 108,
+   "title": "TiPJAR's Direct Service 2026 Tells Chains to Stop Skimming Tips Before They Reach the Chair",
+   "about": [
+    "TiPJAR"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 98,
+   "title": "OSMO Guardian Angel Range Grows: What the New Mask and Minis Mean for Your Shelf",
+   "about": [
+    "OSMO"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 94,
+   "title": "HUSH Pro USA Launches Sensory-Friendly Clippers at 48 Decibels, Trimmers at 46",
+   "about": [
+    "HUSH Pro"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 84,
+   "title": "Novo Cabelo Launches TrueBlend Non-Shave Hair Replacement: What It Costs a Shop to Offer",
+   "about": [
+    "Novo Cabelo"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 82,
+   "title": "Leaf and Adam Reed Launch £299 Yellow Shatter Shear, Capped at 250 Units",
+   "about": [
+    "Leaf Scissors"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 47,
+   "title": "Three Top Barbers Launch Mentored By Menspire: One Membership, Weekly Mentoring Sessions",
+   "about": [
+    "Mentored By Menspire"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 12,
+   "title": "The UK Barbershop Boom: What It Really Means for Your Shop",
+   "about": [],
+   "mentions": [
+    "Booksy",
+    "Fresha",
+    "Treatwell"
+   ]
+  },
+  {
+   "id": 8,
+   "title": "Barbershop Booking System: An Independent UK Buyer's Guide",
+   "about": [],
+   "mentions": [
+    "Booksy",
+    "Fresha",
+    "Phorest"
+   ]
+  }
+ ]
+}

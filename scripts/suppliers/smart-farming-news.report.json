@@ -1,0 +1,441 @@
+{
+ "site": "smart-farming-news",
+ "posts": 146,
+ "suppliers": 29,
+ "taggedArticles": 35,
+ "aboutLinks": 36,
+ "mentionLinks": 2,
+ "perSupplier": [
+  {
+   "name": "Berrys",
+   "about": 4,
+   "mentions": 0
+  },
+  {
+   "name": "KUHN",
+   "about": 3,
+   "mentions": 0
+  },
+  {
+   "name": "Ecorobotix",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Fendt",
+   "about": 2,
+   "mentions": 0
+  },
+  {
+   "name": "Massey Ferguson",
+   "about": 2,
+   "mentions": 0
+  },
+  {
+   "name": "Pitchup",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Alpego",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Applied Carbon",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Atmonia",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Avon Tuning HD",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Bayer",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Cargill",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Claas",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Feather Down Farms",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "G.T. Bunning & Sons",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Kilter",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Kubota",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "NFU Mutual",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "OlsAro",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "OPTYGAZ",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "PerPlant",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "PTx",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "SatYield",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Seederal",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Switch Bioworks",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Tegrona",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Valtra",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Vogelsang",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Volare",
+   "about": 1,
+   "mentions": 0
+  }
+ ],
+ "registryWithNoAboutArticle": [],
+ "articles": [
+  {
+   "id": 583,
+   "title": "Fendt brings its “most powerful CVT tractor” claim to LAMMA 2027",
+   "about": [
+    "Fendt"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 553,
+   "title": "Applied Carbon gets $72m as climate funds chase farm carbon deals",
+   "about": [
+    "Applied Carbon"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 546,
+   "title": "Cargill CISO: 155,000 staff are the best cyber defence",
+   "about": [
+    "Cargill"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 538,
+   "title": "OPTYGAZ claims 58.8% butane cut on irrigation engines",
+   "about": [
+    "OPTYGAZ"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 529,
+   "title": "Berrys opens CSHT orchard grants: £471/ha paid for 10 years",
+   "about": [
+    "Berrys"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 514,
+   "title": "Claas joins €3.2m ammonia tractor engine project, no price yet",
+   "about": [
+    "Claas"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 510,
+   "title": "Bunning brings weigh-cell spreaders to LAMMA 2027",
+   "about": [
+    "G.T. Bunning & Sons"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 504,
+   "title": "Massey Ferguson's 7S MARK 2 makes UK debut at LAMMA 2027",
+   "about": [
+    "Massey Ferguson"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 468,
+   "title": "Clarkson's Farm: season six wraps, return set for 2027",
+   "about": [],
+   "mentions": [
+    "Pitchup"
+   ]
+  },
+  {
+   "id": 461,
+   "title": "KUHN brings 30 machines to LAMMA 2027, three new launches",
+   "about": [
+    "KUHN"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 457,
+   "title": "Mach launches autonomous mowing for solar farms: no price yet",
+   "about": [],
+   "mentions": [
+    "Ecorobotix"
+   ]
+  },
+  {
+   "id": 453,
+   "title": "Pitchup calls for campsite exemption from 2027 visitor levy",
+   "about": [
+    "Pitchup"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 450,
+   "title": "Ecorobotix adds 10 plant models to ARA sprayer for 2027",
+   "about": [
+    "Ecorobotix"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 432,
+   "title": "Anglian Water reopens £7,500 grant: round 7 opens 1 November",
+   "about": [
+    "Berrys"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 429,
+   "title": "Feather Down Farms enters insolvency: Dutch filings, September 2026",
+   "about": [
+    "Feather Down Farms"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 417,
+   "title": "Avon Tuning HD cracks encrypted ECUs on AGCO, Deutz tractors",
+   "about": [
+    "Avon Tuning HD"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 394,
+   "title": "Volare opens €15m insect protein plant: 5,000 tonnes a year",
+   "about": [
+    "Volare"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 392,
+   "title": "PTx says targeted spraying doubles spray coverage per tank",
+   "about": [
+    "PTx"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 388,
+   "title": "NFU Mutual: pensioner NI exemption change could cost £745",
+   "about": [
+    "NFU Mutual"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 352,
+   "title": "Vogelsang SynCult Retrofit Kit Fits Cultivators 4 to 12m",
+   "about": [
+    "Vogelsang"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 348,
+   "title": "KUHN launches ANTEA self-propelled feeder for 2027",
+   "about": [
+    "KUHN"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 344,
+   "title": "Building Safety Levy hits farms: £24.68/m² Shropshire rate",
+   "about": [
+    "Berrys"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 332,
+   "title": "Fendt launches fault-code website covering 10-year-old machines",
+   "about": [
+    "Fendt"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 322,
+   "title": "Zema Global, SatYield add satellite crop data for US, Brazil",
+   "about": [
+    "SatYield"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 314,
+   "title": "OlsAro raises $5.5m as salt-tolerant wheat nears 41% yield gain",
+   "about": [
+    "OlsAro"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 310,
+   "title": "Switch Bioworks Partners With Bayer on 25% Nitrogen-Cut Microbe",
+   "about": [
+    "Bayer",
+    "Switch Bioworks"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 299,
+   "title": "Seederal unveils 160hp electric tractor, no UK price yet",
+   "about": [
+    "Seederal"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 294,
+   "title": "Valtra fits PerPlant AI crop sensor at factory: 87% input cut claimed",
+   "about": [
+    "PerPlant",
+    "Valtra"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 256,
+   "title": "Kubota to sell Kilter AX-1 robot, 95% herbicide cut claimed",
+   "about": [
+    "Kilter",
+    "Kubota"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 252,
+   "title": "Buccleuch trade park reaches 95% let as last unit goes to market",
+   "about": [
+    "Berrys"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 241,
+   "title": "Alpego Inversa drill claims 35% cut to reseeding costs",
+   "about": [
+    "Alpego"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 219,
+   "title": "Atmonia's 150-ton ammonia box eyes farm fertiliser costs",
+   "about": [
+    "Atmonia"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 159,
+   "title": "KUHN launches APEX direct drill for min-till and no-till work",
+   "about": [
+    "KUHN"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 151,
+   "title": "Massey Ferguson launches FarmEngage to run mixed fleets",
+   "about": [
+    "Massey Ferguson"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 111,
+   "title": "Tegrona's free tool counts farm roof solar panels in 11 languages",
+   "about": [
+    "Tegrona"
+   ],
+   "mentions": []
+  }
+ ]
+}

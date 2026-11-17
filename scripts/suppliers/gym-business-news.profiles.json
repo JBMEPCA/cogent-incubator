@@ -1,0 +1,185 @@
+{
+  "_readme": "Supplier page details for Gym Business News, gathered 17 Nov 2026 from each company's own website (title, meta description, header logo). Where the site gave no usable logo, the logo is from the company's Wikimedia Commons file. dark:true means the logo is white and is shown on a dark tile. An empty website or logo means we could not confirm one: leave it empty rather than guess. Sector drives the filter on the hub.",
+  "suppliers": {
+    "ABC Fitness": {
+      "website": "https://abcfitness.com/",
+      "sector": "Gym management software",
+      "line": "Software for running memberships, sales, marketing and payments at fitness businesses.",
+      "dark": true
+    },
+    "Aescape": {
+      "website": "https://www.aescape.com/",
+      "sector": "Wearables, recovery and performance tech",
+      "line": "Robotic massage system that maps the body and adapts each session."
+    },
+    "Centr": {
+      "website": "https://centr.com/",
+      "sector": "Gym equipment",
+      "line": "Connected strength equipment, coaching and training plans."
+    },
+    "ClubWise": {
+      "website": "https://www.clubwise.com/",
+      "sector": "Gym management software",
+      "line": "Club management software for memberships, payments, bookings and reporting."
+    },
+    "CoverMe": {
+      "website": "https://www.covermeapp.co/",
+      "sector": "Staffing and member platforms",
+      "line": "Workforce platform that helps gyms find instructor cover and manage staff."
+    },
+    "Daxko": {
+      "website": "https://www.daxko.com/",
+      "sector": "Gym management software",
+      "line": "Fitness management software for nonprofits, studios and clubs."
+    },
+    "FITBENCH": {
+      "website": "https://fitbench.com/",
+      "sector": "Gym equipment",
+      "line": "Space-saving functional training equipment for gyms."
+    },
+    "Future Fit": {
+      "website": "https://www.futurefit.co.uk/",
+      "sector": "Training and education",
+      "line": "Personal trainer, nutrition and Pilates courses."
+    },
+    "Glofox": {
+      "website": "https://www.glofox.com/",
+      "sector": "Gym management software",
+      "line": "Fitness management software for studios and gyms, part of ABC Fitness."
+    },
+    "Hussle": {
+      "website": "https://www.hussle.com/",
+      "sector": "Staffing and member platforms",
+      "line": "Gym pass and flexible membership network covering gyms across the UK."
+    },
+    "HYROX": {
+      "website": "https://hyrox.com/",
+      "sector": "Fitness events and programmes",
+      "line": "Fitness racing series that gyms can join as training partners."
+    },
+    "Legend": {
+      "website": "https://www.legendware.co.uk/",
+      "sector": "Gym management software",
+      "line": "Leisure management software for local authorities, leisure trusts and universities."
+    },
+    "Mariana Tek": {
+      "website": "https://www.marianatek.com/",
+      "sector": "Gym management software",
+      "line": "Business management software for boutique fitness studios."
+    },
+    "Matrix Fitness": {
+      "website": "https://uk.matrixfitness.com/eng",
+      "sector": "Gym equipment",
+      "line": "Commercial fitness and home gym equipment.",
+      "dark": true
+    },
+    "Oura": {
+      "website": "https://ouraring.com/",
+      "sector": "Wearables, recovery and performance tech",
+      "line": "Smart ring that tracks sleep, fitness and stress."
+    },
+    "Output Sports": {
+      "website": "https://www.outputsports.com/",
+      "sector": "Wearables, recovery and performance tech",
+      "line": "Athlete testing, training and tracking system for coaches."
+    },
+    "Peloton": {
+      "website": "https://www.onepeloton.com/en-GB",
+      "sector": "Gym equipment",
+      "line": "Exercise equipment and personalised workout programmes."
+    },
+    "Playlist": {
+      "website": "https://www.playlist.com/",
+      "sector": "Gym management software",
+      "line": "Group behind Mindbody, Booker, ClassPass and EGYM."
+    },
+    "Pulse Fitness": {
+      "website": "https://pulsefitness.com/",
+      "sector": "Gym equipment",
+      "dark": true,
+      "line": "UK company that designs and builds fitness equipment."
+    },
+    "Resamania": {
+      "website": "https://resamania.co.uk/",
+      "sector": "Gym management software",
+      "dark": true,
+      "line": "All-in-one gym management software."
+    },
+    "RockSalt Pilates": {
+      "website": "https://rocksaltpilates.com/",
+      "sector": "Franchises",
+      "line": "Pilates studio brand growing through franchising."
+    },
+    "RunX": {
+      "website": "https://www.runx.org/en-GB/",
+      "sector": "Fitness events and programmes",
+      "dark": true,
+      "line": "Treadmill 5k running competition hosted by official gym centres."
+    },
+    "Simply Business": {
+      "website": "https://www.simplybusiness.co.uk/",
+      "sector": "Insurance and finance",
+      "line": "Insurance for small businesses and landlords."
+    },
+    "Strong Pilates": {
+      "website": "https://strongpilates.co.uk/",
+      "sector": "Franchises",
+      "line": "Pilates, strength and cardio studio brand with UK franchise studios."
+    },
+    "Sweatpals": {
+      "website": "https://sweatpals.com/",
+      "sector": "Staffing and member platforms",
+      "line": "Social app for finding wellness clubs, workout classes and events."
+    },
+    "The Picklr": {
+      "website": "https://thepicklr.com/",
+      "sector": "Franchises",
+      "line": "Indoor pickleball club franchise."
+    },
+    "The PT Development Center": {
+      "website": "https://www.theptdc.com/",
+      "sector": "Training and education",
+      "line": "Business education for personal trainers and fitness professionals."
+    },
+    "Torque Fitness": {
+      "website": "https://www.torquefitness.com/",
+      "sector": "Gym equipment",
+      "line": "Strength and functional training equipment for home and commercial gyms."
+    },
+    "Training Mate": {
+      "website": "https://trainingmate.com/",
+      "sector": "Franchises",
+      "line": "HIIT and group fitness studio brand seeking franchisees."
+    },
+    "Trainerize": {
+      "website": "https://www.trainerize.com/",
+      "sector": "Gym management software",
+      "line": "Personal training software for delivering programmes and tracking clients, part of ABC Fitness."
+    },
+    "VersaClimber": {
+      "website": "https://versaclimber.com/",
+      "sector": "Gym equipment",
+      "line": "US maker of the VersaClimber vertical climbing cardio machine."
+    },
+    "Wattbike": {
+      "website": "https://wattbike.com/",
+      "sector": "Gym equipment",
+      "line": "Smart indoor bikes and cycling trainers."
+    },
+    "Xplor": {
+      "website": "https://xplor.com/",
+      "sector": "Gym management software",
+      "line": "Software and payments group whose fitness brands include Resamania, Mariana Tek and Legend."
+    },
+    "Xponential Fitness": {
+      "website": "https://www.xponential.com/",
+      "sector": "Franchises",
+      "line": "Franchise group of boutique fitness brands including Club Pilates and Pure Barre."
+    },
+    "Zen Planner": {
+      "website": "https://www.zenplanner.com/",
+      "sector": "Gym management software",
+      "line": "Gym management software for operations, member engagement and billing."
+    }
+  }
+}

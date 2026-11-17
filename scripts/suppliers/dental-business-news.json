@@ -1,0 +1,23 @@
+{
+  "_readme": "Companies Dental Business News has published articles ABOUT, curated by hand from headlines, feed sources and subject fields on 17 Nov 2026. A name here only becomes a page if the backfill finds at least one article about it. aliases are other exact names the company goes by. mentions:false means the name is too short or too common to trust in body text, so only a headline, feed source or subject match counts. Government bodies, regulators, the GDC, trade and professional bodies (BDIA, ADG, NASDAL, CGDent), charities, trade press, market data bodies and dental practices or groups reported as subjects are deliberately left out.",
+  "suppliers": [
+    { "name": "Anglian Dental" },
+    { "name": "Aura Infection Control", "aliases": ["Aura"], "mentions": false },
+    { "name": "Blake Morgan" },
+    { "name": "Carestream Dental", "aliases": ["Carestream"] },
+    { "name": "Christie & Co" },
+    { "name": "Dental Directory" },
+    { "name": "Dental Elite" },
+    { "name": "Dental Protection", "aliases": ["Medical Protection Society"] },
+    { "name": "HuFriedyGroup", "aliases": ["Hu-Friedy", "HuFriedy Group"] },
+    { "name": "Locus", "aliases": ["locusintel.io", "LocusIntel", "Locus Intel"], "mentions": false },
+    { "name": "Mectron" },
+    { "name": "Medenta" },
+    { "name": "NSK", "mentions": false },
+    { "name": "PFM Dental" },
+    { "name": "Practice Plan" },
+    { "name": "Scott Bailey" },
+    { "name": "Simplyhealth" },
+    { "name": "Wesleyan" }
+  ]
+}

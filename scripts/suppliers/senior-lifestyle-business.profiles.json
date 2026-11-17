@@ -1,0 +1,65 @@
+{
+  "_readme": "Supplier page details for Senior Lifestyle Business, gathered 17 Nov 2026 from each company's own website (title, meta description, header logo). dark:true means the logo is white and is shown on a dark tile. An empty website or logo means we could not confirm one: leave it empty rather than guess. Sector drives the filter on the hub.",
+  "suppliers": {
+    "Conran and Partners": {
+      "website": "https://conranandpartners.com/",
+      "sector": "Design and architecture",
+      "dark": true,
+      "line": "Architecture and interior design studio, now part of DLR Group."
+    },
+    "DLR Group": {
+      "website": "https://www.dlrgroup.com/",
+      "sector": "Design and architecture",
+      "line": "Integrated design firm working in architecture, engineering, interiors and planning."
+    },
+    "Healthsperien": {
+      "website": "https://healthsperien.com/",
+      "sector": "Care and health services",
+      "line": "Health consultancy working with NIC on a resident health outcomes study."
+    },
+    "Jim's Gym": {
+      "website": "https://jameshiltonfitnessstroud.squarespace.com/",
+      "sector": "Resident wellbeing",
+      "line": "Online fitness and wellbeing classes for adults aged over 55."
+    },
+    "LifeLoop": {
+      "website": "https://lifeloop.com/",
+      "sector": "Technology and telecare",
+      "line": "Engagement and wellness software for senior living communities."
+    },
+    "Percussion Play": {
+      "website": "https://www.percussionplay.com/",
+      "sector": "Resident wellbeing",
+      "line": "Makes outdoor musical instruments for parks, schools, care settings and public spaces.",
+      "dark": true
+    },
+    "Silverchain": {
+      "website": "https://silverchain.org.au/",
+      "sector": "Care and health services",
+      "line": "Australian provider of health care and aged care at home."
+    },
+    "SLIB": {
+      "website": "https://seniorlivingbrokerage.com/",
+      "sector": "Finance and brokerage",
+      "line": "Senior Living Investment Brokerage, a US real estate brokerage selling senior housing and care assets.",
+      "dark": true
+    },
+    "Tarkett": {
+      "website": "https://www.tarkett.co.uk/",
+      "sector": "Flooring and interiors",
+      "line": "Commercial and residential flooring maker, including vinyl, linoleum, wood and luxury vinyl tiles.",
+      "dark": true
+    },
+    "Tunstall Healthcare": {
+      "website": "https://www.tunstall.co.uk/",
+      "sector": "Technology and telecare",
+      "dark": true,
+      "line": "Technology-enabled care and telecare for health, housing and care providers."
+    },
+    "Walker & Dunlop": {
+      "website": "https://www.walkerdunlop.com/",
+      "sector": "Finance and brokerage",
+      "line": "US commercial real estate finance and advisory firm covering financing, sales, valuation and loan servicing."
+    }
+  }
+}

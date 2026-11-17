@@ -1,0 +1,497 @@
+{
+ "site": "dental-business-news",
+ "posts": 108,
+ "suppliers": 18,
+ "taggedArticles": 48,
+ "aboutLinks": 39,
+ "mentionLinks": 18,
+ "perSupplier": [
+  {
+   "name": "Blake Morgan",
+   "about": 6,
+   "mentions": 2
+  },
+  {
+   "name": "Christie & Co",
+   "about": 2,
+   "mentions": 6
+  },
+  {
+   "name": "Dental Elite",
+   "about": 6,
+   "mentions": 2
+  },
+  {
+   "name": "Practice Plan",
+   "about": 7,
+   "mentions": 1
+  },
+  {
+   "name": "Simplyhealth",
+   "about": 2,
+   "mentions": 3
+  },
+  {
+   "name": "Carestream Dental",
+   "about": 1,
+   "mentions": 2
+  },
+  {
+   "name": "Dental Protection",
+   "about": 3,
+   "mentions": 0
+  },
+  {
+   "name": "Anglian Dental",
+   "about": 2,
+   "mentions": 0
+  },
+  {
+   "name": "Medenta",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Wesleyan",
+   "about": 1,
+   "mentions": 1
+  },
+  {
+   "name": "Aura Infection Control",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Dental Directory",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "HuFriedyGroup",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Locus",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Mectron",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "NSK",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "PFM Dental",
+   "about": 1,
+   "mentions": 0
+  },
+  {
+   "name": "Scott Bailey",
+   "about": 1,
+   "mentions": 0
+  }
+ ],
+ "registryWithNoAboutArticle": [],
+ "articles": [
+  {
+   "id": 500,
+   "title": "Scott Bailey names 6 contract clauses against late payers",
+   "about": [
+    "Scott Bailey"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 490,
+   "title": "Budget 2026 doubles CSOP share option limit to £120,000",
+   "about": [
+    "Blake Morgan"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 483,
+   "title": "Dental Elite completes Bloxwich Dental sale, names 3 advisers",
+   "about": [
+    "Dental Elite"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 466,
+   "title": "Practice Plan podcast: Christie & Co's Graham on 4 sales topics",
+   "about": [
+    "Christie & Co",
+    "Practice Plan"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 463,
+   "title": "Budget 2026: BADR cut and frozen thresholds hit dentists",
+   "about": [
+    "Wesleyan"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 458,
+   "title": "Dental Elite names 4 due diligence checks for practice sales",
+   "about": [
+    "Dental Elite"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 433,
+   "title": "Dental Directory: 58.8% of practices see patients delay treatment",
+   "about": [
+    "Dental Directory"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 423,
+   "title": "Before counting nearby practices, decide what you are counting",
+   "about": [
+    "Locus"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 417,
+   "title": "Dental Protection runs free mindfulness webinar 10 November",
+   "about": [
+    "Dental Protection"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 411,
+   "title": "Anglian Dental builds 3-surgery SKON Dental squat in Hackney Wick",
+   "about": [
+    "Anglian Dental"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 404,
+   "title": "Day-one dismissal protections for new mothers set for 2027",
+   "about": [
+    "Blake Morgan"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 398,
+   "title": "Fire and rehire protections slip 5 months to March 2027",
+   "about": [
+    "Blake Morgan"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 396,
+   "title": "HuFriedyGroup buys Mectron dental unit, reaches 100 countries",
+   "about": [
+    "HuFriedyGroup",
+    "Mectron"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 384,
+   "title": "DBT confirms 6-month dismissal protections, start October 2027",
+   "about": [],
+   "mentions": [
+    "Blake Morgan"
+   ]
+  },
+  {
+   "id": 375,
+   "title": "DBT confirms fire-and-rehire rules cover shift pattern changes",
+   "about": [],
+   "mentions": [
+    "Blake Morgan"
+   ]
+  },
+  {
+   "id": 373,
+   "title": "Smile Rooms Scotland debut: Glasgow private clinic acquired",
+   "about": [],
+   "mentions": [
+    "Christie & Co"
+   ]
+  },
+  {
+   "id": 370,
+   "title": "Blake Morgan warns of EUSS curtailment risk, names 2 routes out",
+   "about": [
+    "Blake Morgan"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 367,
+   "title": "Dental Protection warns of AI liability gap for dentists",
+   "about": [
+    "Dental Protection"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 362,
+   "title": "Anglian Dental delivers six-surgery practice in west London",
+   "about": [
+    "Anglian Dental"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 358,
+   "title": "Dental Elite funds first-time buyer's practice purchase",
+   "about": [
+    "Dental Elite"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 354,
+   "title": "Practice Plan podcast names three ageism themes in dental nursing",
+   "about": [
+    "Practice Plan"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 336,
+   "title": "Medenta names five patient finance myths holding back uptake",
+   "about": [
+    "Medenta"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 332,
+   "title": "Simplyhealth adds online prescribing through Evaro partnership",
+   "about": [
+    "Simplyhealth"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 324,
+   "title": "Blake Morgan names five employment law deadlines before 2027",
+   "about": [
+    "Blake Morgan"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 319,
+   "title": "MHRA 2030 strategy cuts device advice wait to 45 days",
+   "about": [],
+   "mentions": [
+    "Carestream Dental"
+   ]
+  },
+  {
+   "id": 311,
+   "title": "Dental Elite: 65% of NHS contract sales delayed 6 months",
+   "about": [
+    "Dental Elite"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 308,
+   "title": "Business property relief changes hit dental practices in 2026",
+   "about": [],
+   "mentions": [
+    "Christie & Co",
+    "Dental Elite",
+    "Wesleyan"
+   ]
+  },
+  {
+   "id": 298,
+   "title": "Dental Group Signal: corporate buyers made 50% of 2026 offers",
+   "about": [],
+   "mentions": [
+    "Christie & Co"
+   ]
+  },
+  {
+   "id": 290,
+   "title": "Practice Plan podcast names two skills for private patients",
+   "about": [
+    "Practice Plan"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 287,
+   "title": "Todays Dental Group expands to 36 practices, turnover £36.45m",
+   "about": [],
+   "mentions": [
+    "Simplyhealth"
+   ]
+  },
+  {
+   "id": 275,
+   "title": "Best dental patient payment plan providers UK compared",
+   "about": [],
+   "mentions": [
+    "Medenta",
+    "Practice Plan",
+    "Simplyhealth"
+   ]
+  },
+  {
+   "id": 272,
+   "title": "Practice Plan names four questions patients ask on going private",
+   "about": [
+    "Practice Plan"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 266,
+   "title": "Practice Plan: profit and care aren't rivals, ex-16-practice BDM",
+   "about": [
+    "Practice Plan"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 264,
+   "title": "Immigration Salary List closes 31 December 2026 for dentistry",
+   "about": [
+    "Blake Morgan"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 250,
+   "title": "Dental Elite warns financial red flags cut practice offers",
+   "about": [
+    "Dental Elite"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 241,
+   "title": "Carestream Dental launches Sensei Cloud for group practices",
+   "about": [
+    "Carestream Dental"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 232,
+   "title": "Gillian Leng becomes President of Medical Protection Society",
+   "about": [
+    "Dental Protection"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 225,
+   "title": "Dental Elite: London squat practice costs reach £600,000",
+   "about": [
+    "Dental Elite"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 220,
+   "title": "Practice Plan podcast covers Oliver McGowan training in two tiers",
+   "about": [
+    "Practice Plan"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 204,
+   "title": "PFM Dental sets seven clauses for joint practice buyers",
+   "about": [
+    "PFM Dental"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 202,
+   "title": "Practice Plan's new podcast covers AI leads in three points",
+   "about": [
+    "Practice Plan"
+   ],
+   "mentions": [
+    "Simplyhealth"
+   ]
+  },
+  {
+   "id": 193,
+   "title": "Stirling dental practice listed at £360,000 by Christie & Co",
+   "about": [
+    "Christie & Co"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 147,
+   "title": "Aura relaunches UK dental handpiece survey, NSK backs 2026 round",
+   "about": [
+    "Aura Infection Control",
+    "NSK"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 134,
+   "title": "Simplyhealth dental plan expands access via Personal Group deal",
+   "about": [
+    "Simplyhealth"
+   ],
+   "mentions": []
+  },
+  {
+   "id": 112,
+   "title": "Dental Equipment in 2026: What It Costs and What It Pays Back",
+   "about": [],
+   "mentions": [
+    "Carestream Dental"
+   ]
+  },
+  {
+   "id": 95,
+   "title": "Who Is Buying Dental Practices Now, and What They Are Paying",
+   "about": [],
+   "mentions": [
+    "Christie & Co",
+    "Dental Elite"
+   ]
+  },
+  {
+   "id": 18,
+   "title": "Who owns the UK dental groups, and who backs them",
+   "about": [],
+   "mentions": [
+    "Christie & Co"
+   ]
+  },
+  {
+   "id": 16,
+   "title": "Dental Practice Valuation UK: What Yours Is Worth in 2026",
+   "about": [],
+   "mentions": [
+    "Christie & Co"
+   ]
+  }
+ ]
+}

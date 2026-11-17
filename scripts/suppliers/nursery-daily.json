@@ -1,0 +1,20 @@
+{
+  "_readme": "Companies Nursery Daily has published articles ABOUT, curated by hand from headlines, feed sources and subject fields on 17 Nov 2026. A name here only becomes a page if the backfill finds at least one article about it. aliases are other exact names the company goes by. mentions:false means the name is too short or too common to trust in body text, so only a headline, feed source or subject match counts. Government departments, regulators, councils, political parties, trade bodies, charities, trade press, market data bodies and the nurseries and nursery groups reported as subjects are deliberately left out.",
+  "suppliers": [
+    { "name": "Amplify Goods" },
+    { "name": "Babymore" },
+    { "name": "Britax Römer", "aliases": ["Britax"] },
+    { "name": "Christie & Co", "aliases": ["Christie and Co", "Christie"], "mentions": false },
+    { "name": "Eclipse Corporate Finance" },
+    { "name": "Famly" },
+    { "name": "Kinderly" },
+    { "name": "Lester Aldridge" },
+    { "name": "Monkey Puzzle Day Nurseries", "aliases": ["Monkey Puzzle"] },
+    { "name": "Ovivio", "aliases": ["Ovivio UK", "Blossom Educational"] },
+    { "name": "Owen Froebel" },
+    { "name": "Petite Amélie", "aliases": ["Petite Amelie"] },
+    { "name": "Shakespeare Martineau", "aliases": ["SHMA"] },
+    { "name": "Tapestry", "mentions": false },
+    { "name": "The Nursery Business" }
+  ]
+}

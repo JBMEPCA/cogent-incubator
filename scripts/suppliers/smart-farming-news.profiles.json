@@ -1,0 +1,151 @@
+{
+  "_readme": "Supplier page details for Smart Farming News, gathered 17 Nov 2026 from each company's own website (title, meta description, header logo). Where the site gave no usable logo, the logo is from the company's Wikimedia Commons file. dark:true means the logo is white and is shown on a dark tile. An empty website or logo means we could not confirm one: leave it empty rather than guess. Sector drives the filter on the hub.",
+  "suppliers": {
+    "Alpego": {
+      "website": "https://alpego.com/",
+      "sector": "Tractors and machinery",
+      "line": "Italian maker of agricultural machinery, including drills."
+    },
+    "Applied Carbon": {
+      "website": "https://www.appliedcarbon.com/",
+      "sector": "Energy and carbon",
+      "line": "Farm carbon removal company."
+    },
+    "Atmonia": {
+      "website": "https://www.atmonia.com/",
+      "sector": "Seed, crop protection and fertiliser",
+      "line": "Company developing compact ammonia production for fertiliser."
+    },
+    "Avon Tuning HD": {
+      "website": "https://www.avontuninghd.co.uk/",
+      "sector": "Tractors and machinery",
+      "line": "ECU remapping for heavy duty, agricultural and forestry machines."
+    },
+    "Bayer": {
+      "website": "https://cropscience.bayer.co.uk/",
+      "sector": "Seed, crop protection and fertiliser",
+      "line": "Crop protection products and agronomy support from Bayer Crop Science UK."
+    },
+    "Berrys": {
+      "website": "https://berrys.uk.com/",
+      "sector": "Insurance and professional services",
+      "line": "Property consultancy and land agent covering rural and farm property."
+    },
+    "Cargill": {
+      "website": "https://www.cargill.co.uk/en/home",
+      "sector": "Feed and animal nutrition",
+      "line": "Food, agriculture and animal nutrition company."
+    },
+    "Claas": {
+      "website": "https://www.claas.com/en-gb/",
+      "sector": "Tractors and machinery",
+      "line": "Maker of tractors, combine harvesters, forage harvesters, telehandlers and balers."
+    },
+    "Ecorobotix": {
+      "website": "https://ecorobotix.com/",
+      "sector": "Precision farming and data",
+      "line": "Maker of AI-driven precision field sprayers."
+    },
+    "Feather Down Farms": {
+      "website": "https://www.featherdown.co.uk/",
+      "sector": "Diversification and tourism",
+      "line": "Farm stay holidays run on working UK farms."
+    },
+    "Fendt": {
+      "website": "https://www.fendt.com/uk/",
+      "sector": "Tractors and machinery",
+      "line": "Agricultural machinery brand owned by AGCO."
+    },
+    "G.T. Bunning & Sons": {
+      "website": "https://www.gtbunning.co.uk/",
+      "sector": "Tractors and machinery",
+      "line": "Maker of rear discharge muck spreaders.",
+      "dark": true
+    },
+    "Kilter": {
+      "website": "https://www.kiltersystems.com/",
+      "sector": "Precision farming and data",
+      "line": "Maker of the AX-1, an autonomous robot that spot-sprays weeds in vegetable fields."
+    },
+    "Kubota": {
+      "website": "https://www.kubota-eu.com/",
+      "sector": "Tractors and machinery",
+      "line": "Maker of agricultural, groundcare and construction machinery and engines."
+    },
+    "KUHN": {
+      "website": "https://www.kuhn.co.uk/",
+      "sector": "Tractors and machinery",
+      "line": "Maker of machinery for hay and silage, baling, bedding, seeding and spraying."
+    },
+    "Massey Ferguson": {
+      "website": "https://www.masseyferguson.com/en_gb.html",
+      "sector": "Tractors and machinery",
+      "line": "Tractor and agricultural machinery brand owned by AGCO."
+    },
+    "NFU Mutual": {
+      "website": "https://www.nfumutual.co.uk/",
+      "sector": "Insurance and professional services",
+      "line": "Farm, home and business insurer and pensions provider with UK agencies."
+    },
+    "OlsAro": {
+      "website": "https://olsaro.com/",
+      "sector": "Seed, crop protection and fertiliser",
+      "line": "Seed genetics company developing climate-resilient cereals."
+    },
+    "OPTYGAZ": {
+      "website": "",
+      "sector": "Energy and carbon",
+      "line": "Fuel technology company claiming lower butane use on irrigation engines."
+    },
+    "PerPlant": {
+      "website": "https://perplant.com/",
+      "sector": "Precision farming and data",
+      "line": "AI camera system that lets tractors see individual plants."
+    },
+    "Pitchup": {
+      "website": "",
+      "sector": "Diversification and tourism",
+      "line": "Online booking site for campsites and glamping."
+    },
+    "PTx": {
+      "website": "https://www.ptxag.com/",
+      "sector": "Precision farming and data",
+      "line": "AGCO's precision farming business, combining PTx Trimble and Precision Planting."
+    },
+    "SatYield": {
+      "website": "https://www.satyield.com/",
+      "sector": "Precision farming and data",
+      "line": "Satellite crop yield data for agricultural and commodity markets."
+    },
+    "Seederal": {
+      "website": "https://seederal.fr/fr/",
+      "sector": "Tractors and machinery",
+      "line": "French company designing an electric farm tractor."
+    },
+    "Switch Bioworks": {
+      "website": "https://www.switchbioworks.com/",
+      "sector": "Seed, crop protection and fertiliser",
+      "line": "Engineers soil microbes that produce nitrogen fertiliser."
+    },
+    "Tegrona": {
+      "website": "https://tegrona.com/",
+      "sector": "Energy and carbon",
+      "line": "Solar design and simulation software."
+    },
+    "Valtra": {
+      "website": "https://www.valtra.co.uk/",
+      "sector": "Tractors and machinery",
+      "line": "Tractor brand owned by AGCO."
+    },
+    "Vogelsang": {
+      "website": "https://www.vogelsang.info/en-uk/",
+      "sector": "Tractors and machinery",
+      "line": "Engineering company making equipment for agriculture, biogas and wastewater."
+    },
+    "Volare": {
+      "website": "https://volare.fi/",
+      "sector": "Feed and animal nutrition",
+      "line": "Producer of black soldier fly protein, oil and fertiliser from food sidestreams."
+    }
+  }
+}

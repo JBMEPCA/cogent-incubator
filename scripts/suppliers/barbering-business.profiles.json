@@ -1,0 +1,168 @@
+{
+  "_readme": "Supplier page details for Barbering Business, gathered 17 Nov 2026 from each company's own website (title, meta description, header logo). Where the site gave no usable logo, the logo is from the company's Wikimedia Commons file. dark:true means the logo is white and is shown on a dark tile. An empty website or logo means we could not confirm one: leave it empty rather than guess. Sector drives the filter on the hub.",
+  "suppliers": {
+    "Andis": {
+      "website": "https://andis.com/",
+      "sector": "Clippers, shears and tools",
+      "line": "Maker of hair clippers, trimmers and shavers for barbers and stylists."
+    },
+    "Aveda": {
+      "website": "https://www.aveda.co.uk/",
+      "sector": "Hair care and hair loss",
+      "line": "Vegan hair care, skin care and body care brand sold through salons.",
+      "dark": true
+    },
+    "Barber Temple": {
+      "website": "https://barbertemple.co.uk/",
+      "sector": "Wholesale and shop supplies",
+      "line": "UK barber supplies wholesaler, formerly Barber Blades."
+    },
+    "Baxter of California": {
+      "website": "https://baxterofcalifornia.com/",
+      "sector": "Grooming products",
+      "line": "Men's hair care, shaving and skincare brand."
+    },
+    "Beauty Works": {
+      "website": "https://beautyworksonline.com/",
+      "sector": "Hair care and hair loss",
+      "line": "Human hair extensions, hair tools and haircare brand."
+    },
+    "BetterDays": {
+      "website": "https://www.betterdayshair.com/",
+      "sector": "Grooming products",
+      "line": "Haircare and styling range from barber VicBlends."
+    },
+    "Booksy": {
+      "website": "https://booksy.com/en-gb/",
+      "sector": "Booking and salon software",
+      "line": "Booking app and scheduling software for barbers, stylists and beauty businesses."
+    },
+    "Captain Fawcett": {
+      "website": "https://www.captainfawcett.com/",
+      "sector": "Grooming products",
+      "line": "Men's grooming, shaving tools and fragrance brand."
+    },
+    "Church California Pro": {
+      "website": "https://churchcalifornia.com/",
+      "sector": "Grooming products",
+      "line": "Plant-based grooming products made in small batches in Northern California."
+    },
+    "COCCO": {
+      "website": "https://coccohairpro.com/",
+      "sector": "Hair care and hair loss",
+      "line": "Professional hair care brand, trading as Cocco Hair Professional."
+    },
+    "Enki Towels": {
+      "website": "https://enkitowels.com/",
+      "sector": "Wholesale and shop supplies",
+      "line": "Single-use, biodegradable towels for salons and barbershops."
+    },
+    "Fresha": {
+      "website": "https://www.fresha.com/en-GB",
+      "sector": "Booking and salon software",
+      "line": "Booking marketplace and salon management software."
+    },
+    "GAMMA+": {
+      "website": "https://gammapiu.it/",
+      "sector": "Clippers, shears and tools",
+      "line": "Italian maker of professional hair dryers, straighteners and clippers."
+    },
+    "GLOWWA": {
+      "website": "https://www.glowwa.com/",
+      "sector": "Hair care and hair loss",
+      "line": "Hair nutrition supplements sold through hair professionals."
+    },
+    "Hair Gain": {
+      "website": "",
+      "sector": "Hair care and hair loss",
+      "line": "Hair supplement brand selling capsules, gummies and gift sets."
+    },
+    "HUSH Pro": {
+      "website": "https://hushprousa.com/",
+      "sector": "Clippers, shears and tools",
+      "line": "Clipper and trimmer brand that has launched low-noise, sensory-friendly tools."
+    },
+    "Intuit": {
+      "website": "https://quickbooks.intuit.com/uk/",
+      "sector": "Insurance, payments and finance",
+      "line": "Maker of QuickBooks accounting and bookkeeping software."
+    },
+    "Kleek": {
+      "website": "https://kleekapprenticeships.co.uk/",
+      "sector": "Training and education",
+      "line": "Hairdressing, barbering and beauty apprenticeship training provider."
+    },
+    "Leaf Scissors": {
+      "website": "https://leafscissors.com/",
+      "sector": "Clippers, shears and tools",
+      "line": "Japanese steel hairdressing scissors, with ten trees planted for each pair sold."
+    },
+    "Mentored By Menspire": {
+      "website": "https://menspire.com/",
+      "sector": "Training and education",
+      "dark": true,
+      "line": "Mentoring membership for barbers from the Menspire salons and hair academy."
+    },
+    "Morgan's Pomade": {
+      "website": "https://morganspomade.co.uk/",
+      "sector": "Grooming products",
+      "line": "UK men's hair styling, beard and shaving products."
+    },
+    "Novo Cabelo": {
+      "website": "https://novocabelo.com/",
+      "sector": "Hair care and hair loss",
+      "line": "Hair replacement offered as a service to salon and barber professionals."
+    },
+    "OSMO": {
+      "website": "https://www.osmohair.co.uk/",
+      "sector": "Hair care and hair loss",
+      "line": "Professional haircare and styling products."
+    },
+    "Phorest": {
+      "website": "https://www.phorest.com/",
+      "sector": "Booking and salon software",
+      "line": "Salon and clinic software covering booking, marketing, reporting and payments."
+    },
+    "Reuzel": {
+      "website": "https://www.reuzel.com/",
+      "sector": "Grooming products",
+      "line": "Men's hair styling, pomade and beard products."
+    },
+    "Simply Business": {
+      "website": "https://www.simplybusiness.co.uk/",
+      "sector": "Insurance, payments and finance",
+      "line": "Insurance for small businesses and landlords."
+    },
+    "StyleCraft": {
+      "website": "https://stylecraftus.com/",
+      "sector": "Clippers, shears and tools",
+      "line": "Professional clippers, trimmers, shavers and dryers for barbers and stylists."
+    },
+    "The Bluebeards Revenge": {
+      "website": "https://bluebeards-revenge.co.uk/",
+      "sector": "Grooming products",
+      "line": "UK-made vegan men's grooming products for shaving, hair, beard and skin.",
+      "dark": true
+    },
+    "TiPJAR": {
+      "website": "https://www.wearetipjar.com/",
+      "sector": "Insurance, payments and finance",
+      "line": "Cashless tipping platform for hospitality and service staff."
+    },
+    "Treatwell": {
+      "website": "https://www.treatwell.co.uk/",
+      "sector": "Booking and salon software",
+      "line": "Online booking marketplace and salon software for hair and beauty businesses."
+    },
+    "Uppercut Deluxe": {
+      "website": "https://uppercutdeluxe.com/",
+      "sector": "Grooming products",
+      "line": "Men's grooming and hair styling products."
+    },
+    "Wahl": {
+      "website": "https://www.wahl.co.uk/",
+      "sector": "Clippers, shears and tools",
+      "line": "Maker of professional clippers, trimmers and personal care products."
+    }
+  }
+}
