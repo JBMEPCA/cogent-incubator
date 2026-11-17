@@ -145,6 +145,9 @@ if (!APPLY) {
 // 3. Write: terms, tags, the about-list per post, and the hub page.
 const payload = {
   terms: pages,
+  // The other names and the strict flag go onto the term too, so tagging at
+  // publish time (lib/suppliers.js) matches exactly as this backfill did.
+  match: Object.fromEntries(registry.filter((r) => about.has(r.name)).map((r) => [r.name, { aliases: (r.aliases || []).join(", "), strict: r.mentions === false ? "1" : "" }])),
   posts: [...tags.entries()].map(([id, names]) => ({ id, names, about: perPost.find((r) => r.id === id).about })),
 };
 const applyPhp = `<?php
@@ -157,6 +160,10 @@ foreach ( $data['terms'] as $name ) {
   if ( ! $t ) { $t = wp_insert_term( $name, $tax ); $made++; }
   if ( is_wp_error( $t ) ) { echo "TERM FAIL {$name}: " . $t->get_error_message() . "\\n"; continue; }
   $ids[ $name ] = (int) $t['term_id'];
+  $m = isset( $data['match'][ $name ] ) ? $data['match'][ $name ] : array( 'aliases' => '', 'strict' => '' );
+  foreach ( array( 'aliases', 'strict' ) as $k ) {
+    if ( '' === $m[ $k ] ) { delete_term_meta( $ids[ $name ], 'cogent_supplier_' . $k ); } else { update_term_meta( $ids[ $name ], 'cogent_supplier_' . $k, $m[ $k ] ); }
+  }
 }
 $tagged = 0;
 foreach ( $data['posts'] as $p ) {

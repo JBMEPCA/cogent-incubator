@@ -1,9 +1,9 @@
 {
  "site": "fleet-magazine",
- "posts": 263,
+ "posts": 265,
  "suppliers": 78,
- "taggedArticles": 142,
- "aboutLinks": 119,
+ "taggedArticles": 143,
+ "aboutLinks": 120,
  "mentionLinks": 94,
  "perSupplier": [
   {
@@ -202,6 +202,11 @@
    "mentions": 1
   },
   {
+   "name": "Gophr",
+   "about": 2,
+   "mentions": 0
+  },
+  {
    "name": "Isotrak",
    "about": 1,
    "mentions": 1
@@ -302,11 +307,6 @@
    "mentions": 0
   },
   {
-   "name": "Gophr",
-   "about": 1,
-   "mentions": 0
-  },
-  {
    "name": "HTC Group",
    "about": 1,
    "mentions": 0
@@ -399,6 +399,14 @@
  ],
  "registryWithNoAboutArticle": [],
  "articles": [
+  {
+   "id": 1932,
+   "title": "Quarter of vehicle repairs delayed by slow parts delivery",
+   "about": [
+    "Gophr"
+   ],
+   "mentions": []
+  },
   {
    "id": 1852,
    "title": "Dealer Auction Q3 2026: premium SUV margins hit £4,654",

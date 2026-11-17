@@ -2,6 +2,7 @@ import { forEachSite, cronGuard } from "@/lib/cron";
 import { isWordPressConfigured, publishToWordPress, uploadMedia, resolveCategory, authorForSite } from "@/lib/wordpress";
 import { stripEmDashes } from "@/lib/drafting";
 import { verifyImage } from "@/lib/qa";
+import { tagSuppliers } from "@/lib/suppliers";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -268,11 +269,14 @@ export async function GET(request) {
         where: { id: article.id },
         data: { status: "published", publishedAt: new Date(), wpPostId: post.id },
       });
+      // Join the supplier pages this article is about. Never throws.
+      const suppliers = await tagSuppliers(wp, db, { article, post, title: article.title, body });
       // Surfaced, not swallowed: if the second look was skipped, the run says so.
       return {
         title: article.title,
         url: post.link,
         ...(check?.unchecked ? { note: check.reason } : {}),
+        ...(suppliers.error || suppliers.about?.length || suppliers.created?.length ? { suppliers } : {}),
       };
     } catch (e) {
       return { title: article.title, error: e.message };
