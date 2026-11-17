@@ -32,6 +32,16 @@ const nextConfig = {
     // sharp finds libvips by a relative path that tracing cannot follow (the
     // 20 Aug 2026 failure again, on 3 Nov: every campaign page answered 500).
     "/campaigns/**": ["./node_modules/@img/sharp-linux-x64/**/*", "./node_modules/@img/sharp-libvips-linux-x64/**/*"],
+    // And a third time on 17 Nov 2026: the trending cron and Push live publish
+    // by calling publish-due inside their own function, which had no libvips,
+    // so three QA-passed trending pieces failed to publish. Every route that
+    // can picture or publish an article now carries it, not one at a time.
+    ...Object.fromEntries(
+      ["/api/**", "/trending", "/trending/**", "/needs-image", "/needs-image/**", "/s/**"].map((route) => [
+        route,
+        ["./node_modules/@img/sharp-linux-x64/**/*", "./node_modules/@img/sharp-libvips-linux-x64/**/*"],
+      ])
+    ),
     ...Object.fromEntries(
     // Keys are globs, so "[slug]" would read as a character class: hence "**".
     ["/api/overlay/**", "/api/cron/post-linkedin", "/api/cron/post-instagram"].map((route) => [
