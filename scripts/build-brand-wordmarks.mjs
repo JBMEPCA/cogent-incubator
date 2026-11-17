@@ -38,9 +38,15 @@ const TITLES = [
   ["airport-business-magazine", "Airport Business Magazine"],
   ["gym-business-news", "Gym Business News"],
   ["nursery-daily", "Nursery Daily"],
-  ["senior-lifestyle-business", "Senior Living Business"],
+  ["senior-lifestyle-business", "Senior Lifestyle Business"],
   ["dental-business-news", "Dental Business News"],
   ["smart-farming-news", "Smart Farming News"],
+  // 17 Nov 2026 wave.
+  ["fm-weekly", "FM Weekly"],
+  ["data-centre-today", "Data Centre Today"],
+  ["stadium-arena-business", "Stadium and Arena Business"],
+  ["retail-business-magazine", "Retail Business Magazine"],
+  ["travel-business-news", "Travel Business News"],
 ];
 
 async function load(slug, file) {
