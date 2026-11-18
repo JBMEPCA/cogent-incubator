@@ -18,6 +18,10 @@
     {
       "path": "/api/cron/ad-stats",
       "schedule": "15 5 * * *"
+    },
+    {
+      "path": "/api/cron/supplier-profiles",
+      "schedule": "40 6 * * *"
     }
   ]
 }
