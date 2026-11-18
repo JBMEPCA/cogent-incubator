@@ -1,13 +1,13 @@
 # Stadium and Arena Business: launch tracker
 
 Started 17 November 2026, as one of the five titles in the wave-7 batch.
-**This title is NOT live.** The tracker is written before launch on purpose, so
-the open items below are a live list rather than something reconstructed weeks
-later (playbook §12).
+**This title is NOT live.** The domain is bought; the site does not exist yet.
+The tracker is written before launch on purpose, so the open items below are a
+live list rather than something reconstructed weeks later (playbook §12).
 
 | | |
 |---|---|
-| Domain | **stadiumarenabusiness.com** - free and UNREGISTERED as at 17 Nov 2026 |
+| Domain | **stadiumarenabusiness.com** - REGISTERED 18 Nov 2026, nameservers still at GoDaddy |
 | Slug | `stadium-arena-business` |
 | Site folder | `stadium-arena-business-website` (git repo, first commit made, no remote) |
 | Theme | `child/`, child of cogent-base |
@@ -50,8 +50,8 @@ Stadium and Arena Business covers the business of running and building stadiums,
 Each step blocks the next. DNS is the only one with a mandatory wait, so it
 starts the clock.
 
-- [ ] **1. Register stadiumarenabusiness.com.** Still free at the last check. Nothing below
-      can start until this is done.
+- [x] **1. Register stadiumarenabusiness.com.** Done 18 Nov 2026 at 10:44 UTC, confirmed by
+      RDAP. Nameservers are still GoDaddy's, which is correct until step 2.
 - [ ] **2. Create the site at SiteGround, then point nameservers.** Never the
       reverse: flipping nameservers before the host has a DNS zone takes the
       domain dark.
