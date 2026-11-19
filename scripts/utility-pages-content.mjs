@@ -485,6 +485,250 @@ export const TITLES = {
       "The grant, tax and succession changes coming, explained with what to do now.",
     ],
   },
+
+  /* ---- The 17 Nov 2026 wave. Copy written from each title's own
+     editorial standard, so the public pages say what the engine is told. ---- */
+
+  "fm-weekly": {
+    name: "FM Weekly",
+    domain: "fmweekly.com",
+    email: "jb@fmweekly.com",
+    consentKey: "cogent-consent",
+    skip: [],
+    oneLiner:
+      "FM Weekly is the UK publication for the firms that clean and look after other people's buildings: what a contract is worth, what it costs to staff, and what the rules change.",
+    aboutBody: [
+      "We are written for the owners and directors of contract cleaning, window cleaning, washroom and hygiene, pest control, grounds maintenance and security guarding firms, and for the facilities managers who buy those services.",
+      "Every piece answers the same question: what does this cost you, and what do you do next. We cover contracts and tenders, wages and employment rules, insurance, equipment, software and the deals reshaping the sector. We write about the business of cleaning, never about how to clean.",
+      "Hard FM is not our subject. Plant, HVAC and factory maintenance belong to our sister title MEPCA, and we leave them there.",
+    ],
+    adLede: "Reach the people who sign for cleaning contracts, machines, chemicals, vans and the staff who use them.",
+    audienceForAds:
+      "FM Weekly is read by the people who price contracts, buy equipment and employ the workforce. They are making decisions about machines, consumables, insurance, payroll and job-management software, and most of them are sold to by suppliers who have never written anything useful for them.",
+    adFormats: [
+      "<strong>Display advertising</strong> in leaderboard, billboard and MPU positions across the site.",
+      "<strong>Category sponsorship</strong>, your brand against Contracts &amp; Tenders, Money &amp; Compliance, Equipment &amp; Supplies or Hygiene &amp; Washroom.",
+      "<strong>Sponsored articles</strong>, written to the same standard as our editorial and clearly labelled.",
+      "<strong>Newsletter sponsorship</strong>, a fixed slot in the weekly send, and solus email to our subscribers.",
+    ],
+    sourcing:
+      "We check facts against primary sources: gov.uk and HMRC for wages, National Insurance and employment rules, the HSE for safety, the Home Office and the Gangmasters and Labour Abuse Authority for right-to-work and labour enforcement, and Companies House and the Insolvency Service for company news. Published cleaning rates almost always come from someone selling cleaning or selling to cleaners, so we say who published a figure and what it does and does not include. Where we are uncertain, we say so.",
+    newsWanted: [
+      "<strong>Contract wins and losses.</strong> Who has taken on which site, and from whom.",
+      "<strong>Appointments and promotions</strong> at contractors and in-house FM teams.",
+      "<strong>Acquisitions and insolvencies</strong> in a consolidating industry.",
+      "<strong>Product launches</strong> a contractor would realistically buy: machines, chemicals, washroom systems, vans, software.",
+      "<strong>Pay, recruitment and enforcement</strong>: wage settlements, right-to-work action, tribunal outcomes.",
+      "<strong>Research with real numbers</strong> on rates, turnover, absence or the cost of compliance.",
+    ],
+    newsNotWanted: [
+      "Cleaning technique, product dilution or method content",
+      "Hard FM: plant, HVAC, boilers and factory maintenance",
+      "Announcements with no UK operator angle",
+      "Supplier claims we cannot check, or statistics with no published source",
+    ],
+    interviewLine:
+      "FM Weekly runs a regular interview with a named person running a real cleaning or FM business. If you or a client would make a good subject, say so in the same email and tell us in a line or two what decision or change makes the story worth a reader's time.",
+    prLine: "If you are building a UK cleaning and facilities media list, please add FM Weekly.",
+    newsletterBullets: [
+      "The contract wins, losses and acquisitions that move work between firms.",
+      "What the wage floor, National Insurance and the tender rules do to a labour-heavy margin, with the arithmetic done.",
+      "Equipment, consumables and software worth the money, and the compliance deadlines worth diarising.",
+    ],
+  },
+
+  "data-centre-today": {
+    name: "Data Centre Today",
+    domain: "datacentretoday.com",
+    email: "jb@datacentretoday.com",
+    consentKey: "cogent-consent",
+    skip: [],
+    oneLiner:
+      "Data Centre Today covers the UK data centre build-out as a business: which sites, which grid connection, which contractor, and which of the announced gigawatts will become buildings.",
+    aboutBody: [
+      "We are written for operators and colocation firms, developers and their investors, the construction and M&amp;E contractors building the sites, and the engineers who specify power, cooling and connectivity, along with the consultants, land agents and planners who advise them.",
+      "The global titles cover this sector well and we do not try to beat them at it. Our subject is the UK layer they skim: the planning application, the connection queue, the contract award, the town the scheme lands in.",
+      "Every investment and capacity figure in this sector is somebody's announcement before it is a fact. We name who said it and when, and where an announcement and an independent estimate disagree, we print both and say they disagree.",
+    ],
+    adLede: "Reach the operators, developers and contractors building the UK's data centres.",
+    audienceForAds:
+      "Data Centre Today is read by the people who specify and buy power, cooling, connectivity and construction for data centre projects. It is a small readership with the highest value per head of any title we publish, and it should be bought on who reads it rather than on traffic.",
+    adFormats: [
+      "<strong>Display advertising</strong> in leaderboard, billboard and MPU positions across the site.",
+      "<strong>Category sponsorship</strong>, your brand against Power &amp; Grid, Cooling &amp; Design, Build &amp; Supply Chain or Sites &amp; Planning.",
+      "<strong>Sponsored articles</strong>, written to the same standard as our editorial and clearly labelled.",
+      "<strong>Newsletter sponsorship</strong>, a fixed slot in the weekly send, and solus email to our subscribers.",
+    ],
+    sourcing:
+      "We check facts against primary sources: DSIT and DESNZ for policy, Ofgem and NESO for connections, the Planning Inspectorate and local authority portals for applications and decisions, Companies House for corporate detail, and the Uptime Institute and the property agents for market data. Capacity and investment figures are attributed to whoever announced them, with the date. We do not publish site security detail beyond what a planning document already shows, and we do not estimate a contract value that has not been disclosed.",
+    newsWanted: [
+      "<strong>Planning applications, approvals and refusals</strong>, with the authority and the reference.",
+      "<strong>Grid connection news</strong>: offers, queue positions, reform and what it does to a programme.",
+      "<strong>Contract awards</strong> across main contractor, M&amp;E, enabling works and fit-out.",
+      "<strong>Investment, acquisitions and capacity deals</strong>, with who is funding what.",
+      "<strong>Product launches</strong> an operator or contractor would realistically specify.",
+      "<strong>Research with real numbers</strong> on capacity, utilisation, power or build cost.",
+    ],
+    newsNotWanted: [
+      "Anything describing physical site security arrangements",
+      "Cloud and enterprise IT stories with no UK facility angle",
+      "Announced figures with nobody willing to be named behind them",
+      "Supplier claims we cannot check, or statistics with no published source",
+    ],
+    interviewLine:
+      "Data Centre Today runs a regular interview with a named person building or running a real facility. If you or a client would make a good subject, say so in the same email and tell us in a line or two what decision or change makes the story worth a reader's time.",
+    prLine: "If you are building a UK data centre and critical infrastructure media list, please add Data Centre Today.",
+    newsletterBullets: [
+      "Which UK sites moved this week: applications, approvals, refusals and starts on site.",
+      "Grid connections and power, the constraint that decides whether a scheme is real.",
+      "Contract awards and who is getting paid, from main contractor down to specialist packages.",
+    ],
+  },
+
+  "stadium-arena-business": {
+    name: "Stadium and Arena Business",
+    domain: "stadiumarenabusiness.com",
+    email: "jb@stadiumarenabusiness.com",
+    consentKey: "cogent-consent",
+    skip: [],
+    global: true,
+    oneLiner:
+      "Stadium and Arena Business covers the business of running and building the venues that hold the big occasions: stadiums, arenas, concert halls and conference centres.",
+    aboutBody: [
+      "We are written for venue operators and general managers, club and arena chief executives and commercial directors, promoters, architects, and the contractors and suppliers who build and fit out these buildings.",
+      "We are not a sports title. There are no match reports, no results, no transfers and no team news here, and there never will be. Our subject is the building and the business around it, which is why a concert hall and a conference centre matter here as much as a football ground.",
+      "We take no gambling advertising. A betting brand may appear in a naming-rights story as a plain fact, and that is as far as it goes.",
+    ],
+    adLede: "Reach the people who build, fit out and run the venues where the big occasions happen.",
+    audienceForAds:
+      "Stadium and Arena Business is read by the people who commission venue projects and buy what goes into them: seating, screens, ticketing, catering, security, turf and the contracts around all of it. These are capital decisions with long lead times and few buyers, which is what makes the readership worth reaching.",
+    adFormats: [
+      "<strong>Display advertising</strong> in leaderboard, billboard and MPU positions across the site.",
+      "<strong>Category sponsorship</strong>, your brand against Projects &amp; Builds, Ticketing &amp; Revenue, Hospitality &amp; Catering or Safety &amp; Operations.",
+      "<strong>Sponsored articles</strong>, written to the same standard as our editorial and clearly labelled.",
+      "<strong>Newsletter sponsorship</strong>, a fixed slot in the weekly send, and solus email to our subscribers.",
+    ],
+    sourcing:
+      "We check facts against primary sources: the Sports Grounds Safety Authority and the Green Guide for safety and capacity, licensing authorities for permissions, Companies House and published accounts for club and operator finances, and contractor and architect announcements for projects. We distinguish a construction contract value from a total project cost, because they are different numbers and conflating them is how the same stadium gets quoted at two prices. Most naming-rights deals are undisclosed, so we flag published values as estimates.",
+    newsWanted: [
+      "<strong>New venues and redevelopments</strong>: planning, funding, appointments and starts on site.",
+      "<strong>Contract awards</strong> for construction, fit-out, seating, screens, catering and security.",
+      "<strong>Naming rights and sponsorship deals</strong>, with whatever terms are disclosed.",
+      "<strong>Ticketing, hospitality and revenue</strong> initiatives with numbers behind them.",
+      "<strong>Safety, licensing and operations</strong> changes that alter how a venue runs.",
+      "<strong>Major event bookings</strong>: tours, tournaments and conferences won or lost.",
+    ],
+    newsNotWanted: [
+      "Match reports, results, transfers, team news or player stories",
+      "Anything promoting betting or gambling",
+      "Ticket sales announcements aimed at the public rather than the trade",
+      "Supplier claims we cannot check, or statistics with no published source",
+    ],
+    interviewLine:
+      "Stadium and Arena Business runs a regular interview with a named person running or building a real venue. If you or a client would make a good subject, say so in the same email and tell us in a line or two what decision or change makes the story worth a reader's time.",
+    prLine: "If you are building a venue, live events and sports infrastructure media list, please add Stadium and Arena Business.",
+    newsletterBullets: [
+      "The builds and redevelopments that moved this week, and who won the work.",
+      "Where venue money actually comes from: ticketing, premium hospitality, naming rights and events.",
+      "Safety, licensing and the operational changes that alter what a building can hold.",
+    ],
+  },
+
+  "retail-business-magazine": {
+    name: "Retail Business Magazine",
+    domain: "retailbusinessmagazine.com",
+    email: "jb@retailbusinessmagazine.com",
+    consentKey: "cogent-consent",
+    skip: [],
+    oneLiner:
+      "Retail Business Magazine covers UK retail as a business: margin, rates, crime, ranging and the regulations that decide what a shop can sell and what it makes on it.",
+    aboutBody: [
+      "We are written for store owners and retail managers, weighted to independents and convenience operators running one shop or a small group, and for the brand sales and trade marketing teams who sell through them.",
+      "We are not a consumer title. There are no shopper deals, no product reviews and no best-buys here. Everything is written for the person running or supplying the shop, because the person deciding what to stock has different questions from the person buying it.",
+      "Where we cover tobacco, vapes and alcohol, we report the rules and what they do to a shop's sales mix. We never promote them.",
+    ],
+    adLede: "Reach the people who decide what gets stocked, and the people who stock it.",
+    audienceForAds:
+      "Retail Business Magazine is read by independent and convenience retailers and by the brand teams selling into them. It is the one place a supplier can talk to both sides of a listing decision at once, and it sits alongside our hospitality, leisure and venue titles for a brand selling across the whole trade.",
+    adFormats: [
+      "<strong>Display advertising</strong> in leaderboard, billboard and MPU positions across the site.",
+      "<strong>Category sponsorship</strong>, your brand against Convenience &amp; Independents, Brands &amp; Ranging, Money &amp; Rates or Retail Tech &amp; Payments.",
+      "<strong>Sponsored articles</strong>, written to the same standard as our editorial and clearly labelled.",
+      "<strong>Newsletter sponsorship</strong>, a fixed slot in the weekly send, and solus email to our subscribers.",
+    ],
+    sourcing:
+      "We check facts against primary sources: the ACS Local Shop Report and Crime Report, the BRC's sales and crime data, gov.uk and the Valuation Office Agency for business rates, HMRC for tax and wages, legislation.gov.uk for the law, and Companies House for corporate detail. Where a figure reaches us through trade coverage rather than the report itself, we say so and check it before we publish it. Where we are uncertain, we say so.",
+    newsWanted: [
+      "<strong>Openings, closures and refits</strong>, with the location and the operator.",
+      "<strong>Symbol group and wholesale news</strong>: terms, recruitment, fascia changes.",
+      "<strong>Product launches and listings</strong> an independent would realistically stock.",
+      "<strong>Rates, wages and regulation</strong> that change what trading costs.",
+      "<strong>Retail crime</strong>: incidents, prevention, policing and the law.",
+      "<strong>Research with real numbers</strong> on margin, basket, footfall or category performance.",
+    ],
+    newsNotWanted: [
+      "Shopper-facing content: deals, reviews, best-buys or where to buy",
+      "Anything promoting tobacco, vapes, nicotine products or alcohol",
+      "Announcements with no UK retail trade angle",
+      "Supplier claims we cannot check, or statistics with no published source",
+    ],
+    interviewLine:
+      "Retail Business Magazine runs a regular interview with a named person running a real shop or group. If you or a client would make a good subject, say so in the same email and tell us in a line or two what decision or change makes the story worth a reader's time.",
+    prLine: "If you are building a UK retail and convenience trade media list, please add Retail Business Magazine.",
+    newsletterBullets: [
+      "What changed this week in the cost of trading: rates, wages, energy and regulation.",
+      "The independent's P&amp;L: margin by category, shrink, crime and where the money leaks.",
+      "Ranging and listings, and what the multiples doing means for everyone below them.",
+    ],
+  },
+
+  "travel-business-news": {
+    name: "Travel Business News",
+    domain: "travelbusinessnews.com",
+    email: "jb@travelbusinessnews.com",
+    consentKey: "cogent-consent",
+    skip: [],
+    oneLiner:
+      "Travel Business News covers business travel: how companies book, manage and pay for travel, and what the policy, the suppliers and the rules cost them.",
+    aboutBody: [
+      "We are written for corporate travel managers, finance and operations directors, procurement leads, PAs and office managers, and the SME owners who book their own travel.",
+      "This is not a consumer travel title and not an agency trade title. There are no holidays, no destinations and no tour operator news here. Our reader is spending an employer's money and running a programme, and the questions that matter are what the policy says, what a trip should cost, who is liable when something goes wrong and which supplier or tool to buy.",
+      "We report what HMRC, the FCDO, the Home Office and the HSE actually say, and we send readers to those sources rather than telling them what their position is.",
+    ],
+    adLede: "Reach the people who write the travel policy and sign off the travel budget.",
+    audienceForAds:
+      "Travel Business News is read by the people who choose travel management companies, booking and expense platforms, hotel programmes and travel risk providers. They buy on policy fit and cost control rather than on brand, and they are researching long before a tender goes out.",
+    adFormats: [
+      "<strong>Display advertising</strong> in leaderboard, billboard and MPU positions across the site.",
+      "<strong>Category sponsorship</strong>, your brand against Cost &amp; Savings, Duty of Care, Tech &amp; Booking Tools or Hotels &amp; Accommodation.",
+      "<strong>Sponsored articles</strong>, written to the same standard as our editorial and clearly labelled.",
+      "<strong>Newsletter sponsorship</strong>, a fixed slot in the weekly send, and solus email to our subscribers.",
+    ],
+    sourcing:
+      "We check facts against primary sources: HMRC's own manuals for travel and subsistence, legislation.gov.uk and the HSE for employer duties, the FCDO for travel advice, the Home Office for visas and entry rules, and the CAA and ORR for air and rail. We quote a rate only with the page it came from and the date it was last updated, because retired figures from a decade ago are still circulating on vendor blogs. We never give tax or legal advice in our own voice.",
+    newsWanted: [
+      "<strong>Supplier and TMC news</strong>: wins, mergers, platform launches and integrations.",
+      "<strong>Corporate rate and programme news</strong> from airlines, rail and hotel groups.",
+      "<strong>Policy, tax and compliance changes</strong> that alter what a trip costs or requires.",
+      "<strong>Entry requirements</strong>: visas, border systems and what they mean for business travellers.",
+      "<strong>Duty of care and travel risk</strong> developments, including real incidents and lessons.",
+      "<strong>Research with real numbers</strong> on travel spend, airfares, hotel rates or compliance.",
+    ],
+    newsNotWanted: [
+      "Holidays, destinations, leisure travel or travel inspiration",
+      "Travel agency and tour operator trade news",
+      "Airline or hotel announcements with no corporate buyer angle",
+      "Supplier claims we cannot check, or statistics with no published source",
+    ],
+    interviewLine:
+      "Travel Business News runs a regular interview with a named person running a real travel programme. If you or a client would make a good subject, say so in the same email and tell us in a line or two what decision or change makes the story worth a reader's time.",
+    prLine: "If you are building a UK business travel and corporate mobility media list, please add Travel Business News.",
+    newsletterBullets: [
+      "What changed in the rules: HMRC, entry requirements and employer obligations, with the source named.",
+      "Where travel budgets actually go, and the levers that cut spend without banning travel.",
+      "Suppliers, tools and rates, read from the buyer's side rather than the vendor's.",
+    ],
+  },
 };
 
 // ── Page templates ───────────────────────────────────────────────────────────
