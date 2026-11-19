@@ -2,10 +2,21 @@ import { forEachSite, cronGuard } from "@/lib/cron";
 import { scanBrand } from "@/lib/feeds";
 
 export const dynamic = "force-dynamic";
-// Hobby plan caps functions at 60s and crons at daily — GitHub Actions
-// (.github/workflows/scan-feeds.yml) drives this hourly instead; the Vercel
-// daily cron is a backstop.
-export const maxDuration = 60;
+// GitHub Actions (.github/workflows/scan-feeds.yml) drives this hourly; the
+// Vercel daily cron is a backstop.
+//
+// Was 60, on a comment that said the Hobby plan capped functions there. That
+// has not been true since fluid compute was enabled — see agents/route.js,
+// which raised its own ceiling to 300 for the same reason and says so. The 60
+// survived as a copied assumption.
+//
+// It stopped being survivable at fifteen titles on 19 Nov 2026: forEachSite
+// splits the budget by title count, so each title had about four seconds, the
+// whole invocation returned FUNCTION_INVOCATION_TIMEOUT, and the four newest
+// titles were left with zero feed items. That is the 20 Aug starvation this
+// file's own comments describe, at a scale where it fails outright rather than
+// quietly.
+export const maxDuration = 300;
 
 // Two classes of source, and they want completely different polling.
 //
