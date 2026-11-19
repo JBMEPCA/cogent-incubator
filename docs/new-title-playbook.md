@@ -1693,3 +1693,156 @@ the reverse, and can contradict the launch brief's tone (Barbering did). And
 the three questions that teach taste fastest (least favourite, what would
 embarrass you, what the automation gets wrong) come back blank when the site
 is under a month old: re-ask them at three months.
+
+---
+
+## 13. What the 17-19 November 2026 wave taught
+
+Five titles: FM Weekly, Data Centre Today, Stadium and Arena Business, Retail
+Business Magazine and Travel Business News. Everything below is new, or
+corrects something §§1-12 already said.
+
+### WordPress ships named "My WordPress", and the parent believes it
+
+The worst one, because it was live and looked deliberate. A fresh install sets
+`blogname` to **My WordPress**, nobody sets it, and `cogent_brand()` derives
+copy from the site name. All five homepages went up reading **"Fresh from My
+WordPress"** in the Latest heading, **"MY WORDPRESS WEEKLY"** on the sidebar
+signup card, and "My WordPress uses analytics cookies" in the consent banner.
+
+It renders perfectly. Nothing errors. It is the Fleet-copy incident in a new
+costume: a default that is wrong rather than empty.
+
+Set both, from the Site row rather than by hand, so they cannot drift:
+
+```bash
+wp option update blogname "FM Weekly"
+wp option update blogdescription "The business of clean."
+```
+
+**Add this to the install step**, not to a later sweep. The theme is correct
+and the site still says the wrong name.
+
+### Solving the host's CAPTCHA in a browser does NOT unblock your scripts
+
+§10 says the host locks you out and tells you to wait. The missing half: the
+challenge is cleared by a **cookie issued to the browser that solved it**, not
+by releasing the IP. Solving it in Chrome fixes Chrome and changes nothing for
+curl, fetch or any script. Both were verified on the same machine minutes
+apart: the browser loaded the site normally while every automated request to
+the same host still returned the 202 interstitial.
+
+So the options when challenged are: wait, run the step from somewhere else
+(the Vercel engine is never challenged), or do the work over SSH. Do not ask a
+person to "clear it" expecting your tooling to recover, and never route around
+it through a proxy or a tunnel.
+
+### §10's own workaround does not work on a new SiteGround site
+
+§10 says to verify while locked out by having each server fetch its own
+homepage with `wp_remote_get( home_url('/') )`. On all five new sites that
+returns:
+
+```
+cURL error 35: TLS connect error: error:0A000126:SSL routines::unexpected eof while reading
+```
+
+A loopback `curl --resolve domain:443:127.0.0.1` returns nothing either. The
+escape hatch is unavailable on a fresh site, so plan to verify over SSH with
+wp-cli instead: `wp option get`, `wp theme list`, `wp post list`, `wp user
+list` all work and are not challenged.
+
+### Adding a title means editing FIVE separate per-title maps
+
+Each one is a silent no-op if missed, and they live in two repos:
+
+| File | Repo | Miss it and… |
+| --- | --- | --- |
+| `scripts/check-title-agnostic.mjs` → `TITLES` | theme | the title's name is not forbidden in other themes |
+| `scripts/check-title-agnostic.mjs` → `CHILDREN` | theme | `--all` never walks it, and reports a pass |
+| `scripts/brand/install.mjs` → `INSTALL` | theme | no masthead artwork is installed |
+| `scripts/brand/email.mjs` → `SOURCES` | theme | no email masthead, so newsletters send the name as text |
+| `scripts/build-brand-wordmarks.mjs` → `TITLES` | app | same, one layer down |
+| `scripts/utility-pages-content.mjs` → `TITLES` | app | no about, contact, advertise, privacy or submit-news pages |
+| `scripts/set-publisher-logo.mjs` → `CHILD_DIRS` | app | no Yoast Organization entity |
+
+**The guard needs BOTH of its maps.** `TITLES` makes a name forbidden
+elsewhere; `CHILDREN` is what `--all` actually walks. A title in one and not
+the other reads as a clean pass, which is the exact failure the guard exists to
+prevent.
+
+### Sections have to agree in three places, including their order
+
+The Site row's section **names**, the batch plan's `category` values, and the
+child theme's `cogent_home_sections` **slugs** must all match. A checker that
+compares all three caught three faults on its first run across five titles:
+two titles had the same sections in a different order from their theme, and one
+had a genuine break, a section named "Tech & Booking Tools" against a theme
+slug of `tech-booking`. That one would have reserved articles to a section the
+homepage never renders, silently.
+
+Order matters too: the Site row's order is the allocation order and the theme's
+is the render order, so a section with a high target should not render last.
+
+### WordPress stores `&` in a term name as `&amp;`
+
+`wp term create category "Money & Compliance"` stores **Money &amp;
+Compliance**, and re-saving the decoded value re-escapes it. This is WordPress
+behaviour, not a bug in the seed, but a theme that adds its own `esc_html()`
+over the top will double-escape and print `&amp;` on the page. Check a rendered
+section heading at first publish before assuming it is fine.
+
+### The engine's app password email collides with the byline user
+
+The Engine account is created with `jb@<domain>`, which means `wp user create
+james-burke jb@<domain>` fails with "that email address is already used". Give
+the byline user a different address.
+
+More usefully: **check before you create.** A `wp user list` that looks like it
+is missing the byline user may simply be a stale read, and creating one anyway
+gets you two accounts with the same display name. Verify the **nicename**, not
+the login or the display name:
+
+```bash
+wp user list --fields=ID,user_login,user_nicename,display_name,roles --format=csv
+```
+
+### Check the donor theme's FOOTER, not just its header
+
+A child generated from another title's theme carried the donor's strapline,
+contact address, copyright line and a supplier-directory link that 404s, all in
+the footer, on five sites at once. The header was corrected and looked right,
+which is what made it easy to miss.
+
+The fix that matters is not the edit, it is the guard: the generator now fails
+the build if any other title's name or domain appears anywhere in a child.
+Copying a child is cheap; proving the copy is clean is the part worth
+automating.
+
+### Mail: MX is not the job, SPF and DKIM are
+
+Adding the domain to Workspace sets MX correctly and stops there. On all five,
+SPF still authorised only SiteGround and there was no Google DKIM at all, so
+anything sent from `jb@<domain>` would have failed authentication.
+
+**SPF is edited, not replaced.** The live fleet keeps the host's include and
+adds Google's, because WordPress sends mail too:
+
+```
+v=spf1 +a +mx include:<domain>.spf.auto.dnssmarthost.net include:_spf.google.com ~all
+```
+
+One record only; two SPF records make both invalid.
+
+**Check the DKIM key length.** A 2048-bit key is longer than a DNS string's 255
+characters and has to be chunked. It looks identical in the provider's panel
+whether it was chunked or truncated. A correct record returns a `p=` value of
+**392 characters**; anything shorter is truncated and every signature fails.
+
+### Pace the verification, or you lock yourself out
+
+Deploying five titles produced several hundred requests from one IP in a couple
+of hours and triggered the challenge described above. Batch the checks: one
+request per site that asserts several things, rather than one request per
+assertion. §10 already says a deploy can trigger it; a *launch* triggers it far
+harder.
