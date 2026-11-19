@@ -69,6 +69,10 @@ const STEPS = [
   // Console spikes, matched to the title that should cover them. Also on the
   // half-past trigger, because a spike is worth catching within the hour.
   "/api/cron/trending",
+  // Supplier pages for anything published outside the app's publish routes
+  // (hand-built scripts, the WordPress editor). Added 19 Nov 2026 after a
+  // BrightHR story built by hand never reached the BrightHR page.
+  "/api/cron/supplier-catchup",
   "/api/cron/scan-feeds",
   "/api/cron/scan-feeds",
 ];
@@ -316,6 +320,8 @@ async function runAll(env, now = new Date(), steps = null) {
     // Since 13 Oct 2026 the trending refresh also writes, pictures and publishes
     // what it commissions, so it runs to its 300s like the agent stage.
     "/api/cron/trending",
+    // Reads each title's new posts with a short model call per post; up to 240s.
+    "/api/cron/supplier-catchup",
   ];
   const stillWorking = (r) => r.status === 524 && LONG_RUNNING.some((path) => r.path.startsWith(path));
   const failures = results.filter((r) => (r.error || r.status >= 400) && !stillWorking(r));
