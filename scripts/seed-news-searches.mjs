@@ -31,6 +31,11 @@ import {
   GOLF_NEWS_SEARCHES,
   BARBERING_NEWS_SEARCHES,
   AIRPORT_NEWS_SEARCHES,
+  FM_NEWS_SEARCHES,
+  DATA_CENTRE_NEWS_SEARCHES,
+  STADIUM_NEWS_SEARCHES,
+  RETAIL_NEWS_SEARCHES,
+  TRAVEL_NEWS_SEARCHES,
   searchFeedUrl,
   searchHubUrl,
 } from "../lib/news-searches.js";
@@ -44,6 +49,14 @@ const SEARCH_SETS = {
   "golf-resort-magazine": GOLF_NEWS_SEARCHES,
   "barbering-business": BARBERING_NEWS_SEARCHES,
   "airport-business-magazine": AIRPORT_NEWS_SEARCHES,
+  // The 17 Nov 2026 wave. This map is one of the per-title maps the playbook
+  // warns about: a title missing from it is not an error, the script just
+  // refuses the slug, and the title runs on company feeds alone.
+  "fm-weekly": FM_NEWS_SEARCHES,
+  "data-centre-today": DATA_CENTRE_NEWS_SEARCHES,
+  "stadium-arena-business": STADIUM_NEWS_SEARCHES,
+  "retail-business-magazine": RETAIL_NEWS_SEARCHES,
+  "travel-business-news": TRAVEL_NEWS_SEARCHES,
 };
 
 for (const f of [".env.local", ".env"]) {
