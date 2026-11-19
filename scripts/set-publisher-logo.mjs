@@ -44,6 +44,12 @@ const CHILD_DIRS = {
   "golf-resort-magazine": "golf-resort-magazine-website",
   "barbering-business": "barbering-business-website",
   "airport-business-magazine": "airport-business-magazine-website",
+  // The 17 Nov 2026 wave.
+  "fm-weekly": "fm-weekly-website",
+  "data-centre-today": "data-centre-today-website",
+  "stadium-arena-business": "stadium-arena-business-website",
+  "retail-business-magazine": "retail-business-magazine-website",
+  "travel-business-news": "travel-business-news-website",
   "gym-business-news": "gym-business-news-website",
   "nursery-daily": "nursery-daily-website",
   "senior-lifestyle-business": "senior-lifestyle-business-website",
