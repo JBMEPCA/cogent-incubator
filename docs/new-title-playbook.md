@@ -1846,3 +1846,51 @@ of hours and triggered the challenge described above. Batch the checks: one
 request per site that asserts several things, rather than one request per
 assertion. §10 already says a deploy can trigger it; a *launch* triggers it far
 harder.
+
+### Mailchimp wants the DKIM records at the ROOT, not on the sending subdomain
+
+Resolved 19 Nov 2026, after guessing wrong twice. The From address is
+`news@news.<domain>` and the live titles carry `k2`/`k3._domainkey` CNAMEs
+pointing at `dkim2.mcsv.net` and `dkim3.mcsv.net` **on the subdomain only**,
+which makes it look like the subdomain is what gets authenticated. It is not.
+
+Mailchimp verifies and authenticates the **root** domain, and asks for the same
+pair at `k2._domainkey.<domain>`. Add both sets:
+
+```
+k2._domainkey.news        -> dkim2.mcsv.net     (sending subdomain)
+k3._domainkey.news        -> dkim3.mcsv.net
+k2._domainkey             -> dkim2.mcsv.net     (root, what Mailchimp checks)
+k3._domainkey             -> dkim3.mcsv.net
+```
+
+SiteGround's DNS editor appends the domain, so type the short name on the left,
+not the full hostname, or you get `k2._domainkey.news.domain.com.domain.com`.
+
+**The ten older titles have no root records at all**, so they are authenticated
+on the subdomain alone and at least one shows "Verification in progress" years
+on. Worth a sweep: the wave-7 five are now configured better than the fleet.
+
+Verification is separate from authentication and is done by emailing an address
+**at the root domain**. `news@news.<domain>` receives nothing, so always verify
+with `jb@<domain>`.
+
+### A brand-new title mailbox cannot receive its own verification codes
+
+Mailchimp emails a code to `jb@<domain>`. To read it you sign in to that
+mailbox. Google then wants to send a sign-in code to the same mailbox. The
+account is new, forwarding is not set up yet, and nothing can get in.
+
+Break it from the Admin console: Directory → Users → reset the password, untick
+"ask for a password change at next sign-in", then sign in with it.
+
+Then set the forwarding **as a routing rule, not per mailbox**. Per-mailbox
+forwarding needs a confirmation email clicked in the destination inbox, and
+four titles from the September wave still had unclicked confirmations sitting
+in the hub two months later, which means their mail was never forwarding at
+all. A routing rule needs no confirmation, cannot be undone by a user, and
+covers every title at once:
+
+Admin → Apps → Google Workspace → Gmail → Routing → Add rule, Inbound and
+Internal receiving, Modify message → Also deliver to the hub, with an envelope
+filter on a regexp of the title addresses.
