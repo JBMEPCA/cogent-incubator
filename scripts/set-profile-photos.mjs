@@ -27,6 +27,15 @@ const USERS = {
   "jb@seniorlifestylebusiness.com": "senior-lifestyle-business",
   "jb@dentalbusinessnews.com": "dental-business-news",
   "jb@smartfarmingnews.com": "smart-farming-news",
+  // The 17 Nov 2026 wave. These five have no avatar-animated.gif yet, so run
+  // cogent-base-theme/scripts/brand/avatar-gif.mjs for them before --apply, or
+  // this reports MISSING and skips. Their avatar-512.png already exists and is
+  // what went up by hand on 19 Nov.
+  "jb@fmweekly.com": "fm-weekly",
+  "jb@datacentretoday.com": "data-centre-today",
+  "jb@stadiumarenabusiness.com": "stadium-arena-business",
+  "jb@retailbusinessmagazine.com": "retail-business-magazine",
+  "jb@travelbusinessnews.com": "travel-business-news",
 };
 
 const token = await getGoogleAccessToken(["https://www.googleapis.com/auth/admin.directory.user"], ADMIN);

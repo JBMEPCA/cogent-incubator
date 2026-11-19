@@ -32,6 +32,15 @@ const TITLES = {
   "jb@seniorlifestylebusiness.com": { slug: "senior-lifestyle-business", name: "Senior Lifestyle Business", domain: "seniorlifestylebusiness.com", accent: "#7A1F3D", logoHeight: 22 },
   "jb@dentalbusinessnews.com": { slug: "dental-business-news", name: "Dental Business News", domain: "dentalbusinessnews.com", accent: "#0B5E63", logoHeight: 20 },
   "jb@smartfarmingnews.com": { slug: "smart-farming-news", name: "Smart Farming News", domain: "smartfarmingnews.com", accent: "#2F6B2F", logoHeight: 24 },
+  // The 17 Nov 2026 wave, added the same day — §13 says not to leave this for
+  // six weeks the way the September wave was left.
+  "jb@fmweekly.com": { slug: "fm-weekly", name: "FM Weekly", domain: "fmweekly.com", accent: "#0A8FA0", logoHeight: 26 },
+  "jb@datacentretoday.com": { slug: "data-centre-today", name: "Data Centre Today", domain: "datacentretoday.com", accent: "#4338CA", logoHeight: 22 },
+  // Stadium's mark is three stacked lines rather than one, so it needs the
+  // extra height to stay legible at signature size.
+  "jb@stadiumarenabusiness.com": { slug: "stadium-arena-business", name: "Stadium and Arena Business", domain: "stadiumarenabusiness.com", accent: "#1F3FBF", logoHeight: 34 },
+  "jb@retailbusinessmagazine.com": { slug: "retail-business-magazine", name: "Retail Business Magazine", domain: "retailbusinessmagazine.com", accent: "#E3262F", logoHeight: 20 },
+  "jb@travelbusinessnews.com": { slug: "travel-business-news", name: "Travel Business News", domain: "travelbusinessnews.com", accent: "#0B5FA8", logoHeight: 22 },
 };
 
 // Heights differ because the marks differ: a long one-line mark at the height
