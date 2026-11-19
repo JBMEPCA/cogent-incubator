@@ -2,20 +2,29 @@ import { forEachSite, cronGuard } from "@/lib/cron";
 import { scanBrand } from "@/lib/feeds";
 
 export const dynamic = "force-dynamic";
-// GitHub Actions (.github/workflows/scan-feeds.yml) drives this hourly; the
-// Vercel daily cron is a backstop.
+// This used to say GitHub Actions drove it hourly from
+// .github/workflows/scan-feeds.yml. There is no .github directory in this
+// repo, so the Vercel cron in vercel.json is the only caller, once a day at
+// 06:00. Reason about new titles on that basis: at DISCOVERY_PER_RUN brands a
+// run, a title with sixty-odd unscanned sources takes over a week to finish
+// discovery, not an afternoon.
 //
-// Was 60, on a comment that said the Hobby plan capped functions there. That
-// has not been true since fluid compute was enabled — see agents/route.js,
-// which raised its own ceiling to 300 for the same reason and says so. The 60
-// survived as a copied assumption.
+// maxDuration was 60, on a comment that said the Hobby plan capped functions
+// there. That has not been true since fluid compute was enabled — see
+// agents/route.js, which raised its own ceiling to 300 for the same reason and
+// says so. The 60 survived as a copied assumption.
 //
-// It stopped being survivable at fifteen titles on 19 Nov 2026: forEachSite
-// splits the budget by title count, so each title had about four seconds, the
-// whole invocation returned FUNCTION_INVOCATION_TIMEOUT, and the four newest
-// titles were left with zero feed items. That is the 20 Aug starvation this
-// file's own comments describe, at a scale where it fails outright rather than
-// quietly.
+// It stopped being survivable at fifteen titles on 19 Nov 2026, and the
+// arithmetic is worth keeping because it is not the one you would guess.
+// TIME_BUDGET_MS is 40s, but each title's share has a 5s FLOOR, so the run
+// does not take 40s at any fleet size past eight — it takes roughly
+// 5s × titles. At fifteen that is ~75s against a 60s ceiling, so the whole
+// invocation returned FUNCTION_INVOCATION_TIMEOUT and whichever titles were
+// late in the rotation got nothing.
+//
+// Raising the ceiling changes no title's share: the floor and the division are
+// untouched, so every title still gets exactly what it got before. It only
+// stops the run being killed before the later ones have had their turn.
 export const maxDuration = 300;
 
 // Two classes of source, and they want completely different polling.
