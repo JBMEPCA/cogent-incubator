@@ -1894,3 +1894,202 @@ covers every title at once:
 Admin → Apps → Google Workspace → Gmail → Routing → Add rule, Inbound and
 Internal receiving, Modify message → Also deliver to the hub, with an envelope
 filter on a regexp of the title addresses.
+
+### Hub send-as is an API call, not a console chore
+
+Adding new titles to the hub inbox's **Send mail as** list looks like a console
+job with a verification code per address, and that is how Gmail's own UI reads.
+It is not. The service account's existing domain-wide delegation already carries
+`gmail.settings.sharing` — the scope `set-gmail-signatures.mjs` uses — and that
+scope can **create** a send-as identity as well as patch one:
+
+```
+POST https://gmail.googleapis.com/gmail/v1/users/me/settings/sendAs
+{ "sendAsEmail": "jb@<domain>", "displayName": "James Burke",
+  "replyToAddress": "jb@<domain>", "treatAsAlias": false }
+```
+
+Because the domain is a secondary domain of the same Workspace, the identity
+comes back **`verificationStatus: accepted`** immediately. No code, no SMTP
+server, no app password, nothing to click. All five of the 17 Nov titles were
+added in one run.
+
+Two things follow. Do not open the "Add another email address" dialog: it opens
+a separate browser window that no automation in this project can reach, and it
+asks for SMTP credentials because the existing identities are all
+`treatAsAlias: false`. And **do not try to make the title addresses aliases on
+the hub user instead** — Google refuses with "Another user already has this
+email", because each title is its own Workspace user. That refusal is correct
+and is not a problem to be solved.
+
+### Forwarding is not retroactive, so silence is not evidence
+
+Searching the hub inbox for a new title's domain and finding nothing does **not**
+mean forwarding is off. Gmail forwarding applies only to mail arriving after it
+is switched on, and a title that is two days old with three welcome emails has
+had nothing arrive since. All five of the 17 Nov titles were forwarding
+correctly the entire time they appeared not to be.
+
+Read the setting rather than inferring it from the hub:
+
+```
+GET https://gmail.googleapis.com/gmail/v1/users/me/settings/autoForwarding
+```
+
+impersonating the title mailbox. `scripts/_mailaudit.mjs` prints forwarding,
+registered forwarding addresses and extra send-as identities for every title in
+one pass, which is the cheap way to answer this for the whole fleet.
+
+### What a title's mail setup actually consists of
+
+Five things. The older titles have all five; a new title usually has the first
+two and nothing else.
+
+| | Where it lives | How |
+| --- | --- | --- |
+| `jb@<domain>` Workspace user | Admin console | by hand, its own seat |
+| forwarding to the hub, `leaveInInbox` | the title mailbox | by hand or API |
+| `press@<domain>` alias on the **`jb@<domain>`** user | Admin console | by hand |
+| `press@<domain>` send-as on the title mailbox | Gmail API | `settings.sharing` |
+| `jb@<domain>` send-as on the hub, reply-to itself | Gmail API | `settings.sharing` |
+
+The press alias belongs on the **title's own user**, not on the hub. Adding
+`press@<newdomain>` to the hub user's alternate addresses appears to work and
+quietly diverges from every other title, which matters because
+`set-gmail-signatures.mjs` looks for the press identity on the title mailbox and
+will silently skip it.
+
+Every title also needs a row in `TITLES` in `scripts/set-gmail-signatures.mjs`,
+then one `--apply` run. §2 step 5 already says this; it is repeated here because
+the September wave went six weeks with blank signatures anyway.
+
+### Nobody has written down who owns the Cloud project
+
+The service account the whole fleet runs on lives in Google Cloud project
+**163444851963**, and nothing in either repo records which Google identity owns
+it. That is fine until something needs a Google API that has never been used
+before, at which point the call fails with:
+
+```
+403  Admin SDK API has not been used in project 163444851963 before or it is disabled.
+```
+
+The scope was granted and the token minted — only the API itself was off. The
+fix is one click in that project's console, but finding an identity that can
+open the project is the slow part: the title accounts cannot (they are not
+owners and the console forces a re-auth), and the error the console gives is
+`resourcemanager.projects.get (missing)`, which reads like a permissions
+problem rather than a wrong-account one.
+
+**Write the owning account into this playbook the next time someone opens that
+project successfully.** The likely candidates are the identity that holds the
+fleet's GA4 properties and the one used for third-party signups, neither of
+which is the Workspace admin.
+
+Until then, anything needing a newly-used Google API is a two-person job, so
+prefer the manual route for one-off cosmetic work. Setting five Workspace
+profile photos by hand in Admin → Users → the user → the avatar takes about two
+minutes; `scripts/_w7photos.mjs` does it from each title's
+`brand/dist/<slug>/avatar-512.png` the moment the Admin SDK is enabled, and is
+worth running only when a wave is large enough to justify it.
+
+### The platform allowance is a launch dependency, and nobody counts it
+
+Launching five titles took the fleet from ten to fifteen and pushed the Vercel
+team past the Hobby plan's **4 hours of Fluid Active CPU a month**. It reached
+6h 55m and Vercel **paused every project on the team** on 19 Nov 2026: the
+fleet app, the MEPCA app, the dashboard, all of them, for twelve hours until
+the plan was upgraded. The pause would otherwise have lasted until 19 December.
+
+Three things make this worse than it sounds.
+
+**It does not read as a capacity problem.** Every route returns:
+
+```
+402  Payment required
+     DEPLOYMENT_DISABLED
+```
+
+which looks like an unpaid invoice. It is not. The cause is only visible in the
+Vercel dashboard sidebar, as "Paused since … for Fluid Active CPU. Your team
+exceeded the Hobby fair use limits."
+
+**It takes the whole team down, not one project.** The titles' public sites are
+on SiteGround and were unaffected, so readers saw nothing. But everything on
+Vercel stopped, including `/api/brand/logo/<slug>`, which every Gmail signature
+on every title loads its mark from, so those images were broken in outgoing
+mail for the whole outage.
+
+**Nothing is lost, but nothing catches up by itself either.** Eleven finished
+articles sat past their slot. They published on the first `publish-due` after
+the plan was restored, two per title per run.
+
+### Active CPU is not wall time, so measure the right thing
+
+The instinct is to blame the agents. The numbers say otherwise. Over seven days:
+
+| agent | runs | avg | min/day | $/day |
+| --- | --- | --- | --- | --- |
+| editor | 427 | 56s | 56.5 | 7.55 |
+| researcher | 65 | 112s | 17.4 | 2.02 |
+| backlink | 83 | 61s | 12.1 | 0.17 |
+| director | 521 | 3s | 3.8 | 0.17 |
+| | | | **96 min/day** | **$10.43** |
+
+96 minutes a day of agent wall time, about 48 hours a month — but fluid compute
+bills **active CPU**, and an agent run is mostly idle waiting on the Anthropic
+API, which is not billed. The giveaway is in the usage panel: Function
+Invocations were at **14%** of their allowance while Active CPU was at **173%**.
+That combination means the cost is work that genuinely burns processor, which
+is feed parsing far more than model calls.
+
+So the lever is the scanner, not the writers. Do not throttle the Editor to
+save CPU: it is the product, and it is mostly waiting.
+
+### The duplicate that cost the most
+
+`cloudflare/worker.js` listed `/api/cron/scan-feeds` **twice** in its hourly
+`STEPS`, with no comment, unlike every other line in that array. It is not a
+harmless repeat — the route divides a fixed budget across the fleet and
+advances a rotation, so the second call does a second full slice of work. At 28
+ticks a day that was the largest single consumer of Active CPU in the system.
+
+Raising `scan-feeds`' `maxDuration` from 60s to 300s on the same day was
+correct, because at fifteen titles the run needs about 75s and was being killed
+part way — but it also meant each of those 28 calls ran to completion at ~130s
+instead of being cut at 60. Correct fix, doubled bill, same afternoon.
+
+Fixed by deleting one line. Nothing is lost: the wire already carries thousands
+of unread items, and `HALF_PAST` omits scanning entirely for the same reason.
+
+### Where the clock actually lives, and how to deploy it
+
+Not in `vercel.json`, which holds only two daily crons. The real schedule is a
+Cloudflare Worker, `smart-sme-cron`, in `cloudflare/`:
+
+```
+crons = ["5 6-19 * * *", "35 6-19 * * *"]     28 ticks a day
+```
+
+`STEPS` runs at five past, `HALF_PAST` at thirty-five past. Read `worker.js`
+for what each tick does, **not the comments in `wrangler.toml`**: that file
+claims the half-past trigger "runs no agent stage", while `HALF_PAST` plainly
+contains both agent stages. Where two comments disagree, the array is the truth.
+
+`npx` is blocked on this machine, so deploy through node from `cloudflare/`:
+
+```powershell
+node ..\node_modules\wrangler\bin\wrangler.js deploy
+```
+
+**Check two things after every worker deploy**, because a deploy has silently
+wiped them before and the fleet went nineteen hours untouched while Cloudflare
+reported every cron as firing:
+
+```powershell
+node ..\node_modules\wrangler\bin\wrangler.js secret list
+```
+
+`BASE_URL` must still point at the fleet app (it is versioned in
+`wrangler.toml` now, which is why it survives), and `CRON_SECRET` must still be
+listed. If the secret goes, every call 401s and nothing anywhere looks wrong.
