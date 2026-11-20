@@ -1693,3 +1693,403 @@ the reverse, and can contradict the launch brief's tone (Barbering did). And
 the three questions that teach taste fastest (least favourite, what would
 embarrass you, what the automation gets wrong) come back blank when the site
 is under a month old: re-ask them at three months.
+
+---
+
+## 13. What the 17-19 November 2026 wave taught
+
+Five titles: FM Weekly, Data Centre Today, Stadium and Arena Business, Retail
+Business Magazine and Travel Business News. Everything below is new, or
+corrects something §§1-12 already said.
+
+### WordPress ships named "My WordPress", and the parent believes it
+
+The worst one, because it was live and looked deliberate. A fresh install sets
+`blogname` to **My WordPress**, nobody sets it, and `cogent_brand()` derives
+copy from the site name. All five homepages went up reading **"Fresh from My
+WordPress"** in the Latest heading, **"MY WORDPRESS WEEKLY"** on the sidebar
+signup card, and "My WordPress uses analytics cookies" in the consent banner.
+
+It renders perfectly. Nothing errors. It is the Fleet-copy incident in a new
+costume: a default that is wrong rather than empty.
+
+Set both, from the Site row rather than by hand, so they cannot drift:
+
+```bash
+wp option update blogname "FM Weekly"
+wp option update blogdescription "The business of clean."
+```
+
+**Add this to the install step**, not to a later sweep. The theme is correct
+and the site still says the wrong name.
+
+### Solving the host's CAPTCHA in a browser does NOT unblock your scripts
+
+§10 says the host locks you out and tells you to wait. The missing half: the
+challenge is cleared by a **cookie issued to the browser that solved it**, not
+by releasing the IP. Solving it in Chrome fixes Chrome and changes nothing for
+curl, fetch or any script. Both were verified on the same machine minutes
+apart: the browser loaded the site normally while every automated request to
+the same host still returned the 202 interstitial.
+
+So the options when challenged are: wait, run the step from somewhere else
+(the Vercel engine is never challenged), or do the work over SSH. Do not ask a
+person to "clear it" expecting your tooling to recover, and never route around
+it through a proxy or a tunnel.
+
+### §10's own workaround does not work on a new SiteGround site
+
+§10 says to verify while locked out by having each server fetch its own
+homepage with `wp_remote_get( home_url('/') )`. On all five new sites that
+returns:
+
+```
+cURL error 35: TLS connect error: error:0A000126:SSL routines::unexpected eof while reading
+```
+
+A loopback `curl --resolve domain:443:127.0.0.1` returns nothing either. The
+escape hatch is unavailable on a fresh site, so plan to verify over SSH with
+wp-cli instead: `wp option get`, `wp theme list`, `wp post list`, `wp user
+list` all work and are not challenged.
+
+### Adding a title means editing FIVE separate per-title maps
+
+Each one is a silent no-op if missed, and they live in two repos:
+
+| File | Repo | Miss it and… |
+| --- | --- | --- |
+| `scripts/check-title-agnostic.mjs` → `TITLES` | theme | the title's name is not forbidden in other themes |
+| `scripts/check-title-agnostic.mjs` → `CHILDREN` | theme | `--all` never walks it, and reports a pass |
+| `scripts/brand/install.mjs` → `INSTALL` | theme | no masthead artwork is installed |
+| `scripts/brand/email.mjs` → `SOURCES` | theme | no email masthead, so newsletters send the name as text |
+| `scripts/build-brand-wordmarks.mjs` → `TITLES` | app | same, one layer down |
+| `scripts/utility-pages-content.mjs` → `TITLES` | app | no about, contact, advertise, privacy or submit-news pages |
+| `scripts/set-publisher-logo.mjs` → `CHILD_DIRS` | app | no Yoast Organization entity |
+
+**The guard needs BOTH of its maps.** `TITLES` makes a name forbidden
+elsewhere; `CHILDREN` is what `--all` actually walks. A title in one and not
+the other reads as a clean pass, which is the exact failure the guard exists to
+prevent.
+
+### Sections have to agree in three places, including their order
+
+The Site row's section **names**, the batch plan's `category` values, and the
+child theme's `cogent_home_sections` **slugs** must all match. A checker that
+compares all three caught three faults on its first run across five titles:
+two titles had the same sections in a different order from their theme, and one
+had a genuine break, a section named "Tech & Booking Tools" against a theme
+slug of `tech-booking`. That one would have reserved articles to a section the
+homepage never renders, silently.
+
+Order matters too: the Site row's order is the allocation order and the theme's
+is the render order, so a section with a high target should not render last.
+
+### WordPress stores `&` in a term name as `&amp;`
+
+`wp term create category "Money & Compliance"` stores **Money &amp;
+Compliance**, and re-saving the decoded value re-escapes it. This is WordPress
+behaviour, not a bug in the seed, but a theme that adds its own `esc_html()`
+over the top will double-escape and print `&amp;` on the page. Check a rendered
+section heading at first publish before assuming it is fine.
+
+### The engine's app password email collides with the byline user
+
+The Engine account is created with `jb@<domain>`, which means `wp user create
+james-burke jb@<domain>` fails with "that email address is already used". Give
+the byline user a different address.
+
+More usefully: **check before you create.** A `wp user list` that looks like it
+is missing the byline user may simply be a stale read, and creating one anyway
+gets you two accounts with the same display name. Verify the **nicename**, not
+the login or the display name:
+
+```bash
+wp user list --fields=ID,user_login,user_nicename,display_name,roles --format=csv
+```
+
+### Check the donor theme's FOOTER, not just its header
+
+A child generated from another title's theme carried the donor's strapline,
+contact address, copyright line and a supplier-directory link that 404s, all in
+the footer, on five sites at once. The header was corrected and looked right,
+which is what made it easy to miss.
+
+The fix that matters is not the edit, it is the guard: the generator now fails
+the build if any other title's name or domain appears anywhere in a child.
+Copying a child is cheap; proving the copy is clean is the part worth
+automating.
+
+### Mail: MX is not the job, SPF and DKIM are
+
+Adding the domain to Workspace sets MX correctly and stops there. On all five,
+SPF still authorised only SiteGround and there was no Google DKIM at all, so
+anything sent from `jb@<domain>` would have failed authentication.
+
+**SPF is edited, not replaced.** The live fleet keeps the host's include and
+adds Google's, because WordPress sends mail too:
+
+```
+v=spf1 +a +mx include:<domain>.spf.auto.dnssmarthost.net include:_spf.google.com ~all
+```
+
+One record only; two SPF records make both invalid.
+
+**Check the DKIM key length.** A 2048-bit key is longer than a DNS string's 255
+characters and has to be chunked. It looks identical in the provider's panel
+whether it was chunked or truncated. A correct record returns a `p=` value of
+**392 characters**; anything shorter is truncated and every signature fails.
+
+### Pace the verification, or you lock yourself out
+
+Deploying five titles produced several hundred requests from one IP in a couple
+of hours and triggered the challenge described above. Batch the checks: one
+request per site that asserts several things, rather than one request per
+assertion. §10 already says a deploy can trigger it; a *launch* triggers it far
+harder.
+
+### Mailchimp wants the DKIM records at the ROOT, not on the sending subdomain
+
+Resolved 19 Nov 2026, after guessing wrong twice. The From address is
+`news@news.<domain>` and the live titles carry `k2`/`k3._domainkey` CNAMEs
+pointing at `dkim2.mcsv.net` and `dkim3.mcsv.net` **on the subdomain only**,
+which makes it look like the subdomain is what gets authenticated. It is not.
+
+Mailchimp verifies and authenticates the **root** domain, and asks for the same
+pair at `k2._domainkey.<domain>`. Add both sets:
+
+```
+k2._domainkey.news        -> dkim2.mcsv.net     (sending subdomain)
+k3._domainkey.news        -> dkim3.mcsv.net
+k2._domainkey             -> dkim2.mcsv.net     (root, what Mailchimp checks)
+k3._domainkey             -> dkim3.mcsv.net
+```
+
+SiteGround's DNS editor appends the domain, so type the short name on the left,
+not the full hostname, or you get `k2._domainkey.news.domain.com.domain.com`.
+
+**The ten older titles have no root records at all**, so they are authenticated
+on the subdomain alone and at least one shows "Verification in progress" years
+on. Worth a sweep: the wave-7 five are now configured better than the fleet.
+
+Verification is separate from authentication and is done by emailing an address
+**at the root domain**. `news@news.<domain>` receives nothing, so always verify
+with `jb@<domain>`.
+
+### A brand-new title mailbox cannot receive its own verification codes
+
+Mailchimp emails a code to `jb@<domain>`. To read it you sign in to that
+mailbox. Google then wants to send a sign-in code to the same mailbox. The
+account is new, forwarding is not set up yet, and nothing can get in.
+
+Break it from the Admin console: Directory → Users → reset the password, untick
+"ask for a password change at next sign-in", then sign in with it.
+
+Then set the forwarding **as a routing rule, not per mailbox**. Per-mailbox
+forwarding needs a confirmation email clicked in the destination inbox, and
+four titles from the September wave still had unclicked confirmations sitting
+in the hub two months later, which means their mail was never forwarding at
+all. A routing rule needs no confirmation, cannot be undone by a user, and
+covers every title at once:
+
+Admin → Apps → Google Workspace → Gmail → Routing → Add rule, Inbound and
+Internal receiving, Modify message → Also deliver to the hub, with an envelope
+filter on a regexp of the title addresses.
+
+### Hub send-as is an API call, not a console chore
+
+Adding new titles to the hub inbox's **Send mail as** list looks like a console
+job with a verification code per address, and that is how Gmail's own UI reads.
+It is not. The service account's existing domain-wide delegation already carries
+`gmail.settings.sharing` — the scope `set-gmail-signatures.mjs` uses — and that
+scope can **create** a send-as identity as well as patch one:
+
+```
+POST https://gmail.googleapis.com/gmail/v1/users/me/settings/sendAs
+{ "sendAsEmail": "jb@<domain>", "displayName": "James Burke",
+  "replyToAddress": "jb@<domain>", "treatAsAlias": false }
+```
+
+Because the domain is a secondary domain of the same Workspace, the identity
+comes back **`verificationStatus: accepted`** immediately. No code, no SMTP
+server, no app password, nothing to click. All five of the 17 Nov titles were
+added in one run.
+
+Two things follow. Do not open the "Add another email address" dialog: it opens
+a separate browser window that no automation in this project can reach, and it
+asks for SMTP credentials because the existing identities are all
+`treatAsAlias: false`. And **do not try to make the title addresses aliases on
+the hub user instead** — Google refuses with "Another user already has this
+email", because each title is its own Workspace user. That refusal is correct
+and is not a problem to be solved.
+
+### Forwarding is not retroactive, so silence is not evidence
+
+Searching the hub inbox for a new title's domain and finding nothing does **not**
+mean forwarding is off. Gmail forwarding applies only to mail arriving after it
+is switched on, and a title that is two days old with three welcome emails has
+had nothing arrive since. All five of the 17 Nov titles were forwarding
+correctly the entire time they appeared not to be.
+
+Read the setting rather than inferring it from the hub:
+
+```
+GET https://gmail.googleapis.com/gmail/v1/users/me/settings/autoForwarding
+```
+
+impersonating the title mailbox. `scripts/_mailaudit.mjs` prints forwarding,
+registered forwarding addresses and extra send-as identities for every title in
+one pass, which is the cheap way to answer this for the whole fleet.
+
+### What a title's mail setup actually consists of
+
+Five things. The older titles have all five; a new title usually has the first
+two and nothing else.
+
+| | Where it lives | How |
+| --- | --- | --- |
+| `jb@<domain>` Workspace user | Admin console | by hand, its own seat |
+| forwarding to the hub, `leaveInInbox` | the title mailbox | by hand or API |
+| `press@<domain>` alias on the **`jb@<domain>`** user | Admin console | by hand |
+| `press@<domain>` send-as on the title mailbox | Gmail API | `settings.sharing` |
+| `jb@<domain>` send-as on the hub, reply-to itself | Gmail API | `settings.sharing` |
+
+The press alias belongs on the **title's own user**, not on the hub. Adding
+`press@<newdomain>` to the hub user's alternate addresses appears to work and
+quietly diverges from every other title, which matters because
+`set-gmail-signatures.mjs` looks for the press identity on the title mailbox and
+will silently skip it.
+
+Every title also needs a row in `TITLES` in `scripts/set-gmail-signatures.mjs`,
+then one `--apply` run. §2 step 5 already says this; it is repeated here because
+the September wave went six weeks with blank signatures anyway.
+
+### Nobody has written down who owns the Cloud project
+
+The service account the whole fleet runs on lives in Google Cloud project
+**163444851963**, and nothing in either repo records which Google identity owns
+it. That is fine until something needs a Google API that has never been used
+before, at which point the call fails with:
+
+```
+403  Admin SDK API has not been used in project 163444851963 before or it is disabled.
+```
+
+The scope was granted and the token minted — only the API itself was off. The
+fix is one click in that project's console, but finding an identity that can
+open the project is the slow part: the title accounts cannot (they are not
+owners and the console forces a re-auth), and the error the console gives is
+`resourcemanager.projects.get (missing)`, which reads like a permissions
+problem rather than a wrong-account one.
+
+**Write the owning account into this playbook the next time someone opens that
+project successfully.** The likely candidates are the identity that holds the
+fleet's GA4 properties and the one used for third-party signups, neither of
+which is the Workspace admin.
+
+Until then, anything needing a newly-used Google API is a two-person job, so
+prefer the manual route for one-off cosmetic work. Setting five Workspace
+profile photos by hand in Admin → Users → the user → the avatar takes about two
+minutes; `scripts/_w7photos.mjs` does it from each title's
+`brand/dist/<slug>/avatar-512.png` the moment the Admin SDK is enabled, and is
+worth running only when a wave is large enough to justify it.
+
+### The platform allowance is a launch dependency, and nobody counts it
+
+Launching five titles took the fleet from ten to fifteen and pushed the Vercel
+team past the Hobby plan's **4 hours of Fluid Active CPU a month**. It reached
+6h 55m and Vercel **paused every project on the team** on 19 Nov 2026: the
+fleet app, the MEPCA app, the dashboard, all of them, for twelve hours until
+the plan was upgraded. The pause would otherwise have lasted until 19 December.
+
+Three things make this worse than it sounds.
+
+**It does not read as a capacity problem.** Every route returns:
+
+```
+402  Payment required
+     DEPLOYMENT_DISABLED
+```
+
+which looks like an unpaid invoice. It is not. The cause is only visible in the
+Vercel dashboard sidebar, as "Paused since … for Fluid Active CPU. Your team
+exceeded the Hobby fair use limits."
+
+**It takes the whole team down, not one project.** The titles' public sites are
+on SiteGround and were unaffected, so readers saw nothing. But everything on
+Vercel stopped, including `/api/brand/logo/<slug>`, which every Gmail signature
+on every title loads its mark from, so those images were broken in outgoing
+mail for the whole outage.
+
+**Nothing is lost, but nothing catches up by itself either.** Eleven finished
+articles sat past their slot. They published on the first `publish-due` after
+the plan was restored, two per title per run.
+
+### Active CPU is not wall time, so measure the right thing
+
+The instinct is to blame the agents. The numbers say otherwise. Over seven days:
+
+| agent | runs | avg | min/day | $/day |
+| --- | --- | --- | --- | --- |
+| editor | 427 | 56s | 56.5 | 7.55 |
+| researcher | 65 | 112s | 17.4 | 2.02 |
+| backlink | 83 | 61s | 12.1 | 0.17 |
+| director | 521 | 3s | 3.8 | 0.17 |
+| | | | **96 min/day** | **$10.43** |
+
+96 minutes a day of agent wall time, about 48 hours a month — but fluid compute
+bills **active CPU**, and an agent run is mostly idle waiting on the Anthropic
+API, which is not billed. The giveaway is in the usage panel: Function
+Invocations were at **14%** of their allowance while Active CPU was at **173%**.
+That combination means the cost is work that genuinely burns processor, which
+is feed parsing far more than model calls.
+
+So the lever is the scanner, not the writers. Do not throttle the Editor to
+save CPU: it is the product, and it is mostly waiting.
+
+### The duplicate that cost the most
+
+`cloudflare/worker.js` listed `/api/cron/scan-feeds` **twice** in its hourly
+`STEPS`, with no comment, unlike every other line in that array. It is not a
+harmless repeat — the route divides a fixed budget across the fleet and
+advances a rotation, so the second call does a second full slice of work. At 28
+ticks a day that was the largest single consumer of Active CPU in the system.
+
+Raising `scan-feeds`' `maxDuration` from 60s to 300s on the same day was
+correct, because at fifteen titles the run needs about 75s and was being killed
+part way — but it also meant each of those 28 calls ran to completion at ~130s
+instead of being cut at 60. Correct fix, doubled bill, same afternoon.
+
+Fixed by deleting one line. Nothing is lost: the wire already carries thousands
+of unread items, and `HALF_PAST` omits scanning entirely for the same reason.
+
+### Where the clock actually lives, and how to deploy it
+
+Not in `vercel.json`, which holds only two daily crons. The real schedule is a
+Cloudflare Worker, `smart-sme-cron`, in `cloudflare/`:
+
+```
+crons = ["5 6-19 * * *", "35 6-19 * * *"]     28 ticks a day
+```
+
+`STEPS` runs at five past, `HALF_PAST` at thirty-five past. Read `worker.js`
+for what each tick does, **not the comments in `wrangler.toml`**: that file
+claims the half-past trigger "runs no agent stage", while `HALF_PAST` plainly
+contains both agent stages. Where two comments disagree, the array is the truth.
+
+`npx` is blocked on this machine, so deploy through node from `cloudflare/`:
+
+```powershell
+node ..\node_modules\wrangler\bin\wrangler.js deploy
+```
+
+**Check two things after every worker deploy**, because a deploy has silently
+wiped them before and the fleet went nineteen hours untouched while Cloudflare
+reported every cron as firing:
+
+```powershell
+node ..\node_modules\wrangler\bin\wrangler.js secret list
+```
+
+`BASE_URL` must still point at the fleet app (it is versioned in
+`wrangler.toml` now, which is why it survives), and `CRON_SECRET` must still be
+listed. If the secret goes, every call 401s and nothing anywhere looks wrong.

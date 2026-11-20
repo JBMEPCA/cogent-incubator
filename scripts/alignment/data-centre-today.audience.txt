@@ -1,0 +1,3 @@
+Data centre operators and colocation firms, developers and their investors, the construction and M&E contractors building the sites, and the engineers who specify power, cooling and connectivity. Plus the consultants, land agents and planners who advise them. Their decision is almost always whether a scheme is real: whether the megawatts announced will become a building, and whether there is work in it for them.
+
+NOT our reader: The IT buyer choosing a cloud provider, and the enterprise architect. This is the business of building and running the buildings, not of consuming compute.
