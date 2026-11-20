@@ -64,7 +64,23 @@ const STEPS = [
   // Console spikes, matched to the title that should cover them. Also on the
   // half-past trigger, because a spike is worth catching within the hour.
   "/api/cron/trending",
-  "/api/cron/scan-feeds",
+  // ONE call, not two. This was listed twice, with no comment, unlike every
+  // other line here — and it is not a harmless repeat: the route divides a
+  // fixed budget across the fleet and advances a rotation, so the second call
+  // does a second full slice of work. Feed parsing is the most CPU-bound thing
+  // the engine does, so at 28 ticks a day that duplicate was the single
+  // largest consumer of Vercel's Fluid Active CPU.
+  //
+  // It stopped being affordable on 19 Nov 2026. Raising scan-feeds'
+  // maxDuration from 60s to 300s the same day was correct — at fifteen titles
+  // the run needs ~75s and was being killed part way — but it also meant each
+  // of those 28 calls ran to completion at ~130s instead of being cut at 60.
+  // The team exceeded the Hobby plan's 4h Active CPU allowance (6h 55m) and
+  // every project was paused for twelve hours.
+  //
+  // Nothing is lost by halving it: the wire already carries thousands of
+  // unread items, and HALF_PAST deliberately omits scanning for the same
+  // reason.
   "/api/cron/scan-feeds",
 ];
 
