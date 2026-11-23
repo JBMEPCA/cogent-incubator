@@ -73,7 +73,14 @@ const STEPS = [
   // (hand-built scripts, the WordPress editor). Added 19 Nov 2026 after a
   // BrightHR story built by hand never reached the BrightHR page.
   "/api/cron/supplier-catchup",
-  "/api/cron/scan-feeds",
+  // ONE call, not two. Listed twice with no comment, unlike every other line
+  // here, and not a harmless repeat: the route divides a fixed budget across the
+  // fleet and advances a rotation, so the second call does a second full slice.
+  // Feed parsing is the most CPU-bound thing the engine does, and at 28 ticks a
+  // day that duplicate was the largest single consumer of Vercel Fluid Active
+  // CPU — enough, with the 60s-to-300s maxDuration raise of the same day, to
+  // pass the Hobby allowance and pause every project on the team for twelve
+  // hours on 19 Nov 2026. HALF_PAST omits scanning for the same reason.
   "/api/cron/scan-feeds",
 ];
 
