@@ -347,6 +347,15 @@ export default async function TrendingPage({ searchParams }) {
                   </span>
                 );
               })()}
+              {/* The news pulse: broad searches per title over the last 12
+                  hours, clustered with each title's wire (lib/news-pulse.js). */}
+              {feed?.pulse && (
+                <span className="micro">
+                  news pulse: {feed.pulse.google || 0} Google News articles
+                  {" · GDELT "}
+                  {feed.pulse.gdeltRefused && !feed.pulse.gdelt ? "refused this time" : `${feed.pulse.gdelt || 0} articles`}
+                </span>
+              )}
               <Link href={showAll ? "/trending" : "/trending?all=1"} className="micro">
                 {showAll ? "Show only matched topics" : `Show everything trending (${hidden} not matched to a title)`}
               </Link>
