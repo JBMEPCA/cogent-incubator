@@ -16,6 +16,15 @@ const CULPRIT =
 
 const CASES = [
   [CULPRIT, true, "the Carrington culprit"],
+  // 24 Nov 2026: ran above "Rangeford Wins Gold for Strawberry Fields at
+  // WhatHouse? Awards". The word test catches it; what failed was the model
+  // leaving named_place empty, because the story reads as being about an
+  // award rather than about a place. Rule 4 now says an event counts.
+  [
+    "Modern apartment buildings with terracotta and cream facades surrounding manicured gardens and green space at a residential development",
+    true,
+    "the Strawberry Fields culprit",
+  ],
   ["Aerial view of a golf resort clubhouse and fairways at sunset", true, "golf resort exterior"],
   ["Exterior facade of a modern apartment block", true, "plain exterior"],
   ["Airport terminal building at dusk", true, "terminal exterior"],
